@@ -30,7 +30,7 @@ export default function HeroSection() {
         {/* Side info */}
         <div className={`col-span-12 lg:col-span-4 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="border-l border-primary/30 pl-6 space-y-6">
-            <p className="font-clinical text-sm text-muted-foreground leading-relaxed">Merging engineering with generative AI to create immersive visual systems for events, exhibitions, and curated environments.
+            <p className="font-clinical text-sm text-muted-foreground leading-relaxed">​Transforming complex ideas into visual systems designed for physical spaces, such as events, exhibitions, performances, and curated environments.
 
             </p>
             <div className="flex gap-4 text-xs font-clinical text-muted-foreground">
