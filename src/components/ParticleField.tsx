@@ -221,7 +221,7 @@ function Particles() {
 
 export default function ParticleField() {
   return (
-    <div className="fixed inset-0 z-0">
+    <div className="fixed inset-0 z-0" style={{ filter: 'blur(0.5px)' }}>
       <Canvas
         camera={{ position: [0, 0, 7], fov: 60 }}
         gl={{ antialias: false, alpha: true }}
