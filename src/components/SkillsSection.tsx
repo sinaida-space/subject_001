@@ -11,7 +11,7 @@ const SKILLS = [
   },
   {
     category: 'Strategic',
-    items: ['Creative Direction', 'Brand Strategy', 'Digital Marketing', 'Project Management', 'Stakeholder Engagement'],
+    items: ['Creative Direction', 'Brand Strategy', 'Project Management'],
   },
   {
     category: 'Engineering Foundation',
