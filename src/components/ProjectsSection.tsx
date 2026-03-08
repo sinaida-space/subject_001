@@ -58,16 +58,7 @@ const PROJECTS: Project[] = [
 
   span: 'md:col-span-4'
 },
-{
-  id: 'bts',
-  title: 'Behind the Process',
-  subtitle: 'Studio Setup',
-  description: 'A glimpse into the physical setup — projectors, cables, TouchDesigner networks, and the controlled chaos of making digital art inhabit real space.',
-  image: projectBTS,
-  tags: ['Process', 'Documentation'],
-  tools: ['MacBook Pro', 'Magcubic Projector'],
-  span: 'md:col-span-8'
-}];
+];
 
 
 function ProjectCard({ project }: {project: Project;}) {
