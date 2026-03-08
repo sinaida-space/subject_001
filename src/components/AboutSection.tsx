@@ -19,7 +19,6 @@ export default function AboutSection() {
         <div className="section-divider mb-20" />
 
         <div className="grid grid-cols-12 gap-8">
-          {/* Label */}
           <div className="col-span-12 md:col-span-3">
             <span className="clinical-label text-primary">About</span>
             <div className="mt-2 text-xs font-clinical text-muted-foreground">
@@ -27,30 +26,19 @@ export default function AboutSection() {
             </div>
           </div>
 
-          {/* Content */}
           <div className={`col-span-12 md:col-span-9 space-y-8 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             <h2 className="font-display text-3xl md:text-5xl font-light leading-tight">
               From diagnostic algorithms to
               <span className="text-primary"> digital organisms</span>
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm text-secondary-foreground leading-relaxed">
-              <div className="space-y-4">
-                <p>
-                  I'm Sinaida — an AI visual artist and creative director based in Prague. My path started in biomedical engineering at Bauman Moscow State Technical University, where I developed cancer detection algorithms and biometric systems.
-                </p>
-                <p>
-                  From there, I spent 5+ years at General Electric, leading IT strategy, Oracle ERP implementations, and digital transformation across Russia, UAE, and the US through their elite IT Leadership Program.
-                </p>
-              </div>
-              <div className="space-y-4">
-                <p>
-                  Now I channel that engineering precision into generative AI art and immersive installations. I work with TouchDesigner, Midjourney, and real-time procedural systems to create visual experiences that live in physical space — on stages, in water, across architecture.
-                </p>
-                <p>
-                  I see Gen AI not as a shortcut, but as a creative instrument. In the hands of a trained, intentional mind, it expands scale, speed, and expressive range.
-                </p>
-              </div>
+            <div className="font-clinical text-sm text-secondary-foreground leading-relaxed max-w-2xl space-y-4">
+              <p>
+                I believe the digital world is a sanctuary for human memory. My work exists to bridge the gap between the anatomical precision of a dancer and the algorithmic logic of a machine.
+              </p>
+              <p>
+                I build visual systems that are as structured as a medical diagnosis and as fluid as a stage performance. I design immersive digital environments and responsive visual narratives for cultural institutions.
+              </p>
             </div>
           </div>
         </div>

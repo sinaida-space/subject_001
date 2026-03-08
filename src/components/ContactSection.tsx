@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function ContactSection() {
   const [inView, setInView] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -14,33 +12,6 @@ export default function ContactSection() {
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSending(true);
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    try {
-      await fetch('https://formsubmit.co/ajax/gallant_mod5v@icloud.com', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          name: data.get('name'),
-          email: data.get('email'),
-          subject: data.get('subject'),
-          message: data.get('message'),
-        }),
-      });
-      setSubmitted(true);
-      form.reset();
-    } catch {
-      // fallback: open mailto
-      window.location.href = `mailto:gallant_mod5v@icloud.com?subject=${encodeURIComponent(data.get('subject') as string)}&body=${encodeURIComponent(data.get('message') as string)}`;
-    } finally {
-      setSending(false);
-    }
-  };
 
   return (
     <section ref={ref} id="contact" className="relative z-10 py-32">
@@ -65,96 +36,36 @@ export default function ContactSection() {
               Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions. Based in Prague, working globally.
             </p>
 
-            {/* Contact Form */}
-            {submitted ? (
-              <div className="border border-primary/40 bg-primary/5 p-8 mb-12">
-                <h3 className="font-display text-lg text-primary mb-2">Message transmitted</h3>
-                <p className="font-clinical text-xs text-muted-foreground">
-                  Signal received. I'll get back to you soon.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-                <input type="text" hidden name="_captcha" value="false" readOnly />
-                <div className="space-y-1">
-                  <label className="clinical-label text-accent">Name</label>
-                  <input
-                    name="name"
-                    required
-                    maxLength={100}
-                    className="w-full bg-transparent border border-border px-4 py-3 font-clinical text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none transition-colors cursor-none"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="clinical-label text-accent">Email</label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    maxLength={255}
-                    className="w-full bg-transparent border border-border px-4 py-3 font-clinical text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none transition-colors cursor-none"
-                    placeholder="your@email.com"
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="clinical-label text-accent">Subject</label>
-                  <input
-                    name="subject"
-                    required
-                    maxLength={200}
-                    className="w-full bg-transparent border border-border px-4 py-3 font-clinical text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none transition-colors cursor-none"
-                    placeholder="Project inquiry, collaboration, commission..."
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="clinical-label text-accent">Message</label>
-                  <textarea
-                    name="message"
-                    required
-                    maxLength={2000}
-                    rows={5}
-                    className="w-full bg-transparent border border-border px-4 py-3 font-clinical text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none transition-colors resize-none cursor-none"
-                    placeholder="Tell me about your project..."
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <button
-                    type="submit"
-                    disabled={sending}
-                    className="border border-primary/40 px-8 py-3 font-clinical text-xs uppercase tracking-widest text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 cursor-none disabled:opacity-50"
-                  >
-                    {sending ? '[ TRANSMITTING... ]' : '[ SEND SIGNAL ]'}
-                  </button>
-                </div>
-              </form>
-            )}
+            {/* Mailto button */}
+            <a
+              href="mailto:gallant_mod5v@icloud.com"
+              className="inline-block border border-primary/40 px-8 py-3 font-clinical text-xs uppercase tracking-widest text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 cursor-none mb-12"
+            >
+              [ Send Signal ]
+            </a>
 
             {/* Social links */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              <a
-                href="https://www.instagram.com/sin.ai.da/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none"
-              >
-                <div className="clinical-label text-accent mb-2">Instagram</div>
-                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
-                  @sin.ai.da
-                </div>
-              </a>
-
-              <a
-                href="https://www.linkedin.com/in/sinaida"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none"
-              >
-                <div className="clinical-label text-accent mb-2">LinkedIn</div>
-                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
-                  /in/sinaida
-                </div>
-              </a>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
+              {[
+                { label: 'Instagram', handle: '@sin.ai.da', url: 'https://www.instagram.com/sin.ai.da/' },
+                { label: 'LinkedIn', handle: '/in/sinaida', url: 'https://www.linkedin.com/in/sinaida' },
+                { label: 'Medium', handle: '@idacooper', url: 'https://medium.com/@idacooper' },
+                { label: 'Spotify', handle: 'Sinaida', url: 'https://open.spotify.com/user/1u4ol8qogt04u4476e4xba8g8?si=291adc6fad08414f' },
+                { label: 'Behance', handle: '/sinaida', url: 'https://www.behance.net/sinaida' },
+              ].map((link) => (
+                <a
+                  key={link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border border-border p-5 hover:border-primary/40 transition-all group cursor-none"
+                >
+                  <div className="clinical-label text-accent mb-2">{link.label}</div>
+                  <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
+                    {link.handle}
+                  </div>
+                </a>
+              ))}
             </div>
 
             <div className="border border-primary/20 bg-primary/5 p-8">

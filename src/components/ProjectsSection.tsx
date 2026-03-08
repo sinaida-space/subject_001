@@ -28,6 +28,7 @@ const PROJECTS: Project[] = [
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
       { label: 'YouTube', url: 'https://youtube.com/shorts/7qgDlifWno0' },
+      { label: 'Instagram', url: 'https://www.instagram.com/p/DVVB4K9gh9x/' },
     ],
     span: 'md:col-span-8 md:row-span-2',
   },
@@ -41,6 +42,7 @@ const PROJECTS: Project[] = [
     tools: ['Midjourney', 'Higgsfield.ai', 'Affinity'],
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245414325/Legacy-in-the-Age-of-Stochastic-Output' },
+      { label: 'Instagram', url: 'https://www.instagram.com/p/DTsKFpxAloa/' },
     ],
     span: 'md:col-span-4',
   },
@@ -54,7 +56,7 @@ const PROJECTS: Project[] = [
     tools: ['TouchDesigner', 'Midjourney', 'Suno'],
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245415773/Synesthetic-Bloom-An-Audio-Responsive-Digital-Organism' },
-      { label: 'YouTube', url: 'https://youtu.be/pzq0BSVzw28' },
+      { label: 'YouTube', url: 'https://youtu.be/pzq0BSVzw28?si=rDUFqLNsi9EHa_BO' },
     ],
     span: 'md:col-span-4',
   },
@@ -90,26 +92,58 @@ function ProjectCard({ project }: { project: Project }) {
       className={`group relative overflow-hidden border border-border bg-card transition-all duration-700 cursor-none ${project.span} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => setHovered(prev => !prev)}
     >
-      {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      {/* Image — 45:60 aspect ratio */}
+      <div className="relative overflow-hidden" style={{ aspectRatio: '45/60' }}>
         <img
           src={project.image}
           alt={project.title}
           className={`w-full h-full object-cover transition-all duration-700 ${
-            hovered ? 'scale-105' : 'scale-100 dither-image'
+            hovered ? 'scale-105' : 'scale-100'
           }`}
+          style={!hovered ? {
+            filter: 'contrast(1.4) grayscale(0.6) brightness(0.8) saturate(0.5)',
+          } : undefined}
         />
 
-        {/* Glitch overlay on hover */}
-        {hovered && (
-          <div className="absolute inset-0 pointer-events-none">
+        {/* VHS glitch overlay — visible when NOT hovered */}
+        {!hovered && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Scanlines */}
             <div
-              className="absolute inset-0 mix-blend-screen opacity-30"
+              className="absolute inset-0 opacity-60"
               style={{
-                background: `repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(0 100% 55% / 0.1) 2px, hsl(0 100% 55% / 0.1) 4px)`,
+                background: `repeating-linear-gradient(0deg, transparent, transparent 1px, hsl(var(--primary) / 0.08) 1px, hsl(var(--primary) / 0.08) 2px)`,
               }}
             />
+            {/* Color channel shift */}
+            <div
+              className="absolute inset-0 mix-blend-screen opacity-40"
+              style={{
+                backgroundImage: `
+                  linear-gradient(90deg, hsl(0 100% 50% / 0.15) 33%, hsl(120 100% 50% / 0.1) 33%, hsl(120 100% 50% / 0.1) 66%, hsl(240 100% 50% / 0.15) 66%)
+                `,
+              }}
+            />
+            {/* Horizontal noise bars */}
+            <div className="absolute inset-0 vhs-noise-bars" />
+            {/* Tracking distortion lines */}
+            <div
+              className="absolute left-0 right-0 h-[3px] bg-foreground/20"
+              style={{ top: '23%' }}
+            />
+            <div
+              className="absolute left-0 right-0 h-[2px] bg-foreground/15"
+              style={{ top: '67%' }}
+            />
+          </div>
+        )}
+
+        {/* Clean reveal glow on hover */}
+        {hovered && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
           </div>
         )}
 
@@ -143,7 +177,7 @@ function ProjectCard({ project }: { project: Project }) {
 
         {/* Links */}
         {project.links && (
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-wrap gap-3 pt-2">
             {project.links.map((link) => (
               <a
                 key={link.label}

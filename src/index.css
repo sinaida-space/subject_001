@@ -149,6 +149,32 @@
     filter: contrast(1) grayscale(0) brightness(1);
   }
 
+  /* VHS noise bars on project images */
+  .vhs-noise-bars {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0%,
+      transparent 3%,
+      hsl(var(--foreground) / 0.04) 3%,
+      hsl(var(--foreground) / 0.04) 3.5%,
+      transparent 3.5%,
+      transparent 8%,
+      hsl(var(--foreground) / 0.06) 8%,
+      hsl(var(--foreground) / 0.06) 8.3%,
+      transparent 8.3%,
+      transparent 15%,
+      hsl(var(--foreground) / 0.03) 15%,
+      hsl(var(--foreground) / 0.03) 15.5%,
+      transparent 15.5%
+    );
+    animation: vhs-drift 4s linear infinite;
+  }
+
+  @keyframes vhs-drift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-20px); }
+  }
+
   /* Neon glow */
   .neon-glow {
     text-shadow:
