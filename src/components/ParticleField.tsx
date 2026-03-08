@@ -42,7 +42,7 @@ function Particles() {
         col[i * 3] = 0.5; col[i * 3 + 1] = 0.03; col[i * 3 + 2] = 0.09;
       }
 
-      siz[i] = Math.random() * 3 + 0.5;
+      siz[i] = Math.random() * 1.5 + 0.3;
     }
     return [pos, base, col, siz];
   }, []);
