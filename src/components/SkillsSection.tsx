@@ -7,15 +7,15 @@ const SKILLS = [
   },
   {
     category: 'Technical',
-    items: ['Projection Mapping', 'Blob Tracking', 'Audio-Reactive Systems', 'WebGL / Three.js', 'Procedural Animation'],
+    items: ['Projection Mapping', 'Audio-Reactive Systems', 'WebGL / Three.js', 'Procedural Animation'],
   },
   {
     category: 'Strategic',
-    items: ['Creative Direction', 'Brand Strategy', 'Digital Marketing', 'Project Management', 'Stakeholder Engagement'],
+    items: ['Creative Direction', 'Brand Strategy', 'Project Management'],
   },
   {
     category: 'Engineering Foundation',
-    items: ['Biomedical Engineering MSc', 'BPMN Process Modeling', 'Salesforce / ERP / CRM', 'MatLab Algorithms', 'Data Analysis'],
+    items: ['Biomedical Engineering MSc', 'Salesforce / ERP / CRM', 'MatLab Algorithms', 'Data Analysis'],
   },
 ];
 
@@ -23,7 +23,7 @@ const SERVICES = [
   {
     code: 'SRV.001',
     title: 'Immersive Visuals',
-    description: 'AI-generated visual systems for event spaces, stages, exhibitions, and architectural projection mapping.',
+    description: 'AI-generated visual systems for event spaces, stages, exhibitions, and projection mapping.',
   },
   {
     code: 'SRV.002',
