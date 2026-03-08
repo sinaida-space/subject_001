@@ -204,7 +204,7 @@
   /* Clinical label style */
   .clinical-label {
     font-family: var(--font-clinical);
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: hsl(var(--muted-foreground));
