@@ -35,11 +35,11 @@ function Particles() {
 
       const type = Math.random();
       if (type < 0.4) {
-        col[i * 3] = 1.0; col[i * 3 + 1] = 0.1; col[i * 3 + 2] = 0.1;
+        col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
       } else if (type < 0.7) {
-        col[i * 3] = 0.0; col[i * 3 + 1] = 0.9; col[i * 3 + 2] = 0.9;
+        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
       } else {
-        col[i * 3] = 0.7; col[i * 3 + 1] = 0.7; col[i * 3 + 2] = 0.7;
+        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
       }
 
       siz[i] = Math.random() * 3 + 0.5;
