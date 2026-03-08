@@ -22,7 +22,7 @@ export default function AboutSection() {
           {/* Label */}
           <div className="col-span-12 md:col-span-3">
             <span className="clinical-label text-primary">About</span>
-            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ BIO.SYS ]
+            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ BIO ]
 
             </div>
           </div>
