@@ -21,8 +21,8 @@ const trailVertexShader = `
     float expandCurve = life < 0.3 
       ? life / 0.3 
       : 1.0 - smoothstep(0.5, 1.0, life);
-    float size = aSize * (0.1 + expandCurve * 3.0);
-    gl_PointSize = size * (200.0 / -mvPosition.z);
+    float size = aSize * (0.1 + expandCurve * 2.0);
+    gl_PointSize = size * (150.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -191,14 +191,14 @@ function Particles() {
           vels[idx * 3 + 1] = Math.sin(angle) * driftSpeed + 0.15; // slight upward bias
           vels[idx * 3 + 2] = (Math.random() - 0.5) * 0.1;
 
-          // Random color: white-heavy with some crimson
+          // Colors matching site: warm white + crimson
           const r = Math.random();
-          if (r < 0.5) {
+          if (r < 0.45) {
             trailColArray[idx * 3] = 0.95; trailColArray[idx * 3 + 1] = 0.93; trailColArray[idx * 3 + 2] = 0.9;
           } else if (r < 0.8) {
             trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
           } else {
-            trailColArray[idx * 3] = 0.6; trailColArray[idx * 3 + 1] = 0.5; trailColArray[idx * 3 + 2] = 0.95; // hint of blue magic
+            trailColArray[idx * 3] = 0.5; trailColArray[idx * 3 + 1] = 0.03; trailColArray[idx * 3 + 2] = 0.09;
           }
 
           trailSizeArray[idx] = 0.8 + Math.random() * 1.2;
@@ -355,9 +355,9 @@ export default function ParticleField() {
         <Particles />
         <EffectComposer>
           <Bloom
-            intensity={3.0}
-            luminanceThreshold={0.02}
-            luminanceSmoothing={0.99}
+            intensity={1.8}
+            luminanceThreshold={0.08}
+            luminanceSmoothing={0.9}
             mipmapBlur
           />
         </EffectComposer>
