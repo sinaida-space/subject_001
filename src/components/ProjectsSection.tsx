@@ -21,7 +21,7 @@ const PROJECTS: Project[] = [
     id: 'submerged',
     title: 'Submerged Realities',
     subtitle: 'Projection Mapping Study',
-    description: 'AI-generated aesthetics mapped onto fluid surfaces. Digital textures interacting with the physics of water and red-light environments, using blob tracking for interactive triggers.',
+    description: 'AI-generated aesthetics mapped onto fluid surface. Digital textures interacting with the physics of water and red-light environments, using blob tracking for interactive triggers.',
     image: projectSubmerged,
     tags: ['Installation', 'Interactive', 'Projection'],
     tools: ['TouchDesigner', 'Midjourney', 'DaVinci Resolve'],

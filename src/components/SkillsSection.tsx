@@ -7,7 +7,7 @@ const SKILLS = [
   },
   {
     category: 'Technical',
-    items: ['Projection Mapping', 'Blob Tracking', 'Audio-Reactive Systems', 'WebGL / Three.js', 'Procedural Animation'],
+    items: ['Projection Mapping', 'Audio-Reactive Systems', 'WebGL / Three.js', 'Procedural Animation'],
   },
   {
     category: 'Strategic',
