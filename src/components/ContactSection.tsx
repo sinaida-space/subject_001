@@ -27,56 +27,44 @@ export default function ContactSection() {
           </div>
 
           <div className={`col-span-12 md:col-span-9 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <h2 className="font-display text-3xl md:text-5xl font-light mb-8">
-              Let's create something<br />
-              <span className="text-primary">extraordinary</span>
-            </h2>
+            {/* Collaboration callout — moved up */}
+            <div className="mb-12">
+              <h2 className="font-display text-3xl md:text-5xl font-light mb-4">
+                Open for<br />
+                <span className="text-primary">Collaboration</span>
+              </h2>
+              <p className="font-clinical text-sm text-muted-foreground max-w-2xl leading-relaxed">
+                Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.
+              </p>
+            </div>
 
-            <p className="font-clinical text-sm text-muted-foreground max-w-xl mb-12 leading-relaxed">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.
+            <p className="font-clinical text-sm text-muted-foreground max-w-xl mb-12 leading-relaxed">
+              Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions. Based in Prague, working globally.
+            </p>
 
-Based in Prague, working globally.</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap gap-4">
               <a
                 href="mailto:sinkrivchenko@gmail.com"
-                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none">
-                
-                <div className="clinical-label text-accent mb-2">Email</div>
-                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
-                   gallant_mod5v@icloud.com
-                </div>
+                className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
+                EMAIL ME ↗
               </a>
 
               <a
                 href="https://www.instagram.com/sin.ai.da/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none">
-                
-                <div className="clinical-label text-accent mb-2">Instagram</div>
-                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
-                  @sin.ai.da
-                </div>
+                className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
+                FOLLOW ON INSTAGRAM ↗
               </a>
 
               <a
                 href="https://www.linkedin.com/in/sinaida"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none">
-                
-                <div className="clinical-label text-accent mb-2">LinkedIn</div>
-                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
-                  /in/sinaida
-                </div>
+                className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
+                CONNECT ON LINKEDIN ↗
               </a>
-            </div>
-
-            <div className="border border-primary/20 bg-primary/5 p-8">
-              <h3 className="font-display text-lg mb-3">Open for Collaboration</h3>
-              <p className="font-clinical text-xs text-muted-foreground leading-relaxed">
-                Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.
-              </p>
             </div>
           </div>
         </div>
