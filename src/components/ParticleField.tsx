@@ -355,9 +355,9 @@ export default function ParticleField() {
         <Particles />
         <EffectComposer>
           <Bloom
-            intensity={3.0}
-            luminanceThreshold={0.02}
-            luminanceSmoothing={0.99}
+            intensity={1.8}
+            luminanceThreshold={0.08}
+            luminanceSmoothing={0.9}
             mipmapBlur
           />
         </EffectComposer>
