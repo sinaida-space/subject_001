@@ -155,9 +155,9 @@ function ProjectCard({ project }: {project: Project;}) {
 
 export default function ProjectsSection() {
   return (
-    <section id="work" className="relative z-10 py-32">
+    <section id="work" className="relative z-10 py-12">
       <div className="container mx-auto px-6 max-w-7xl">
-        <div className="section-divider mb-20" />
+        <div className="section-divider mb-8" />
 
         <div className="grid grid-cols-12 gap-4 md:gap-6 mb-16">
           <div className="col-span-12 md:col-span-3">
