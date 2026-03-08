@@ -3,8 +3,8 @@ import Logo from './Logo';
 export default function Footer() {
   return (
     <footer className="relative z-10 border-t border-border py-12">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-12 gap-8">
+      <div className="container mx-auto px-6 max-w-7xl">
+        <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
           {/* Logo & tagline */}
           <div className="col-span-12 md:col-span-4">
             <Logo />
