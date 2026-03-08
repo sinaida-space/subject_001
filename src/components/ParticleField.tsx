@@ -21,8 +21,8 @@ const trailVertexShader = `
     float expandCurve = life < 0.3 
       ? life / 0.3 
       : 1.0 - smoothstep(0.5, 1.0, life);
-    float size = aSize * (0.1 + expandCurve * 3.0);
-    gl_PointSize = size * (200.0 / -mvPosition.z);
+    float size = aSize * (0.1 + expandCurve * 2.0);
+    gl_PointSize = size * (150.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
