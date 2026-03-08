@@ -8,8 +8,11 @@ export default function Footer() {
           {/* Logo & tagline */}
           <div className="col-span-12 md:col-span-4">
             <Logo />
-            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">
-              Visual essays on perception and illusion. AI visual artist & creative director based in Prague.
+            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.
+
+
+
+
             </p>
           </div>
 
@@ -17,15 +20,12 @@ export default function Footer() {
           <div className="col-span-6 md:col-span-2">
             <div className="clinical-label text-primary mb-4">Navigate</div>
             <div className="space-y-2">
-              {['Work', 'About', 'Process', 'Contact'].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none"
-                >
+              {['Work', 'About', 'Process', 'Contact'].map((item) => <a key={item} href={`#${item.toLowerCase()}`}
+              className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none">
+                
                   {item}
                 </a>
-              ))}
+              )}
             </div>
           </div>
 
@@ -34,22 +34,20 @@ export default function Footer() {
             <div className="clinical-label text-primary mb-4">Connect</div>
             <div className="space-y-2">
               {[
-                { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
-                { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
-                { label: 'Behance', url: 'https://www.behance.net/sinaida' },
-                { label: 'Medium', url: 'https://medium.com/@idacooper' },
-                { label: 'Spotify', url: 'https://open.spotify.com/user/1u4ol8qogt04u4476e4xba8g8?si=291adc6fad08414f' },
-              ].map((link) => (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none"
-                >
+              { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
+              { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
+              { label: 'Behance', url: 'https://www.behance.net/sinaida' }].
+              map((link) =>
+              <a
+                key={link.label}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none">
+                
                   {link.label} ↗
                 </a>
-              ))}
+              )}
             </div>
           </div>
 
@@ -58,8 +56,8 @@ export default function Footer() {
             <div className="clinical-label text-primary mb-4">Legal</div>
             <a
               href="/privacy"
-              className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none mb-2"
-            >
+              className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none mb-2">
+              
               Privacy Policy
             </a>
             <p className="font-clinical text-xs text-muted-foreground">
@@ -75,6 +73,6 @@ export default function Footer() {
           <span className="clinical-label text-muted-foreground">Are we more than the data we leave behind?</span>
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
+
 }

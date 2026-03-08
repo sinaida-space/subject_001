@@ -43,7 +43,7 @@ Based in Prague, working globally.</p>
                 
                 <div className="clinical-label text-accent mb-2">Email</div>
                 <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
-                  sinkrivchenko@gmail.com
+                   gallant_mod5v@icloud.com
                 </div>
               </a>
 
