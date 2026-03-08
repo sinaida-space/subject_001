@@ -57,11 +57,11 @@ export default function SkillsSection() {
 
   return (
     <section ref={ref} id="process" className="relative z-10 py-32">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 max-w-7xl">
         <div className="section-divider mb-20" />
 
         {/* Services */}
-        <div className="grid grid-cols-12 gap-4 mb-24">
+        <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 mb-24">
           <div className="col-span-12 md:col-span-3">
             <span className="clinical-label text-primary">Services</span>
             <div className="mt-2 text-xs font-clinical text-muted-foreground">
@@ -82,7 +82,7 @@ export default function SkillsSection() {
         </div>
 
         {/* Skills Matrix */}
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
           <div className="col-span-12 md:col-span-3">
             <span className="clinical-label text-primary">Capabilities</span>
             <div className="mt-2 text-xs font-clinical text-muted-foreground">
