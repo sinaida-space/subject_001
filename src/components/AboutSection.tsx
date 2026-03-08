@@ -52,20 +52,6 @@ export default function AboutSection() {
                 </p>
               </div>
             </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-border">
-              {[
-                { value: '10+', label: 'Years in Tech & Strategy' },
-                { value: 'GE', label: 'IT Leadership Program' },
-                { value: 'MSc', label: 'Biomedical Engineering' },
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <div className="font-display text-2xl md:text-3xl text-primary font-light">{stat.value}</div>
-                  <div className="clinical-label mt-1">{stat.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
