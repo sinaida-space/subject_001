@@ -38,9 +38,10 @@ export default function ContactSection() {
               </p>
             </div>
 
-            <p className="font-clinical text-sm text-muted-foreground max-w-xl mb-12 leading-relaxed">
-              Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions. Based in Prague, working globally.
-            </p>
+            <div className="font-clinical text-sm text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-4">
+              <p>Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.</p>
+              <p>Based in Prague, working globally.</p>
+            </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4">
