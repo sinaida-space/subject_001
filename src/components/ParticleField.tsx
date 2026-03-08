@@ -34,15 +34,15 @@ function Particles() {
       base[i * 3 + 2] = z;
 
       const type = Math.random();
-      if (type < 0.4) {
+      if (type < 0.33) {
         col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
-      } else if (type < 0.7) {
-        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
+      } else if (type < 0.66) {
+        col[i * 3] = 0.6; col[i * 3 + 1] = 0.04; col[i * 3 + 2] = 0.12;
       } else {
-        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
+        col[i * 3] = 0.5; col[i * 3 + 1] = 0.03; col[i * 3 + 2] = 0.09;
       }
 
-      siz[i] = Math.random() * 3 + 0.5;
+      siz[i] = Math.random() * 1.5 + 0.3;
     }
     return [pos, base, col, siz];
   }, []);
@@ -59,7 +59,7 @@ function Particles() {
       pos[i * 3 + 1] = 0;
       pos[i * 3 + 2] = -100; // hide offscreen initially
       col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
-      siz[i] = 1.5;
+      siz[i] = 0.8;
       opa[i] = 0;
     }
     return [pos, col, siz, opa];
@@ -125,11 +125,11 @@ function Particles() {
         trailPosArray[idx * 3 + 1] = my + (Math.random() - 0.5) * spread;
         trailPosArray[idx * 3 + 2] = (Math.random() - 0.5) * 0.5;
 
-        // Random color: crimson or warm off-white
-        if (Math.random() < 0.6) {
+        // Random color: dimmed crimson variations
+        if (Math.random() < 0.5) {
           trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
         } else {
-          trailColArray[idx * 3] = 0.961; trailColArray[idx * 3 + 1] = 0.961; trailColArray[idx * 3 + 2] = 0.941;
+          trailColArray[idx * 3] = 0.6; trailColArray[idx * 3 + 1] = 0.04; trailColArray[idx * 3 + 2] = 0.12;
         }
 
         ages[idx] = 0;
@@ -204,7 +204,7 @@ function Particles() {
           <bufferAttribute attach="attributes-color" count={PARTICLE_COUNT} array={colors} itemSize={3} />
           <bufferAttribute attach="attributes-size" count={PARTICLE_COUNT} array={sizes} itemSize={1} />
         </bufferGeometry>
-        <pointsMaterial size={0.06} vertexColors transparent opacity={0.8} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+        <pointsMaterial size={0.03} vertexColors transparent opacity={0.8} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
 
       {/* Trail particles */}
@@ -213,7 +213,7 @@ function Particles() {
           <bufferAttribute attach="attributes-position" count={TRAIL_COUNT} array={trailPositions} itemSize={3} />
           <bufferAttribute attach="attributes-color" count={TRAIL_COUNT} array={trailColors} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial size={0.08} vertexColors transparent opacity={0.9} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+        <pointsMaterial size={0.04} vertexColors transparent opacity={0.9} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
     </>
   );
