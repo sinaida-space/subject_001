@@ -35,11 +35,11 @@ function Particles() {
 
       const type = Math.random();
       if (type < 0.4) {
-        col[i * 3] = 1.0; col[i * 3 + 1] = 0.1; col[i * 3 + 2] = 0.1;
+        col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
       } else if (type < 0.7) {
-        col[i * 3] = 0.0; col[i * 3 + 1] = 0.9; col[i * 3 + 2] = 0.9;
+        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
       } else {
-        col[i * 3] = 0.7; col[i * 3 + 1] = 0.7; col[i * 3 + 2] = 0.7;
+        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
       }
 
       siz[i] = Math.random() * 3 + 0.5;
@@ -58,7 +58,7 @@ function Particles() {
       pos[i * 3] = 0;
       pos[i * 3 + 1] = 0;
       pos[i * 3 + 2] = -100; // hide offscreen initially
-      col[i * 3] = 1.0; col[i * 3 + 1] = 0.3; col[i * 3 + 2] = 0.2;
+      col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
       siz[i] = 1.5;
       opa[i] = 0;
     }
@@ -125,11 +125,11 @@ function Particles() {
         trailPosArray[idx * 3 + 1] = my + (Math.random() - 0.5) * spread;
         trailPosArray[idx * 3 + 2] = (Math.random() - 0.5) * 0.5;
 
-        // Random color: red or cyan
+        // Random color: crimson or warm off-white
         if (Math.random() < 0.6) {
-          trailColArray[idx * 3] = 1.0; trailColArray[idx * 3 + 1] = 0.2; trailColArray[idx * 3 + 2] = 0.15;
+          trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
         } else {
-          trailColArray[idx * 3] = 0.1; trailColArray[idx * 3 + 1] = 0.9; trailColArray[idx * 3 + 2] = 0.85;
+          trailColArray[idx * 3] = 0.961; trailColArray[idx * 3 + 1] = 0.961; trailColArray[idx * 3 + 2] = 0.941;
         }
 
         ages[idx] = 0;
@@ -221,7 +221,7 @@ function Particles() {
 
 export default function ParticleField() {
   return (
-    <div className="fixed inset-0 z-0">
+    <div className="fixed inset-0 z-0" style={{ filter: 'blur(0.5px)' }}>
       <Canvas
         camera={{ position: [0, 0, 7], fov: 60 }}
         gl={{ antialias: false, alpha: true }}
