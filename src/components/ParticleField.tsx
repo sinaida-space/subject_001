@@ -201,7 +201,7 @@ function Particles() {
             trailColArray[idx * 3] = 0.5; trailColArray[idx * 3 + 1] = 0.03; trailColArray[idx * 3 + 2] = 0.09;
           }
 
-          trailSizeArray[idx] = 0.8 + Math.random() * 1.2;
+          trailSizeArray[idx] = 0.3 + Math.random() * 0.4;
           ages[idx] = 0;
           trailAgeArray[idx] = 0;
           trailIndexRef.current++;
