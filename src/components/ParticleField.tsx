@@ -54,7 +54,7 @@ function Particles() {
     scrollRef.current = window.scrollY;
   }, []);
 
-  useMemo(() => {
+  useEffect(() => {
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('scroll', handleScroll);
     return () => {
