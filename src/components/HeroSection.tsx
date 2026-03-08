@@ -12,7 +12,7 @@ export default function HeroSection() {
     <section ref={sectionRef} className="relative min-h-[80vh] flex items-center justify-center z-10 pt-32 md:pt-20">
       <div className="container mx-auto px-6 max-w-7xl grid grid-cols-12 gap-8 md:gap-6 lg:gap-8 items-end pb-12">
         {/* Main title area */}
-        <div className="col-span-12 lg:col-span-8">
+         <div className="col-span-12 lg:col-span-8 md:py-8">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <p className="clinical-label mb-6 text-primary">SINAIDA KRIVCHENKO  |  VISUAL ARTIST AND DIGITAL STRATEGIST </p>
             <h1
