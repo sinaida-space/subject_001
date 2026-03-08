@@ -186,13 +186,13 @@ function Particles() {
         const targetY = by + pushY + bloom;
         const targetZ = bz + influence * 1.5 * speedMult;
 
-        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], targetX, delta * 2);
-        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], targetY, delta * 2);
-        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], targetZ, delta * 2);
+        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], targetX, delta * 1.2);
+        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], targetY, delta * 1.2);
+        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], targetZ, delta * 1.2);
       } else {
-        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], bx, delta * 0.5);
-        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], by, delta * 0.5);
-        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], bz, delta * 0.5);
+        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], bx, delta * 0.3);
+        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], by, delta * 0.3);
+        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], bz, delta * 0.3);
       }
     }
 
