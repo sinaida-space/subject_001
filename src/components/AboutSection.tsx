@@ -45,7 +45,7 @@ export default function AboutSection() {
               </div>
               <div className="space-y-4">
                 <p>
-                  Now I channel that engineering precision into generative AI art and immersive installations. I work with TouchDesigner, Midjourney, and real-time procedural systems to create visual experiences that live in physical space — on stages, in water, across architecture.
+                  I channel precision and intentionality into generative art and immersive installations. I work with TouchDesigner, Midjourney, to create real-time visual experiences that inhabit physical space — on stages, in water, across real world objects.
                 </p>
                 <p>
                   I see Gen AI not as a shortcut, but as a creative instrument. In the hands of a trained, intentional mind, it expands scale, speed, and expressive range.
