@@ -1,0 +1,78 @@
+import Logo from './Logo';
+
+export default function Footer() {
+  return (
+    <footer className="relative z-10 border-t border-border py-12">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-12 gap-8">
+          {/* Logo & tagline */}
+          <div className="col-span-12 md:col-span-4">
+            <Logo />
+            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">
+              Visual essays on perception and illusion. AI visual artist & creative director based in Prague.
+            </p>
+          </div>
+
+          {/* Quick links */}
+          <div className="col-span-6 md:col-span-2">
+            <div className="clinical-label text-primary mb-4">Navigate</div>
+            <div className="space-y-2">
+              {['Work', 'About', 'Process', 'Contact'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Social */}
+          <div className="col-span-6 md:col-span-2">
+            <div className="clinical-label text-primary mb-4">Connect</div>
+            <div className="space-y-2">
+              {[
+                { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
+                { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
+                { label: 'Behance', url: 'https://www.behance.net/sinaida' },
+              ].map((link) => (
+                <a
+                  key={link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none"
+                >
+                  {link.label} ↗
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Legal */}
+          <div className="col-span-12 md:col-span-4">
+            <div className="clinical-label text-primary mb-4">Legal</div>
+            <a
+              href="/privacy"
+              className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none mb-2"
+            >
+              Privacy Policy
+            </a>
+            <p className="font-clinical text-xs text-muted-foreground">
+              © {new Date().getFullYear()} Zinaida Krivchenko. All rights reserved.
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="section-divider mt-8 mb-6" />
+        <div className="flex justify-between items-center">
+          <span className="clinical-label text-muted-foreground">Prague, CZ — {new Date().getFullYear()}</span>
+          <span className="clinical-label text-muted-foreground">Are we more than the data we leave behind?</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
