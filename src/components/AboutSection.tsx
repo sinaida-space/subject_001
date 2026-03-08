@@ -36,9 +36,7 @@ export default function AboutSection() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm text-secondary-foreground leading-relaxed">
               <div className="space-y-4">
-                <p>I believe the digital world is a sanctuary for human memory. My process breathes a soul into the machine, grounding the logic of fantasy into immersive visual systems. 
-
-                </p>
+                <p>I believe the digital world is a sanctuary for human memory. My process breathes a soul into the machine, grounding the logic of fantasy into immersive visual systems.</p>
                 <p>
                   From there, I spent 5+ years at General Electric, leading IT strategy, Oracle ERP implementations, and digital transformation across Russia, UAE, and the US through their elite IT Leadership Program.
                 </p>
@@ -51,20 +49,6 @@ export default function AboutSection() {
                   I see generative AI as a creative instrument that collapses the distance between speed and soul, expanding the boundaries of what is possible to bring people together in the real world.
                 </p>
               </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-border">
-              {[
-              { value: '10+', label: 'Years in Tech & Strategy' },
-              { value: 'GE', label: 'IT Leadership Program' },
-              { value: 'MSc', label: 'Biomedical Engineering' }].
-              map((stat) =>
-              <div key={stat.label}>
-                  <div className="font-display text-2xl md:text-3xl text-primary font-light">{stat.value}</div>
-                  <div className="clinical-label mt-1">{stat.label}</div>
-                </div>
-              )}
             </div>
           </div>
         </div>
