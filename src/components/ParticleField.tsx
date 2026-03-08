@@ -128,11 +128,12 @@ function Particles() {
         trailPosArray[idx * 3 + 1] = my + (Math.random() - 0.5) * spread;
         trailPosArray[idx * 3 + 2] = (Math.random() - 0.5) * 0.5;
 
-        // Random color: dimmed crimson variations
-        if (Math.random() < 0.5) {
-          trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
+        // Random color: white or dimmed crimson
+        const r = Math.random();
+        if (r < 0.4) {
+          trailColArray[idx * 3] = 0.95; trailColArray[idx * 3 + 1] = 0.93; trailColArray[idx * 3 + 2] = 0.9;
         } else {
-          trailColArray[idx * 3] = 0.6; trailColArray[idx * 3 + 1] = 0.04; trailColArray[idx * 3 + 2] = 0.12;
+          trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
         }
 
         ages[idx] = 0;
