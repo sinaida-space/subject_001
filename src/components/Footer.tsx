@@ -31,7 +31,9 @@ export default function Footer() {
               {[
               { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
               { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
-              { label: 'Behance', url: 'https://www.behance.net/sinaida' }].
+              { label: 'Behance', url: 'https://www.behance.net/sinaida' },
+              { label: 'Medium', url: 'https://medium.com/@idacooper' },
+              { label: 'Spotify', url: 'https://open.spotify.com/user/1u4ol8qogt04u4476e4xba8g8?si=9ed0a53d14934618' }].
               map((link) =>
               <a
                 key={link.label}
