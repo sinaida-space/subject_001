@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import projectSubmerged from '@/assets/project-submerged.jpeg';
+import projectSubmerged from '@/assets/project-submerged-cover.png';
 import projectLegacy from '@/assets/project-legacy.jpg';
 import projectSynesthetic from '@/assets/project-synesthetic.jpg';
 import projectBTS from '@/assets/project-submerged-bts.jpeg';
