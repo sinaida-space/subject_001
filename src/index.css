@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3%;
+    --background: 280 33% 3%;
     --foreground: 0 0% 88%;
 
     --card: 240 8% 6%;
@@ -13,7 +13,7 @@
     --popover: 240 8% 6%;
     --popover-foreground: 0 0% 88%;
 
-    --primary: 0 100% 55%;
+    --primary: 352 87% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 6% 10%;
@@ -30,13 +30,15 @@
 
     --border: 240 6% 15%;
     --input: 240 6% 15%;
-    --ring: 0 100% 55%;
+    --ring: 352 87% 40%;
 
     --radius: 0px;
 
     --neon-magenta: 320 100% 55%;
-    --neon-glow: 0 100% 55%;
+    --neon-glow: 352 87% 40%;
     --clinical: 180 15% 70%;
+    --particle-white: 40 67% 96%;
+    --bloom-cyan: 180 100% 45%;
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-mono: 'Space Mono', monospace;
