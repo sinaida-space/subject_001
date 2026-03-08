@@ -14,9 +14,8 @@ export default function HeroSection() {
         {/* Main title area */}
         <div className="col-span-12 lg:col-span-8">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <p className="clinical-label mb-6 text-primary">SINAIDA KRIVCHENKOAI VISUAL ARTIST AND DIGITAL STRATEGIST — PRAGUE, CZ
+            <p className="clinical-label mb-6 text-primary">SINAIDA KRIVCHENKO | AI VISUAL ARTIST AND DIGITAL STRATEGIST — PRAGUE, CZ
               <span className="inline-block w-2 h-2 bg-primary mr-2 animate-pulse" />
-              AI Visual Artist — Prague, CZ
             </p>
             <h1
               className="font-display text-5xl md:text-7xl lg:text-8xl font-light leading-[0.9] tracking-tight text-foreground glitch-text"
