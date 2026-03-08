@@ -111,7 +111,7 @@ function ProjectCard({ project }: {project: Project;}) {
       </div>
 
       {/* Info */}
-      <div className="p-5 space-y-3">
+      <div className="p-6 md:p-8 space-y-4">
         <h3 className="font-display text-lg font-medium text-foreground">{project.title}</h3>
         <p className="font-clinical text-xs text-muted-foreground leading-relaxed line-clamp-2">
           {project.description}
