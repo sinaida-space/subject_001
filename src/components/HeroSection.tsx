@@ -14,14 +14,14 @@ export default function HeroSection() {
         {/* Main title area */}
         <div className="col-span-12 lg:col-span-8">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <p className="clinical-label mb-6 text-primary">
+            <p className="clinical-label mb-6 text-primary">SINAIDA KRIVCHENKO
               <span className="inline-block w-2 h-2 bg-primary mr-2 animate-pulse" />
               AI Visual Artist — Prague, CZ
             </p>
             <h1
               className="font-display text-5xl md:text-7xl lg:text-8xl font-light leading-[0.9] tracking-tight text-foreground glitch-text"
-              data-text="Where Engineering Meets Imagination"
-            >
+              data-text="Where Engineering Meets Imagination">
+              
               Where<br />
               <span className="text-primary font-medium">Engineering</span><br />
               Meets<br />
@@ -34,8 +34,13 @@ export default function HeroSection() {
         <div className={`col-span-12 lg:col-span-4 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="border-l border-primary/30 pl-6 space-y-6">
             <p className="font-clinical text-sm text-muted-foreground leading-relaxed">
-              Visual artist and creative strategist focused on immersive visuals for event spaces, exhibitions, and cultural experiences.
+              Merging biomedical engineering with generative AI to create immersive visual systems for stages, exhibitions, and curated environments.
             </p>
+            <div className="flex gap-4 text-xs font-clinical text-muted-foreground">
+              <span className="border border-border px-2 py-1">TouchDesigner</span>
+              <span className="border border-border px-2 py-1">GenAI</span>
+              <span className="border border-border px-2 py-1">WebGL</span>
+            </div>
           </div>
         </div>
 
@@ -47,6 +52,6 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }

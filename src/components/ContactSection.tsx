@@ -6,7 +6,7 @@ export default function ContactSection() {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setInView(true); },
+      ([entry]) => {if (entry.isIntersecting) setInView(true);},
       { threshold: 0.2 }
     );
     if (ref.current) observer.observe(ref.current);
@@ -32,51 +32,55 @@ export default function ContactSection() {
               <span className="text-primary">extraordinary</span>
             </h2>
 
-            <p className="font-clinical text-sm text-muted-foreground max-w-xl mb-12 leading-relaxed">
-              Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions. Based in Prague, working globally.
-            </p>
+            <p className="font-clinical text-sm text-muted-foreground max-w-xl mb-12 leading-relaxed">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.
 
-            {/* Mailto button */}
-            <a
-              href="mailto:gallant_mod5v@icloud.com"
-              className="inline-block border border-primary/40 px-8 py-3 font-clinical text-xs uppercase tracking-widest text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 cursor-none mb-12"
-            >
-              [ Send Signal ]
-            </a>
+Based in Prague, working globally.</p>
 
-            {/* Social links */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
-              {[
-                { label: 'Instagram', handle: '@sin.ai.da', url: 'https://www.instagram.com/sin.ai.da/' },
-                { label: 'LinkedIn', handle: '/in/sinaida', url: 'https://www.linkedin.com/in/sinaida' },
-                { label: 'Medium', handle: '@idacooper', url: 'https://medium.com/@idacooper' },
-                { label: 'Spotify', handle: 'Sinaida', url: 'https://open.spotify.com/user/1u4ol8qogt04u4476e4xba8g8?si=291adc6fad08414f' },
-                { label: 'Behance', handle: '/sinaida', url: 'https://www.behance.net/sinaida' },
-              ].map((link) => (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border border-border p-5 hover:border-primary/40 transition-all group cursor-none"
-                >
-                  <div className="clinical-label text-accent mb-2">{link.label}</div>
-                  <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
-                    {link.handle}
-                  </div>
-                </a>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <a
+                href="mailto:sinkrivchenko@gmail.com"
+                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none">
+                
+                <div className="clinical-label text-accent mb-2">Email</div>
+                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
+                  sinkrivchenko@gmail.com
+                </div>
+              </a>
+
+              <a
+                href="https://www.instagram.com/sin.ai.da/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none">
+                
+                <div className="clinical-label text-accent mb-2">Instagram</div>
+                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
+                  @sin.ai.da
+                </div>
+              </a>
+
+              <a
+                href="https://www.linkedin.com/in/sinaida"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-border p-6 hover:border-primary/40 transition-all group cursor-none">
+                
+                <div className="clinical-label text-accent mb-2">LinkedIn</div>
+                <div className="font-clinical text-sm text-foreground group-hover:text-primary transition-colors">
+                  /in/sinaida
+                </div>
+              </a>
             </div>
 
             <div className="border border-primary/20 bg-primary/5 p-8">
               <h3 className="font-display text-lg mb-3">Open for Collaboration</h3>
               <p className="font-clinical text-xs text-muted-foreground leading-relaxed">
-                Seeking synthesis with touring productions, theater, musicians, and cultural institutions. I am looking for collaborations that require the transmutation of data into live experiences. Let's build the future together.
+                Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.
               </p>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
