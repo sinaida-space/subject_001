@@ -4,8 +4,7 @@ import Logo from './Logo';
 const NAV_ITEMS = [
 { label: 'Work', href: '#work' },
 { label: 'About', href: '#about' },
-{ label: 'Process', href: '#process' },
-{ label: 'Contact', href: '#contact' }];
+{ label: 'Process', href: '#process' }];
 
 
 export default function Header() {
