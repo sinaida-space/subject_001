@@ -14,7 +14,7 @@ export default function HeroSection() {
         {/* Main title area */}
         <div className="col-span-12 lg:col-span-8">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <p className="clinical-label mb-6 text-primary">SINAIDA KRIVCHENKOAI VISUAL ARTIST AND DIGITAL STRATEGIST — PRAGUE, CZ</p>
+            <p className="clinical-label mb-6 text-primary">SINAIDA KRIVCHENKO  |  VISUAL ARTIST AND DIGITAL STRATEGIST </p>
             <h1
               className="font-display text-5xl md:text-7xl lg:text-8xl font-light leading-[0.9] tracking-tight text-foreground glitch-text"
               data-text="Where Engineering Meets Imagination">
@@ -30,8 +30,8 @@ export default function HeroSection() {
         {/* Side info */}
         <div className={`col-span-12 lg:col-span-4 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="border-l border-primary/30 pl-6 space-y-6">
-            <p className="font-clinical text-sm text-muted-foreground leading-relaxed">
-              Merging biomedical engineering with generative AI to create immersive visual systems for stages, exhibitions, and curated environments.
+            <p className="font-clinical text-sm text-muted-foreground leading-relaxed">Merging engineering with generative AI to create immersive visual systems for events, exhibitions, and curated environments.
+
             </p>
             <div className="flex gap-4 text-xs font-clinical text-muted-foreground">
               <span className="border border-border px-2 py-1">Digital Strategy</span>
