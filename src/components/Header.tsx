@@ -4,8 +4,7 @@ import Logo from './Logo';
 const NAV_ITEMS = [
 { label: 'Work', href: '#work' },
 { label: 'About', href: '#about' },
-{ label: 'Process', href: '#process' },
-{ label: 'Contact', href: '#contact' }];
+{ label: 'Process', href: '#process' }];
 
 
 export default function Header() {
@@ -38,7 +37,7 @@ export default function Header() {
         </nav>
         <a
           href="#contact"
-          className="clinical-label border border-primary/30 px-4 py-2 hover:bg-primary/10 hover:border-primary transition-all duration-300 cursor-none">
+          className="clinical-label border border-primary/30 px-4 py-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
           
           CONTACT 
         </a>
