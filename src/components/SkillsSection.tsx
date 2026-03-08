@@ -23,7 +23,7 @@ const SERVICES = [
 {
   code: 'SRV.001',
   title: 'Immersive Visuals',
-  description: 'AI-generated visual systems for event spaces, stages, exhibitions, and projection mapping.'
+  description: 'Visual systems for event spaces, stages, exhibitions, and projection mapping. Interactive and realtime environments.'
 },
 {
   code: 'SRV.002',
@@ -32,7 +32,7 @@ const SERVICES = [
 },
 {
   code: 'SRV.003',
-  title: 'Generative Art',
+  title: 'Digital Art',
   description: 'Custom audio-reactive and data-driven procedural animations for performances and curated environments.'
 },
 {
