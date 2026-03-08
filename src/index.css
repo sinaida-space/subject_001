@@ -20,7 +20,7 @@
     --secondary-foreground: 0 0% 75%;
 
     --muted: 240 5% 12%;
-    --muted-foreground: 0 0% 50%;
+    --muted-foreground: 0 0% 70%;
 
     --accent: 180 100% 45%;
     --accent-foreground: 240 10% 3%;
@@ -204,7 +204,7 @@
   /* Clinical label style */
   .clinical-label {
     font-family: var(--font-clinical);
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: hsl(var(--muted-foreground));

@@ -33,12 +33,12 @@ export default function ContactSection() {
                 Open for<br />
                 <span className="text-primary">Collaboration</span>
               </h2>
-              <p className="font-clinical text-sm text-muted-foreground max-w-2xl leading-relaxed">
+              <p className="font-clinical text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
                 Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.
               </p>
             </div>
 
-            <div className="font-clinical text-sm text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-4">
+            <div className="font-clinical text-base md:text-lg text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-4">
               <p>Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.</p>
               <p>Based in Prague, working globally.</p>
             </div>
