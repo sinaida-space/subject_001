@@ -46,7 +46,7 @@ export default function ContactSection() {
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4">
               <a
-                href="mailto:sinkrivchenko@gmail.com"
+                href="mailto:gallant_mod5v@icloud.com"
                 className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
                 EMAIL ME ↗
               </a>
