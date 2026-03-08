@@ -9,8 +9,8 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[70vh] flex items-center justify-center z-10 pt-20">
-      <div className="container mx-auto px-6 max-w-7xl grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 items-end pb-8">
+    <section ref={sectionRef} className="relative min-h-[80vh] flex items-center justify-center z-10 pt-32 md:pt-20">
+      <div className="container mx-auto px-6 max-w-7xl grid grid-cols-12 gap-8 md:gap-6 lg:gap-8 items-end pb-12">
         {/* Main title area */}
         <div className="col-span-12 lg:col-span-8">
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
