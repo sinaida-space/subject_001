@@ -38,7 +38,7 @@ const SERVICES = [
   {
     code: 'SRV.004',
     title: 'Conceptual Storytelling',
-    description: 'Translating complex philosophical and ethical themes into compelling visual narratives using retro-futuristic aesthetics.',
+    description: 'Translating complex philosophical and ethical themes into compelling visual narratives.',
   },
 ];
 
