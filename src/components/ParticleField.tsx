@@ -59,7 +59,7 @@ function Particles() {
       pos[i * 3 + 1] = 0;
       pos[i * 3 + 2] = -100; // hide offscreen initially
       col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
-      siz[i] = 1.5;
+      siz[i] = 0.8;
       opa[i] = 0;
     }
     return [pos, col, siz, opa];
