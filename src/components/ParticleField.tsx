@@ -34,11 +34,14 @@ function Particles() {
       base[i * 3 + 2] = z;
 
       const type = Math.random();
-      if (type < 0.33) {
+      if (type < 0.4) {
+        // Warm white / soft star
+        col[i * 3] = 0.95; col[i * 3 + 1] = 0.93; col[i * 3 + 2] = 0.9;
+      } else if (type < 0.7) {
+        // Dimmed crimson
         col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
-      } else if (type < 0.66) {
-        col[i * 3] = 0.6; col[i * 3 + 1] = 0.04; col[i * 3 + 2] = 0.12;
       } else {
+        // Darker crimson
         col[i * 3] = 0.5; col[i * 3 + 1] = 0.03; col[i * 3 + 2] = 0.09;
       }
 
