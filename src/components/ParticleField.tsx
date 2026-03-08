@@ -240,7 +240,7 @@ function Particles() {
 
       // Update trail particles — expand + drift like dissipating steam
       for (let i = 0; i < TRAIL_COUNT; i++) {
-        ages[i] += delta * 0.18; // Slower aging for dreamier feel
+        ages[i] += delta * 1.0; // ~1 second lifetime
         const life = ages[i];
         trailAgeArray[i] = life;
 
