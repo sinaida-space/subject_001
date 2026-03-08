@@ -23,7 +23,7 @@ const SERVICES = [
   {
     code: 'SRV.001',
     title: 'Immersive Visuals',
-    description: 'AI-generated visual systems for event spaces, stages, exhibitions, and architectural projection mapping.',
+    description: 'AI-generated visual systems for event spaces, stages, exhibitions, and projection mapping.',
   },
   {
     code: 'SRV.002',
