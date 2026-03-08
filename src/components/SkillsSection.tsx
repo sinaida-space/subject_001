@@ -15,7 +15,7 @@ const SKILLS = [
   },
   {
     category: 'Engineering Foundation',
-    items: ['Biomedical Engineering MSc', 'Salesforce / ERP / CRM', 'MatLab Algorithms', 'Data Analysis'],
+    items: ['Biomedical Engineering MSc', 'Data Analysis'],
   },
 ];
 
