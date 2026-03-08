@@ -34,12 +34,12 @@ function Particles() {
       base[i * 3 + 2] = z;
 
       const type = Math.random();
-      if (type < 0.4) {
+      if (type < 0.33) {
         col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
-      } else if (type < 0.7) {
-        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
+      } else if (type < 0.66) {
+        col[i * 3] = 0.6; col[i * 3 + 1] = 0.04; col[i * 3 + 2] = 0.12;
       } else {
-        col[i * 3] = 0.961; col[i * 3 + 1] = 0.961; col[i * 3 + 2] = 0.941;
+        col[i * 3] = 0.5; col[i * 3 + 1] = 0.03; col[i * 3 + 2] = 0.09;
       }
 
       siz[i] = Math.random() * 3 + 0.5;
