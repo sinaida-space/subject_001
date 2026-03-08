@@ -21,8 +21,8 @@ const trailVertexShader = `
     float expandCurve = life < 0.3 
       ? life / 0.3 
       : 1.0 - smoothstep(0.5, 1.0, life);
-    float size = aSize * (0.3 + expandCurve * 0.3);
-    gl_PointSize = size * (60.0 / -mvPosition.z);
+    float size = aSize * (0.4 + expandCurve * 0.4);
+    gl_PointSize = size * (90.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -240,7 +240,7 @@ function Particles() {
 
       // Update trail particles — expand + drift like dissipating steam
       for (let i = 0; i < TRAIL_COUNT; i++) {
-        ages[i] += delta * 0.3; // Slow aging for dreamy feel
+        ages[i] += delta * 0.18; // Slower aging for dreamier feel
         const life = ages[i];
         trailAgeArray[i] = life;
 
@@ -355,9 +355,9 @@ export default function ParticleField() {
         <Particles />
         <EffectComposer>
           <Bloom
-            intensity={1.8}
-            luminanceThreshold={0.08}
-            luminanceSmoothing={0.9}
+            intensity={2.2}
+            luminanceThreshold={0.05}
+            luminanceSmoothing={0.95}
             mipmapBlur
           />
         </EffectComposer>
