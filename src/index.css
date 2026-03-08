@@ -188,8 +188,9 @@
 
   .neon-glow-accent {
     text-shadow:
-      0 0 7px hsl(var(--accent) / 0.6),
-      0 0 20px hsl(var(--accent) / 0.4);
+      0 0 10px hsl(var(--accent) / 0.7),
+      0 0 20px hsl(var(--accent) / 0.3),
+      0 0 35px hsl(var(--accent) / 0.15);
   }
 
   /* Grid lines */
