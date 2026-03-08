@@ -21,8 +21,8 @@ const trailVertexShader = `
     float expandCurve = life < 0.3 
       ? life / 0.3 
       : 1.0 - smoothstep(0.5, 1.0, life);
-    float size = aSize * (0.1 + expandCurve * 2.0);
-    gl_PointSize = size * (150.0 / -mvPosition.z);
+    float size = aSize * (0.3 + expandCurve * 0.3);
+    gl_PointSize = size * (60.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -201,7 +201,7 @@ function Particles() {
             trailColArray[idx * 3] = 0.5; trailColArray[idx * 3 + 1] = 0.03; trailColArray[idx * 3 + 2] = 0.09;
           }
 
-          trailSizeArray[idx] = 0.8 + Math.random() * 1.2;
+          trailSizeArray[idx] = 0.3 + Math.random() * 0.4;
           ages[idx] = 0;
           trailAgeArray[idx] = 0;
           trailIndexRef.current++;
@@ -231,7 +231,7 @@ function Particles() {
             trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
           }
 
-          trailSizeArray[idx] = 0.6 + Math.random() * 1.0;
+          trailSizeArray[idx] = 0.2 + Math.random() * 0.3;
           ages[idx] = 0;
           trailAgeArray[idx] = 0;
           trailIndexRef.current++;
