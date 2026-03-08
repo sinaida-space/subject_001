@@ -149,12 +149,12 @@ function Particles() {
 
       for (let i = 0; i < TRAIL_COUNT; i++) {
         ages[i] += delta;
-        if (ages[i] > 1.5) {
+        if (ages[i] > 2.5) {
           trailPosArray[i * 3 + 2] = -100; // hide
         } else {
-          // Drift upward and outward
-          trailPosArray[i * 3 + 1] += delta * 0.3;
-          trailPosArray[i * 3] += (Math.random() - 0.5) * delta * 0.2;
+          // Drift upward slowly
+          trailPosArray[i * 3 + 1] += delta * 0.15;
+          trailPosArray[i * 3] += (Math.random() - 0.5) * delta * 0.1;
         }
       }
       trailPosAttr.needsUpdate = true;
