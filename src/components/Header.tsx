@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Logo from './Logo';
 
 const NAV_ITEMS = [
-{ label: 'Work', href: '#work' },
+{ label: 'GALLERY', href: '#work' },
 { label: 'About', href: '#about' },
 { label: 'Process', href: '#process' }];
 

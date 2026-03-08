@@ -161,9 +161,9 @@ export default function ProjectsSection() {
 
         <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 mb-16">
           <div className="col-span-12 md:col-span-3">
-            <span className="clinical-label text-primary">Selected Work</span>
+            <span className="clinical-label text-primary">GALLERY</span>
             <div className="mt-2 text-xs font-clinical text-muted-foreground">
-              {​    
+              [ SELECTED PROJECTS ]
             </div>
           </div>
           <div className="col-span-12 md:col-span-9">
