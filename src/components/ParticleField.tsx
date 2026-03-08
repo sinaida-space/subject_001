@@ -125,11 +125,11 @@ function Particles() {
         trailPosArray[idx * 3 + 1] = my + (Math.random() - 0.5) * spread;
         trailPosArray[idx * 3 + 2] = (Math.random() - 0.5) * 0.5;
 
-        // Random color: red or cyan
+        // Random color: crimson or warm off-white
         if (Math.random() < 0.6) {
-          trailColArray[idx * 3] = 1.0; trailColArray[idx * 3 + 1] = 0.2; trailColArray[idx * 3 + 2] = 0.15;
+          trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
         } else {
-          trailColArray[idx * 3] = 0.1; trailColArray[idx * 3 + 1] = 0.9; trailColArray[idx * 3 + 2] = 0.85;
+          trailColArray[idx * 3] = 0.961; trailColArray[idx * 3 + 1] = 0.961; trailColArray[idx * 3 + 2] = 0.941;
         }
 
         ages[idx] = 0;
