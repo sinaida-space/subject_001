@@ -36,19 +36,35 @@ export default function AboutSection() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm text-secondary-foreground leading-relaxed">
               <div className="space-y-4">
-                <p>I believe the digital world is a sanctuary for human memory. My work merges the artistic precision of a dancer and the algorithmic logic of a machine.</p>
+                <p>I believe the digital world is a sanctuary for human memory. My process breathes a soul into the machine, grounding the logic of fantasy into immersive visual systems. 
+
+                </p>
                 <p>
-                  I design immersive digital environments and responsive visual narratives for cultural institutions. My practice spans AI-generated visuals, projection mapping, and audio-reactive systems.
+                  From there, I spent 5+ years at General Electric, leading IT strategy, Oracle ERP implementations, and digital transformation across Russia, UAE, and the US through their elite IT Leadership Program.
                 </p>
               </div>
               <div className="space-y-4">
                 <p>
-                  I channel precision and intentionality into generative art and immersive installations. I work with TouchDesigner, Midjourney, and real-time procedural systems to create visual experiences that inhabit physical space — on stages, in water, across architecture.
+                  Now I channel that engineering precision into generative AI art and immersive installations. I work with TouchDesigner, Midjourney, and real-time procedural systems to create visual experiences that live in physical space — on stages, in water, across architecture.
                 </p>
                 <p>
-                  I see generative AI not as a shortcut, but as a creative instrument. In trained, intentional hands, it expands scale, speed, and expressive range.
+                  I see Gen AI not as a shortcut, but as a creative instrument. In the hands of a trained, intentional mind, it expands scale, speed, and expressive range.
                 </p>
               </div>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-border">
+              {[
+              { value: '10+', label: 'Years in Tech & Strategy' },
+              { value: 'GE', label: 'IT Leadership Program' },
+              { value: 'MSc', label: 'Biomedical Engineering' }].
+              map((stat) =>
+              <div key={stat.label}>
+                  <div className="font-display text-2xl md:text-3xl text-primary font-light">{stat.value}</div>
+                  <div className="clinical-label mt-1">{stat.label}</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
