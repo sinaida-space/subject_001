@@ -8,12 +8,7 @@ export default function Footer() {
           {/* Logo & tagline */}
           <div className="col-span-12 md:col-span-4">
             <Logo />
-            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.
-
-
-
-
-            </p>
+            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.<br /><br />All rights reserved.</p>
           </div>
 
           {/* Quick links */}
@@ -61,7 +56,7 @@ export default function Footer() {
               Privacy Policy
             </a>
             <p className="font-clinical text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Zinaida Krivchenko. All rights reserved.
+              © {new Date().getFullYear()} Sinaida Krivchenko. All rights reserved.
             </p>
           </div>
         </div>
@@ -69,7 +64,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="section-divider mt-8 mb-6" />
         <div className="flex justify-between items-center">
-          <span className="clinical-label text-muted-foreground">Prague, CZ — {new Date().getFullYear()}</span>
+          <span className="clinical-label text-muted-foreground">Website design and development by Sinaida Krivchenko | Prague, CZ — {new Date().getFullYear()}</span>
           <span className="clinical-label text-muted-foreground">Are we more than the data we leave behind?</span>
         </div>
       </div>
