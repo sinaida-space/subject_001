@@ -37,7 +37,7 @@ export default function HeroSection() {
               Merging biomedical engineering with generative AI to create immersive visual systems for stages, exhibitions, and curated environments.
             </p>
             <div className="flex gap-4 text-xs font-clinical text-muted-foreground">
-              <span className="border border-border px-2 py-1">Creative Strategy </span>
+              <span className="border border-border px-2 py-1">Digital Strategy</span>
               <span className="border border-border px-2 py-1">Gen AI</span>
               <span className="border border-border px-2 py-1">​Experience Design    </span>
             </div>
