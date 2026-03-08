@@ -22,7 +22,7 @@ export default function Header() {
       scrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : ''}`
       }>
       
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
         <Logo />
         <nav className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) =>
