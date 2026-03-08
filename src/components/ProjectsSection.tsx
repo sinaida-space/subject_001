@@ -36,7 +36,7 @@ const PROJECTS: Project[] = [
     id: 'legacy',
     title: 'Legacy in the Age of Stochastic Output',
     subtitle: 'Image Series',
-    description: 'Exploring infertility, biological finality, and AI. If a silicon brain produces a "stochastic legacy," where does the soul of the work reside?',
+    description: 'Exploring personal story in relation to Gen AI. If a silicon brain produces a "stochastic legacy," where does the soul of the work reside?',
     image: projectLegacy,
     tags: ['GenAI', 'Conceptual', 'Series'],
     tools: ['Midjourney', 'Higgsfield.ai', 'Affinity'],
