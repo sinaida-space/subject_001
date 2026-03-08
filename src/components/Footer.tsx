@@ -61,7 +61,7 @@ export default function Footer() {
               Privacy Policy
             </a>
             <p className="font-clinical text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Zinaida Krivchenko. All rights reserved.
+              © {new Date().getFullYear()} Sinaida Krivchenko. All rights reserved.
             </p>
           </div>
         </div>
