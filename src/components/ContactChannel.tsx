@@ -369,7 +369,7 @@ export default function ContactChannel() {
             </p>
 
             {/* Available for */}
-            <div className="font-mono text-[10px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
+            <div className="font-mono text-[12px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
               {availHeader.displayed}
             </div>
 
