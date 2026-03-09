@@ -52,28 +52,6 @@ const SKILLS = [
   }
 ];
 
-const SERVICES = [
-  {
-    code: 'SRV.001',
-    title: 'Immersive Visuals',
-    description: 'Visual systems for event spaces, stages, exhibitions, and projection mapping. Interactive and realtime environments.'
-  },
-  {
-    code: 'SRV.002',
-    title: 'Creative Direction',
-    description: 'Developing consistent visual languages across video, static media, and interactive installations.'
-  },
-  {
-    code: 'SRV.003',
-    title: 'Digital Art',
-    description: 'Custom audio-reactive and data-driven procedural animations for performances and curated environments.'
-  },
-  {
-    code: 'SRV.004',
-    title: 'Conceptual Storytelling',
-    description: 'Translating complex philosophical and ethical themes into compelling visual narratives.'
-  }
-];
 
 export default function SkillsSection() {
   const [inView, setInView] = useState(false);
