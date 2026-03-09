@@ -639,9 +639,9 @@ export default function SkillConstellation() {
                 key={node.id}
                 className="absolute font-mono whitespace-nowrap"
                 style={{
-                  fontSize: '9px',
+                  fontSize: '11px',
                   color: node.color,
-                  opacity: 0.7,
+                  opacity: 0.75,
                   transition: 'opacity 0.2s, font-size 0.2s',
                   willChange: 'transform',
                 }}
