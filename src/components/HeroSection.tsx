@@ -50,7 +50,7 @@ export default function HeroSection() {
               ​Transforming complex ideas into visual systems designed for physical spaces, such as
               events, exhibitions, performances, and curated environments.
             </p>
-            <div className="flex flex-wrap gap-3 text-xs font-clinical text-muted-foreground">
+            <div className="flex flex-wrap gap-3 text-xs font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>
               <span className="border border-border px-3 py-1.5">Digital Strategy</span>
               <span className="border border-border px-3 py-1.5">Gen AI</span>
               <span className="border border-border px-3 py-1.5">​Experience Design</span>
