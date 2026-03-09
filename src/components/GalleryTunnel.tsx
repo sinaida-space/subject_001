@@ -251,16 +251,19 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         setCursorStyle(newHovered !== null ? 'pointer' : 'default');
       }
 
-      // Scale panels based on hover
-      panels.forEach((panel, i) => {
-        const target = hoveredIndexRef.current === null ? 1 : hoveredIndexRef.current === i ? 1.12 : 0.9;
-        panel.scale.lerp(new THREE.Vector3(target, target, target), 0.08);
+      // Scale panels based on hover (only when not dragging)
+      if (!isDragging) {
+        panels.forEach((panel, i) => {
+          const hoverTarget = hoveredIndexRef.current === null ? 1 : hoveredIndexRef.current === i ? 1.12 : 0.9;
+          const revealScale = 0.3 + revealProgress * 0.7;
+          const finalTarget = hoverTarget * revealScale;
+          panel.scale.lerp(new THREE.Vector3(finalTarget, finalTarget, finalTarget), 0.08);
 
-        // Dim non-hovered
-        const mat = panel.material as THREE.MeshBasicMaterial;
-        const targetOpacity = hoveredIndexRef.current === null ? 1 : hoveredIndexRef.current === i ? 1 : 0.5;
-        mat.opacity += (targetOpacity - mat.opacity) * 0.08;
-      });
+          const mat = panel.material as THREE.MeshBasicMaterial;
+          const targetOpacity = hoveredIndexRef.current === null ? revealProgress : hoveredIndexRef.current === i ? revealProgress : revealProgress * 0.5;
+          mat.opacity += (targetOpacity - mat.opacity) * 0.08;
+        });
+      }
 
       // Handle click (deferred to avoid state in loop)
       if (clickedProject) {
@@ -283,8 +286,12 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
     window.addEventListener('resize', handleResize);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mouseup', handleMouseUp);
       container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('mousedown', handleMouseDown);
+      container.removeEventListener('wheel', handleWheel);
       container.removeEventListener('click', handleClick);
       cancelAnimationFrame(animFrame);
       panels.forEach((p) => { p.geometry.dispose(); (p.material as THREE.MeshBasicMaterial).dispose(); });
