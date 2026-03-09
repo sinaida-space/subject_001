@@ -303,20 +303,22 @@ export default function SkillConstellation() {
             {graph.edges.map((edge, i) => {
               const from = graph.nodes.find(n => n.id === edge.from)!;
               const to = graph.nodes.find(n => n.id === edge.to)!;
+              const isSkillEdge = to.type === 'skill';
 
-              // Dim edges not in active category
               const catName = CATEGORIES.find(c => c.color === edge.color)?.name;
               const dim = activeCategory && catName !== activeCategory;
 
-              // Curved path
               const midX = (from.x + to.x) / 2;
               const midY = (from.y + to.y) / 2;
-              // Slight curve toward center
               const cx = midX + (vw / 2 - midX) * 0.15;
               const cy = midY + (vh / 2 - midY) * 0.15;
 
               const pathLen = Math.sqrt((to.x - from.x) ** 2 + (to.y - from.y) ** 2);
-              const drawn = progress * pathLen;
+              const edgeProgress = isSkillEdge ? progress * skillReveal : progress;
+              const drawn = edgeProgress * pathLen;
+
+              const baseOpacity = dim ? 0.05 : 0.3;
+              const finalOpacity = isSkillEdge ? baseOpacity * skillReveal : baseOpacity;
 
               return (
                 <path
@@ -325,7 +327,7 @@ export default function SkillConstellation() {
                   fill="none"
                   stroke={edge.color}
                   strokeWidth={to.type === 'category' ? 1.5 : 0.8}
-                  strokeOpacity={dim ? 0.05 : 0.3}
+                  strokeOpacity={finalOpacity}
                   strokeDasharray={pathLen}
                   strokeDashoffset={pathLen - drawn}
                   style={{ transition: 'stroke-opacity 0.3s' }}
@@ -340,7 +342,6 @@ export default function SkillConstellation() {
               const isSkill = node.type === 'skill';
               const isHovered = hoveredNode === node.id;
 
-              // Determine if this node belongs to active category
               let belongsToActive = false;
               if (activeCategory) {
                 if (isCat) belongsToActive = node.label === activeCategory;
@@ -352,15 +353,27 @@ export default function SkillConstellation() {
               }
               const dim = activeCategory ? !belongsToActive : false;
 
-              // Entrance: nodes fly from root outward
-              const dx = node.x - vw / 2;
-              const dy = node.y - vh / 2;
-              const px = vw / 2 + dx * progress;
-              const py = vh / 2 + dy * progress;
+              // Skill nodes grow outward from their parent based on scroll
+              let px: number, py: number;
+              if (isSkill) {
+                const parent = graph.nodes.find(n => n.id === node.parentId)!;
+                const parentPx = vw / 2 + (parent.x - vw / 2) * progress;
+                const parentPy = vh / 2 + (parent.y - vh / 2) * progress;
+                const finalPx = vw / 2 + (node.x - vw / 2) * progress;
+                const finalPy = vh / 2 + (node.y - vh / 2) * progress;
+                px = parentPx + (finalPx - parentPx) * skillReveal;
+                py = parentPy + (finalPy - parentPy) * skillReveal;
+              } else {
+                px = vw / 2 + (node.x - vw / 2) * progress;
+                py = vh / 2 + (node.y - vh / 2) * progress;
+              }
 
               const r = isRoot ? 8 : isCat ? 6 : 3.5;
               const labelSize = isRoot ? 14 : isCat ? 13 : 12;
               const labelWeight = isRoot || isCat ? 600 : 400;
+
+              const skillScale = isSkill ? skillReveal : 1;
+              const skillOpacity = isSkill ? skillReveal : 1;
 
               return (
                 <g
@@ -369,25 +382,22 @@ export default function SkillConstellation() {
                   onMouseLeave={() => setHoveredNode(null)}
                   style={{ cursor: 'default' }}
                 >
-                  {/* Glow ring */}
                   <circle
                     cx={px}
                     cy={py}
-                    r={r * 3}
+                    r={r * 3 * skillScale}
                     fill={node.color}
-                    opacity={dim ? 0.02 : isHovered ? 0.15 : 0.06}
+                    opacity={(dim ? 0.02 : isHovered ? 0.15 : 0.06) * skillOpacity}
                     style={{ transition: 'opacity 0.3s' }}
                   />
-                  {/* Dot */}
                   <circle
                     cx={px}
                     cy={py}
-                    r={isHovered ? r * 1.4 : r}
+                    r={(isHovered ? r * 1.4 : r) * skillScale}
                     fill={node.color}
-                    opacity={dim ? 0.15 : 1}
+                    opacity={(dim ? 0.15 : 1) * skillOpacity}
                     style={{ transition: 'r 0.2s, opacity 0.3s' }}
                   />
-                  {/* Label */}
                   {!isRoot && (
                     <text
                       x={px + (isSkill ? getLabelOffset(node) : 0)}
@@ -397,7 +407,7 @@ export default function SkillConstellation() {
                       fontSize={isHovered ? labelSize + 1 : labelSize}
                       fontFamily="'Space Mono', monospace"
                       fontWeight={labelWeight}
-                      opacity={dim ? 0.1 : isHovered ? 1 : 0.9}
+                      opacity={(dim ? 0.1 : isHovered ? 1 : 0.9) * skillOpacity}
                       style={{
                         transition: 'opacity 0.3s, font-size 0.15s',
                         filter: isHovered ? `drop-shadow(0 0 6px ${node.color})` : 'none',
