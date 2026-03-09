@@ -414,19 +414,11 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
       <section
         ref={containerRef}
         id="work"
-        className="relative w-full h-screen overflow-hidden bg-black"
+        className="relative w-full h-screen overflow-hidden bg-transparent"
         style={{ cursor: hoveredIndex !== null ? 'pointer' : 'default' }}
       >
         {/* WebGL Canvas */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-
-        {/* Vignette overlay */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0,0,0,0.6) 100%)',
-          }}
-        />
 
         {/* Left side label */}
         <div 
@@ -438,11 +430,6 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
           <span className="block mt-2 text-xs font-mono text-cyan-400">
             [ RECENT WORK ]
           </span>
-        </div>
-
-        {/* Scroll hint */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-cyan-400/50 font-mono text-xs tracking-widest pointer-events-none">
-          CLICK TO EXPLORE
         </div>
       </section>
 
