@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import VHSImage from '@/components/VHSImage';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface Project {
   id: string;
