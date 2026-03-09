@@ -92,8 +92,8 @@ function buildMindMap(cx: number, cy: number) {
   });
 
   const catCount = CATEGORIES.length;
-  const catRadius = 220;
-  const skillRadius = 170;
+  const catRadius = 260;
+  const skillRadius = 200;
 
   // Distribute categories evenly around the circle
   // Start from top-left (-135°) and go clockwise
