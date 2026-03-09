@@ -357,10 +357,10 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         <div className="container mx-auto px-6">
           {/* Section Header */}
           <div className="mb-12">
-            <span className="text-[11px] tracking-[0.2em] text-red-500 font-mono uppercase">
+            <span className="clinical-label text-primary">
               SELECTED PROJECTS
             </span>
-            <div className="mt-2 text-xs font-mono text-cyan-400">[ RECENT WORK ]</div>
+            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ RECENT WORK ]</div>
           </div>
 
           {/* Mobile cards */}
