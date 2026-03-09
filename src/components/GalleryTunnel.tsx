@@ -387,10 +387,10 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         <div 
           className="absolute left-[4%] top-1/2 -translate-y-1/2 z-10 pointer-events-none"
         >
-          <span className="block text-[11px] tracking-[0.2em] text-red-500 font-mono uppercase">
+          <span className="clinical-label text-primary">
             SELECTED PROJECTS
           </span>
-          <span className="block mt-2 text-xs font-mono text-cyan-400">
+          <span className="block mt-2 text-xs font-clinical text-muted-foreground">
             [ RECENT WORK ]
           </span>
         </div>
