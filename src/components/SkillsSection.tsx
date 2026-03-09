@@ -93,12 +93,12 @@ export default function SkillsSection() {
             <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 transition-all duration-700 delay-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
               {SKILLS.map((group) =>
               <div key={group.category}>
-                  <h4 className="font-display text-sm font-medium text-foreground mb-3 border-b border-border pb-2">
+                  <h4 className="font-display text-base font-medium text-foreground mb-4 border-b border-border pb-2">
                     {group.category}
                   </h4>
-                  <ul className="space-y-1.5">
+                  <ul className="space-y-2">
                     {group.items.map((item) =>
-                  <li key={item} className="font-clinical text-xs text-muted-foreground flex items-center gap-2">
+                  <li key={item} className="font-clinical text-sm text-muted-foreground flex items-center gap-2">
                         <span className="w-1 h-1 bg-primary/50 shrink-0" />
                         {item}
                       </li>

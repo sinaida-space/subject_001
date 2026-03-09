@@ -29,18 +29,18 @@ export default function ContactSection() {
           <div className={`col-span-12 md:col-span-9 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {/* Collaboration callout — moved up */}
             <div className="mb-12">
-              <h2 className="font-display text-3xl md:text-5xl font-light mb-4">
+              <h2 className="font-display text-2xl md:text-4xl font-light mb-8">
                 Open for<br />
                 <span className="text-primary">Collaboration</span>
               </h2>
-              <p className="font-clinical text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+              <p className="font-clinical text-sm md:text-base text-muted-foreground max-w-2xl leading-relaxed my-4">
                 Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.
               </p>
             </div>
 
-            <div className="font-clinical text-base md:text-lg text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-4">
-              <p>Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.</p>
-              <p>Based in Prague, working globally.</p>
+            <div className="font-clinical text-sm md:text-base text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-6">
+              <p className="my-3">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.</p>
+              <p className="my-3">Based in Prague, working globally.</p>
             </div>
 
             {/* CTA Buttons */}

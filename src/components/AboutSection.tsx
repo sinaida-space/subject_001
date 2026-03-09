@@ -27,23 +27,23 @@ export default function AboutSection() {
 
           {/* Content */}
           <div className={`col-span-12 md:col-span-9 space-y-8 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <h2 className="font-display text-3xl md:text-5xl font-light leading-tight">
+            <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-8">
               From diagnostic algorithms to
               <span className="text-primary"> digital organisms</span>
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm text-secondary-foreground leading-relaxed">
-              <div className="space-y-4">
-                <p>I believe the digital world is a sanctuary for human memory. My process breathes a soul into the machine, grounding the logic of fantasy into immersive visual systems.</p>
-                <p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm md:text-base text-secondary-foreground leading-relaxed">
+              <div className="space-y-6">
+                <p className="my-3">I believe the digital world is a sanctuary for human memory. My process breathes a soul into the machine, grounding the logic of fantasy into immersive visual systems.</p>
+                <p className="my-3">
                   From there, I spent 5+ years at General Electric, leading IT strategy, Oracle ERP implementations, and digital transformation across Russia, UAE, and the US through their elite IT Leadership Program.
                 </p>
               </div>
-              <div className="space-y-4">
-                <p>
+              <div className="space-y-6">
+                <p className="my-3">
                   I channel precision and intentionality into generative art and immersive installations. I work with TouchDesigner, Midjourney, to create real-time visual experiences that inhabit physical space — on stages, in water, across real world objects.
                 </p>
-                <p>
+                <p className="my-3">
                   I see generative AI as a creative instrument that collapses the distance between speed and soul, expanding the boundaries of what is possible to bring people together in the real world.
                 </p>
               </div>
