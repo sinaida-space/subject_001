@@ -238,19 +238,19 @@ export default function ContactChannel() {
 
   // Typing sequences — heading completes in ~2s total
   const sysLine = useTyper('> COMM.SYS ONLINE — CHANNEL OPEN', 0, 0, inView);
-  const openFor = useTyper('Open for', 35, 200, inView);
-  const collab = useTyper('Collaboration', 35, 200 + 8 * 35 + 60, inView);
+  const openFor = useTyper('Open for', 30, 100, inView);
+  const collab = useTyper('Collaboration', 30, 100 + 8 * 30 + 40, inView);
   const [glitchActive, setGlitchActive] = useState(false);
 
   useEffect(() => {
     if (collab.done && !glitchActive) {
       setGlitchActive(true);
-      setTimeout(() => setGlitchActive(false), 400);
+      setTimeout(() => setGlitchActive(false), 300);
     }
   }, [collab.done, glitchActive]);
 
-  // ~2s for heading, then continue
-  const transmissionDelay = 200 + (8 + 13) * 35 + 60 + 400 + 200;
+  // ~1s for heading animation, then continue
+  const transmissionDelay = 100 + (8 + 13) * 30 + 40 + 300 + 150;
   const txHeader = useTyper('> incoming_transmission.decode() —', 18, transmissionDelay, inView);
 
   const para1 = 'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let\'s talk.';

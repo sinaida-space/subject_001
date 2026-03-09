@@ -37,9 +37,22 @@ export default function Header() {
         </nav>
         <a
           href="#contact"
-          className="clinical-label border border-primary/30 px-4 py-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
-          
-          CONTACT 
+          className="font-mono text-[11px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
+          style={{
+            border: '1px solid #ff3333',
+            color: '#ff3333',
+            background: 'rgba(255,51,51,0.06)',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = '#ff3333';
+            e.currentTarget.style.color = '#000';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
+            e.currentTarget.style.color = '#ff3333';
+          }}
+        >
+          CONTACT
         </a>
       </div>
     </header>);
