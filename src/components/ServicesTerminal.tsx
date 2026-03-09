@@ -315,9 +315,6 @@ export default function ServicesTerminal() {
           >
             [ VALUE // ACTIVE ]
           </div>
-          <span className="animate-terminal-cursor font-mono mt-3 block" style={{ color: 'hsl(var(--primary))' }}>
-            █
-          </span>
         </div>
 
         {/* RIGHT COLUMN */}
