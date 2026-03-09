@@ -15,7 +15,7 @@ const CATEGORIES = [
   },
   {
     name: 'Creative Technology',
-    color: '#00e5ff',
+    color: '#00e5ff', // cyan
     items: [
       'TouchDesigner',
       'Generative AI Systems',
