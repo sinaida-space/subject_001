@@ -239,14 +239,14 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
       
       const mesh = new THREE.Mesh(geometry, material);
       
-      // Position in orbit
-      const angle = (i / 3) * Math.PI * 2;
-      mesh.position.x = Math.sin(angle) * radius;
-      mesh.position.z = Math.cos(angle) * radius - radius;
+      // Position panels in a horizontal row, visible from camera at z=0
+      const spacing = 5.0;
+      const startX = -(projects.length - 1) * spacing / 2;
+      mesh.position.x = startX + i * spacing;
+      mesh.position.z = -6; // In front of camera
       mesh.position.y = panelHeights[i];
       
-      // Face center
-      mesh.lookAt(0, mesh.position.y, 0);
+      // Face camera
       
       mesh.userData = { index: i, project };
       panels.push(mesh);
