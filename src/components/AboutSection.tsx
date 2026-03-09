@@ -108,13 +108,13 @@ function PhotoBlock() {
       </div>
 
       {/* Labels */}
-      <span className="block font-mono mt-2" style={{ fontSize: 9, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
+      <span className="block font-mono mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
         SUBJECT_001
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 10, color: '#00e5ff', opacity: 0.8, letterSpacing: '0.3em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: '#00e5ff', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>
         VISUAL ARTIST AND DIGITAL STRATEGIST
       </span>
     </div>
