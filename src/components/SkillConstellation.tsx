@@ -198,7 +198,8 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
     // Category clustering
     for (const node of nodes) {
       const c = catCentroids[node.category];
-      node.vx += (c[0] - node.x) * 0.02 * decay;
+      node.vx += (c[0] - node.x) * 0.05 * decay;
+      node.vy += (c[1] - node.y) * 0.05 * decay;
       node.vy += (c[1] - node.y) * 0.02 * decay;
     }
 
