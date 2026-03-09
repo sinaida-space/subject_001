@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
+import VHSImage from '@/components/VHSImage';
 
 interface Project {
   id: string;
@@ -41,9 +42,7 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
           <button onClick={onClose} className="absolute top-4 right-4 text-primary hover:text-foreground font-clinical text-sm tracking-widest cursor-none">
             [CLOSE]
           </button>
-          <div className="aspect-[16/10] overflow-hidden mb-6">
-            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-          </div>
+          <VHSImage src={project.image} alt={project.title} className="mb-6" />
           <span className="clinical-label text-accent">{project.subtitle}</span>
           <h2 className="font-display text-3xl text-foreground mt-2 mb-4">{project.title}</h2>
           <p className="text-sm text-muted-foreground font-clinical leading-relaxed mb-6">{project.description}</p>
@@ -76,10 +75,7 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
 function MobileProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <div className="relative overflow-hidden border border-border/30 mb-6">
-      <div className="relative aspect-[16/10] overflow-hidden">
-        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-      </div>
+      <VHSImage src={project.image} alt={project.title} />
       <div className="p-6">
         <span className="clinical-label text-accent">{String(index + 1).padStart(2, '0')} — {project.subtitle}</span>
         <h3 className="font-display text-xl text-foreground mt-2 mb-3">{project.title}</h3>
