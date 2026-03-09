@@ -265,8 +265,7 @@ export default function ContactChannel() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative z-10 overflow-hidden"
-      style={{ minHeight: '100vh', padding: '6vh 2vw' }}
+      className="relative z-10 py-24 overflow-hidden"
       onMouseMove={handleMouseMove}
     >
       {/* Scanline + particle keyframes */}
@@ -287,23 +286,24 @@ export default function ContactChannel() {
 
       <FreqDisplay />
 
-      <div className="flex flex-col md:flex-row gap-6 md:gap-8 max-w-[1600px] mx-auto">
-        {/* LEFT COLUMN */}
-        <div className="md:w-[180px] shrink-0 md:sticky md:top-[15vh] md:self-start">
-          <div
-            className="font-mono uppercase"
-            style={{ color: '#ff3333', letterSpacing: '0.2em', fontSize: 12 }}
-          >
-            Contact
-          </div>
-          <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
-            [ COMM.SYS // OPEN ]
-          </div>
+      <div className="container mx-auto px-6 max-w-7xl">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+          {/* LEFT COLUMN */}
+          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
+            <div
+              className="font-mono uppercase text-primary"
+              style={{ letterSpacing: '0.2em', fontSize: 12 }}
+            >
+              Contact
+            </div>
+            <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+              [ COMM.SYS // OPEN ]
+            </div>
 
-          <SignalBars />
-          <div className="font-mono mt-2 select-none" style={{ color: '#00e5ff', opacity: 0.4, fontSize: 12 }}>
-            SIGNAL: STRONG
-          </div>
+            <SignalBars />
+            <div className="font-mono mt-2 select-none" style={{ color: '#00e5ff', opacity: 0.4, fontSize: 12 }}>
+              SIGNAL: STRONG
+            </div>
 
           {/* Social links */}
           <div className="mt-10 space-y-3">
