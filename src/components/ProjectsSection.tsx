@@ -33,7 +33,7 @@ const PROJECTS: Project[] = [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
       { label: 'YouTube', url: 'https://youtube.com/shorts/7qgDlifWno0' },
     ],
-    span: 'md:col-span-8 md:row-span-2',
+    span: 'w-full',
     depthLayer: 1,
   },
   {
@@ -48,7 +48,7 @@ const PROJECTS: Project[] = [
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245414325/Legacy-in-the-Age-of-Stochastic-Output' },
     ],
-    span: 'md:col-span-4',
+    span: 'w-full',
     depthLayer: 2,
   },
   {
@@ -64,7 +64,7 @@ const PROJECTS: Project[] = [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245415773/Synesthetic-Bloom-An-Audio-Responsive-Digital-Organism' },
       { label: 'YouTube', url: 'https://youtu.be/pzq0BSVzw28' },
     ],
-    span: 'md:col-span-4',
+    span: 'w-full',
     depthLayer: 0,
   },
 ];
