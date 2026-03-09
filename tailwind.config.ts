@@ -154,7 +154,7 @@ export default {
   					transform: 'translateX(-3px)'
   				}
   			},
-  			'scan': {
+  			scan: {
   				'0%': {
   					transform: 'translateY(-100%)'
   				},
@@ -169,7 +169,7 @@ export default {
   			'fade-in': 'fade-in 0.6s ease-out forwards',
   			'glitch-1': 'glitch-1 0.3s steps(2) infinite',
   			'glitch-2': 'glitch-2 0.3s steps(2) infinite',
-  			'scan': 'scan 8s linear infinite'
+  			scan: 'scan 8s linear infinite'
   		}
   	}
   },
