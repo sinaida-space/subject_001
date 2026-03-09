@@ -410,7 +410,7 @@ export default function ContactChannel() {
                 href="https://www.instagram.com/sin.ai.da/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid rgba(0,229,255,0.4)',
                   color: '#00e5ff',
