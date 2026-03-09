@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import ParticleCard from '@/components/ParticleCard';
 
 const SKILLS = [
 {
