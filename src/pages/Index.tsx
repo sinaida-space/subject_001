@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import GalleryTunnel from '@/components/GalleryTunnel';
-import SkillsSection from '@/components/SkillsSection';
+import SkillConstellation from '@/components/SkillConstellation';
 import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
