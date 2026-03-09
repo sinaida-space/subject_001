@@ -90,7 +90,7 @@ const Index = () => {
         <GalleryTunnel projects={PROJECTS} />
         <AboutSection />
         <ServicesTerminal />
-        <SkillsSection />
+        <SkillConstellation />
         <ContactSection />
       </main>
 
