@@ -32,7 +32,7 @@ export default function AboutSection() {
               <span className="text-primary"> digital organisms</span>
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm md:text-base text-secondary-foreground leading-relaxed">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm md:text-base text-secondary-foreground leading-relaxed pt-[42px]">
               <div className="space-y-6">
                 <p className="my-3">I believe the digital world is a sanctuary for human memory. My process breathes a soul into the machine, grounding the logic of fantasy into immersive visual systems.</p>
                 <p className="my-3">

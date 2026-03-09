@@ -33,14 +33,14 @@ export default function ContactSection() {
                 Open for<br />
                 <span className="text-primary">Collaboration</span>
               </h2>
-              <p className="font-clinical text-sm md:text-base text-muted-foreground max-w-2xl leading-relaxed my-4">
+              <p className="font-clinical text-sm md:text-base text-muted-foreground max-w-2xl leading-relaxed my-4 pt-[42px]">
                 Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.
               </p>
             </div>
 
             <div className="font-clinical text-sm md:text-base text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-6">
-              <p className="my-3">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.</p>
-              <p className="my-3">Based in Prague, working globally.</p>
+              <p className="my-3 pt-[42px] py-[21px]">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.</p>
+              <p className="my-3 pt-[42px] py-[21px]">Based in Prague, working globally.</p>
             </div>
 
             {/* CTA Buttons */}

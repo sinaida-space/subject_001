@@ -8,19 +8,20 @@ export default function Footer() {
           {/* Logo & tagline */}
           <div className="col-span-12 md:col-span-4">
             <Logo />
-            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.<br /><br />All rights reserved.</p>
+            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.
+
+© 2026 Sinaida Krivchenko.
+All rights reserved.<br /><br />All rights reserved.</p>
           </div>
 
           {/* Quick links */}
           <div className="col-span-6 md:col-span-2">
             <div className="clinical-label text-primary mb-4">Navigate</div>
             <div className="space-y-2">
-              {['Work', 'About', 'Process', 'Contact'].map((item) => <a key={item} href={`#${item.toLowerCase()}`}
-              className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none">
+              {['Work', 'About', 'Process', 'Contact'].map((item) => <a key={item} href={`#${item.toLowerCase()}`} className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none">
                 
                   {item}
-                </a>
-              )}
+                </a>)}
             </div>
           </div>
 
@@ -28,8 +29,7 @@ export default function Footer() {
           <div className="col-span-6 md:col-span-2">
             <div className="clinical-label text-primary mb-4">Connect</div>
             <div className="space-y-2">
-              {[
-              { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
+              {[{ label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
               { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
               { label: 'Behance', url: 'https://www.behance.net/sinaida' },
               { label: 'Medium', url: 'https://medium.com/@idacooper' },
