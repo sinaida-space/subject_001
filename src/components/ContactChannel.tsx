@@ -357,9 +357,6 @@ export default function ContactChannel() {
               <span className="block font-bold" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#ff3333' }}>
                 {collab.displayed}
               </span>
-              {collab.done && (
-                <span style={{ animation: 'blink-cursor 1s step-end infinite', color: '#ff3333' }}>█</span>
-              )}
             </h2>
 
             {/* Transmission */}
