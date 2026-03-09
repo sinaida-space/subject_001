@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import VHSImage from '@/components/VHSImage';
 import projectSubmergedFull from '@/assets/project-submerged.jpeg';
 import projectSubmergedSetup from '@/assets/project-submerged-setup.jpeg';
 import projectSubmergedTracking from '@/assets/project-submerged-tracking.png';
