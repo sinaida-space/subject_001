@@ -205,9 +205,6 @@ export default function AboutSection() {
                     <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', paddingLeft: 24 }}>
                       It's a territory.
                     </div>
-                    <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', paddingLeft: 48 }}>
-                      I've been mapping it since before it had a name.
-                    </div>
                   </div>
                 </Reveal>
 
