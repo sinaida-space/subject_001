@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 const CATEGORIES = [
   {
     name: 'Creative Direction',
-    color: '#ff3333',
+    color: '#ff3333', // red
     items: [
       'Visual narrative development',
       'Concept design for immersive environments',
@@ -15,7 +15,7 @@ const CATEGORIES = [
   },
   {
     name: 'Creative Technology',
-    color: '#00e5ff',
+    color: '#00e5ff', // cyan
     items: [
       'TouchDesigner',
       'Generative AI Systems',
@@ -27,7 +27,7 @@ const CATEGORIES = [
   },
   {
     name: 'Strategic & Systems Thinking',
-    color: '#ffffff',
+    color: '#ff9933', // amber/orange
     items: [
       'Creative technology strategy',
       'Interdisciplinary project leadership',
@@ -38,7 +38,7 @@ const CATEGORIES = [
   },
   {
     name: 'Technical & Analytical',
-    color: '#00ff88',
+    color: '#00ff88', // green
     items: [
       'Systems design thinking',
       'Data-driven creative workflows',
@@ -49,7 +49,7 @@ const CATEGORIES = [
   },
   {
     name: 'Research Interests',
-    color: '#ff00aa',
+    color: '#cc66ff', // violet
     items: [
       'AI and creativity research',
       'Human-AI creative collaboration',
@@ -85,7 +85,7 @@ function buildMindMap(cx: number, cy: number) {
     label: 'CAPABILITIES',
     x: cx,
     y: cy,
-    color: '#ff3333',
+    color: '#666666',
     type: 'root',
     parentId: null,
     angle: 0,
