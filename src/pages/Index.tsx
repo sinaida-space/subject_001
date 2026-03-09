@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import GalleryTunnel from '@/components/GalleryTunnel';
 import SkillsSection from '@/components/SkillsSection';
+import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import CustomCursor from '@/components/CustomCursor';
