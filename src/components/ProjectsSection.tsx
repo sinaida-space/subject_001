@@ -198,7 +198,9 @@ export default function ProjectsSection() {
         {/* Project Cards - One per line with generous spacing */}
         <div className="space-y-16 md:space-y-24">
           {PROJECTS.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+            <ParticleCard key={project.id}>
+              <ProjectCard project={project} index={i} />
+            </ParticleCard>
           ))}
         </div>
       </div>
