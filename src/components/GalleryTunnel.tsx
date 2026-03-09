@@ -165,38 +165,81 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    const targetMouse = { x: 0, y: 0 };
     let animFrame = 0;
     let clickedProject: Project | null = null;
+    let targetRotationY = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartRotation = 0;
+    let revealProgress = 0;
+    let targetReveal = 0;
+
+    // Intersection observer for ADSR reveal
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        targetReveal = entry.isIntersecting ? 1 : 0;
+      },
+      { threshold: [0, 0.2] }
+    );
+    observer.observe(container);
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      targetMouse.x = mouse.x * 0.15;
-      targetMouse.y = mouse.y * 0.15;
+
+      if (isDragging) {
+        const deltaX = (e.clientX - dragStartX) / width;
+        targetRotationY = dragStartRotation + deltaX * Math.PI * 2;
+      }
     };
 
-    const handleClick = () => {
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(panels);
-      if (intersects.length > 0) {
-        clickedProject = intersects[0].object.userData.project;
+    const handleMouseDown = (e: MouseEvent) => {
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartRotation = targetRotationY;
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      targetRotationY += e.deltaY * 0.002;
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      // Only trigger click if not dragging
+      if (Math.abs(e.clientX - dragStartX) < 5) {
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(panels);
+        if (intersects.length > 0) {
+          clickedProject = intersects[0].object.userData.project;
+        }
       }
     };
 
     container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('wheel', handleWheel, { passive: true });
     container.addEventListener('click', handleClick);
 
     const animate = () => {
       animFrame = requestAnimationFrame(animate);
 
-      // Slow auto-rotation
-      panelGroup.rotation.y += 0.002;
+      // ADSR reveal: fast attack (0.08), hold at 1
+      revealProgress += (targetReveal - revealProgress) * 0.08;
 
-      // Mouse parallax on camera
-      camera.position.x += (targetMouse.x - camera.position.x) * 0.03;
-      camera.position.y += (targetMouse.y - camera.position.y) * 0.03;
+      // Apply reveal - scale panels from 0
+      panels.forEach((panel) => {
+        const mat = panel.material as THREE.MeshBasicMaterial;
+        mat.opacity = revealProgress;
+      });
+      panelGroup.scale.setScalar(0.3 + revealProgress * 0.7);
+
+      // No auto-rotation — only user-driven
+      panelGroup.rotation.y += (targetRotationY - panelGroup.rotation.y) * 0.08;
 
       // Raycasting for hover
       raycaster.setFromCamera(mouse, camera);
