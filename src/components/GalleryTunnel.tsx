@@ -200,11 +200,11 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      alpha: false,
+      alpha: true,
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 1);
+    renderer.setClearColor(0x000000, 0);
     rendererRef.current = renderer;
 
     // Scene
