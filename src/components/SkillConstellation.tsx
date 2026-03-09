@@ -297,7 +297,7 @@ export default function SkillConstellation() {
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
-      const s = nodes[i].importance === 0 ? 18 : nodes[i].importance === 1 ? 12 : 8;
+      const s = nodes[i].importance === 0 ? 28 : nodes[i].importance === 1 ? 20 : 14;
       sizes[i] = s;
       baseSizes[i] = s;
     }
