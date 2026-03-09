@@ -207,7 +207,6 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     alt={`${project.title} detail ${i + 1}`}
                     aspectRatio="4/3"
                   />
-                  </div>
                 ))}
               </motion.div>
             )}
