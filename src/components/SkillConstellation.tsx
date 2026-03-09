@@ -6,48 +6,48 @@ const CATEGORIES = [
   {
     name: 'Creative Direction',
     color: '#ff3333',
-    centroid: [-90, 60],
+    centroid: [-280, 200],
     items: [
       'Visual narrative development',
       'Concept design for immersive environments',
-      'Aesthetic systems & visual language design',
+      'Aesthetic systems & visual language',
       'Storytelling',
-      'Cultural and performance-based visual concepts',
+      'Cultural & performance-based concepts',
     ],
   },
   {
     name: 'Creative Technology',
     color: '#00e5ff',
-    centroid: [90, 60],
+    centroid: [280, 200],
     items: [
       'TouchDesigner',
-      'Generative AI Systems (LLM, diffusion workflows)',
+      'Generative AI Systems',
       'Real-time audio-reactive visuals',
       'Procedural animation',
       'AI-assisted visual pipelines',
-      'Post-production (editing and color grading)',
+      'Post-production & color grading',
     ],
   },
   {
     name: 'Strategic & Systems Thinking',
     color: '#ffffff',
-    centroid: [100, -20],
+    centroid: [300, -80],
     items: [
       'Creative technology strategy',
       'Interdisciplinary project leadership',
       'Cultural program development',
       'Digital experience design',
-      'Innovation & emerging media strategy',
+      'Innovation & emerging media',
     ],
   },
   {
     name: 'Technical & Analytical Foundations',
     color: '#00ff88',
-    centroid: [-90, -70],
+    centroid: [-280, -160],
     items: [
       'Systems design thinking',
       'Data-driven creative workflows',
-      'Algorithmic thinking for visual systems',
+      'Algorithmic visual systems',
       'Process architecture & optimization',
       'Biomedical engineering (MSc)',
     ],
@@ -55,7 +55,7 @@ const CATEGORIES = [
   {
     name: 'Research Interests',
     color: '#ff00aa',
-    centroid: [0, -90],
+    centroid: [0, -240],
     items: [
       'AI and creativity research',
       'Human-AI creative collaboration',
@@ -69,7 +69,7 @@ interface SkillNode {
   name: string;
   category: string;
   color: string;
-  importance: number; // 0=primary, 1=secondary, 2=tertiary
+  importance: number;
   x: number;
   y: number;
   vx: number;
@@ -83,13 +83,12 @@ interface Edge {
   cross: boolean;
 }
 
-// Bridge connections between related cross-category skills
 const BRIDGES: [string, string][] = [
   ['TouchDesigner', 'Real-time audio-reactive visuals'],
   ['Storytelling', 'Concept design for immersive environments'],
   ['AI-assisted visual pipelines', 'AI and creativity research'],
   ['Systems design thinking', 'Creative technology strategy'],
-  ['Generative AI Systems (LLM, diffusion workflows)', 'Human-AI creative collaboration'],
+  ['Generative AI Systems', 'Human-AI creative collaboration'],
 ];
 
 function buildGraph() {
@@ -106,8 +105,8 @@ function buildGraph() {
         category: cat.name,
         color: cat.color,
         importance,
-        x: cat.centroid[0] + (Math.random() - 0.5) * 30,
-        y: cat.centroid[1] + (Math.random() - 0.5) * 30,
+        x: cat.centroid[0] + (Math.random() - 0.5) * 40,
+        y: cat.centroid[1] + (Math.random() - 0.5) * 40,
         vx: 0,
         vy: 0,
         phase: Math.random() * Math.PI * 2,
@@ -115,7 +114,7 @@ function buildGraph() {
     }
   }
 
-  // Intra-category edges: connect each node to 2-3 nearest in same category
+  // Intra-category edges: connect to 2 nearest
   for (const cat of CATEGORIES) {
     const catNodes = nodes.filter(n => n.category === cat.name);
     for (const node of catNodes) {
@@ -126,7 +125,7 @@ function buildGraph() {
           const db = (b.x - node.x) ** 2 + (b.y - node.y) ** 2;
           return da - db;
         });
-      const count = Math.min(2 + Math.floor(Math.random() * 2), others.length);
+      const count = Math.min(2, others.length);
       for (let i = 0; i < count; i++) {
         const a = Math.min(node.id, others[i].id);
         const b = Math.max(node.id, others[i].id);
@@ -137,7 +136,6 @@ function buildGraph() {
     }
   }
 
-  // Cross-category bridges
   for (const [nameA, nameB] of BRIDGES) {
     const nA = nodes.find(n => n.name === nameA);
     const nB = nodes.find(n => n.name === nameB);
@@ -162,13 +160,17 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
   for (let iter = 0; iter < iterations; iter++) {
     const decay = 1 - iter / iterations;
 
-    // Repulsion
+    // Strong repulsion to prevent overlap
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const dx = nodes[j].x - nodes[i].x;
         const dy = nodes[j].y - nodes[i].y;
         const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 5);
-        const force = (3000 * decay) / (dist * dist);
+        // Very strong repulsion at close range
+        const minDist = 70;
+        const force = dist < minDist
+          ? (20000 * decay) / (dist * dist)
+          : (5000 * decay) / (dist * dist);
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
         nodes[i].vx -= fx;
@@ -178,15 +180,15 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
       }
     }
 
-    // Attraction along edges
+    // Attraction along edges (longer rest length)
     for (const edge of edges) {
       const a = nodes[edge.a];
       const b = nodes[edge.b];
       const dx = b.x - a.x;
       const dy = b.y - a.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const rest = 45;
-      const force = (dist - rest) * 0.06 * decay;
+      const rest = 100;
+      const force = (dist - rest) * 0.03 * decay;
       const fx = (dx / Math.max(dist, 1)) * force;
       const fy = (dy / Math.max(dist, 1)) * force;
       a.vx += fx;
@@ -198,21 +200,19 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
     // Category clustering
     for (const node of nodes) {
       const c = catCentroids[node.category];
-      node.vx += (c[0] - node.x) * 0.05 * decay;
-      node.vy += (c[1] - node.y) * 0.05 * decay;
-      
+      node.vx += (c[0] - node.x) * 0.03 * decay;
+      node.vy += (c[1] - node.y) * 0.03 * decay;
     }
 
     // Apply velocities
     for (const node of nodes) {
-      node.vx *= 0.85;
-      node.vy *= 0.85;
+      node.vx *= 0.8;
+      node.vy *= 0.8;
       node.x += node.vx;
       node.y += node.vy;
     }
   }
 
-  // Zero velocities
   for (const n of nodes) {
     n.vx = 0;
     n.vy = 0;
@@ -230,16 +230,15 @@ export default function SkillConstellation() {
   const labelsRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [hoveredNode, setHoveredNode] = useState<SkillNode | null>(null);
+  const [, setHoveredNode] = useState<SkillNode | null>(null);
   const [inView, setInView] = useState(false);
 
   const graph = useMemo(() => {
     const g = buildGraph();
-    runForceLayout(g.nodes, g.edges, 200);
+    runForceLayout(g.nodes, g.edges, 300);
     return g;
   }, []);
 
-  // Store final positions
   const finalPositions = useMemo(() => graph.nodes.map(n => ({ x: n.x, y: n.y })), [graph]);
 
   useEffect(() => {
@@ -249,7 +248,7 @@ export default function SkillConstellation() {
       ([entry]) => {
         if (entry.isIntersecting && !inView) setInView(true);
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -262,9 +261,9 @@ export default function SkillConstellation() {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // Scene setup
     const scene = new THREE.Scene();
-    const frustum = Math.max(width, height) * 0.55;
+    // Tighter frustum so nodes fill more of the canvas
+    const frustum = Math.max(width, height) * 0.42;
     const aspect = width / height;
     const camera = new THREE.OrthographicCamera(
       -frustum * aspect, frustum * aspect,
@@ -272,14 +271,13 @@ export default function SkillConstellation() {
       0.1, 1000
     );
     camera.position.set(0, 0, 500);
-    camera.rotation.x = -12 * (Math.PI / 180);
+    camera.rotation.x = -8 * (Math.PI / 180);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // Node points with custom shader
     const { nodes, edges } = graph;
     const nodeCount = nodes.length;
 
@@ -297,7 +295,7 @@ export default function SkillConstellation() {
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
-      const s = nodes[i].importance === 0 ? 28 : nodes[i].importance === 1 ? 20 : 14;
+      const s = nodes[i].importance === 0 ? 24 : nodes[i].importance === 1 ? 16 : 10;
       sizes[i] = s;
       baseSizes[i] = s;
     }
@@ -321,9 +319,9 @@ export default function SkillConstellation() {
         varying vec3 vColor;
         void main() {
           float d = length(gl_PointCoord - 0.5) * 2.0;
-          float glow = exp(-d * 8.0);
+          float glow = exp(-d * 6.0);
           if (glow < 0.01) discard;
-          gl_FragColor = vec4(vColor, glow);
+          gl_FragColor = vec4(vColor, glow * 0.9);
         }
       `,
       transparent: true,
@@ -352,15 +350,13 @@ export default function SkillConstellation() {
         edgeColors[i * 6 + j * 3 + 1] = avg.g;
         edgeColors[i * 6 + j * 3 + 2] = avg.b;
       }
-      // Start collapsed at midpoint
       const mx = (finalPositions[edges[i].a].x + finalPositions[edges[i].b].x) / 2;
       const my = (finalPositions[edges[i].a].y + finalPositions[edges[i].b].y) / 2;
-      edgePos[i * 6] = mx;
-      edgePos[i * 6 + 1] = my;
-      edgePos[i * 6 + 2] = 0;
-      edgePos[i * 6 + 3] = mx;
-      edgePos[i * 6 + 4] = my;
-      edgePos[i * 6 + 5] = 0;
+      for (let k = 0; k < 2; k++) {
+        edgePos[i * 6 + k * 3] = mx;
+        edgePos[i * 6 + k * 3 + 1] = my;
+        edgePos[i * 6 + k * 3 + 2] = 0;
+      }
     }
 
     edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
@@ -369,7 +365,7 @@ export default function SkillConstellation() {
     const edgeMat = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.15,
+      opacity: 0.2,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
@@ -377,7 +373,6 @@ export default function SkillConstellation() {
     const lineSegments = new THREE.LineSegments(edgeGeo, edgeMat);
     scene.add(lineSegments);
 
-    // State refs
     const mouseRef = { x: 0, y: 0 };
     const parallaxRef = { x: 0, y: 0 };
     const activeCatRef = { current: null as string | null };
@@ -391,27 +386,22 @@ export default function SkillConstellation() {
     };
     container.addEventListener('mousemove', handleMouseMove);
 
-    // Animation loop
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const elapsed = (performance.now() - startTime) / 1000;
 
-      // Node entrance animation (1.4s)
       const entranceT = Math.min(elapsed / 1.4, 1);
       const eased = easeOutQuart(entranceT);
 
       const posArr = pointGeo.attributes.position.array as Float32Array;
       const sizeArr = pointGeo.attributes.size.array as Float32Array;
 
-      // Mouse parallax
-      parallaxRef.x += (mouseRef.x * 15 - parallaxRef.x) * 0.03;
-      parallaxRef.y += (mouseRef.y * 15 - parallaxRef.y) * 0.03;
+      parallaxRef.x += (mouseRef.x * 12 - parallaxRef.x) * 0.03;
+      parallaxRef.y += (mouseRef.y * 12 - parallaxRef.y) * 0.03;
 
-      // Hover detection via projected positions
       let closestIdx: number | null = null;
-      let closestDist = 30;
-
+      let closestDist = 40;
       const projectedPositions: { x: number; y: number }[] = [];
 
       for (let i = 0; i < nodeCount; i++) {
@@ -420,32 +410,27 @@ export default function SkillConstellation() {
         const px = fx * eased + parallaxRef.x;
         const py = fy * eased + parallaxRef.y;
 
-        // Pulse
-        const pulse = 1 + 0.15 * Math.sin(elapsed * 1.2 + nodes[i].phase);
+        const pulse = 1 + 0.12 * Math.sin(elapsed * 1.2 + nodes[i].phase);
         posArr[i * 3] = px;
         posArr[i * 3 + 1] = py;
         posArr[i * 3 + 2] = 0;
 
-        // Category highlighting
         const aCat = activeCatRef.current;
         let catScale = 1;
         if (aCat) {
-          catScale = nodes[i].category === aCat ? 1.4 : 0.2;
+          catScale = nodes[i].category === aCat ? 1.3 : 0.3;
         }
-
         sizeArr[i] = baseSizes[i] * pulse * catScale;
 
-        // Project to screen for hover detection & labels
         const vec = new THREE.Vector3(px, py, 0);
         vec.project(camera);
         const sx = (vec.x * 0.5 + 0.5) * width;
         const sy = (-vec.y * 0.5 + 0.5) * height;
         projectedPositions.push({ x: sx, y: sy });
 
-        // Pixel distance to mouse
-        const mx = (mouseRef.x * 0.5 + 0.5) * width;
-        const my = (-mouseRef.y * 0.5 + 0.5) * height;
-        const dist = Math.sqrt((sx - mx) ** 2 + (sy - my) ** 2);
+        const mx2 = (mouseRef.x * 0.5 + 0.5) * width;
+        const my2 = (-mouseRef.y * 0.5 + 0.5) * height;
+        const dist = Math.sqrt((sx - mx2) ** 2 + (sy - my2) ** 2);
         if (dist < closestDist) {
           closestDist = dist;
           closestIdx = i;
@@ -456,7 +441,7 @@ export default function SkillConstellation() {
       pointGeo.attributes.position.needsUpdate = true;
       pointGeo.attributes.size.needsUpdate = true;
 
-      // Edge animation: draw after 1.4s, stagger 30ms each
+      // Edges
       const edgePosArr = edgeGeo.attributes.position.array as Float32Array;
       for (let i = 0; i < edgeCount; i++) {
         const aIdx = edges[i].a;
@@ -467,54 +452,53 @@ export default function SkillConstellation() {
         const edgeStart = 1.4 + i * 0.03;
         const edgeT = Math.min(Math.max((elapsed - edgeStart) / 0.6, 0), 1);
 
-        const mx = (ax + bx) / 2;
-        const my = (ay + by) / 2;
+        const emx = (ax + bx) / 2;
+        const emy = (ay + by) / 2;
 
-        edgePosArr[i * 6] = mx + (ax - mx) * edgeT;
-        edgePosArr[i * 6 + 1] = my + (ay - my) * edgeT;
+        edgePosArr[i * 6] = emx + (ax - emx) * edgeT;
+        edgePosArr[i * 6 + 1] = emy + (ay - emy) * edgeT;
         edgePosArr[i * 6 + 2] = 0;
-        edgePosArr[i * 6 + 3] = mx + (bx - mx) * edgeT;
-        edgePosArr[i * 6 + 4] = my + (by - my) * edgeT;
+        edgePosArr[i * 6 + 3] = emx + (bx - emx) * edgeT;
+        edgePosArr[i * 6 + 4] = emy + (by - emy) * edgeT;
         edgePosArr[i * 6 + 5] = 0;
       }
       edgeGeo.attributes.position.needsUpdate = true;
 
-      // Edge flicker
-      const baseOpacity = 0.15;
-      const flickerOpacity = baseOpacity + Math.sin(elapsed * 3 + Math.random()) * 0.05;
-      edgeMat.opacity = activeCatRef.current ? 0.06 : flickerOpacity;
+      const baseOpacity = 0.2;
+      const flickerOpacity = baseOpacity + Math.sin(elapsed * 3 + Math.random()) * 0.04;
+      edgeMat.opacity = activeCatRef.current ? 0.08 : flickerOpacity;
 
-      // Update labels
-      if (labelsRef.current && entranceT > 0.5) {
+      // Labels
+      if (labelsRef.current && entranceT > 0.3) {
         const labelEls = labelsRef.current.children;
         for (let i = 0; i < Math.min(labelEls.length, nodeCount); i++) {
           const el = labelEls[i] as HTMLElement;
           const p = projectedPositions[i];
           if (p) {
-            el.style.transform = `translate(${p.x + 8}px, ${p.y - 6}px)`;
+            el.style.transform = `translate(${p.x + 10}px, ${p.y - 8}px)`;
             const isHovered = hoveredRef.current === i;
             const aCat = activeCatRef.current;
-            let op = 0.7;
+            let op = 0.85;
             if (aCat) {
-              op = nodes[i].category === aCat ? 0.9 : 0.1;
+              op = nodes[i].category === aCat ? 1 : 0.12;
             }
             if (isHovered) op = 1;
             el.style.opacity = String(op);
-            el.style.fontSize = isHovered ? '12px' : '11px';
+            el.style.fontWeight = isHovered ? '700' : '400';
           }
         }
       }
 
-      // Update tooltip
+      // Tooltip
       if (tooltipRef.current) {
         if (closestIdx !== null) {
           const p = projectedPositions[closestIdx];
           const node = nodes[closestIdx];
           tooltipRef.current.style.display = 'block';
-          tooltipRef.current.style.transform = `translate(${p.x + 14}px, ${p.y - 40}px)`;
+          tooltipRef.current.style.transform = `translate(${p.x + 16}px, ${p.y - 44}px)`;
           tooltipRef.current.innerHTML = `
-            <div style="color:${node.color};font-size:10px;text-transform:uppercase;letter-spacing:0.1em">${node.name}</div>
-            <div style="color:rgba(255,255,255,0.5);font-size:9px;margin-top:2px">${node.category}</div>
+            <div style="color:${node.color};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;font-weight:600">${node.name}</div>
+            <div style="color:rgba(255,255,255,0.5);font-size:10px;margin-top:3px">${node.category}</div>
           `;
         } else {
           tooltipRef.current.style.display = 'none';
@@ -525,12 +509,10 @@ export default function SkillConstellation() {
     };
     animate();
 
-    // Sync category ref
     const catInterval = setInterval(() => {
       activeCatRef.current = (sectionRef.current as any)?.__activeCat ?? null;
     }, 50);
 
-    // Hover state sync
     const hoverInterval = setInterval(() => {
       const idx = hoveredRef.current;
       const node = idx !== null ? nodes[idx] : null;
@@ -540,11 +522,10 @@ export default function SkillConstellation() {
       });
     }, 60);
 
-    // Resize
     const handleResize = () => {
       const w = container.clientWidth;
       const h = container.clientHeight;
-      const f = Math.max(w, h) * 0.55;
+      const f = Math.max(w, h) * 0.42;
       const a = w / h;
       camera.left = -f * a;
       camera.right = f * a;
@@ -570,7 +551,6 @@ export default function SkillConstellation() {
     };
   }, [inView, graph, finalPositions]);
 
-  // Sync active category to section element for the Three.js loop to read
   useEffect(() => {
     if (sectionRef.current) {
       (sectionRef.current as any).__activeCat = activeCategory;
@@ -582,11 +562,11 @@ export default function SkillConstellation() {
       ref={sectionRef}
       id="process"
       className="relative z-10"
-      style={{ minHeight: '100vh', padding: '8vh 8vw' }}
+      style={{ minHeight: '100vh', padding: '6vh 4vw' }}
     >
-      <div className="flex flex-col md:flex-row gap-8 md:gap-12 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row gap-8 md:gap-12 max-w-[1400px] mx-auto">
         {/* LEFT COLUMN */}
-        <div className="md:w-1/4 md:sticky md:top-[15vh] md:self-start">
+        <div className="md:w-1/5 md:sticky md:top-[15vh] md:self-start">
           <div
             className="font-mono uppercase"
             style={{ color: 'hsl(var(--primary))', letterSpacing: '0.2em', fontSize: '11px' }}
@@ -600,7 +580,6 @@ export default function SkillConstellation() {
             [ SKILLS ]
           </div>
 
-          {/* Legend */}
           <div className="mt-8 space-y-3">
             {CATEGORIES.map(cat => {
               const isActive = activeCategory === cat.name;
@@ -626,7 +605,7 @@ export default function SkillConstellation() {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="md:w-3/4 relative" style={{ height: '75vh', minHeight: 400 }}>
+        <div className="md:w-4/5 relative" style={{ height: '80vh', minHeight: 500 }}>
           <div ref={canvasRef} className="w-full h-full" />
 
           {/* Node labels */}
@@ -639,11 +618,12 @@ export default function SkillConstellation() {
                 key={node.id}
                 className="absolute font-mono whitespace-nowrap"
                 style={{
-                  fontSize: '11px',
+                  fontSize: '13px',
                   color: node.color,
-                  opacity: 0.75,
-                  transition: 'opacity 0.2s, font-size 0.2s',
+                  opacity: 0.85,
+                  transition: 'opacity 0.2s, font-weight 0.2s',
                   willChange: 'transform',
+                  textShadow: '0 0 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6)',
                 }}
               >
                 {node.name}
@@ -657,9 +637,9 @@ export default function SkillConstellation() {
             className="absolute pointer-events-none font-mono"
             style={{
               display: 'none',
-              background: 'rgba(0,0,0,0.85)',
+              background: 'rgba(0,0,0,0.9)',
               border: '1px solid #00e5ff',
-              padding: '6px 10px',
+              padding: '8px 12px',
               zIndex: 10,
               willChange: 'transform',
             }}
