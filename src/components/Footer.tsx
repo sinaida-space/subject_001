@@ -58,7 +58,7 @@ All rights reserved.<br /><br />All rights reserved.</p>
               Privacy Policy
             </a>
             <p className="font-clinical text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Sinaida Krivchenko. All rights reserved.
+              
             </p>
           </div>
         </div>
