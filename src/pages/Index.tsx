@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import CustomCursor from '@/components/CustomCursor';
 import VHSOverlay from '@/components/VHSOverlay';
 import CookieBanner from '@/components/CookieBanner';
+import ScrollWind from '@/components/ScrollWind';
 
 import projectSubmerged from '@/assets/project-submerged-cover.png';
 import projectLegacy from '@/assets/project-legacy-cover.jpg';
@@ -69,6 +70,9 @@ const Index = () => {
       <Suspense fallback={null}>
         <ParticleField />
       </Suspense>
+
+      {/* Scroll Wind Particles */}
+      <ScrollWind />
 
       {/* Custom Cursor */}
       <CustomCursor />
