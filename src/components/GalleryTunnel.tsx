@@ -298,14 +298,22 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
   if (isMobile) {
     return (
       <section id="work" className="relative z-10 py-24">
-        <div className="container mx-auto px-6">
-          <div className="mb-12">
-            <span className="clinical-label text-primary">Selected Projects</span>
-            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ RECENT WORK ]</div>
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+            <div className="md:w-[200px] shrink-0">
+              <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+                Selected Projects
+              </div>
+              <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+                [ RECENT WORK ]
+              </div>
+            </div>
+            <div className="flex-1">
+              {projects.map((project, i) => (
+                <MobileProjectCard key={project.id} project={project} index={i} />
+              ))}
+            </div>
           </div>
-          {projects.map((project, i) => (
-            <MobileProjectCard key={project.id} project={project} index={i} />
-          ))}
         </div>
       </section>
     );
