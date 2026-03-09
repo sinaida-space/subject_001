@@ -55,7 +55,7 @@ const CATEGORIES = [
   {
     name: 'Research Interests',
     color: '#ff00aa',
-    centroid: [0, -160],
+    centroid: [0, -90],
     items: [
       'AI and creativity research',
       'Human-AI creative collaboration',

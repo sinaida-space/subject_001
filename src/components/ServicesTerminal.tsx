@@ -327,18 +327,27 @@ export default function ServicesTerminal() {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [key, setKey] = useState(0);
+  const [skipAnimation, setSkipAnimation] = useState(false);
+  const hasPlayedRef = useRef(false);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
 
+    // Check if user is NOT at the top on mount — if so, skip animation
+    if (window.scrollY > 200) {
+      setSkipAnimation(true);
+      setActiveIndex(SERVICES.length - 1);
+      hasPlayedRef.current = true;
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !hasPlayedRef.current) {
+          hasPlayedRef.current = true;
           setKey(k => k + 1);
           setActiveIndex(0);
-        } else {
-          setActiveIndex(-1);
         }
       },
       { threshold: 0.15 }
