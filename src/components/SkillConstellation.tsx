@@ -49,7 +49,7 @@ const CATEGORIES = [
   },
   {
     name: 'Research Interests',
-    color: '#ff00aa',
+    color: '#cc66ff', // violet
     items: [
       'AI and creativity research',
       'Human-AI creative collaboration',
