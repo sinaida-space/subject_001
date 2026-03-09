@@ -115,7 +115,7 @@ function PhotoBlock() {
         SINAIDA
       </span>
       <span className="block font-mono mt-1" style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>
-        Prague // Creative Director
+        VISUAL ARTIST AND DIGITAL STRATEGIST
       </span>
     </div>
   );
