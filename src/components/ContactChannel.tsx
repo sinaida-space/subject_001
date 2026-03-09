@@ -389,7 +389,7 @@ export default function ContactChannel() {
             >
               <a
                 href="mailto:gallant_mod5v@icloud.com"
-                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid #ff3333',
                   color: '#ff3333',
