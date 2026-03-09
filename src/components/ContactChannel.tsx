@@ -309,7 +309,7 @@ export default function ContactChannel() {
           <div className="mt-10 space-y-3">
             <a
               href="mailto:gallant_mod5v@icloud.com"
-              className="block font-mono text-[10px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
               style={{ color: '#00e5ff', opacity: 0.5 }}
             >
               → EMAIL
