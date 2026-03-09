@@ -151,6 +151,8 @@ function ServiceBlock({
 }) {
   const [hovered, setHovered] = useState(false);
   const [glitchName, setGlitchName] = useState<string | null>(null);
+  const [evaporated, setEvaporated] = useState(false);
+  const [evaporating, setEvaporating] = useState(false);
   const descLines = splitDescription(service.description);
 
   const lines = [
@@ -167,7 +169,6 @@ function ServiceBlock({
   ];
 
   const handleNameTyped = useCallback(() => {
-    // Glitch effect on the service name
     const name = service.title;
     let glitchCount = 0;
     const glitchInterval = setInterval(() => {
@@ -191,7 +192,17 @@ function ServiceBlock({
   const { outputs, done } = useTypingSequence(lines, active, handleNameTyped, 0);
 
   useEffect(() => {
-    if (done) onDone();
+    if (done) {
+      onDone();
+      // Start evaporation after 3 seconds
+      const t = setTimeout(() => {
+        setEvaporating(true);
+        // After animation completes, hide terminal chrome
+        const t2 = setTimeout(() => setEvaporated(true), 800);
+        return () => clearTimeout(t2);
+      }, 3000);
+      return () => clearTimeout(t);
+    }
   }, [done, onDone]);
 
   if (!active && outputs.length === 0) return null;
@@ -200,6 +211,37 @@ function ServiceBlock({
   const displayCommand = glitchName
     ? commandLine.replace(`--name="${service.title}"`, `--name="${glitchName}"`)
     : commandLine;
+
+  // After evaporation, show only the clean content
+  if (evaporated) {
+    return (
+      <div
+        className={`transition-all duration-200 font-mono text-sm leading-relaxed ${hovered ? 'translate-x-2' : ''}`}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          borderBottom: hovered ? '1px solid #00e5ff' : '1px solid transparent',
+          paddingBottom: '1rem',
+          marginBottom: '0.5rem',
+        }}
+      >
+        <h3 className="font-mono text-base font-medium mb-2" style={{ color: '#00e5ff' }}>
+          {service.title}
+        </h3>
+        {descLines.map((line, i) => (
+          <div key={i} style={{ color: 'rgba(255,255,255,0.75)' }}>
+            {`  │ ${line}`}
+          </div>
+        ))}
+        {hovered && (
+          <span className="animate-terminal-cursor" style={{ color: '#00e5ff' }}>{`> _`}</span>
+        )}
+      </div>
+    );
+  }
+
+  const chromeOpacity = evaporating ? 0 : 1;
+  const chromeFilter = evaporating ? 'blur(8px)' : 'none';
 
   return (
     <div
@@ -218,6 +260,9 @@ function ServiceBlock({
         style={{
           color: '#00e5ff',
           textShadow: glitchName ? '2px 0 #ff0000, -2px 0 #00ffff' : 'none',
+          opacity: chromeOpacity,
+          filter: chromeFilter,
+          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
         }}
       >
         {displayCommand}
@@ -228,12 +273,21 @@ function ServiceBlock({
 
       {/* Line 2: initializing */}
       {outputs[1] !== undefined && (
-        <div style={{ color: 'rgba(255,255,255,0.5)' }}>{outputs[1]}</div>
+        <div style={{
+          color: 'rgba(255,255,255,0.5)',
+          opacity: chromeOpacity,
+          filter: chromeFilter,
+          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
+        }}>{outputs[1]}</div>
       )}
 
       {/* Line 3: progress bar */}
       {outputs[2] !== undefined && (
-        <div>
+        <div style={{
+          opacity: chromeOpacity,
+          filter: chromeFilter,
+          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
+        }}>
           <span style={{ color: '#ff3333' }}>{`> STATUS: ACTIVE `}</span>
           <span style={{ color: '#00ff88' }}>{outputs[2]}</span>
           <span style={{ color: 'rgba(255,255,255,0.5)' }}> 100%</span>
@@ -253,11 +307,16 @@ function ServiceBlock({
 
       {/* Module loaded */}
       {outputs[lines.length - 1] !== undefined && (
-        <div style={{ color: '#00e5ff', opacity: 0.4 }}>{outputs[lines.length - 1]}</div>
+        <div style={{
+          color: '#00e5ff',
+          opacity: evaporating ? 0 : 0.4,
+          filter: chromeFilter,
+          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
+        }}>{outputs[lines.length - 1]}</div>
       )}
 
       {/* Hover blinking cursor */}
-      {hovered && done && (
+      {hovered && done && !evaporating && (
         <span className="animate-terminal-cursor" style={{ color: '#00e5ff' }}>{`> _`}</span>
       )}
     </div>
