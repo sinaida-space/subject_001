@@ -115,7 +115,7 @@ function PhotoBlock() {
         SINAIDA
       </span>
       <span className="block font-mono mt-1" style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>
-        Prague // Creative Director
+        VISUAL ARTIST AND DIGITAL STRATEGIST
       </span>
     </div>
   );
@@ -204,9 +204,6 @@ export default function AboutSection() {
                     </div>
                     <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', paddingLeft: 24 }}>
                       It's a territory.
-                    </div>
-                    <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', paddingLeft: 48 }}>
-                      I've been mapping it since before it had a name.
                     </div>
                   </div>
                 </Reveal>
