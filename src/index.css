@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,19 +6,19 @@
 @layer base {
   :root {
     --background: 280 33% 3%;
-    --foreground: 0 0% 88%;
+    --foreground: 210 40% 96.0784%;
 
     --card: 240 8% 6%;
-    --card-foreground: 0 0% 88%;
+    --card-foreground: 210 40% 96.0784%;
 
     --popover: 240 8% 6%;
-    --popover-foreground: 0 0% 88%;
+    --popover-foreground: 210 40% 96.0784%;
 
     --primary: 352 87% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 6% 10%;
-    --secondary-foreground: 0 0% 75%;
+    --secondary-foreground: 210 40% 96.0784%;
 
     --muted: 240 5% 12%;
     --muted-foreground: 0 0% 70%;
