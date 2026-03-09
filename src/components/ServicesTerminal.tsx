@@ -373,7 +373,7 @@ export default function ServicesTerminal() {
         <div className="md:w-1/4 md:sticky md:top-[15vh] md:self-start">
           <div
             className="font-mono uppercase"
-            style={{ color: 'hsl(var(--primary))', letterSpacing: '0.2em', fontSize: '11px' }}
+            style={{ color: 'hsl(var(--primary))', letterSpacing: '0.2em', fontSize: '12px' }}
           >
             Services
           </div>
