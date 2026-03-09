@@ -1,120 +1,169 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
 
-// ── Skill Data ──────────────────────────────────────────────
+// ── Data ────────────────────────────────────────────────────
 const CATEGORIES = [
   {
     name: 'Creative Direction',
     color: '#ff3333',
-    centroid: [-280, 200],
+    // zone as fraction of canvas: xMin, xMax, yMin, yMax
+    zone: [0.15, 0.42, 0.08, 0.38],
     items: [
-      'Visual narrative development',
-      'Concept design for immersive environments',
-      'Aesthetic systems & visual language',
-      'Storytelling',
-      'Cultural & performance-based concepts',
+      { name: 'Visual narrative development', importance: 0 },
+      { name: 'Concept design for immersive environments', importance: 0 },
+      { name: 'Aesthetic systems & visual language', importance: 1 },
+      { name: 'Storytelling', importance: 1 },
+      { name: 'Cultural & performance-based concepts', importance: 2 },
     ],
   },
   {
     name: 'Creative Technology',
     color: '#00e5ff',
-    centroid: [280, 200],
+    zone: [0.58, 0.90, 0.08, 0.42],
     items: [
-      'TouchDesigner',
-      'Generative AI Systems',
-      'Real-time audio-reactive visuals',
-      'Procedural animation',
-      'AI-assisted visual pipelines',
-      'Post-production & color grading',
+      { name: 'TouchDesigner', importance: 0 },
+      { name: 'Generative AI Systems', importance: 0 },
+      { name: 'Real-time audio-reactive visuals', importance: 1 },
+      { name: 'Procedural animation', importance: 1 },
+      { name: 'AI-assisted visual pipelines', importance: 2 },
+      { name: 'Post-production & color grading', importance: 2 },
     ],
   },
   {
     name: 'Strategic & Systems Thinking',
     color: '#ffffff',
-    centroid: [300, -80],
+    zone: [0.55, 0.88, 0.45, 0.72],
     items: [
-      'Creative technology strategy',
-      'Interdisciplinary project leadership',
-      'Cultural program development',
-      'Digital experience design',
-      'Innovation & emerging media',
+      { name: 'Creative technology strategy', importance: 0 },
+      { name: 'Interdisciplinary project leadership', importance: 0 },
+      { name: 'Cultural program development', importance: 1 },
+      { name: 'Digital experience design', importance: 1 },
+      { name: 'Innovation & emerging media', importance: 2 },
     ],
   },
   {
     name: 'Technical & Analytical Foundations',
     color: '#00ff88',
-    centroid: [-280, -160],
+    zone: [0.12, 0.48, 0.52, 0.85],
     items: [
-      'Systems design thinking',
-      'Data-driven creative workflows',
-      'Algorithmic visual systems',
-      'Process architecture & optimization',
-      'Biomedical engineering (MSc)',
+      { name: 'Systems design thinking', importance: 0 },
+      { name: 'Data-driven creative workflows', importance: 0 },
+      { name: 'Algorithmic visual systems', importance: 1 },
+      { name: 'Process architecture & optimization', importance: 1 },
+      { name: 'Biomedical engineering (MSc)', importance: 2 },
     ],
   },
   {
     name: 'Research Interests',
     color: '#ff00aa',
-    centroid: [0, -240],
+    zone: [0.35, 0.65, 0.58, 0.88],
     items: [
-      'AI and creativity research',
-      'Human-AI creative collaboration',
-      'Cognitive science of creativity',
+      { name: 'AI and creativity research', importance: 0 },
+      { name: 'Human-AI creative collaboration', importance: 0 },
+      { name: 'Cognitive science of creativity', importance: 1 },
     ],
   },
 ];
 
-interface SkillNode {
+// Cross-category bridges (dashed, white)
+const BRIDGES: [string, string][] = [
+  ['TouchDesigner', 'Real-time audio-reactive visuals'],
+  ['Storytelling', 'Visual narrative development'],
+  ['AI and creativity research', 'Generative AI Systems'],
+];
+
+interface NodeData {
   id: number;
   name: string;
   category: string;
   color: string;
   importance: number;
-  x: number;
+  x: number; // pixel position (set during layout)
   y: number;
-  vx: number;
-  vy: number;
+  zoneIdx: number;
   phase: number;
 }
 
-interface Edge {
+interface EdgeData {
   a: number;
   b: number;
-  cross: boolean;
+  bridge: boolean;
 }
 
-const BRIDGES: [string, string][] = [
-  ['TouchDesigner', 'Real-time audio-reactive visuals'],
-  ['Storytelling', 'Concept design for immersive environments'],
-  ['AI-assisted visual pipelines', 'AI and creativity research'],
-  ['Systems design thinking', 'Creative technology strategy'],
-  ['Generative AI Systems', 'Human-AI creative collaboration'],
-];
-
-function buildGraph() {
-  const nodes: SkillNode[] = [];
-  const edges: Edge[] = [];
+function buildNodesAndEdges(w: number, h: number) {
+  const nodes: NodeData[] = [];
   let id = 0;
 
-  for (const cat of CATEGORIES) {
-    for (let i = 0; i < cat.items.length; i++) {
-      const importance = i < 2 ? 0 : i < 4 ? 1 : 2;
+  // Place nodes in zones using grid-like spiral
+  for (let ci = 0; ci < CATEGORIES.length; ci++) {
+    const cat = CATEGORIES[ci];
+    const [zxMin, zxMax, zyMin, zyMax] = cat.zone;
+    const zoneW = (zxMax - zxMin) * w;
+    const zoneH = (zyMax - zyMin) * h;
+    const zoneX = zxMin * w;
+    const zoneY = zyMin * h;
+
+    const count = cat.items.length;
+    // Grid: determine cols/rows that fit with min spacing
+    const minSpacingX = 110;
+    const minSpacingY = 52;
+    const cols = Math.max(1, Math.min(count, Math.floor(zoneW / minSpacingX)));
+    const rows = Math.ceil(count / cols);
+
+    const spacingX = cols > 1 ? zoneW / (cols + 1) : zoneW / 2;
+    const spacingY = rows > 1 ? zoneH / (rows + 1) : zoneH / 2;
+
+    for (let i = 0; i < count; i++) {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      const x = zoneX + spacingX * (col + 1);
+      const y = zoneY + spacingY * (row + 1);
+
       nodes.push({
         id: id++,
-        name: cat.items[i],
+        name: cat.items[i].name,
         category: cat.name,
         color: cat.color,
-        importance,
-        x: cat.centroid[0] + (Math.random() - 0.5) * 40,
-        y: cat.centroid[1] + (Math.random() - 0.5) * 40,
-        vx: 0,
-        vy: 0,
+        importance: cat.items[i].importance,
+        x,
+        y,
+        zoneIdx: ci,
         phase: Math.random() * Math.PI * 2,
       });
     }
   }
 
-  // Intra-category edges: connect to 2 nearest
+  // Collision resolution: push apart any nodes closer than 130px
+  for (let iter = 0; iter < 150; iter++) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[j].x - nodes[i].x;
+        const dy = nodes[j].y - nodes[i].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const minDist = 130;
+        if (dist < minDist && dist > 0.1) {
+          const overlap = (minDist - dist) / 2;
+          const nx = dx / dist;
+          const ny = dy / dist;
+          nodes[i].x -= nx * overlap;
+          nodes[i].y -= ny * overlap;
+          nodes[j].x += nx * overlap;
+          nodes[j].y += ny * overlap;
+        }
+      }
+    }
+    // Clamp to zone bounds
+    for (const node of nodes) {
+      const cat = CATEGORIES[node.zoneIdx];
+      const [zxMin, zxMax, zyMin, zyMax] = cat.zone;
+      const pad = 20;
+      node.x = Math.max(zxMin * w + pad, Math.min(zxMax * w - pad, node.x));
+      node.y = Math.max(zyMin * h + pad, Math.min(zyMax * h - pad, node.y));
+    }
+  }
+
+  // Build edges: 2 nearest within same category
+  const edges: EdgeData[] = [];
   for (const cat of CATEGORIES) {
     const catNodes = nodes.filter(n => n.category === cat.name);
     for (const node of catNodes) {
@@ -125,17 +174,17 @@ function buildGraph() {
           const db = (b.x - node.x) ** 2 + (b.y - node.y) ** 2;
           return da - db;
         });
-      const count = Math.min(2, others.length);
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < Math.min(2, others.length); i++) {
         const a = Math.min(node.id, others[i].id);
         const b = Math.max(node.id, others[i].id);
         if (!edges.some(e => e.a === a && e.b === b)) {
-          edges.push({ a, b, cross: false });
+          edges.push({ a, b, bridge: false });
         }
       }
     }
   }
 
+  // Cross-category bridges
   for (const [nameA, nameB] of BRIDGES) {
     const nA = nodes.find(n => n.name === nameA);
     const nB = nodes.find(n => n.name === nameB);
@@ -143,7 +192,7 @@ function buildGraph() {
       const a = Math.min(nA.id, nB.id);
       const b = Math.max(nA.id, nB.id);
       if (!edges.some(e => e.a === a && e.b === b)) {
-        edges.push({ a, b, cross: true });
+        edges.push({ a, b, bridge: true });
       }
     }
   }
@@ -151,136 +200,108 @@ function buildGraph() {
   return { nodes, edges };
 }
 
-function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
-  const catCentroids: Record<string, number[]> = {};
-  for (const cat of CATEGORIES) {
-    catCentroids[cat.name] = [...cat.centroid];
-  }
-
-  for (let iter = 0; iter < iterations; iter++) {
-    const decay = 1 - iter / iterations;
-
-    // Strong repulsion to prevent overlap
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const dx = nodes[j].x - nodes[i].x;
-        const dy = nodes[j].y - nodes[i].y;
-        const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 5);
-        // Very strong repulsion at close range
-        const minDist = 70;
-        const force = dist < minDist
-          ? (20000 * decay) / (dist * dist)
-          : (5000 * decay) / (dist * dist);
-        const fx = (dx / dist) * force;
-        const fy = (dy / dist) * force;
-        nodes[i].vx -= fx;
-        nodes[i].vy -= fy;
-        nodes[j].vx += fx;
-        nodes[j].vy += fy;
-      }
-    }
-
-    // Attraction along edges (longer rest length)
-    for (const edge of edges) {
-      const a = nodes[edge.a];
-      const b = nodes[edge.b];
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const rest = 100;
-      const force = (dist - rest) * 0.03 * decay;
-      const fx = (dx / Math.max(dist, 1)) * force;
-      const fy = (dy / Math.max(dist, 1)) * force;
-      a.vx += fx;
-      a.vy += fy;
-      b.vx -= fx;
-      b.vy -= fy;
-    }
-
-    // Category clustering
-    for (const node of nodes) {
-      const c = catCentroids[node.category];
-      node.vx += (c[0] - node.x) * 0.03 * decay;
-      node.vy += (c[1] - node.y) * 0.03 * decay;
-    }
-
-    // Apply velocities
-    for (const node of nodes) {
-      node.vx *= 0.8;
-      node.vy *= 0.8;
-      node.x += node.vx;
-      node.y += node.vy;
-    }
-  }
-
-  for (const n of nodes) {
-    n.vx = 0;
-    n.vy = 0;
-  }
-}
-
 function easeOutQuart(t: number) {
   return 1 - Math.pow(1 - t, 4);
+}
+
+// Determine label placement relative to dot based on zone position
+function getLabelSide(node: NodeData, w: number, h: number) {
+  const cat = CATEGORIES[node.zoneIdx];
+  const [zxMin, zxMax, zyMin, zyMax] = cat.zone;
+  const zoneCx = (zxMin + zxMax) / 2 * w;
+  const zoneCy = (zyMin + zyMax) / 2 * h;
+
+  const nearTop = node.y < zyMin * h + (zyMax - zyMin) * h * 0.2;
+  const nearBottom = node.y > zyMax * h - (zyMax - zyMin) * h * 0.2;
+
+  if (nearTop) return 'below';
+  if (nearBottom) return 'above';
+  if (node.x < zoneCx) return 'right';
+  return 'left';
 }
 
 // ── Component ───────────────────────────────────────────────
 export default function SkillConstellation() {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
-  const labelsRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [, setHoveredNode] = useState<SkillNode | null>(null);
+  const [zoomedCategory, setZoomedCategory] = useState<string | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
   const [inView, setInView] = useState(false);
+  const [canvasSize, setCanvasSize] = useState({ w: 1200, h: 800 });
+  const animStartRef = useRef<number | null>(null);
 
-  const graph = useMemo(() => {
-    const g = buildGraph();
-    runForceLayout(g.nodes, g.edges, 300);
-    return g;
-  }, []);
+  const graph = useMemo(
+    () => buildNodesAndEdges(canvasSize.w, canvasSize.h),
+    [canvasSize.w, canvasSize.h]
+  );
 
-  const finalPositions = useMemo(() => graph.nodes.map(n => ({ x: n.x, y: n.y })), [graph]);
+  // Entrance offsets (random ±60px per node, consistent across renders)
+  const entranceOffsets = useMemo(
+    () => graph.nodes.map(() => ({
+      dx: (Math.random() - 0.5) * 120,
+      dy: (Math.random() - 0.5) * 120,
+    })),
+    [graph.nodes]
+  );
 
+  // Observe section
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !inView) setInView(true);
-      },
-      { threshold: 0.1 }
+      ([entry]) => { if (entry.isIntersecting && !inView) setInView(true); },
+      { threshold: 0.08 }
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, [inView]);
 
+  // Set start time on first view
+  useEffect(() => {
+    if (inView && animStartRef.current === null) {
+      animStartRef.current = performance.now();
+    }
+  }, [inView]);
+
+  // Measure canvas
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      const { width, height } = entries[0].contentRect;
+      if (width > 0 && height > 0) {
+        setCanvasSize({ w: Math.round(width), h: Math.round(height) });
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Three.js for dots and lines only
   useEffect(() => {
     if (!canvasRef.current || !inView) return;
 
     const container = canvasRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    // Remove previous canvas if any
+    const existing = container.querySelector('canvas');
+    if (existing) container.removeChild(existing);
+
+    const { w, h } = canvasSize;
 
     const scene = new THREE.Scene();
-    // Tighter frustum so nodes fill more of the canvas
-    const frustum = Math.max(width, height) * 0.42;
-    const aspect = width / height;
-    const camera = new THREE.OrthographicCamera(
-      -frustum * aspect, frustum * aspect,
-      frustum, -frustum,
-      0.1, 1000
-    );
-    camera.position.set(0, 0, 500);
-    camera.rotation.x = -8 * (Math.PI / 180);
+    const camera = new THREE.OrthographicCamera(0, w, 0, h, 0.1, 100);
+    camera.position.z = 50;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(width, height);
+    renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
+    container.insertBefore(renderer.domElement, container.firstChild);
 
     const { nodes, edges } = graph;
     const nodeCount = nodes.length;
 
+    // Points
     const pointGeo = new THREE.BufferGeometry();
     const positions = new Float32Array(nodeCount * 3);
     const colors = new Float32Array(nodeCount * 3);
@@ -288,14 +309,14 @@ export default function SkillConstellation() {
     const baseSizes = new Float32Array(nodeCount);
 
     for (let i = 0; i < nodeCount; i++) {
-      positions[i * 3] = 0;
-      positions[i * 3 + 1] = 0;
+      positions[i * 3] = nodes[i].x;
+      positions[i * 3 + 1] = h - nodes[i].y; // flip Y for Three.js
       positions[i * 3 + 2] = 0;
       const c = new THREE.Color(nodes[i].color);
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
-      const s = nodes[i].importance === 0 ? 24 : nodes[i].importance === 1 ? 16 : 10;
+      const s = nodes[i].importance === 0 ? 22 : nodes[i].importance === 1 ? 16 : 10;
       sizes[i] = s;
       baseSizes[i] = s;
     }
@@ -311,7 +332,7 @@ export default function SkillConstellation() {
         void main() {
           vColor = color;
           vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = size * (1.0 / -mvPos.z) * 500.0;
+          gl_PointSize = size;
           gl_Position = projectionMatrix * mvPos;
         }
       `,
@@ -319,9 +340,11 @@ export default function SkillConstellation() {
         varying vec3 vColor;
         void main() {
           float d = length(gl_PointCoord - 0.5) * 2.0;
-          float glow = exp(-d * 6.0);
-          if (glow < 0.01) discard;
-          gl_FragColor = vec4(vColor, glow * 0.9);
+          float core = smoothstep(0.5, 0.0, d);
+          float glow = exp(-d * 4.0) * 0.5;
+          float a = core + glow;
+          if (a < 0.01) discard;
+          gl_FragColor = vec4(vColor, a);
         }
       `,
       transparent: true,
@@ -333,240 +356,145 @@ export default function SkillConstellation() {
     const points = new THREE.Points(pointGeo, pointMat);
     scene.add(points);
 
-    // Edges
-    const edgeCount = edges.length;
-    const edgeGeo = new THREE.BufferGeometry();
-    const edgePos = new Float32Array(edgeCount * 6);
-    const edgeColors = new Float32Array(edgeCount * 6);
+    // Solid edges
+    const solidEdges = edges.filter(e => !e.bridge);
+    const bridgeEdges = edges.filter(e => e.bridge);
 
-    for (let i = 0; i < edgeCount; i++) {
-      const a = nodes[edges[i].a];
-      const b = nodes[edges[i].b];
-      const ca = new THREE.Color(a.color);
-      const cb = new THREE.Color(b.color);
-      const avg = new THREE.Color().addColors(ca, cb).multiplyScalar(0.5);
-      for (let j = 0; j < 2; j++) {
-        edgeColors[i * 6 + j * 3] = avg.r;
-        edgeColors[i * 6 + j * 3 + 1] = avg.g;
-        edgeColors[i * 6 + j * 3 + 2] = avg.b;
+    // Solid lines
+    if (solidEdges.length > 0) {
+      const lineGeo = new THREE.BufferGeometry();
+      const linePos = new Float32Array(solidEdges.length * 6);
+      const lineCol = new Float32Array(solidEdges.length * 6);
+
+      for (let i = 0; i < solidEdges.length; i++) {
+        const a = nodes[solidEdges[i].a];
+        const b = nodes[solidEdges[i].b];
+        linePos[i * 6] = a.x;
+        linePos[i * 6 + 1] = h - a.y;
+        linePos[i * 6 + 2] = 0;
+        linePos[i * 6 + 3] = b.x;
+        linePos[i * 6 + 4] = h - b.y;
+        linePos[i * 6 + 5] = 0;
+        const ca = new THREE.Color(a.color);
+        const cb = new THREE.Color(b.color);
+        const avg = new THREE.Color().addColors(ca, cb).multiplyScalar(0.5);
+        for (let j = 0; j < 2; j++) {
+          lineCol[i * 6 + j * 3] = avg.r;
+          lineCol[i * 6 + j * 3 + 1] = avg.g;
+          lineCol[i * 6 + j * 3 + 2] = avg.b;
+        }
       }
-      const mx = (finalPositions[edges[i].a].x + finalPositions[edges[i].b].x) / 2;
-      const my = (finalPositions[edges[i].a].y + finalPositions[edges[i].b].y) / 2;
-      for (let k = 0; k < 2; k++) {
-        edgePos[i * 6 + k * 3] = mx;
-        edgePos[i * 6 + k * 3 + 1] = my;
-        edgePos[i * 6 + k * 3 + 2] = 0;
+
+      lineGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
+      lineGeo.setAttribute('color', new THREE.BufferAttribute(lineCol, 3));
+
+      const lineMat = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.25,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      scene.add(new THREE.LineSegments(lineGeo, lineMat));
+    }
+
+    // Bridge lines (dashed)
+    if (bridgeEdges.length > 0) {
+      for (const edge of bridgeEdges) {
+        const a = nodes[edge.a];
+        const b = nodes[edge.b];
+        const geo = new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(a.x, h - a.y, 0),
+          new THREE.Vector3(b.x, h - b.y, 0),
+        ]);
+        const mat = new THREE.LineDashedMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.18,
+          dashSize: 4,
+          gapSize: 4,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const line = new THREE.Line(geo, mat);
+        line.computeLineDistances();
+        scene.add(line);
       }
     }
 
-    edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
-    edgeGeo.setAttribute('color', new THREE.BufferAttribute(edgeColors, 3));
-
-    const edgeMat = new THREE.LineBasicMaterial({
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.2,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-
-    const lineSegments = new THREE.LineSegments(edgeGeo, edgeMat);
-    scene.add(lineSegments);
-
-    const mouseRef = { x: 0, y: 0 };
-    const parallaxRef = { x: 0, y: 0 };
-    const activeCatRef = { current: null as string | null };
-    const hoveredRef = { current: null as number | null };
-    const startTime = performance.now();
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      mouseRef.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouseRef.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    };
-    container.addEventListener('mousemove', handleMouseMove);
-
+    // Animation
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const elapsed = (performance.now() - startTime) / 1000;
-
-      const entranceT = Math.min(elapsed / 1.4, 1);
-      const eased = easeOutQuart(entranceT);
+      const now = performance.now();
+      const elapsed = animStartRef.current ? (now - animStartRef.current) / 1000 : 0;
 
       const posArr = pointGeo.attributes.position.array as Float32Array;
       const sizeArr = pointGeo.attributes.size.array as Float32Array;
 
-      parallaxRef.x += (mouseRef.x * 12 - parallaxRef.x) * 0.03;
-      parallaxRef.y += (mouseRef.y * 12 - parallaxRef.y) * 0.03;
-
-      let closestIdx: number | null = null;
-      let closestDist = 40;
-      const projectedPositions: { x: number; y: number }[] = [];
-
       for (let i = 0; i < nodeCount; i++) {
-        const fx = finalPositions[i].x;
-        const fy = finalPositions[i].y;
-        const px = fx * eased + parallaxRef.x;
-        const py = fy * eased + parallaxRef.y;
+        // Entrance: stagger 25ms per node
+        const delay = i * 0.025;
+        const t = Math.min(Math.max((elapsed - delay) / 1.0, 0), 1);
+        const eased = easeOutQuart(t);
 
-        const pulse = 1 + 0.12 * Math.sin(elapsed * 1.2 + nodes[i].phase);
-        posArr[i * 3] = px;
-        posArr[i * 3 + 1] = py;
-        posArr[i * 3 + 2] = 0;
+        const finalX = nodes[i].x;
+        const finalY = h - nodes[i].y;
+        const startX = finalX + entranceOffsets[i].dx;
+        const startY = finalY + entranceOffsets[i].dy;
 
-        const aCat = activeCatRef.current;
-        let catScale = 1;
-        if (aCat) {
-          catScale = nodes[i].category === aCat ? 1.3 : 0.3;
-        }
-        sizeArr[i] = baseSizes[i] * pulse * catScale;
+        posArr[i * 3] = startX + (finalX - startX) * eased;
+        posArr[i * 3 + 1] = startY + (finalY - startY) * eased;
 
-        const vec = new THREE.Vector3(px, py, 0);
-        vec.project(camera);
-        const sx = (vec.x * 0.5 + 0.5) * width;
-        const sy = (-vec.y * 0.5 + 0.5) * height;
-        projectedPositions.push({ x: sx, y: sy });
-
-        const mx2 = (mouseRef.x * 0.5 + 0.5) * width;
-        const my2 = (-mouseRef.y * 0.5 + 0.5) * height;
-        const dist = Math.sqrt((sx - mx2) ** 2 + (sy - my2) ** 2);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closestIdx = i;
-        }
+        // Pulse
+        const pulse = 1 + 0.12 * Math.sin(elapsed * 1.5 + nodes[i].phase);
+        sizeArr[i] = baseSizes[i] * pulse;
       }
 
-      hoveredRef.current = closestIdx;
       pointGeo.attributes.position.needsUpdate = true;
       pointGeo.attributes.size.needsUpdate = true;
-
-      // Edges
-      const edgePosArr = edgeGeo.attributes.position.array as Float32Array;
-      for (let i = 0; i < edgeCount; i++) {
-        const aIdx = edges[i].a;
-        const bIdx = edges[i].b;
-        const ax = posArr[aIdx * 3], ay = posArr[aIdx * 3 + 1];
-        const bx = posArr[bIdx * 3], by = posArr[bIdx * 3 + 1];
-
-        const edgeStart = 1.4 + i * 0.03;
-        const edgeT = Math.min(Math.max((elapsed - edgeStart) / 0.6, 0), 1);
-
-        const emx = (ax + bx) / 2;
-        const emy = (ay + by) / 2;
-
-        edgePosArr[i * 6] = emx + (ax - emx) * edgeT;
-        edgePosArr[i * 6 + 1] = emy + (ay - emy) * edgeT;
-        edgePosArr[i * 6 + 2] = 0;
-        edgePosArr[i * 6 + 3] = emx + (bx - emx) * edgeT;
-        edgePosArr[i * 6 + 4] = emy + (by - emy) * edgeT;
-        edgePosArr[i * 6 + 5] = 0;
-      }
-      edgeGeo.attributes.position.needsUpdate = true;
-
-      const baseOpacity = 0.2;
-      const flickerOpacity = baseOpacity + Math.sin(elapsed * 3 + Math.random()) * 0.04;
-      edgeMat.opacity = activeCatRef.current ? 0.08 : flickerOpacity;
-
-      // Labels
-      if (labelsRef.current && entranceT > 0.3) {
-        const labelEls = labelsRef.current.children;
-        for (let i = 0; i < Math.min(labelEls.length, nodeCount); i++) {
-          const el = labelEls[i] as HTMLElement;
-          const p = projectedPositions[i];
-          if (p) {
-            el.style.transform = `translate(${p.x + 10}px, ${p.y - 8}px)`;
-            const isHovered = hoveredRef.current === i;
-            const aCat = activeCatRef.current;
-            let op = 0.85;
-            if (aCat) {
-              op = nodes[i].category === aCat ? 1 : 0.12;
-            }
-            if (isHovered) op = 1;
-            el.style.opacity = String(op);
-            el.style.fontWeight = isHovered ? '700' : '400';
-          }
-        }
-      }
-
-      // Tooltip
-      if (tooltipRef.current) {
-        if (closestIdx !== null) {
-          const p = projectedPositions[closestIdx];
-          const node = nodes[closestIdx];
-          tooltipRef.current.style.display = 'block';
-          tooltipRef.current.style.transform = `translate(${p.x + 16}px, ${p.y - 44}px)`;
-          tooltipRef.current.innerHTML = `
-            <div style="color:${node.color};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;font-weight:600">${node.name}</div>
-            <div style="color:rgba(255,255,255,0.5);font-size:10px;margin-top:3px">${node.category}</div>
-          `;
-        } else {
-          tooltipRef.current.style.display = 'none';
-        }
-      }
-
       renderer.render(scene, camera);
     };
     animate();
 
-    const catInterval = setInterval(() => {
-      activeCatRef.current = (sectionRef.current as any)?.__activeCat ?? null;
-    }, 50);
-
-    const hoverInterval = setInterval(() => {
-      const idx = hoveredRef.current;
-      const node = idx !== null ? nodes[idx] : null;
-      setHoveredNode(prev => {
-        if (prev?.id === node?.id) return prev;
-        return node;
-      });
-    }, 60);
-
-    const handleResize = () => {
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      const f = Math.max(w, h) * 0.42;
-      const a = w / h;
-      camera.left = -f * a;
-      camera.right = f * a;
-      camera.top = f;
-      camera.bottom = -f;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
-
     return () => {
       cancelAnimationFrame(animId);
-      clearInterval(catInterval);
-      clearInterval(hoverInterval);
-      window.removeEventListener('resize', handleResize);
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeChild(renderer.domElement);
       renderer.dispose();
       pointGeo.dispose();
       pointMat.dispose();
-      edgeGeo.dispose();
-      edgeMat.dispose();
     };
-  }, [inView, graph, finalPositions]);
+  }, [inView, graph, canvasSize, entranceOffsets]);
 
-  useEffect(() => {
-    if (sectionRef.current) {
-      (sectionRef.current as any).__activeCat = activeCategory;
-    }
-  }, [activeCategory]);
+  // Zoom transform for category click
+  const zoomTransform = useMemo(() => {
+    if (!zoomedCategory) return 'none';
+    const cat = CATEGORIES.find(c => c.name === zoomedCategory);
+    if (!cat) return 'none';
+    const [zxMin, zxMax, zyMin, zyMax] = cat.zone;
+    const cx = (zxMin + zxMax) / 2;
+    const cy = (zyMin + zyMax) / 2;
+    // Scale 1.35x, translate to center
+    const tx = (0.5 - cx) * 100;
+    const ty = (0.5 - cy) * 100;
+    return `scale(1.35) translate(${tx}%, ${ty}%)`;
+  }, [zoomedCategory]);
+
+  const handleCategoryClick = useCallback((name: string) => {
+    setZoomedCategory(prev => prev === name ? null : name);
+  }, []);
+
+  const activeCat = activeCategory || zoomedCategory;
 
   return (
     <section
       ref={sectionRef}
       id="process"
       className="relative z-10"
-      style={{ minHeight: '100vh', padding: '6vh 4vw' }}
+      style={{ minHeight: '100vh', padding: '4vh 3vw' }}
     >
-      <div className="flex flex-col md:flex-row gap-8 md:gap-12 max-w-[1400px] mx-auto">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8 max-w-[1600px] mx-auto">
         {/* LEFT COLUMN */}
-        <div className="md:w-1/5 md:sticky md:top-[15vh] md:self-start">
+        <div className="md:w-[180px] shrink-0 md:sticky md:top-[15vh] md:self-start">
           <div
             className="font-mono uppercase"
             style={{ color: 'hsl(var(--primary))', letterSpacing: '0.2em', fontSize: '11px' }}
@@ -582,12 +510,12 @@ export default function SkillConstellation() {
 
           <div className="mt-8 space-y-3">
             {CATEGORIES.map(cat => {
-              const isActive = activeCategory === cat.name;
-              const dimmed = activeCategory && !isActive;
+              const isActive = activeCat === cat.name;
+              const dimmed = activeCat && !isActive;
               return (
                 <div
                   key={cat.name}
-                  className="font-mono text-xs cursor-pointer transition-all duration-200"
+                  className="font-mono text-xs cursor-pointer transition-all duration-200 select-none"
                   style={{
                     color: isActive ? '#00e5ff' : cat.color,
                     opacity: dimmed ? 0.25 : isActive ? 1 : 0.7,
@@ -595,6 +523,7 @@ export default function SkillConstellation() {
                   }}
                   onMouseEnter={() => setActiveCategory(cat.name)}
                   onMouseLeave={() => setActiveCategory(null)}
+                  onClick={() => handleCategoryClick(cat.name)}
                 >
                   {isActive && <span style={{ color: '#00e5ff', marginRight: 4 }}>▸</span>}
                   {cat.name}
@@ -604,46 +533,105 @@ export default function SkillConstellation() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="md:w-4/5 relative" style={{ height: '80vh', minHeight: 500 }}>
-          <div ref={canvasRef} className="w-full h-full" />
-
-          {/* Node labels */}
+        {/* RIGHT COLUMN — canvas + labels */}
+        <div
+          className="flex-1 relative overflow-hidden"
+          style={{ height: '90vh', minHeight: 600 }}
+        >
           <div
-            ref={labelsRef}
-            className="absolute inset-0 pointer-events-none overflow-hidden"
-          >
-            {graph.nodes.map(node => (
-              <div
-                key={node.id}
-                className="absolute font-mono whitespace-nowrap"
-                style={{
-                  fontSize: '13px',
-                  color: node.color,
-                  opacity: 0.85,
-                  transition: 'opacity 0.2s, font-weight 0.2s',
-                  willChange: 'transform',
-                  textShadow: '0 0 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6)',
-                }}
-              >
-                {node.name}
-              </div>
-            ))}
-          </div>
-
-          {/* Tooltip */}
-          <div
-            ref={tooltipRef}
-            className="absolute pointer-events-none font-mono"
+            ref={canvasRef}
+            className="w-full h-full relative"
             style={{
-              display: 'none',
-              background: 'rgba(0,0,0,0.9)',
-              border: '1px solid #00e5ff',
-              padding: '8px 12px',
-              zIndex: 10,
-              willChange: 'transform',
+              transform: zoomTransform,
+              transition: 'transform 0.6s ease',
+              transformOrigin: 'center center',
             }}
-          />
+          >
+            {/* HTML label overlays */}
+            {graph.nodes.map((node, i) => {
+              const side = getLabelSide(node, canvasSize.w, canvasSize.h);
+              const isHovered = hoveredNode === node.id;
+              const dim = activeCat ? (node.category !== activeCat ? true : false) : false;
+
+              let labelStyle: React.CSSProperties = {
+                position: 'absolute',
+                fontSize: isHovered ? '13px' : '12px',
+                fontFamily: 'monospace',
+                color: node.color,
+                opacity: dim ? 0.1 : isHovered ? 1 : 0.9,
+                transition: 'opacity 0.2s, font-size 0.15s, text-shadow 0.2s',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'auto',
+                cursor: 'default',
+                textShadow: isHovered
+                  ? `0 0 8px ${node.color}`
+                  : '0 0 12px rgba(0,0,0,0.95), 0 0 24px rgba(0,0,0,0.7)',
+              };
+
+              // Position based on side
+              if (side === 'right') {
+                labelStyle.left = node.x + 10;
+                labelStyle.top = node.y - 7;
+              } else if (side === 'left') {
+                labelStyle.right = canvasSize.w - node.x + 10;
+                labelStyle.top = node.y - 7;
+                labelStyle.textAlign = 'right';
+              } else if (side === 'below') {
+                labelStyle.left = node.x - 40;
+                labelStyle.top = node.y + 12;
+              } else {
+                // above
+                labelStyle.left = node.x - 40;
+                labelStyle.top = node.y - 22;
+              }
+
+              return (
+                <div
+                  key={node.id}
+                  style={labelStyle}
+                  onMouseEnter={() => setHoveredNode(node.id)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                >
+                  {node.name}
+                </div>
+              );
+            })}
+
+            {/* Tooltip */}
+            {hoveredNode !== null && (() => {
+              const node = graph.nodes.find(n => n.id === hoveredNode);
+              if (!node) return null;
+              return (
+                <div
+                  className="absolute pointer-events-none font-mono z-20"
+                  style={{
+                    left: node.x + 16,
+                    top: node.y - 52,
+                    background: 'rgba(0,0,0,0.9)',
+                    border: '1px solid #00e5ff',
+                    padding: '8px 12px',
+                  }}
+                >
+                  <div style={{
+                    color: node.color,
+                    fontSize: '12px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    fontWeight: 600,
+                  }}>
+                    {node.name}
+                  </div>
+                  <div style={{
+                    color: 'rgba(255,255,255,0.5)',
+                    fontSize: '10px',
+                    marginTop: '3px',
+                  }}>
+                    {node.category}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
         </div>
       </div>
     </section>
