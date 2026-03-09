@@ -21,11 +21,11 @@ export default function HeroSection() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <p className="clinical-label mb-8 text-primary">
+            <p className="clinical-label mb-6 text-primary">
               SINAIDA KRIVCHENKO | VISUAL ARTIST AND DIGITAL STRATEGIST
             </p>
             <h1
-              className="font-display text-5xl md:text-7xl lg:text-8xl font-light leading-[0.9] tracking-tight text-foreground glitch-text"
+              className="font-display text-4xl md:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8"
               data-text="Where Engineering Meets Imagination"
             >
               Where
