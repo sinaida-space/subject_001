@@ -353,7 +353,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
   // Mobile fallback
   if (isMobile) {
     return (
-      <section id="work" className="relative z-10 py-24 bg-black">
+      <section id="work" className="relative z-10 py-24 bg-transparent">
         <div className="container mx-auto px-6">
           {/* Section Header */}
           <div className="mb-12">
