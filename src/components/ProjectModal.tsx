@@ -151,7 +151,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[10px] font-clinical uppercase tracking-wider text-accent border border-accent/20 px-2 py-0.5"
+                        className="text-[12px] font-mono uppercase tracking-wider text-accent border border-accent/20 px-2 py-0.5"
                       >
                         {tag}
                       </span>
