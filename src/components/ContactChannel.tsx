@@ -345,7 +345,7 @@ export default function ContactChannel() {
           {/* Terminal text */}
           <div className="max-w-2xl">
             {/* Sys line */}
-            <div className="font-mono text-[10px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
+            <div className="font-mono text-[12px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
               {inView ? '> COMM.SYS ONLINE — CHANNEL OPEN' : ''}
             </div>
 
