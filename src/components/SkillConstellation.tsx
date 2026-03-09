@@ -38,7 +38,7 @@ const CATEGORIES = [
   },
   {
     name: 'Technical & Analytical',
-    color: '#00ff88',
+    color: '#00ff88', // green
     items: [
       'Systems design thinking',
       'Data-driven creative workflows',
