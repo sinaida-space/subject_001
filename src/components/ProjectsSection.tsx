@@ -330,7 +330,7 @@ export default function ProjectsSection() {
             <div className="col-span-12 md:col-span-9" />
           </div>
 
-          {/* Project Cards - Each on own line */}
+          {/* Project Cards - Square to expanded 3D animation */}
           <div className="space-y-0" style={{ transformStyle: 'preserve-3d' }}>
             {PROJECTS.map((project, i) => (
               <ProjectCard
@@ -339,16 +339,12 @@ export default function ProjectsSection() {
                 parallaxY={parallaxValues[i].y}
                 parallaxZ={parallaxValues[i].z}
                 scrollVelocity={scrollVelocity}
-                onClick={() => setSelectedProject(project)}
                 index={i}
               />
             ))}
           </div>
         </div>
       </section>
-
-      {/* Project Detail Modal */}
-      <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
     </>
   );
 }
