@@ -364,7 +364,7 @@ export default function ContactChannel() {
               {txHeader.displayed}
             </div>
 
-            <p className="font-mono text-[11px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.75)' }}>
               {typed1.displayed}
             </p>
 
@@ -373,7 +373,7 @@ export default function ContactChannel() {
               {availHeader.displayed}
             </div>
 
-            <div className="font-mono text-[11px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.75)' }}>
               {typed2.displayed.split('·').map((seg, i, arr) => (
                 <span key={i}>
                   {seg}

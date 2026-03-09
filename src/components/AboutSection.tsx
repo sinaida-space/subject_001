@@ -186,7 +186,7 @@ export default function AboutSection() {
 
                 {/* Block 3 — body text */}
                 <Reveal delay={600}>
-                  <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.85 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
                     <p className="mb-4">
                       I operate at the threshold where diagnostic precision meets digital organisms — where the analytical tools of science become the aesthetic tools of immersive experience.
                     </p>
