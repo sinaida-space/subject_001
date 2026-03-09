@@ -124,23 +124,27 @@ function PhotoBlock() {
 // ── Main ─────────────────────────────────────────────────────
 export default function AboutSection() {
   return (
-    <section id="about" className="relative z-10 py-32">
+    <section id="about" className="relative z-10 py-24">
       <div className="container mx-auto px-6 max-w-7xl">
         <DustReveal>
-          <div className="section-divider mb-20" />
+          <div className="section-divider mb-16" />
         </DustReveal>
 
-        <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 items-start">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* Left label */}
-          <div className="col-span-12 md:col-span-3 md:pt-2">
+          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <span className="clinical-label text-primary">About</span>
-              <div className="mt-2 text-xs font-clinical text-muted-foreground">[ BIO ]</div>
+              <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+                About
+              </div>
+              <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+                [ BIO ]
+              </div>
             </Reveal>
           </div>
 
           {/* Right content */}
-          <div className="col-span-12 md:col-span-9">
+          <div className="flex-1">
             {/* Heading */}
             <Reveal delay={50}>
               <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-10">
