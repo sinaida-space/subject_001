@@ -41,7 +41,8 @@ export default function ContactSection() {
             <div className="font-clinical text-sm md:text-base text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-6">
               <p className="my-3 py-[21px] pt-[21px] pb-0">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.
 
-<Based in Prague, working globally.
+</br> 
+Based in Prague, working globally.
 
 
 
