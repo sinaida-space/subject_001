@@ -329,17 +329,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         panel.scale.z += (targetScale - panel.scale.z) * 0.1;
       });
 
-      // Animate stars (hyperspace effect)
-      if (starsRef.current) {
-        const positions = starsRef.current.geometry.attributes.position.array as Float32Array;
-        for (let i = 0; i < starCount; i++) {
-          positions[i * 3 + 2] += 0.1;
-          if (positions[i * 3 + 2] > 5) {
-            positions[i * 3 + 2] = -100;
-          }
-        }
-        starsRef.current.geometry.attributes.position.needsUpdate = true;
-      }
+      // No star animation
 
       renderer.render(scene, camera);
     };
