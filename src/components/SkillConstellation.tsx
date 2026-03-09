@@ -18,7 +18,7 @@ const CATEGORIES = [
   {
     name: 'Creative Technology',
     color: '#00e5ff',
-    centroid: [180, 120],
+    centroid: [90, 60],
     items: [
       'TouchDesigner',
       'Generative AI Systems (LLM, diffusion workflows)',
