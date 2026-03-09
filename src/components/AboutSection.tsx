@@ -175,7 +175,7 @@ export default function AboutSection() {
                       ['DIVERGENCE', 'Ballet. Corporate IT. Generative systems.'],
                       ['CURRENT STATE', 'AI visual art + creative direction.'],
                     ].map(([key, val]) => (
-                      <div key={key} className="font-mono" style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
+                      <div key={key} className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
                         <span style={{ display: 'inline-block', minWidth: 148 }}>{key}</span>
                         <span style={{ opacity: 0.35 }}>{'····· '}</span>
                         {val}
