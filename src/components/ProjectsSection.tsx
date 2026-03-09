@@ -184,11 +184,12 @@ export default function ProjectsSection() {
     <section id="work" className="relative z-10 py-24 md:py-32">
       <div className="container mx-auto px-6 max-w-6xl">
         {/* Section Header */}
-        <div className="mb-16 md:mb-24">
-          <span className="clinical-label text-primary text-xs tracking-widest">SELECTED PROJECTS</span>
-          <h2 className="font-display text-3xl md:text-4xl font-light text-foreground mt-4">
-            Recent Work
-          </h2>
+        <div className="section-divider mb-20" />
+        <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 mb-16 md:mb-24">
+          <div className="col-span-12 md:col-span-3">
+            <span className="clinical-label text-primary">Selected Projects</span>
+            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ RECENT WORK ]</div>
+          </div>
         </div>
 
         {/* Project Cards - One per line with generous spacing */}
