@@ -54,7 +54,7 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
           </div>
           <div className="flex flex-wrap gap-2 mb-6">
             {project.tools.map((tool) => (
-              <span key={tool} className="text-[10px] font-clinical text-muted-foreground">{tool}</span>
+              <span key={tool} className="text-[12px] font-mono text-muted-foreground">{tool}</span>
             ))}
           </div>
           {project.links && (
