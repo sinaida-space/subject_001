@@ -160,7 +160,17 @@ export default function SkillConstellation() {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [inView, setInView] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [skillReveal, setSkillReveal] = useState(0); // 0 = hidden, 1 = fully revealed
   const animRef = useRef<number | null>(null);
+  const isDesktop = useRef(true);
+
+  // Check if desktop
+  useEffect(() => {
+    const check = () => { isDesktop.current = window.innerWidth >= 1024; };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   // Build layout centered in a virtual space
   const vw = 1400;
@@ -179,7 +189,7 @@ export default function SkillConstellation() {
     return () => obs.disconnect();
   }, [inView]);
 
-  // Animate entrance
+  // Animate entrance (categories only on desktop)
   useEffect(() => {
     if (!inView) return;
     const start = performance.now();
@@ -188,9 +198,36 @@ export default function SkillConstellation() {
       const t = Math.min((performance.now() - start) / duration, 1);
       setProgress(easeOutQuart(t));
       if (t < 1) animRef.current = requestAnimationFrame(tick);
+      else if (!isDesktop.current) {
+        // On mobile/tablet, reveal skills immediately after entrance
+        setSkillReveal(1);
+      }
     };
     animRef.current = requestAnimationFrame(tick);
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+  }, [inView]);
+
+  // Scroll-driven skill reveal (desktop only)
+  useEffect(() => {
+    if (!inView) return;
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      if (!isDesktop.current) return;
+      const rect = el.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      // Start revealing when section top reaches 60% of viewport,
+      // fully revealed when section top reaches 20% of viewport
+      const startThreshold = viewH * 0.55;
+      const endThreshold = viewH * 0.15;
+      const t = 1 - (rect.top - endThreshold) / (startThreshold - endThreshold);
+      setSkillReveal(Math.max(0, Math.min(1, t)));
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // initial check
+    return () => window.removeEventListener('scroll', onScroll);
   }, [inView]);
 
   // Get label alignment based on angle
