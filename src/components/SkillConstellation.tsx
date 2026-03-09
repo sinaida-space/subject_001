@@ -6,7 +6,7 @@ const CATEGORIES = [
   {
     name: 'Creative Direction',
     color: '#ff3333',
-    centroid: [-180, 120],
+    centroid: [-90, 60],
     items: [
       'Visual narrative development',
       'Concept design for immersive environments',
