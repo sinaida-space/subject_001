@@ -39,31 +39,31 @@ export default function ContactSection() {
             </div>
 
             <div className="font-clinical text-sm md:text-base text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-6">
-              <p className="my-3 pt-[42px] py-[21px]">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.</p>
-              <p className="my-3 pt-[42px] py-[21px]">Based in Prague, working globally.</p>
+              <p className="my-3 py-[21px] pt-[21px] pb-0">Available for immersive installations, creative direction, stage visuals, exhibition design, and generative art commissions.
+
+<Based in Prague, working globally.
+
+
+
+              
+              </p>
+              <p className="my-3 py-[21px] pb-0 pt-[21px]">
+</p>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4">
-              <a
-                href="mailto:gallant_mod5v@icloud.com"
-                className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
+              <a href="mailto:gallant_mod5v@icloud.com" className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
                 EMAIL ME ↗
               </a>
 
-              <a
-                href="https://www.instagram.com/sin.ai.da/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
+              <a href="https://www.instagram.com/sin.ai.da/" target="_blank" rel="noopener noreferrer" className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
                 FOLLOW ON INSTAGRAM ↗
               </a>
 
-              <a
-                href="https://www.linkedin.com/in/sinaida"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
+              <a href="https://www.linkedin.com/in/sinaida" target="_blank"
+              rel="noopener noreferrer"
+              className="clinical-label border border-primary/30 px-6 py-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 cursor-none">
                 CONNECT ON LINKEDIN ↗
               </a>
             </div>
