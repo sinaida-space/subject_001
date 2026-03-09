@@ -118,17 +118,12 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
             {/* Hero image */}
             <motion.div
-              className="relative overflow-hidden mb-8"
+              className="mb-8"
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full aspect-video object-cover"
-              />
-              <div className="absolute inset-0 pointer-events-none border border-border" />
+              <VHSImage src={project.image} alt={project.title} aspectRatio="16/9" />
             </motion.div>
 
             {/* Info grid */}

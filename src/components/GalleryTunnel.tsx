@@ -76,10 +76,7 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
 function MobileProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <div className="relative overflow-hidden border border-border/30 mb-6">
-      <div className="relative aspect-[16/10] overflow-hidden">
-        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-      </div>
+      <VHSImage src={project.image} alt={project.title} />
       <div className="p-6">
         <span className="clinical-label text-accent">{String(index + 1).padStart(2, '0')} — {project.subtitle}</span>
         <h3 className="font-display text-xl text-foreground mt-2 mb-3">{project.title}</h3>
