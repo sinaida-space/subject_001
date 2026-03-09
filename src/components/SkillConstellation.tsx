@@ -43,7 +43,7 @@ const CATEGORIES = [
   {
     name: 'Technical & Analytical Foundations',
     color: '#00ff88',
-    centroid: [-180, -130],
+    centroid: [-90, -70],
     items: [
       'Systems design thinking',
       'Data-driven creative workflows',
