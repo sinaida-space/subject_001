@@ -201,13 +201,12 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 transition={{ delay: 0.5, duration: 0.6 }}
               >
                 {details.images.map((img, i) => (
-                  <div key={i} className="relative overflow-hidden">
-                    <img
-                      src={img}
-                      alt={`${project.title} detail ${i + 1}`}
-                      className="w-full aspect-[4/3] object-cover"
-                    />
-                    <div className="absolute inset-0 pointer-events-none border border-border" />
+                  <VHSImage
+                    key={i}
+                    src={img}
+                    alt={`${project.title} detail ${i + 1}`}
+                    aspectRatio="4/3"
+                  />
                   </div>
                 ))}
               </motion.div>
