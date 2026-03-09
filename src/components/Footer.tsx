@@ -10,8 +10,9 @@ export default function Footer() {
             <Logo />
             <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.
 
-© 2026 Sinaida Krivchenko.
-All rights reserved.<br /><br />All rights reserved.</p>
+
+© 2026 Sinaida Krivchenko. All rights reserved.
+<br /><br />All rights reserved.</p>
           </div>
 
           {/* Quick links */}
@@ -29,8 +30,7 @@ All rights reserved.<br /><br />All rights reserved.</p>
           <div className="col-span-6 md:col-span-2">
             <div className="clinical-label text-primary mb-4">Connect</div>
             <div className="space-y-2">
-              {[{ label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
-              { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
+              {[{ label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' }, { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
               { label: 'Behance', url: 'https://www.behance.net/sinaida' },
               { label: 'Medium', url: 'https://medium.com/@idacooper' },
               { label: 'Spotify', url: 'https://open.spotify.com/user/1u4ol8qogt04u4476e4xba8g8?si=9ed0a53d14934618' }].
@@ -58,7 +58,7 @@ All rights reserved.<br /><br />All rights reserved.</p>
               Privacy Policy
             </a>
             <p className="font-clinical text-xs text-muted-foreground">
-              
+              © {new Date().getFullYear()} Sinaida Krivchenko. All rights reserved.
             </p>
           </div>
         </div>
