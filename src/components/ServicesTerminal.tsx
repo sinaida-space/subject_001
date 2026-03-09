@@ -385,8 +385,8 @@ export default function ServicesTerminal() {
             </div>
           </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="md:w-3/4 font-mono">
+          {/* RIGHT COLUMN */}
+          <div className="flex-1 font-mono">
           {/* Terminal header */}
           <div style={{ opacity: 0.35 }} className="text-sm mb-8 leading-relaxed">
             <div>{`SINAIDA_OS v2.4.1 — CREATIVE SYSTEMS TERMINAL`}</div>
