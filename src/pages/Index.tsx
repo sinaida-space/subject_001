@@ -71,6 +71,9 @@ const Index = () => {
         <ParticleField />
       </Suspense>
 
+      {/* Scroll Wind Particles */}
+      <ScrollWind />
+
       {/* Custom Cursor */}
       <CustomCursor />
 
