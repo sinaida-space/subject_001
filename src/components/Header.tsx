@@ -37,7 +37,7 @@ export default function Header() {
         </nav>
         <a
           href="#contact"
-          className="font-mono text-[11px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
+          className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
           style={{
             border: '1px solid #ff3333',
             color: '#ff3333',

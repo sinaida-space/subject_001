@@ -449,7 +449,7 @@ export default function ContactChannel() {
             </div>
 
             {/* Final line */}
-            <div className="font-mono text-[9px]" style={{ color: '#00e5ff', opacity: 0.3 }}>
+            <div className="font-mono text-[12px]" style={{ color: '#00e5ff', opacity: 0.3 }}>
               {finalLine.displayed}
               {finalLine.done && (
                 <span style={{ animation: 'blink-cursor 1s step-end infinite' }}>_</span>

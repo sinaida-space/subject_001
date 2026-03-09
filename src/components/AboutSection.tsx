@@ -210,7 +210,7 @@ export default function AboutSection() {
 
                 {/* Block 5 — footer data */}
                 <Reveal delay={900}>
-                  <div className="font-mono" style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
+                  <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
                     <span style={{ color: '#ff3333' }}> · </span>
                     {'REACH: Global'}
