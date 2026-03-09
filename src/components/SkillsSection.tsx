@@ -73,8 +73,8 @@ export default function SkillsSection() {
               {SERVICES.map((service) =>
               <div key={service.code} className="border border-border p-6 hover:border-primary/30 transition-colors group cursor-none">
                   <div className="clinical-label text-accent mb-3">{service.code}</div>
-                  <h3 className="font-display text-xl font-medium mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
-                  <p className="font-clinical text-xs text-muted-foreground leading-relaxed">{service.description}</p>
+                  <h3 className="font-display text-lg font-medium mb-4 group-hover:text-primary transition-colors">{service.title}</h3>
+                  <p className="font-clinical text-sm text-muted-foreground leading-relaxed my-2">{service.description}</p>
                 </div>
               )}
             </div>
