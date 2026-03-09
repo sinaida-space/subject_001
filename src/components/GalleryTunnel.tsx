@@ -118,7 +118,7 @@ function MobileProjectCard({ project, index }: { project: Project; index: number
 }
 
 export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
-  const isMobile = useIsMobile();
+  const isMobile = useIsTabletOrMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
