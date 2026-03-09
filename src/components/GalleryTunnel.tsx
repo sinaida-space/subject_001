@@ -1,6 +1,23 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+const TABLET_BREAKPOINT = 1024;
+
+function useIsTabletOrMobile() {
+  const isMobile = useIsMobile();
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${TABLET_BREAKPOINT - 1}px)`);
+    const onChange = () => setIsTablet(window.innerWidth < TABLET_BREAKPOINT);
+    mql.addEventListener('change', onChange);
+    onChange();
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
+  return isMobile || isTablet;
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import VHSImage from '@/components/VHSImage';
 
@@ -101,7 +118,7 @@ function MobileProjectCard({ project, index }: { project: Project; index: number
 }
 
 export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
-  const isMobile = useIsMobile();
+  const isMobile = useIsTabletOrMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
