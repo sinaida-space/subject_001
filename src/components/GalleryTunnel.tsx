@@ -297,10 +297,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
     const animate = () => {
       animFrameRef.current = requestAnimationFrame(animate);
 
-      // Rotate panel group
-      if (panelGroup) {
-        panelGroup.rotation.y += 0.003;
-      }
+      // No auto-rotation - only respond to user interaction
 
       // Mouse parallax
       camera.position.x += (targetMouseRef.current.x - camera.position.x) * 0.03;
