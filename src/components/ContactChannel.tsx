@@ -333,10 +333,10 @@ export default function ContactChannel() {
               → LINKEDIN
             </a>
           </div>
-        </div>
+          </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="flex-1">
+          {/* RIGHT COLUMN */}
+          <div className="flex-1">
           {/* Waveform */}
           <div className="mb-10">
             <WaveformCanvas mouseY={mouseY} sectionHeight={sectionHeight} isActive={mouseActive} />
