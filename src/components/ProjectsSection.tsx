@@ -258,11 +258,8 @@ export default function ProjectsSection() {
             <div className="col-span-12 md:col-span-9" />
           </div>
 
-          {/* Modular Grid with perspective depth */}
-          <div
-            className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8"
-            style={{ transformStyle: 'preserve-3d' }}
-          >
+          {/* Project Cards - Each on own line */}
+          <div className="space-y-0" style={{ transformStyle: 'preserve-3d' }}>
             {PROJECTS.map((project, i) => (
               <ProjectCard
                 key={project.id}
@@ -271,6 +268,7 @@ export default function ProjectsSection() {
                 parallaxZ={parallaxValues[i].z}
                 scrollVelocity={scrollVelocity}
                 onClick={() => setSelectedProject(project)}
+                index={i}
               />
             ))}
           </div>
