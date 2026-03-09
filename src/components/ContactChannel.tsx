@@ -296,7 +296,7 @@ export default function ContactChannel() {
           >
             Contact
           </div>
-          <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>
+          <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
             [ COMM.SYS // OPEN ]
           </div>
 
