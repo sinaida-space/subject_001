@@ -204,71 +204,6 @@ function GlitchText({ text, active, className, style }: { text: string; active: 
   return <span className={className} style={style}>{display}</span>;
 }
 
-// ── Scanline Button ─────────────────────────────────────────
-function CtaButton({ visible }: { visible: boolean }) {
-  const [hovered, setHovered] = useState(false);
-  const [particles, setParticles] = useState<{ id: number; x: number; y: number; dx: number; dy: number }[]>([]);
-
-  const spawnParticles = useCallback(() => {
-    const p = Array.from({ length: 20 }, (_, i) => ({
-      id: Date.now() + i,
-      x: 0, y: 0,
-      dx: (Math.random() - 0.5) * 80,
-      dy: (Math.random() - 0.5) * 60,
-    }));
-    setParticles(p);
-    setTimeout(() => setParticles([]), 800);
-  }, []);
-
-  return (
-    <div
-      className="relative inline-block transition-opacity duration-600"
-      style={{ opacity: visible ? 1 : 0 }}
-    >
-      <a
-        href="mailto:gallant_mod5v@icloud.com"
-        className="relative block overflow-hidden font-mono text-xs tracking-[0.15em] cursor-pointer transition-all duration-300 select-none"
-        style={{
-          border: `1px solid rgba(0,229,255,${hovered ? 1 : 0.6})`,
-          color: hovered ? '#fff' : '#00e5ff',
-          background: hovered ? 'rgba(0,229,255,0.08)' : 'transparent',
-          padding: '14px 28px',
-        }}
-        onMouseEnter={() => { setHovered(true); spawnParticles(); }}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {/* Scanline */}
-        {hovered && (
-          <span
-            className="absolute inset-x-0 h-full pointer-events-none"
-            style={{
-              background: 'linear-gradient(transparent, rgba(0,229,255,0.15), transparent)',
-              animation: 'scanline-sweep 0.4s linear',
-            }}
-          />
-        )}
-        {'> INITIATE_CONTACT.exe'}
-      </a>
-
-      {/* Particles */}
-      {particles.map(p => (
-        <span
-          key={p.id}
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            width: 3, height: 3,
-            background: Math.random() > 0.5 ? '#00e5ff' : '#ff3333',
-            left: '50%', top: '50%',
-            animation: 'particle-burst 0.8s ease-out forwards',
-            '--dx': `${p.dx}px`,
-            '--dy': `${p.dy}px`,
-          } as React.CSSProperties}
-        />
-      ))}
-    </div>
-  );
-}
-
 // ── Main Component ──────────────────────────────────────────
 export default function ContactChannel() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -301,20 +236,21 @@ export default function ContactChannel() {
     mouseTimer.current = setTimeout(() => setMouseActive(false), 2000);
   }, []);
 
-  // Typing sequences
+  // Typing sequences — heading completes in ~2s total
   const sysLine = useTyper('> COMM.SYS ONLINE — CHANNEL OPEN', 0, 0, inView);
-  const openFor = useTyper('Open for', 55, 400, inView);
-  const collab = useTyper('Collaboration', 55, 400 + 8 * 55 + 100, inView);
+  const openFor = useTyper('Open for', 35, 200, inView);
+  const collab = useTyper('Collaboration', 35, 200 + 8 * 35 + 60, inView);
   const [glitchActive, setGlitchActive] = useState(false);
 
   useEffect(() => {
     if (collab.done && !glitchActive) {
       setGlitchActive(true);
-      setTimeout(() => setGlitchActive(false), 500);
+      setTimeout(() => setGlitchActive(false), 400);
     }
   }, [collab.done, glitchActive]);
 
-  const transmissionDelay = 400 + (8 + 13) * 55 + 100 + 500 + 300;
+  // ~2s for heading, then continue
+  const transmissionDelay = 200 + (8 + 13) * 35 + 60 + 400 + 200;
   const txHeader = useTyper('> incoming_transmission.decode() —', 18, transmissionDelay, inView);
 
   const para1 = 'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let\'s talk.';
@@ -460,9 +396,70 @@ export default function ContactChannel() {
               ))}
             </div>
 
-            {/* CTA */}
-            <div className="mb-10">
-              <CtaButton visible={ctaVisible} />
+            {/* CTA Buttons */}
+            <div
+              className="flex flex-wrap gap-4 mb-10 transition-opacity duration-600"
+              style={{ opacity: ctaVisible ? 1 : 0 }}
+            >
+              <a
+                href="mailto:gallant_mod5v@icloud.com"
+                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                style={{
+                  border: '1px solid #ff3333',
+                  color: '#ff3333',
+                  background: 'rgba(255,51,51,0.06)',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#ff3333';
+                  e.currentTarget.style.color = '#000';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
+                  e.currentTarget.style.color = '#ff3333';
+                }}
+              >
+                EMAIL ME ↗
+              </a>
+              <a
+                href="https://www.instagram.com/sin.ai.da/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                style={{
+                  border: '1px solid rgba(0,229,255,0.4)',
+                  color: '#00e5ff',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(0,229,255,0.08)';
+                  e.currentTarget.style.borderColor = '#00e5ff';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)';
+                }}
+              >
+                FOLLOW ON INSTAGRAM ↗
+              </a>
+              <a
+                href="https://www.linkedin.com/in/sinaida"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                style={{
+                  border: '1px solid rgba(0,229,255,0.4)',
+                  color: '#00e5ff',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(0,229,255,0.08)';
+                  e.currentTarget.style.borderColor = '#00e5ff';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)';
+                }}
+              >
+                CONNECT ON LINKEDIN ↗
+              </a>
             </div>
 
             {/* Final line */}
