@@ -200,7 +200,7 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
       const c = catCentroids[node.category];
       node.vx += (c[0] - node.x) * 0.05 * decay;
       node.vy += (c[1] - node.y) * 0.05 * decay;
-      node.vy += (c[1] - node.y) * 0.02 * decay;
+      
     }
 
     // Apply velocities
