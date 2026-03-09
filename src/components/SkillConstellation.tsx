@@ -121,7 +121,7 @@ function buildMindMap(cx: number, cy: number) {
 
     // Spread skills in a fan from the category node
     const itemCount = cat.items.length;
-    const fanSpread = Math.min(0.55, 0.15 * itemCount); // radians spread
+    const fanSpread = Math.min(0.7, 0.18 * itemCount); // radians spread
 
     for (let si = 0; si < itemCount; si++) {
       const t = itemCount === 1 ? 0 : (si / (itemCount - 1)) - 0.5;
