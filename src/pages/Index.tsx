@@ -5,7 +5,7 @@ import AboutSection from '@/components/AboutSection';
 import GalleryTunnel from '@/components/GalleryTunnel';
 import SkillConstellation from '@/components/SkillConstellation';
 import ServicesTerminal from '@/components/ServicesTerminal';
-import ContactSection from '@/components/ContactSection';
+import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import CustomCursor from '@/components/CustomCursor';
 import VHSOverlay from '@/components/VHSOverlay';
@@ -91,7 +91,7 @@ const Index = () => {
         <AboutSection />
         <ServicesTerminal />
         <SkillConstellation />
-        <ContactSection />
+        <ContactChannel />
       </main>
 
       <Footer />
