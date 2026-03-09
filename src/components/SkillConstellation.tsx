@@ -31,7 +31,7 @@ const CATEGORIES = [
   {
     name: 'Strategic & Systems Thinking',
     color: '#ffffff',
-    centroid: [200, -20],
+    centroid: [100, -20],
     items: [
       'Creative technology strategy',
       'Interdisciplinary project leadership',
