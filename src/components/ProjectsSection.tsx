@@ -28,6 +28,7 @@ const PROJECTS: Project[] = [
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
       { label: 'YouTube', url: 'https://youtube.com/shorts/7qgDlifWno0' },
+      { label: 'Instagram', url: 'https://www.instagram.com/p/DVVB4K9gh9x/' },
     ],
   },
   {
