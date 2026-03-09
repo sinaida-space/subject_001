@@ -21,11 +21,11 @@ export default function HeroSection() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <p className="clinical-label mb-8 text-primary">
+            <p className="clinical-label mb-6 text-primary">
               SINAIDA KRIVCHENKO | VISUAL ARTIST AND DIGITAL STRATEGIST
             </p>
             <h1
-              className="font-display text-5xl md:text-7xl lg:text-8xl font-light leading-[0.9] tracking-tight text-foreground glitch-text"
+              className="font-display text-4xl md:text-6xl lg:text-7xl font-light leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8"
               data-text="Where Engineering Meets Imagination"
             >
               Where
@@ -45,12 +45,12 @@ export default function HeroSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="border-l border-primary/30 pl-8 space-y-8">
-            <p className="font-clinical text-base md:text-lg text-muted-foreground leading-relaxed">
+          <div className="border-l border-primary/30 pl-8 space-y-6">
+            <p className="font-clinical text-sm md:text-base text-muted-foreground leading-relaxed my-4">
               ​Transforming complex ideas into visual systems designed for physical spaces, such as
               events, exhibitions, performances, and curated environments.
             </p>
-            <div className="flex flex-wrap gap-3 text-sm font-clinical text-muted-foreground">
+            <div className="flex flex-wrap gap-3 text-xs font-clinical text-muted-foreground">
               <span className="border border-border px-3 py-1.5">Digital Strategy</span>
               <span className="border border-border px-3 py-1.5">Gen AI</span>
               <span className="border border-border px-3 py-1.5">​Experience Design</span>
