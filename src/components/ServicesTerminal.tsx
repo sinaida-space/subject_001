@@ -411,8 +411,8 @@ export default function ServicesTerminal() {
               </div>
             ))}
           </div>
+          </div>
         </div>
       </div>
     </section>
   );
-}

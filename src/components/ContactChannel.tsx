@@ -456,6 +456,7 @@ export default function ContactChannel() {
               )}
             </div>
           </div>
+          </div>
         </div>
       </div>
     </section>

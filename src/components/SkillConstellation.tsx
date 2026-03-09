@@ -373,8 +373,8 @@ export default function SkillConstellation() {
               );
             })}
           </svg>
+          </div>
         </div>
       </div>
     </section>
   );
-}

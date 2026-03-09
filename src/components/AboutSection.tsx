@@ -144,7 +144,7 @@ export default function AboutSection() {
           </div>
 
           {/* Right content */}
-          <div className="col-span-12 md:col-span-9">
+          <div className="flex-1">
             {/* Heading */}
             <Reveal delay={50}>
               <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-10">
