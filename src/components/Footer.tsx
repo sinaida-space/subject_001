@@ -8,10 +8,10 @@ export default function Footer() {
           {/* Logo & tagline */}
           <div className="col-span-12 md:col-span-4">
             <Logo />
-            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.
-
-© 2026 Sinaida Krivchenko. All rights reserved.
-</p>
+            <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">
+              SINAIDA KRIVCHENKO | VISUAL ARTIST AND DIGITAL STRATEGIST
+            </p>
+            <p className="font-clinical text-xs text-muted-foreground mt-2">© 2026 Sinaida Krivchenko. All rights reserved.</p>
           </div>
 
           {/* Quick links */}
