@@ -176,7 +176,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const panelsRef = useRef<THREE.Mesh[]>([]);
   const panelGroupRef = useRef<THREE.Group | null>(null);
-  const starsRef = useRef<THREE.Points | null>(null);
+  
   const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
   const targetMouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
