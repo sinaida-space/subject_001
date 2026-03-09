@@ -185,8 +185,8 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
       const dx = b.x - a.x;
       const dy = b.y - a.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const rest = 80;
-      const force = (dist - rest) * 0.04 * decay;
+      const rest = 45;
+      const force = (dist - rest) * 0.06 * decay;
       const fx = (dx / Math.max(dist, 1)) * force;
       const fy = (dy / Math.max(dist, 1)) * force;
       a.vx += fx;
