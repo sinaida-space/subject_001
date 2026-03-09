@@ -6,7 +6,7 @@ const CATEGORIES = [
   {
     name: 'Creative Direction',
     color: '#ff3333',
-    centroid: [-180, 120],
+    centroid: [-90, 60],
     items: [
       'Visual narrative development',
       'Concept design for immersive environments',
@@ -18,7 +18,7 @@ const CATEGORIES = [
   {
     name: 'Creative Technology',
     color: '#00e5ff',
-    centroid: [180, 120],
+    centroid: [90, 60],
     items: [
       'TouchDesigner',
       'Generative AI Systems (LLM, diffusion workflows)',
@@ -31,7 +31,7 @@ const CATEGORIES = [
   {
     name: 'Strategic & Systems Thinking',
     color: '#ffffff',
-    centroid: [200, -20],
+    centroid: [100, -20],
     items: [
       'Creative technology strategy',
       'Interdisciplinary project leadership',
@@ -43,7 +43,7 @@ const CATEGORIES = [
   {
     name: 'Technical & Analytical Foundations',
     color: '#00ff88',
-    centroid: [-180, -130],
+    centroid: [-90, -70],
     items: [
       'Systems design thinking',
       'Data-driven creative workflows',
@@ -55,7 +55,7 @@ const CATEGORIES = [
   {
     name: 'Research Interests',
     color: '#ff00aa',
-    centroid: [0, -160],
+    centroid: [0, -90],
     items: [
       'AI and creativity research',
       'Human-AI creative collaboration',
@@ -106,8 +106,8 @@ function buildGraph() {
         category: cat.name,
         color: cat.color,
         importance,
-        x: cat.centroid[0] + (Math.random() - 0.5) * 60,
-        y: cat.centroid[1] + (Math.random() - 0.5) * 60,
+        x: cat.centroid[0] + (Math.random() - 0.5) * 30,
+        y: cat.centroid[1] + (Math.random() - 0.5) * 30,
         vx: 0,
         vy: 0,
         phase: Math.random() * Math.PI * 2,
@@ -168,7 +168,7 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
         const dx = nodes[j].x - nodes[i].x;
         const dy = nodes[j].y - nodes[i].y;
         const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 5);
-        const force = (8000 * decay) / (dist * dist);
+        const force = (3000 * decay) / (dist * dist);
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
         nodes[i].vx -= fx;
@@ -185,8 +185,8 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
       const dx = b.x - a.x;
       const dy = b.y - a.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const rest = 80;
-      const force = (dist - rest) * 0.04 * decay;
+      const rest = 45;
+      const force = (dist - rest) * 0.06 * decay;
       const fx = (dx / Math.max(dist, 1)) * force;
       const fy = (dy / Math.max(dist, 1)) * force;
       a.vx += fx;
@@ -198,8 +198,9 @@ function runForceLayout(nodes: SkillNode[], edges: Edge[], iterations: number) {
     // Category clustering
     for (const node of nodes) {
       const c = catCentroids[node.category];
-      node.vx += (c[0] - node.x) * 0.02 * decay;
-      node.vy += (c[1] - node.y) * 0.02 * decay;
+      node.vx += (c[0] - node.x) * 0.05 * decay;
+      node.vy += (c[1] - node.y) * 0.05 * decay;
+      
     }
 
     // Apply velocities
@@ -296,7 +297,7 @@ export default function SkillConstellation() {
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
-      const s = nodes[i].importance === 0 ? 18 : nodes[i].importance === 1 ? 12 : 8;
+      const s = nodes[i].importance === 0 ? 28 : nodes[i].importance === 1 ? 20 : 14;
       sizes[i] = s;
       baseSizes[i] = s;
     }
@@ -499,7 +500,7 @@ export default function SkillConstellation() {
             }
             if (isHovered) op = 1;
             el.style.opacity = String(op);
-            el.style.fontSize = isHovered ? '10px' : '9px';
+            el.style.fontSize = isHovered ? '12px' : '11px';
           }
         }
       }
@@ -638,9 +639,9 @@ export default function SkillConstellation() {
                 key={node.id}
                 className="absolute font-mono whitespace-nowrap"
                 style={{
-                  fontSize: '9px',
+                  fontSize: '11px',
                   color: node.color,
-                  opacity: 0.7,
+                  opacity: 0.75,
                   transition: 'opacity 0.2s, font-size 0.2s',
                   willChange: 'transform',
                 }}
