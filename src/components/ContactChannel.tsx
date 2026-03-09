@@ -146,7 +146,7 @@ function FreqDisplay() {
 
   return (
     <div
-      className="absolute top-[6%] right-[4%] font-mono text-[10px] z-10 select-none"
+      className="absolute top-[6%] right-[4%] font-mono text-[12px] z-10 select-none"
       style={{ color: glitch ? '#ff3333' : '#00e5ff', opacity: 0.4, transition: 'color 0.05s' }}
     >
       FREQ: {freq} Hz
@@ -292,16 +292,16 @@ export default function ContactChannel() {
         <div className="md:w-[180px] shrink-0 md:sticky md:top-[15vh] md:self-start">
           <div
             className="font-mono uppercase"
-            style={{ color: '#ff3333', letterSpacing: '0.2em', fontSize: 11 }}
+            style={{ color: '#ff3333', letterSpacing: '0.2em', fontSize: 12 }}
           >
             Contact
           </div>
-          <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>
+          <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
             [ COMM.SYS // OPEN ]
           </div>
 
           <SignalBars />
-          <div className="font-mono mt-2 select-none" style={{ color: '#00e5ff', opacity: 0.4, fontSize: 9 }}>
+          <div className="font-mono mt-2 select-none" style={{ color: '#00e5ff', opacity: 0.4, fontSize: 12 }}>
             SIGNAL: STRONG
           </div>
 
@@ -309,7 +309,7 @@ export default function ContactChannel() {
           <div className="mt-10 space-y-3">
             <a
               href="mailto:gallant_mod5v@icloud.com"
-              className="block font-mono text-[10px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
               style={{ color: '#00e5ff', opacity: 0.5 }}
             >
               → EMAIL
@@ -318,7 +318,7 @@ export default function ContactChannel() {
               href="https://www.instagram.com/sin.ai.da/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[10px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
               style={{ color: '#00e5ff', opacity: 0.5 }}
             >
               → INSTAGRAM
@@ -327,7 +327,7 @@ export default function ContactChannel() {
               href="https://www.linkedin.com/in/sinaida"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[10px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
               style={{ color: '#00e5ff', opacity: 0.5 }}
             >
               → LINKEDIN
@@ -345,7 +345,7 @@ export default function ContactChannel() {
           {/* Terminal text */}
           <div className="max-w-2xl">
             {/* Sys line */}
-            <div className="font-mono text-[10px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
+            <div className="font-mono text-[12px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
               {inView ? '> COMM.SYS ONLINE — CHANNEL OPEN' : ''}
             </div>
 
@@ -360,7 +360,7 @@ export default function ContactChannel() {
             </h2>
 
             {/* Transmission */}
-            <div className="font-mono text-[10px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
+            <div className="font-mono text-[12px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
               {txHeader.displayed}
             </div>
 
@@ -369,7 +369,7 @@ export default function ContactChannel() {
             </p>
 
             {/* Available for */}
-            <div className="font-mono text-[10px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
+            <div className="font-mono text-[12px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
               {availHeader.displayed}
             </div>
 
@@ -389,7 +389,7 @@ export default function ContactChannel() {
             >
               <a
                 href="mailto:gallant_mod5v@icloud.com"
-                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid #ff3333',
                   color: '#ff3333',
@@ -410,7 +410,7 @@ export default function ContactChannel() {
                 href="https://www.instagram.com/sin.ai.da/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid rgba(0,229,255,0.4)',
                   color: '#00e5ff',
@@ -430,7 +430,7 @@ export default function ContactChannel() {
                 href="https://www.linkedin.com/in/sinaida"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid rgba(0,229,255,0.4)',
                   color: '#00e5ff',
@@ -449,7 +449,7 @@ export default function ContactChannel() {
             </div>
 
             {/* Final line */}
-            <div className="font-mono text-[9px]" style={{ color: '#00e5ff', opacity: 0.3 }}>
+            <div className="font-mono text-[12px]" style={{ color: '#00e5ff', opacity: 0.3 }}>
               {finalLine.displayed}
               {finalLine.done && (
                 <span style={{ animation: 'blink-cursor 1s step-end infinite' }}>_</span>

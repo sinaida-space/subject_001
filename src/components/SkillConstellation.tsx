@@ -219,13 +219,13 @@ export default function SkillConstellation() {
         <div className="md:w-[180px] shrink-0 md:sticky md:top-[15vh] md:self-start">
           <div
             className="font-mono uppercase"
-            style={{ color: 'hsl(var(--primary))', letterSpacing: '0.2em', fontSize: '11px' }}
+            style={{ color: 'hsl(var(--primary))', letterSpacing: '0.2em', fontSize: '12px' }}
           >
             Capabilities
           </div>
           <div
             className="font-mono mt-2"
-            style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}
+            style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}
           >
             [ SKILLS ]
           </div>

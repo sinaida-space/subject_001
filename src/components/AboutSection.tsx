@@ -108,13 +108,13 @@ function PhotoBlock() {
       </div>
 
       {/* Labels */}
-      <span className="block font-mono mt-2" style={{ fontSize: 9, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
+      <span className="block font-mono mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
         SUBJECT_001
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 10, color: '#00e5ff', opacity: 0.8, letterSpacing: '0.3em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: '#00e5ff', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>
         VISUAL ARTIST AND DIGITAL STRATEGIST
       </span>
     </div>
@@ -162,7 +162,7 @@ export default function AboutSection() {
 
                 {/* Block 1 — terminal header */}
                 <Reveal delay={300}>
-                  <div className="font-mono mb-7" style={{ fontSize: 10, color: '#00e5ff', opacity: 0.45, letterSpacing: '0.2em' }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 12, color: '#00e5ff', opacity: 0.45, letterSpacing: '0.2em' }}>
                     {'> BIO_FILE.load() — SUBJECT: SINAIDA — STATUS: ACTIVE'}
                   </div>
                 </Reveal>
@@ -175,7 +175,7 @@ export default function AboutSection() {
                       ['DIVERGENCE', 'Ballet. Corporate IT. Generative systems.'],
                       ['CURRENT STATE', 'AI visual art + creative direction.'],
                     ].map(([key, val]) => (
-                      <div key={key} className="font-mono" style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
+                      <div key={key} className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
                         <span style={{ display: 'inline-block', minWidth: 148 }}>{key}</span>
                         <span style={{ opacity: 0.35 }}>{'····· '}</span>
                         {val}
@@ -210,7 +210,7 @@ export default function AboutSection() {
 
                 {/* Block 5 — footer data */}
                 <Reveal delay={900}>
-                  <div className="font-mono" style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
+                  <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
                     <span style={{ color: '#ff3333' }}> · </span>
                     {'REACH: Global'}

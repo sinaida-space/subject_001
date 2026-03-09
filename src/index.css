@@ -202,9 +202,8 @@
     background-size: 60px 60px;
   }
 
-  /* Clinical label style */
   .clinical-label {
-    font-family: var(--font-clinical);
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
