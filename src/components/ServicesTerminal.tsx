@@ -154,16 +154,16 @@ function ServiceBlock({
   const descLines = splitDescription(service.description);
 
   const lines = [
-    { text: `$ load_module --id=${service.code} --name="${service.title}"`, speed: 38, type: 'type' as const },
-    { text: '> initializing...', speed: 15, type: 'type' as const, preDelay: 100 },
-    { text: 'fill', speed: 60, type: 'fill' as const, preDelay: 100 },
+    { text: `$ load_module --id=${service.code} --name="${service.title}"`, speed: 12, type: 'type' as const },
+    { text: '> initializing...', speed: 8, type: 'type' as const, preDelay: 30 },
+    { text: 'fill', speed: 25, type: 'fill' as const, preDelay: 30 },
     ...descLines.map((l, i) => ({
       text: `  │ ${l}`,
-      speed: 22,
+      speed: 8,
       type: 'type' as const,
-      preDelay: i === 0 ? 100 : 0,
+      preDelay: i === 0 ? 30 : 0,
     })),
-    { text: '> module loaded.', speed: 0, type: 'instant' as const, preDelay: 200 },
+    { text: '> module loaded.', speed: 0, type: 'instant' as const, preDelay: 60 },
   ];
 
   const handleNameTyped = useCallback(() => {
