@@ -4,7 +4,6 @@ import projectSubmerged from '@/assets/project-submerged-cover.png';
 import projectLegacy from '@/assets/project-legacy-cover.jpg';
 import projectSynesthetic from '@/assets/project-synesthetic-cover.png';
 import ParticleImage from './ParticleImage';
-import ProjectModal from './ProjectModal';
 
 interface Project {
   id: string;
