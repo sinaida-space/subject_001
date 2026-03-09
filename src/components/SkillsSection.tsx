@@ -52,28 +52,6 @@ const SKILLS = [
   }
 ];
 
-const SERVICES = [
-  {
-    code: 'SRV.001',
-    title: 'Immersive Visuals',
-    description: 'Visual systems for event spaces, stages, exhibitions, and projection mapping. Interactive and realtime environments.'
-  },
-  {
-    code: 'SRV.002',
-    title: 'Creative Direction',
-    description: 'Developing consistent visual languages across video, static media, and interactive installations.'
-  },
-  {
-    code: 'SRV.003',
-    title: 'Digital Art',
-    description: 'Custom audio-reactive and data-driven procedural animations for performances and curated environments.'
-  },
-  {
-    code: 'SRV.004',
-    title: 'Conceptual Storytelling',
-    description: 'Translating complex philosophical and ethical themes into compelling visual narratives.'
-  }
-];
 
 export default function SkillsSection() {
   const [inView, setInView] = useState(false);
@@ -93,24 +71,6 @@ export default function SkillsSection() {
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="section-divider mb-20" />
 
-        {/* Services */}
-        <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 mb-24">
-          <div className="col-span-12 md:col-span-3">
-            <span className="clinical-label text-primary">Services</span>
-            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ VALUE // ACTIVE ]</div>
-          </div>
-          <div className="col-span-12 md:col-span-9">
-            <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-              {SERVICES.map((service) => (
-                <div key={service.code} className="border border-border p-6 hover:border-primary/30 transition-colors group cursor-none">
-                  <div className="clinical-label text-accent mb-3">{service.code}</div>
-                  <h3 className="font-display text-lg font-medium mb-4 group-hover:text-primary transition-colors">{service.title}</h3>
-                  <p className="font-clinical text-sm text-muted-foreground leading-relaxed my-2">{service.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* Skills Matrix */}
         <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
