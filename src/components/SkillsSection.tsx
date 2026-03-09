@@ -67,7 +67,7 @@ export default function SkillsSection() {
   }, []);
 
   return (
-    <section ref={ref} id="process" className="relative z-10 py-32">
+    <section ref={ref} id="process" className="relative z-10 py-16">
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="section-divider mb-20" />
 

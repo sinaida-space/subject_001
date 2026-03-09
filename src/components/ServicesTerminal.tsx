@@ -357,7 +357,7 @@ export default function ServicesTerminal() {
     <section
       ref={sectionRef}
       className="relative z-10"
-      style={{ minHeight: '100vh', padding: '8vh 8vw' }}
+      style={{ padding: '8vh 8vw 2vh' }}
     >
       <div className="flex flex-col md:flex-row gap-8 md:gap-12 max-w-7xl mx-auto">
         {/* LEFT COLUMN */}
