@@ -288,7 +288,6 @@ export default function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollVelocity, setScrollVelocity] = useState(0);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const lastScrollRef = useRef(0);
 
   const handleScroll = useCallback(() => {
