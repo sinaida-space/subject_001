@@ -346,8 +346,6 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         panel.geometry.dispose();
         (panel.material as THREE.MeshBasicMaterial).dispose();
       });
-      starGeometry.dispose();
-      starMaterial.dispose();
       renderer.dispose();
     };
   }, [isMobile, projects, panelHeights, hoveredIndex]);
