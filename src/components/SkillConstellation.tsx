@@ -92,8 +92,8 @@ function buildMindMap(cx: number, cy: number) {
   });
 
   const catCount = CATEGORIES.length;
-  const catRadius = 240;
-  const skillRadius = 200;
+  const catRadius = 220;
+  const skillRadius = 170;
 
   // Distribute categories evenly around the circle
   // Start from top-left (-135°) and go clockwise
@@ -121,7 +121,7 @@ function buildMindMap(cx: number, cy: number) {
 
     // Spread skills in a fan from the category node
     const itemCount = cat.items.length;
-    const fanSpread = Math.min(0.85, 0.18 * itemCount); // wider fan
+    const fanSpread = Math.min(0.55, 0.15 * itemCount); // radians spread
 
     for (let si = 0; si < itemCount; si++) {
       const t = itemCount === 1 ? 0 : (si / (itemCount - 1)) - 0.5;
@@ -163,8 +163,8 @@ export default function SkillConstellation() {
   const animRef = useRef<number | null>(null);
 
   // Build layout centered in a virtual space
-  const vw = 1400;
-  const vh = 1050;
+  const vw = 1200;
+  const vh = 900;
   const graph = useMemo(() => buildMindMap(vw / 2, vh / 2), []);
 
   // Observe section
