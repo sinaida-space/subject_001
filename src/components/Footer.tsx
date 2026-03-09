@@ -11,7 +11,6 @@ export default function Footer() {
             <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">
               SINAIDA KRIVCHENKO | VISUAL ARTIST AND DIGITAL STRATEGIST
             </p>
-            <p className="font-clinical text-xs text-muted-foreground mt-2">© 2026 Sinaida Krivchenko. All rights reserved.</p>
           </div>
 
           {/* Quick links */}
