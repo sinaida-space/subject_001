@@ -27,7 +27,7 @@ const CATEGORIES = [
   },
   {
     name: 'Strategic & Systems Thinking',
-    color: '#ffffff',
+    color: '#ff9933', // amber/orange
     items: [
       'Creative technology strategy',
       'Interdisciplinary project leadership',
