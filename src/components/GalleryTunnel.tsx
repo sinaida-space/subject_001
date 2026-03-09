@@ -329,9 +329,15 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
       >
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-        <div className="absolute left-[4%] top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-          <span className="clinical-label text-primary">Selected Projects</span>
-          <span className="block mt-2 text-xs font-clinical text-muted-foreground">[ RECENT WORK ]</span>
+        <div className="container mx-auto px-6 max-w-7xl absolute inset-0 pointer-events-none flex items-center">
+          <div className="md:w-[200px] shrink-0">
+            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+              Selected Projects
+            </div>
+            <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+              [ RECENT WORK ]
+            </div>
+          </div>
         </div>
       </section>
 
