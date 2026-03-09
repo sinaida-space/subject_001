@@ -301,7 +301,7 @@ export default function ContactChannel() {
           </div>
 
           <SignalBars />
-          <div className="font-mono mt-2 select-none" style={{ color: '#00e5ff', opacity: 0.4, fontSize: 9 }}>
+          <div className="font-mono mt-2 select-none" style={{ color: '#00e5ff', opacity: 0.4, fontSize: 12 }}>
             SIGNAL: STRONG
           </div>
 
