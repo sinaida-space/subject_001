@@ -33,7 +33,7 @@ const PROJECTS: Project[] = [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
       { label: 'YouTube', url: 'https://youtube.com/shorts/7qgDlifWno0' },
     ],
-    span: 'md:col-span-8 md:row-span-2',
+    span: 'w-full',
     depthLayer: 1,
   },
   {
@@ -48,7 +48,7 @@ const PROJECTS: Project[] = [
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245414325/Legacy-in-the-Age-of-Stochastic-Output' },
     ],
-    span: 'md:col-span-4',
+    span: 'w-full',
     depthLayer: 2,
   },
   {
@@ -64,7 +64,7 @@ const PROJECTS: Project[] = [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245415773/Synesthetic-Bloom-An-Audio-Responsive-Digital-Organism' },
       { label: 'YouTube', url: 'https://youtu.be/pzq0BSVzw28' },
     ],
-    span: 'md:col-span-4',
+    span: 'w-full',
     depthLayer: 0,
   },
 ];
@@ -79,12 +79,14 @@ function ProjectCard({
   parallaxZ,
   scrollVelocity,
   onClick,
+  index,
 }: {
   project: Project;
   parallaxY: number;
   parallaxZ: number;
   scrollVelocity: number;
   onClick: () => void;
+  index: number;
 }) {
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -95,105 +97,117 @@ function ProjectCard({
         if (entry.isIntersecting) setInView(true);
         else setInView(false);
       },
-      { threshold: 0.1 }
+      { threshold: 0.15 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 
-  const tagParallaxY = parallaxY * 1.3; // Tags float faster (foreground feel)
+  const tagParallaxY = parallaxY * 1.3;
 
   return (
-    <div
+    <motion.div
       ref={ref}
-      className={`group relative overflow-hidden border border-border bg-card cursor-none ${project.span}`}
+      initial={{ opacity: 0, y: 60 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
+      transition={{ 
+        duration: 0.8, 
+        delay: index * 0.2, 
+        ease: [0.16, 1, 0.3, 1] 
+      }}
+      className={`group relative overflow-hidden border border-border bg-card cursor-none ${project.span} mb-16`}
       style={{
         transform: `translate3d(0, ${parallaxY}px, ${parallaxZ}px)`,
-        transition: 'transform 0.1s linear',
         willChange: 'transform',
       }}
       onClick={onClick}
     >
-      {/* Image with particle assembly */}
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <ParticleImage
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full"
-          inView={inView}
-          scrollVelocity={scrollVelocity}
-        />
+      {/* Full-width layout with image and content side by side */}
+      <div className="grid grid-cols-12 gap-0 min-h-[400px]">
+        {/* Image section */}
+        <div className="col-span-12 md:col-span-6 relative overflow-hidden">
+          <ParticleImage
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full"
+            inView={inView}
+            scrollVelocity={scrollVelocity}
+          />
 
-        {/* Clinical label — floats at different depth */}
-        <div
-          className="absolute top-3 left-3 clinical-label text-primary/80 bg-background/80 px-2 py-1 z-10"
-          style={{
-            transform: `translateY(${tagParallaxY * 0.3}px)`,
-            transition: 'transform 0.1s linear',
-          }}
-        >
-          {project.id.toUpperCase()} // {project.subtitle}
-        </div>
-      </div>
-
-      {/* Info — moves at base parallax speed */}
-      <div className="p-6 md:p-8 space-y-4">
-        <h3 className="font-display text-lg font-medium text-foreground">{project.title}</h3>
-        <p className="font-clinical text-xs text-muted-foreground leading-relaxed line-clamp-2">
-          {project.description}
-        </p>
-
-        {/* Tags float above */}
-        <div
-          className="flex flex-wrap gap-2"
-          style={{
-            transform: `translateY(${tagParallaxY * 0.15}px)`,
-            transition: 'transform 0.15s linear',
-          }}
-        >
-          {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-[10px] font-clinical uppercase tracking-wider text-accent border border-accent/20 px-2 py-0.5"
-            >
-              {tag}
-            </span>
-          ))}
+          {/* Clinical label */}
+          <div
+            className="absolute top-6 left-6 clinical-label text-primary/80 bg-background/80 px-3 py-2 z-10"
+            style={{
+              transform: `translateY(${tagParallaxY * 0.3}px)`,
+              transition: 'transform 0.1s linear',
+            }}
+          >
+            {project.id.toUpperCase()} // {project.subtitle}
+          </div>
         </div>
 
-        {/* Tools */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-          {project.tools.map((tool) => (
-            <span key={tool} className="text-[10px] font-clinical text-muted-foreground">
-              {tool}
-            </span>
-          ))}
-        </div>
+        {/* Content section */}
+        <div className="col-span-12 md:col-span-6 p-8 md:p-12 flex flex-col justify-center space-y-6">
+          <h3 className="font-display text-2xl md:text-3xl font-medium text-foreground">
+            {project.title}
+          </h3>
+          
+          <p className="font-clinical text-sm text-muted-foreground leading-relaxed max-w-lg">
+            {project.description}
+          </p>
 
-        {/* Links */}
-        {project.links && (
-          <div className="flex gap-3 pt-2">
-            {project.links.map((link) => (
-              <a
-                key={link.label}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="clinical-label text-primary hover:text-accent transition-colors cursor-none"
-                onClick={(e) => e.stopPropagation()}
+          {/* Tags float above */}
+          <div
+            className="flex flex-wrap gap-3"
+            style={{
+              transform: `translateY(${tagParallaxY * 0.15}px)`,
+              transition: 'transform 0.15s linear',
+            }}
+          >
+            {project.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs font-clinical uppercase tracking-wider text-accent border border-accent/20 px-3 py-1"
               >
-                {link.label} ↗
-              </a>
+                {tag}
+              </span>
             ))}
           </div>
-        )}
 
-        {/* View project indicator */}
-        <div className="clinical-label text-muted-foreground/50 group-hover:text-primary transition-colors pt-2">
-          [ VIEW PROJECT → ]
+          {/* Tools */}
+          <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
+            {project.tools.map((tool) => (
+              <span key={tool} className="text-xs font-clinical text-muted-foreground">
+                {tool}
+              </span>
+            ))}
+          </div>
+
+          {/* Links */}
+          {project.links && (
+            <div className="flex gap-4 pt-4">
+              {project.links.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="clinical-label text-primary hover:text-accent transition-colors cursor-none"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {link.label} ↗
+                </a>
+              ))}
+            </div>
+          )}
+
+          {/* View project indicator */}
+          <div className="clinical-label text-muted-foreground/50 group-hover:text-primary transition-colors pt-4">
+            [ VIEW PROJECT → ]
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -244,11 +258,8 @@ export default function ProjectsSection() {
             <div className="col-span-12 md:col-span-9" />
           </div>
 
-          {/* Modular Grid with perspective depth */}
-          <div
-            className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 lg:gap-8"
-            style={{ transformStyle: 'preserve-3d' }}
-          >
+          {/* Project Cards - Each on own line */}
+          <div className="space-y-0" style={{ transformStyle: 'preserve-3d' }}>
             {PROJECTS.map((project, i) => (
               <ProjectCard
                 key={project.id}
@@ -257,6 +268,7 @@ export default function ProjectsSection() {
                 parallaxZ={parallaxValues[i].z}
                 scrollVelocity={scrollVelocity}
                 onClick={() => setSelectedProject(project)}
+                index={i}
               />
             ))}
           </div>
