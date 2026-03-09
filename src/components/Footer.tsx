@@ -10,9 +10,8 @@ export default function Footer() {
             <Logo />
             <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">AI visual artist and digital strategist based in Prague.
 
-
-© 2026 Sinaida Krivchenko. All rights reserved.
-<br /><br />All rights reserved.</p>
+© 2026 Sinaida Krivchenko. All rights reserved.
+</p>
           </div>
 
           {/* Quick links */}
