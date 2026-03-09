@@ -254,29 +254,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
     });
     panelsRef.current = panels;
 
-    // Stars
-    const starGeometry = new THREE.BufferGeometry();
-    const starCount = 2000;
-    const starPositions = new Float32Array(starCount * 3);
-    
-    for (let i = 0; i < starCount; i++) {
-      starPositions[i * 3] = (Math.random() - 0.5) * 50;
-      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-      starPositions[i * 3 + 2] = -Math.random() * 100;
-    }
-    
-    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    
-    const starMaterial = new THREE.PointsMaterial({
-      color: 0x00e5ff,
-      size: 0.05,
-      transparent: true,
-      opacity: 0.6,
-    });
-    
-    const stars = new THREE.Points(starGeometry, starMaterial);
-    scene.add(stars);
-    starsRef.current = stars;
+    // No ambient stars - keep scene clean
 
     // Handle resize
     const handleResize = () => {
