@@ -301,20 +301,21 @@ export default function ContactChannel() {
     mouseTimer.current = setTimeout(() => setMouseActive(false), 2000);
   }, []);
 
-  // Typing sequences
+  // Typing sequences — heading completes in ~2s total
   const sysLine = useTyper('> COMM.SYS ONLINE — CHANNEL OPEN', 0, 0, inView);
-  const openFor = useTyper('Open for', 55, 400, inView);
-  const collab = useTyper('Collaboration', 55, 400 + 8 * 55 + 100, inView);
+  const openFor = useTyper('Open for', 35, 200, inView);
+  const collab = useTyper('Collaboration', 35, 200 + 8 * 35 + 60, inView);
   const [glitchActive, setGlitchActive] = useState(false);
 
   useEffect(() => {
     if (collab.done && !glitchActive) {
       setGlitchActive(true);
-      setTimeout(() => setGlitchActive(false), 500);
+      setTimeout(() => setGlitchActive(false), 400);
     }
   }, [collab.done, glitchActive]);
 
-  const transmissionDelay = 400 + (8 + 13) * 55 + 100 + 500 + 300;
+  // ~2s for heading, then continue
+  const transmissionDelay = 200 + (8 + 13) * 35 + 60 + 400 + 200;
   const txHeader = useTyper('> incoming_transmission.decode() —', 18, transmissionDelay, inView);
 
   const para1 = 'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let\'s talk.';
