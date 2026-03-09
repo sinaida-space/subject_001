@@ -318,7 +318,7 @@ export default function ContactChannel() {
               href="https://www.instagram.com/sin.ai.da/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[10px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
               style={{ color: '#00e5ff', opacity: 0.5 }}
             >
               → INSTAGRAM
