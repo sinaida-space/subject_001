@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import ParticleCard from '@/components/ParticleCard';
 
 const SKILLS = [
 {
@@ -71,11 +72,13 @@ export default function SkillsSection() {
           <div className="col-span-12 md:col-span-9">
             <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
               {SERVICES.map((service) =>
-              <div key={service.code} className="border border-border p-6 hover:border-primary/30 transition-colors group cursor-none">
+              <ParticleCard key={service.code}>
+                <div className="border border-border p-6 hover:border-primary/30 transition-colors group cursor-none">
                   <div className="clinical-label text-accent mb-3">{service.code}</div>
                   <h3 className="font-display text-lg font-medium mb-4 group-hover:text-primary transition-colors">{service.title}</h3>
                   <p className="font-clinical text-sm text-muted-foreground leading-relaxed my-2">{service.description}</p>
                 </div>
+              </ParticleCard>
               )}
             </div>
           </div>

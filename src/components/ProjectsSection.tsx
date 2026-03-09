@@ -1,8 +1,9 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import projectSubmerged from '@/assets/project-submerged-cover.png';
 import projectLegacy from '@/assets/project-legacy-cover.jpg';
 import projectSynesthetic from '@/assets/project-synesthetic-cover.png';
+import ParticleCard from '@/components/ParticleCard';
 
 interface Project {
   id: string;
@@ -197,7 +198,9 @@ export default function ProjectsSection() {
         {/* Project Cards - One per line with generous spacing */}
         <div className="space-y-16 md:space-y-24">
           {PROJECTS.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+            <ParticleCard key={project.id}>
+              <ProjectCard project={project} index={i} />
+            </ParticleCard>
           ))}
         </div>
       </div>
