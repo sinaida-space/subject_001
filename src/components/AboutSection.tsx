@@ -63,19 +63,6 @@ export default function AboutSection() {
       `}</style>
       
       <div ref={contentRef} className="container mx-auto px-6 max-w-7xl">
-        {/* Click to explore - first child */}
-        <div 
-          className="dust-child text-center mb-8"
-          style={{
-            fontSize: '12px',
-            letterSpacing: '0.3em',
-            color: '#00e5ff',
-            fontFamily: 'monospace',
-          }}
-        >
-          CLICK TO EXPLORE
-        </div>
-        
         <div className="dust-child section-divider mb-20" />
 
         <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 items-start">
@@ -88,25 +75,20 @@ export default function AboutSection() {
           {/* Content */}
           <div className="col-span-12 md:col-span-9 space-y-8">
             <h2 className="dust-child font-display text-2xl md:text-4xl font-light leading-tight mb-8">
-              From diagnostic algorithms to
-              <span className="text-primary"> digital organisms</span>
+              Art, technology, and
+              <span className="text-primary"> human expression</span>
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-clinical text-sm md:text-base text-secondary-foreground leading-relaxed pt-[42px]">
-              <div className="space-y-6">
-                <p className="dust-child my-3">I believe the digital world is a sanctuary for human memory. My process breathes a soul into the machine, grounding the logic of fantasy into immersive visual systems.</p>
-                <p className="dust-child my-3">
-                  From there, I spent 5+ years at General Electric, leading IT strategy, Oracle ERP implementations, and digital transformation across Russia, UAE, and the US through their elite IT Leadership Program.
-                </p>
-              </div>
-              <div className="space-y-6">
-                <p className="dust-child my-3">
-                  I channel precision and intentionality into generative art and immersive installations. I work with TouchDesigner, Midjourney, to create real-time visual experiences that inhabit physical space — on stages, in water, across real world objects.
-                </p>
-                <p className="dust-child my-3">
-                  I see generative AI as a creative instrument that collapses the distance between speed and soul, expanding the boundaries of what is possible to bring people together in the real world.
-                </p>
-              </div>
+            <div className="space-y-6 font-clinical text-sm md:text-base text-secondary-foreground leading-relaxed">
+              <p className="dust-child">
+                I work at the intersection of art, technology, and human expression. My focus is the emerging creative territory often described as the digital latent space – a new medium where generative systems expand how ideas, movement, and identity can be expressed.
+              </p>
+              <p className="dust-child">
+                Trained as a biomedical engineer and shaped by experience in corporate IT leadership, I approach creative technology with both analytical rigor and artistic intent. Alongside my professional career, I have developed projects within the ballet and performing arts world to transition visions into a sustainable commercial reality.
+              </p>
+              <p className="dust-child">
+                My current practice combines generative AI, real-time visual systems, and cinematic post-production to create immersive digital experiences. Using tools such as DaVinci Resolve and TouchDesigner, I build workflows that integrate AI synthesis with real-time environments and high-fidelity visual environments that connect people through a new creative language.
+              </p>
             </div>
           </div>
         </div>

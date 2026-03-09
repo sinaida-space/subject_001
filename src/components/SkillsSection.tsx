@@ -2,20 +2,53 @@ import { useEffect, useRef, useState } from 'react';
 
 const SKILLS = [
   {
-    category: 'Creative Tools',
-    items: ['TouchDesigner', 'Midjourney', 'DaVinci Resolve', 'Affinity Suite', 'Suno AI']
+    category: 'Creative Direction',
+    items: [
+      'Visual narrative development',
+      'Concept design for immersive environments',
+      'Aesthetic systems & visual language design',
+      'Storytelling',
+      'Cultural and performance-based visual concepts'
+    ]
   },
   {
-    category: 'Technical',
-    items: ['Projection Mapping', 'Audio-Reactive Systems', 'WebGL / Three.js', 'Procedural Animation']
+    category: 'Creative Technology',
+    items: [
+      'TouchDesigner',
+      'Generative AI Systems (LLM, diffusion workflows)',
+      'Real-time audio-reactive visuals',
+      'Procedural animation',
+      'AI-assisted visual pipelines',
+      'Post-production (editing and color grading)'
+    ]
   },
   {
-    category: 'Strategic',
-    items: ['Creative Direction', 'Brand Strategy', 'Project Management']
+    category: 'Strategic & Systems Thinking',
+    items: [
+      'Creative technology strategy',
+      'Interdisciplinary project leadership',
+      'Cultural program development',
+      'Digital experience design',
+      'Innovation & emerging media strategy'
+    ]
   },
   {
-    category: 'Engineering Foundation',
-    items: ['Biomedical Engineering MSc', 'Data Analysis']
+    category: 'Technical & Analytical Foundations',
+    items: [
+      'Systems design thinking',
+      'Data-driven creative workflows',
+      'Algorithmic thinking for visual systems',
+      'Process architecture & optimization',
+      'Biomedical engineering (MSc)'
+    ]
+  },
+  {
+    category: 'Research Interests',
+    items: [
+      'AI and creativity research',
+      'Human-AI creative collaboration',
+      'Cognitive science of creativity'
+    ]
   }
 ];
 
@@ -86,7 +119,7 @@ export default function SkillsSection() {
             <div className="mt-2 text-xs font-clinical text-muted-foreground">[ SKILLS ]</div>
           </div>
           <div className="col-span-12 md:col-span-9">
-            <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 transition-all duration-700 delay-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 delay-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
               {SKILLS.map((group) => (
                 <div key={group.category}>
                   <h4 className="font-display text-base font-medium text-foreground mb-4 border-b border-border pb-2">
@@ -94,8 +127,8 @@ export default function SkillsSection() {
                   </h4>
                   <ul className="space-y-2">
                     {group.items.map((item) => (
-                      <li key={item} className="font-clinical text-sm text-muted-foreground flex items-center gap-2">
-                        <span className="w-1 h-1 bg-primary/50 shrink-0" />
+                      <li key={item} className="font-clinical text-sm text-muted-foreground flex items-start gap-2">
+                        <span className="w-1 h-1 bg-primary/50 shrink-0 mt-2" />
                         {item}
                       </li>
                     ))}
