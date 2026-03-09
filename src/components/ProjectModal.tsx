@@ -166,7 +166,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     {project.tools.map((tool) => (
                       <span
                         key={tool}
-                        className="text-[10px] font-clinical text-muted-foreground border border-border px-2 py-0.5"
+                        className="text-[12px] font-mono text-muted-foreground border border-border px-2 py-0.5"
                       >
                         {tool}
                       </span>
