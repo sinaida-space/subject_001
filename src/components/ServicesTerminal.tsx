@@ -229,7 +229,7 @@ function ServiceBlock({
           {service.title}
         </h3>
         {descLines.map((line, i) => (
-          <div key={i} style={{ color: 'rgba(255,255,255,0.75)' }}>
+          <div key={i} className="font-mono text-[13px]" style={{ color: 'rgba(255,255,255,0.75)' }}>
             {`  │ ${line}`}
           </div>
         ))}
