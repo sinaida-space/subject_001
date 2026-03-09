@@ -85,7 +85,7 @@ function buildMindMap(cx: number, cy: number) {
     label: 'CAPABILITIES',
     x: cx,
     y: cy,
-    color: '#ff3333',
+    color: '#666666',
     type: 'root',
     parentId: null,
     angle: 0,
