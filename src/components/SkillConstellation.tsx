@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 const CATEGORIES = [
   {
     name: 'Creative Direction',
-    color: '#ff3333',
+    color: '#ff3333', // red
     items: [
       'Visual narrative development',
       'Concept design for immersive environments',
