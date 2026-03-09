@@ -42,7 +42,7 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
           <button onClick={onClose} className="absolute top-4 right-4 text-primary hover:text-foreground font-clinical text-sm tracking-widest cursor-none">
             [CLOSE]
           </button>
-          <VHSImage src={project.image} alt={project.title} className="mb-6" />
+          <VHSImage src={project.image} alt={project.title} className="mb-6" aspectRatio="16/10" />
           <span className="clinical-label text-accent">{project.subtitle}</span>
           <h2 className="font-display text-3xl text-foreground mt-2 mb-4">{project.title}</h2>
           <p className="text-sm text-muted-foreground font-clinical leading-relaxed mb-6">{project.description}</p>
@@ -298,14 +298,22 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
   if (isMobile) {
     return (
       <section id="work" className="relative z-10 py-24">
-        <div className="container mx-auto px-6">
-          <div className="mb-12">
-            <span className="clinical-label text-primary">Selected Projects</span>
-            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ RECENT WORK ]</div>
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+            <div className="md:w-[200px] shrink-0">
+              <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+                Selected Projects
+              </div>
+              <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+                [ RECENT WORK ]
+              </div>
+            </div>
+            <div className="flex-1">
+              {projects.map((project, i) => (
+                <MobileProjectCard key={project.id} project={project} index={i} />
+              ))}
+            </div>
           </div>
-          {projects.map((project, i) => (
-            <MobileProjectCard key={project.id} project={project} index={i} />
-          ))}
         </div>
       </section>
     );
@@ -321,9 +329,15 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
       >
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-        <div className="absolute left-[4%] top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-          <span className="clinical-label text-primary">Selected Projects</span>
-          <span className="block mt-2 text-xs font-clinical text-muted-foreground">[ RECENT WORK ]</span>
+        <div className="container mx-auto px-6 max-w-7xl absolute inset-0 pointer-events-none flex items-center">
+          <div className="md:w-[200px] shrink-0">
+            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+              Selected Projects
+            </div>
+            <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+              [ RECENT WORK ]
+            </div>
+          </div>
         </div>
       </section>
 
