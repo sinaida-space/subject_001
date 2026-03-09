@@ -119,7 +119,7 @@ export default function SkillsSection() {
             <div className="mt-2 text-xs font-clinical text-muted-foreground">[ SKILLS ]</div>
           </div>
           <div className="col-span-12 md:col-span-9">
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 delay-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 transition-all duration-700 delay-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
               {SKILLS.map((group) => (
                 <div key={group.category}>
                   <h4 className="font-display text-base font-medium text-foreground mb-4 border-b border-border pb-2">
