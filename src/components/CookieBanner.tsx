@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
 
 const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,12 +16,13 @@ const CookieBanner = () => {
     setIsVisible(false);
   };
 
-  const handleDecline = () => {
-    localStorage.setItem('cookie-consent', 'declined');
+  const handleEssential = () => {
+    localStorage.setItem('cookie-consent', 'essential');
     setIsVisible(false);
   };
 
-  const handleClose = () => {
+  const handleDecline = () => {
+    localStorage.setItem('cookie-consent', 'declined');
     setIsVisible(false);
   };
 
@@ -33,11 +33,10 @@ const CookieBanner = () => {
       <div className="container mx-auto max-w-4xl">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className="flex-1">
-            <h3 className="font-display text-sm font-medium mb-2">Cookie Consent</h3>
+            <h3 className="font-display text-sm font-medium mb-2 text-foreground">Cookie Consent</h3>
             <p className="font-clinical text-xs text-muted-foreground leading-relaxed">
               This website uses cookies to enhance your browsing experience and analyze site traffic. 
-              We respect your privacy and comply with GDPR regulations. You can manage your cookie 
-              preferences or learn more in our{' '}
+              We respect your privacy and comply with GDPR regulations. Learn more in our{' '}
               <a 
                 href="/privacy" 
                 className="text-primary hover:text-primary/80 underline"
@@ -47,30 +46,30 @@ const CookieBanner = () => {
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-3 shrink-0">
             <Button
               onClick={handleAccept}
+              variant="outline"
               size="sm"
-              className="clinical-label text-xs"
+              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
             >
               Accept All
+            </Button>
+            <Button
+              onClick={handleEssential}
+              variant="outline"
+              size="sm"
+              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
+            >
+              Essential Only
             </Button>
             <Button
               onClick={handleDecline}
               variant="outline"
               size="sm"
-              className="clinical-label text-xs"
+              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
             >
-              Decline
-            </Button>
-            <Button
-              onClick={handleClose}
-              variant="ghost"
-              size="sm"
-              className="p-2 md:p-2"
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
+              Decline All
             </Button>
           </div>
         </div>
