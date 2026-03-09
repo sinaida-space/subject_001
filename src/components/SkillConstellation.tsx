@@ -163,8 +163,8 @@ export default function SkillConstellation() {
   const animRef = useRef<number | null>(null);
 
   // Build layout centered in a virtual space
-  const vw = 1200;
-  const vh = 900;
+  const vw = 1400;
+  const vh = 1050;
   const graph = useMemo(() => buildMindMap(vw / 2, vh / 2), []);
 
   // Observe section
