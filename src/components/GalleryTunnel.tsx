@@ -176,7 +176,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const panelsRef = useRef<THREE.Mesh[]>([]);
   const panelGroupRef = useRef<THREE.Group | null>(null);
-  const starsRef = useRef<THREE.Points | null>(null);
+  
   const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
   const targetMouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -200,11 +200,11 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      alpha: false,
+      alpha: true,
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 1);
+    renderer.setClearColor(0x000000, 0);
     rendererRef.current = renderer;
 
     // Scene
@@ -254,29 +254,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
     });
     panelsRef.current = panels;
 
-    // Stars
-    const starGeometry = new THREE.BufferGeometry();
-    const starCount = 2000;
-    const starPositions = new Float32Array(starCount * 3);
-    
-    for (let i = 0; i < starCount; i++) {
-      starPositions[i * 3] = (Math.random() - 0.5) * 50;
-      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-      starPositions[i * 3 + 2] = -Math.random() * 100;
-    }
-    
-    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    
-    const starMaterial = new THREE.PointsMaterial({
-      color: 0x00e5ff,
-      size: 0.05,
-      transparent: true,
-      opacity: 0.6,
-    });
-    
-    const stars = new THREE.Points(starGeometry, starMaterial);
-    scene.add(stars);
-    starsRef.current = stars;
+    // No ambient stars - keep scene clean
 
     // Handle resize
     const handleResize = () => {
@@ -319,10 +297,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
     const animate = () => {
       animFrameRef.current = requestAnimationFrame(animate);
 
-      // Rotate panel group
-      if (panelGroup) {
-        panelGroup.rotation.y += 0.003;
-      }
+      // No auto-rotation - only respond to user interaction
 
       // Mouse parallax
       camera.position.x += (targetMouseRef.current.x - camera.position.x) * 0.03;
@@ -354,17 +329,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         panel.scale.z += (targetScale - panel.scale.z) * 0.1;
       });
 
-      // Animate stars (hyperspace effect)
-      if (starsRef.current) {
-        const positions = starsRef.current.geometry.attributes.position.array as Float32Array;
-        for (let i = 0; i < starCount; i++) {
-          positions[i * 3 + 2] += 0.1;
-          if (positions[i * 3 + 2] > 5) {
-            positions[i * 3 + 2] = -100;
-          }
-        }
-        starsRef.current.geometry.attributes.position.needsUpdate = true;
-      }
+      // No star animation
 
       renderer.render(scene, camera);
     };
@@ -381,8 +346,6 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         panel.geometry.dispose();
         (panel.material as THREE.MeshBasicMaterial).dispose();
       });
-      starGeometry.dispose();
-      starMaterial.dispose();
       renderer.dispose();
     };
   }, [isMobile, projects, panelHeights, hoveredIndex]);
@@ -390,7 +353,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
   // Mobile fallback
   if (isMobile) {
     return (
-      <section id="work" className="relative z-10 py-24 bg-black">
+      <section id="work" className="relative z-10 py-24 bg-transparent">
         <div className="container mx-auto px-6">
           {/* Section Header */}
           <div className="mb-12">
