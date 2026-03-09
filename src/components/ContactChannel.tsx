@@ -146,7 +146,7 @@ function FreqDisplay() {
 
   return (
     <div
-      className="absolute top-[6%] right-[4%] font-mono text-[10px] z-10 select-none"
+      className="absolute top-[6%] right-[4%] font-mono text-[12px] z-10 select-none"
       style={{ color: glitch ? '#ff3333' : '#00e5ff', opacity: 0.4, transition: 'color 0.05s' }}
     >
       FREQ: {freq} Hz
