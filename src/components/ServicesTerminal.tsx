@@ -365,25 +365,25 @@ export default function ServicesTerminal() {
   return (
     <section
       ref={sectionRef}
-      className="relative z-10"
-      style={{ padding: '8vh 8vw 2vh' }}
+      className="relative z-10 py-24"
     >
-      <div className="flex flex-col md:flex-row gap-8 md:gap-12 max-w-7xl mx-auto">
-        {/* LEFT COLUMN */}
-        <div className="md:w-1/4 md:sticky md:top-[15vh] md:self-start">
-          <div
-            className="font-mono uppercase"
-            style={{ color: 'hsl(var(--primary))', letterSpacing: '0.2em', fontSize: '12px' }}
-          >
-            Services
+      <div className="container mx-auto px-6 max-w-7xl">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+          {/* LEFT COLUMN */}
+          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
+            <div
+              className="font-mono uppercase text-primary"
+              style={{ letterSpacing: '0.2em', fontSize: 12 }}
+            >
+              Services
+            </div>
+            <div
+              className="font-mono mt-2"
+              style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}
+            >
+              [ VALUE // ACTIVE ]
+            </div>
           </div>
-          <div
-            className="font-mono mt-2"
-            style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}
-          >
-            [ VALUE // ACTIVE ]
-          </div>
-        </div>
 
         {/* RIGHT COLUMN */}
         <div className="md:w-3/4 font-mono">
