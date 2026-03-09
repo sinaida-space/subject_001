@@ -500,7 +500,7 @@ export default function SkillConstellation() {
             }
             if (isHovered) op = 1;
             el.style.opacity = String(op);
-            el.style.fontSize = isHovered ? '10px' : '9px';
+            el.style.fontSize = isHovered ? '12px' : '11px';
           }
         }
       }
