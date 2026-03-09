@@ -461,9 +461,70 @@ export default function ContactChannel() {
               ))}
             </div>
 
-            {/* CTA */}
-            <div className="mb-10">
-              <CtaButton visible={ctaVisible} />
+            {/* CTA Buttons */}
+            <div
+              className="flex flex-wrap gap-4 mb-10 transition-opacity duration-600"
+              style={{ opacity: ctaVisible ? 1 : 0 }}
+            >
+              <a
+                href="mailto:gallant_mod5v@icloud.com"
+                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                style={{
+                  border: '1px solid #ff3333',
+                  color: '#ff3333',
+                  background: 'rgba(255,51,51,0.06)',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#ff3333';
+                  e.currentTarget.style.color = '#000';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
+                  e.currentTarget.style.color = '#ff3333';
+                }}
+              >
+                EMAIL ME ↗
+              </a>
+              <a
+                href="https://www.instagram.com/sin.ai.da/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                style={{
+                  border: '1px solid rgba(0,229,255,0.4)',
+                  color: '#00e5ff',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(0,229,255,0.08)';
+                  e.currentTarget.style.borderColor = '#00e5ff';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)';
+                }}
+              >
+                FOLLOW ON INSTAGRAM ↗
+              </a>
+              <a
+                href="https://www.linkedin.com/in/sinaida"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[11px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                style={{
+                  border: '1px solid rgba(0,229,255,0.4)',
+                  color: '#00e5ff',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(0,229,255,0.08)';
+                  e.currentTarget.style.borderColor = '#00e5ff';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)';
+                }}
+              >
+                CONNECT ON LINKEDIN ↗
+              </a>
             </div>
 
             {/* Final line */}
