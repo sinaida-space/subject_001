@@ -8,6 +8,7 @@ import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import CustomCursor from '@/components/CustomCursor';
 import VHSOverlay from '@/components/VHSOverlay';
+import CookieBanner from '@/components/CookieBanner';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -38,6 +39,9 @@ const Index = () => {
       </main>
 
       <Footer />
+      
+      {/* Cookie Banner */}
+      <CookieBanner />
     </div>
   );
 };
