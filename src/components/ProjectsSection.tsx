@@ -78,32 +78,62 @@ function ProjectCard({
   parallaxY,
   parallaxZ,
   scrollVelocity,
-  onClick,
   index,
 }: {
   project: Project;
   parallaxY: number;
   parallaxZ: number;
   scrollVelocity: number;
-  onClick: () => void;
   index: number;
 }) {
   const [inView, setInView] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const expandProgress = useRef(0);
+  const timeRef = useRef(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setInView(true);
-        else setInView(false);
+        if (entry.isIntersecting) {
+          setInView(true);
+          // Start expansion after particles assemble
+          setTimeout(() => setExpanded(true), 800 + index * 200);
+        } else {
+          setInView(false);
+          setExpanded(false);
+        }
       },
       { threshold: 0.15 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, []);
+  }, [index]);
+
+  // Smooth expansion animation
+  useEffect(() => {
+    let rafId: number;
+    const animate = () => {
+      if (expanded && expandProgress.current < 1) {
+        expandProgress.current = Math.min(1, expandProgress.current + 0.008);
+      } else if (!expanded && expandProgress.current > 0) {
+        expandProgress.current = Math.max(0, expandProgress.current - 0.012);
+      }
+      timeRef.current += 0.016;
+      rafId = requestAnimationFrame(animate);
+    };
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [expanded]);
 
   const tagParallaxY = parallaxY * 1.3;
+  const progress = expandProgress.current;
+  
+  // 3D expansion calculations
+  const scale = 1 + progress * 0.15;
+  const rotateX = progress * 3;
+  const translateZ = progress * 30;
+  const ditherIntensity = Math.sin(timeRef.current * 8) * progress * 0.02;
 
   return (
     <motion.div
@@ -115,96 +145,139 @@ function ProjectCard({
         delay: index * 0.2, 
         ease: [0.16, 1, 0.3, 1] 
       }}
-      className={`group relative overflow-hidden border border-border bg-card cursor-none ${project.span} mb-16`}
+      className="group relative cursor-none mb-16"
       style={{
-        transform: `translate3d(0, ${parallaxY}px, ${parallaxZ}px)`,
+        transform: `translate3d(0, ${parallaxY}px, ${parallaxZ}px) scale(${scale}) rotateX(${rotateX}deg) translateZ(${translateZ}px)`,
+        transformStyle: 'preserve-3d',
         willChange: 'transform',
+        perspective: '1000px',
       }}
-      onClick={onClick}
     >
-      {/* Full-width layout with image and content side by side */}
-      <div className="grid grid-cols-12 gap-0 min-h-[400px]">
-        {/* Image section */}
-        <div className="col-span-12 md:col-span-6 relative overflow-hidden">
-          <ParticleImage
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full"
-            inView={inView}
-            scrollVelocity={scrollVelocity}
-          />
+      {/* Square container that expands */}
+      <div 
+        className="relative overflow-hidden border border-border bg-card"
+        style={{
+          width: '100%',
+          aspectRatio: expanded ? `${1 + progress * 1.5} / 1` : '1 / 1',
+          height: 'auto',
+          transition: 'aspect-ratio 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
+          filter: `blur(${ditherIntensity}px) contrast(${1 + progress * 0.2})`,
+        }}
+      >
+        {/* Background grid that shifts during expansion */}
+        <div 
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `linear-gradient(45deg, hsl(var(--border)) 1px, transparent 1px), linear-gradient(-45deg, hsl(var(--border)) 1px, transparent 1px)`,
+            backgroundSize: `${10 + progress * 20}px ${10 + progress * 20}px`,
+            transform: `rotate(${progress * 45}deg) scale(${1 + progress})`,
+            transition: 'all 0.1s linear',
+          }}
+        />
 
-          {/* Clinical label */}
-          <div
-            className="absolute top-6 left-6 clinical-label text-primary/80 bg-background/80 px-3 py-2 z-10"
+        {/* Content layout changes based on expansion */}
+        <div 
+          className={`relative z-10 ${
+            progress > 0.3 ? 'grid grid-cols-12 gap-0 min-h-full' : 'flex flex-col h-full'
+          }`}
+          style={{
+            transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          {/* Image section */}
+          <div 
+            className={`relative overflow-hidden ${
+              progress > 0.3 ? 'col-span-7' : 'flex-1'
+            }`}
             style={{
-              transform: `translateY(${tagParallaxY * 0.3}px)`,
+              transform: `translateZ(${progress * 20}px) rotateY(${progress * 2}deg)`,
               transition: 'transform 0.1s linear',
             }}
           >
-            {project.id.toUpperCase()} // {project.subtitle}
-          </div>
-        </div>
+            <ParticleImage
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full"
+              inView={inView}
+              scrollVelocity={scrollVelocity}
+            />
 
-        {/* Content section */}
-        <div className="col-span-12 md:col-span-6 p-8 md:p-12 flex flex-col justify-center space-y-6">
-          <h3 className="font-display text-2xl md:text-3xl font-medium text-foreground">
-            {project.title}
-          </h3>
-          
-          <p className="font-clinical text-sm text-muted-foreground leading-relaxed max-w-lg">
-            {project.description}
-          </p>
-
-          {/* Tags float above */}
-          <div
-            className="flex flex-wrap gap-3"
-            style={{
-              transform: `translateY(${tagParallaxY * 0.15}px)`,
-              transition: 'transform 0.15s linear',
-            }}
-          >
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-xs font-clinical uppercase tracking-wider text-accent border border-accent/20 px-3 py-1"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* Tools */}
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
-            {project.tools.map((tool) => (
-              <span key={tool} className="text-xs font-clinical text-muted-foreground">
-                {tool}
-              </span>
-            ))}
-          </div>
-
-          {/* Links */}
-          {project.links && (
-            <div className="flex gap-4 pt-4">
-              {project.links.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="clinical-label text-primary hover:text-accent transition-colors cursor-none"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {link.label} ↗
-                </a>
-              ))}
+            {/* Clinical label with 3D float */}
+            <div
+              className="absolute top-6 left-6 clinical-label text-primary/80 bg-background/80 px-3 py-2 z-10"
+              style={{
+                transform: `translateY(${tagParallaxY * 0.3}px) translateZ(${progress * 15}px)`,
+                transition: 'transform 0.1s linear',
+                opacity: 0.7 + progress * 0.3,
+              }}
+            >
+              {project.id.toUpperCase()} // {project.subtitle}
             </div>
-          )}
-
-          {/* View project indicator */}
-          <div className="clinical-label text-muted-foreground/50 group-hover:text-primary transition-colors pt-4">
-            [ VIEW PROJECT → ]
           </div>
+
+          {/* Content section - only appears when expanded */}
+          {progress > 0.2 && (
+            <motion.div 
+              className="col-span-5 p-8 md:p-12 flex flex-col justify-center space-y-6"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: Math.min(1, (progress - 0.2) * 2), x: 0 }}
+              style={{
+                transform: `translateZ(${progress * 10}px)`,
+              }}
+            >
+              <h3 className="font-display text-2xl md:text-3xl font-medium text-foreground">
+                {project.title}
+              </h3>
+              
+              <p className="font-clinical text-sm text-muted-foreground leading-relaxed max-w-lg">
+                {project.description}
+              </p>
+
+              {/* Tags with 3D float */}
+              <div
+                className="flex flex-wrap gap-3"
+                style={{
+                  transform: `translateY(${tagParallaxY * 0.15}px) translateZ(${progress * 8}px)`,
+                  transition: 'transform 0.15s linear',
+                }}
+              >
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs font-clinical uppercase tracking-wider text-accent border border-accent/20 px-3 py-1"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Tools */}
+              <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
+                {project.tools.map((tool) => (
+                  <span key={tool} className="text-xs font-clinical text-muted-foreground">
+                    {tool}
+                  </span>
+                ))}
+              </div>
+
+              {/* External Links Only */}
+              {project.links && (
+                <div className="flex gap-4 pt-4">
+                  {project.links.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="clinical-label text-primary hover:text-accent transition-colors cursor-none border border-primary/30 px-4 py-2 hover:bg-primary/10"
+                    >
+                      {link.label} ↗
+                    </a>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
         </div>
       </div>
     </motion.div>
