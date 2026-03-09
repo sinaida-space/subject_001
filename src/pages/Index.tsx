@@ -39,6 +39,9 @@ const Index = () => {
       </main>
 
       <Footer />
+      
+      {/* Cookie Banner */}
+      <CookieBanner />
     </div>
   );
 };
