@@ -43,9 +43,7 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
           <button onClick={onClose} className="absolute top-4 right-4 text-primary hover:text-foreground font-clinical text-sm tracking-widest cursor-none">
             [CLOSE]
           </button>
-          <div className="aspect-[16/10] overflow-hidden mb-6">
-            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-          </div>
+          <VHSImage src={project.image} alt={project.title} className="mb-6" />
           <span className="clinical-label text-accent">{project.subtitle}</span>
           <h2 className="font-display text-3xl text-foreground mt-2 mb-4">{project.title}</h2>
           <p className="text-sm text-muted-foreground font-clinical leading-relaxed mb-6">{project.description}</p>
