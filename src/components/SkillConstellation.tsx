@@ -252,10 +252,10 @@ export default function SkillConstellation() {
               );
             })}
           </div>
-        </div>
+          </div>
 
-        {/* RIGHT COLUMN — SVG mind map */}
-        <div className="flex-1 relative" style={{ minHeight: '85vh' }}>
+          {/* RIGHT COLUMN — SVG mind map */}
+          <div className="flex-1 relative min-h-[70vh]">
           <svg
             ref={svgRef}
             viewBox={`0 0 ${vw} ${vh}`}
