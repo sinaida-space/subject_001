@@ -91,7 +91,7 @@ const Index = () => {
         <AboutSection />
         <ServicesTerminal />
         <SkillConstellation />
-        <ContactSection />
+        <ContactChannel />
       </main>
 
       <Footer />
