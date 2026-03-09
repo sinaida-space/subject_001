@@ -46,7 +46,7 @@ export default function HeroSection() {
           }>
           
           <div className="border-l border-primary/30 pl-8 space-y-6">
-            <p className="font-clinical text-sm md:text-base text-muted-foreground leading-relaxed my-4">
+            <p className="font-mono text-[13px] leading-relaxed my-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
               ​Transforming complex ideas into visual systems designed for physical spaces, such as
               events, exhibitions, performances, and curated environments.
             </p>
