@@ -162,7 +162,7 @@ export default function AboutSection() {
 
                 {/* Block 1 — terminal header */}
                 <Reveal delay={300}>
-                  <div className="font-mono mb-7" style={{ fontSize: 10, color: '#00e5ff', opacity: 0.45, letterSpacing: '0.2em' }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 12, color: '#00e5ff', opacity: 0.45, letterSpacing: '0.2em' }}>
                     {'> BIO_FILE.load() — SUBJECT: SINAIDA — STATUS: ACTIVE'}
                   </div>
                 </Reveal>
