@@ -66,6 +66,7 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-timeline: --page-scroll block;
   }
 
   body {
