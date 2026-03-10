@@ -312,3 +312,26 @@
 .animate-terminal-cursor {
   animation: terminal-cursor-blink 0.6s infinite step-end;
 }
+
+@keyframes hover-glitch {
+  0% { transform: translate(0); filter: none; }
+  25% { transform: translate(-2px, 1px); filter: hue-rotate(20deg); }
+  50% { transform: translate(1px, -1px); filter: hue-rotate(-15deg) saturate(1.5); }
+  75% { transform: translate(-1px, 0); filter: hue-rotate(10deg); }
+  100% { transform: translate(0); filter: none; }
+}
+
+@keyframes hover-bloom {
+  0% {
+    filter: brightness(1) blur(0px);
+    text-shadow: none;
+  }
+  15% {
+    filter: brightness(1.4) blur(1px);
+    text-shadow: 0 0 8px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--accent) / 0.3);
+  }
+  100% {
+    filter: brightness(1) blur(0px);
+    text-shadow: none;
+  }
+}

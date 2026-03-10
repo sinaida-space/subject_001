@@ -2,11 +2,11 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const TABLET_BREAKPOINT = 1024;
+const TABLET_BREAKPOINT = 1025;
 
 function useIsTabletOrMobile() {
   const isMobile = useIsMobile();
-  const [isTablet, setIsTablet] = useState(false);
+  const [isTablet, setIsTablet] = useState(() => typeof window !== 'undefined' ? window.innerWidth < TABLET_BREAKPOINT : false);
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${TABLET_BREAKPOINT - 1}px)`);
