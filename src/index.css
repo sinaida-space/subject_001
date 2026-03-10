@@ -66,6 +66,7 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-timeline: --page-scroll block;
   }
 
   body {
@@ -244,6 +245,31 @@
       transparent
     );
   }
+
+  /* Hover glitch-bloom effect — desktop only, on elements without existing hover */
+  @media (hover: hover) and (min-width: 1025px) {
+    main h1,
+    main h2,
+    main h3,
+    main p,
+    main img:not(.no-hover-fx),
+    main .clinical-label,
+    footer p,
+    footer .clinical-label {
+      transition: filter 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    main h1:hover,
+    main h2:hover,
+    main h3:hover,
+    main p:hover,
+    main img:not(.no-hover-fx):hover,
+    main .clinical-label:hover,
+    footer p:hover,
+    footer .clinical-label:hover {
+      animation: hover-glitch 0.15s steps(2) 1, hover-bloom 1s ease-out 1;
+    }
+  }
 }
 
 @layer utilities {
@@ -299,4 +325,27 @@
 
 .animate-terminal-cursor {
   animation: terminal-cursor-blink 0.6s infinite step-end;
+}
+
+@keyframes hover-glitch {
+  0% { transform: translate(0); filter: none; }
+  25% { transform: translate(-2px, 1px); filter: hue-rotate(20deg); }
+  50% { transform: translate(1px, -1px); filter: hue-rotate(-15deg) saturate(1.5); }
+  75% { transform: translate(-1px, 0); filter: hue-rotate(10deg); }
+  100% { transform: translate(0); filter: none; }
+}
+
+@keyframes hover-bloom {
+  0% {
+    filter: brightness(1) blur(0px);
+    text-shadow: none;
+  }
+  15% {
+    filter: brightness(1.4) blur(1px);
+    text-shadow: 0 0 8px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--accent) / 0.3);
+  }
+  100% {
+    filter: brightness(1) blur(0px);
+    text-shadow: none;
+  }
 }
