@@ -246,13 +246,27 @@
     );
   }
 
-  /* Hover glitch-bloom effect — desktop only */
+  /* Hover glitch-bloom effect — desktop only, on elements without existing hover */
   @media (hover: hover) and (min-width: 1025px) {
-    .hover-glitch-bloom {
+    main h1,
+    main h2,
+    main h3,
+    main p,
+    main img:not(.no-hover-fx),
+    main .clinical-label,
+    footer p,
+    footer .clinical-label {
       transition: filter 0.3s ease, text-shadow 0.3s ease;
     }
 
-    .hover-glitch-bloom:hover {
+    main h1:hover,
+    main h2:hover,
+    main h3:hover,
+    main p:hover,
+    main img:not(.no-hover-fx):hover,
+    main .clinical-label:hover,
+    footer p:hover,
+    footer .clinical-label:hover {
       animation: hover-glitch 0.15s steps(2) 1, hover-bloom 1s ease-out 1;
     }
   }
