@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="col-span-12 md:col-span-4">
             <Logo />
             <p className="font-clinical text-xs text-muted-foreground mt-3 max-w-xs">
-              SINAIDA KRIVCHENKO | VISUAL ARTIST AND DIGITAL STRATEGIST
+              SINAIDA KRIVCHENKO<br />VISUAL ARTIST AND DIGITAL STRATEGIST
             </p>
           </div>
 
