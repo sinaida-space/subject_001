@@ -150,7 +150,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
 
     const textureLoader = new THREE.TextureLoader();
     const panels: THREE.Mesh[] = [];
-    const radius = 5.0;
+    const radius = 3.5;
 
     projects.slice(0, 3).forEach((project, i) => {
       const texture = textureLoader.load(project.image);
