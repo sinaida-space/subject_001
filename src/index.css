@@ -245,6 +245,17 @@
       transparent
     );
   }
+
+  /* Hover glitch-bloom effect — desktop only */
+  @media (hover: hover) and (min-width: 1025px) {
+    .hover-glitch-bloom {
+      transition: filter 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    .hover-glitch-bloom:hover {
+      animation: hover-glitch 0.15s steps(2) 1, hover-bloom 1s ease-out 1;
+    }
+  }
 }
 
 @layer utilities {
