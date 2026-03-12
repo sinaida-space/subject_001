@@ -38,8 +38,8 @@ export default function Header() {
           href="#contact"
           className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
           style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#ff3333'; e.currentTarget.style.color = '#000'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,51,51,0.06)'; e.currentTarget.style.color = '#ff3333'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#ff3333'; e.currentTarget.style.color = '#000'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,51,51,0.06)'; e.currentTarget.style.color = '#ff3333'; }}
         >
           CONTACT
         </a>
