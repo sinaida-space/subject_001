@@ -173,16 +173,16 @@ export default function AboutSection() {
 
                 {/* Block 2 — origin data */}
                 <Reveal delay={450}>
-                  <div className="mb-8" style={{ lineHeight: 2.0 }}>
+                  <div className="mb-8">
                     {[
                       ['ORIGIN', 'Biomedical engineering, MSc.'],
                       ['DIVERGENCE', 'Ballet. Corporate IT. Generative systems.'],
                       ['CURRENT STATE', 'AI visual art + creative direction.'],
                     ].map(([key, val]) => (
-                      <div key={key} className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
-                        <span style={{ display: 'inline-block', minWidth: 148 }}>{key}</span>
-                        <span style={{ opacity: 0.35 }}>{'····· '}</span>
-                        {val}
+                      <div key={key} className="font-mono" style={{ display: 'grid', gridTemplateColumns: '140px 20px 1fr', gap: '0 4px', marginBottom: 10, fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
+                        <span style={{ color: 'rgba(255,255,255,0.7)' }}>{key}</span>
+                        <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
+                        <span>{val}</span>
                       </div>
                     ))}
                   </div>
