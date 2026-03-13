@@ -175,8 +175,8 @@ export default function AboutSection() {
                 <Reveal delay={450}>
                   <div className="mb-8">
                     {[
-                      ['ORIGIN', 'Biomedical engineering, MSc.'],
-                      ['DIVERGENCE', 'Ballet. Corporate IT. Generative systems.'],
+                      ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
+                      ['DIVERGENCE', 'Ballet. General Electric IT Leadership Program. Generative systems.'],
                       ['CURRENT STATE', 'AI visual art + creative direction.'],
                     ].map(([key, val]) => (
                       <div key={key} className="font-mono" style={{ display: 'grid', gridTemplateColumns: '140px 20px 1fr', gap: '0 4px', marginBottom: 10, fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
