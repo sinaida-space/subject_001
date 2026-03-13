@@ -4,7 +4,7 @@ import Logo from './Logo';
 const NAV_ITEMS = [
 { label: 'GALLERY', href: '#work' },
 { label: 'About', href: '#about' },
-{ label: 'Services', href: '#services' }];
+{ label: 'Process', href: '#process' }];
 
 
 export default function Header() {
@@ -23,7 +23,7 @@ export default function Header() {
       }>
       
       <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
-        <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ cursor: 'none' }}><Logo /></a>
+        <Logo />
         <nav className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) =>
           <a

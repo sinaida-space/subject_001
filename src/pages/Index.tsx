@@ -89,8 +89,8 @@ const Index = () => {
         <HeroSection />
         <GalleryTunnel projects={PROJECTS} />
         <AboutSection />
-        <SkillConstellation />
         <ServicesTerminal />
+        <SkillConstellation />
         <ContactChannel />
       </main>
 
