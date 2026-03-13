@@ -11,7 +11,6 @@ const CATEGORIES = [
       'Generative AI systems',
       'Real-time audio-reactive visuals',
       'Projection mapping',
-      'Post-production & color grading',
       'AI-assisted visual pipelines',
     ],
   },
