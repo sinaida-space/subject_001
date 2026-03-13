@@ -3,15 +3,14 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 // ── Data ────────────────────────────────────────────────────
 const CATEGORIES = [
   {
-    name: 'Creative Technology',
-    color: '#00e5ff', // cyan
+    name: Strategic & Systems Thinking',
+    color: '#ff9933', // amber/orange
     items: [
-      'TouchDesigner',
-      'DaVinvi Resolve',
-      'Generative AI systems',
-      'Real-time audio-reactive visuals',
-      'Projection mapping',
-      'AI-assisted visual pipelines',
+      'Creative technology strategy',
+      'Interdisciplinary project leadership',
+      'Cultural program development',
+      'Digital experience design',
+      'Experimental media systems',
     ],
   },
   {
@@ -25,14 +24,15 @@ const CATEGORIES = [
     ],
   },
   {
-    name: 'Strategic & Systems Thinking',
-    color: '#ff9933', // amber/orange
+    name: 'Creative Technology',
+    color: '#00e5ff', // cyan
     items: [
-      'Creative technology strategy',
-      'Interdisciplinary project leadership',
-      'Cultural program development',
-      'Digital experience design',
-      'Experimental media systems',
+      'TouchDesigner',
+      'DaVinvi Resolve',
+      'Generative AI systems',
+      'Real-time audio-reactive visuals',
+      'Projection mapping',
+      'AI-assisted visual pipelines',
     ],
   },
   {
