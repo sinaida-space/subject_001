@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 // ── Data ────────────────────────────────────────────────────
 const CATEGORIES = [
   {
-    name: Strategic & Systems Thinking',
+    name: 'Strategic & Systems Thinking',
     color: '#ff9933', // amber/orange
     items: [
       'Creative technology strategy',
