@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Logo from './Logo';
 
 const NAV_ITEMS = [
-  { label: 'GALLERY', href: '#work' },
+  { label: 'Gallery', href: '#work' },
   { label: 'About', href: '#about' },
   { label: 'Services', href: '#services' },
 ];
@@ -80,7 +80,7 @@ export default function Header() {
             aria-label="Menu"
           >
             <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(7.5px) rotate(45deg)' : 'none' }} />
-            <span style={{ display: 'block', width: 22, height: 1.5, background: '#ff3333', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
+            <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
             <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(-7.5px) rotate(-45deg)' : 'none' }} />
           </button>
 
