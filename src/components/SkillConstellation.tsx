@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-/* ------------------------------------------------------------ */
-/* DATA */
-/* ------------------------------------------------------------ */
+/* ---------------------------------- DATA --------------------------------- */
 
 type Category = {
   name: string;
@@ -71,50 +69,45 @@ const CATEGORIES: Category[] = [
   },
 ];
 
-/* ------------------------------------------------------------ */
-/* TYPES */
-/* ------------------------------------------------------------ */
+/* ---------------------------------- TYPES -------------------------------- */
 
 type NodeType = "root" | "category" | "skill";
 
-interface MindMapNode {
+interface Node {
   id: string;
   label: string;
   x: number;
   y: number;
   color: string;
   type: NodeType;
-  parentId: string | null;
+  parent?: string;
   angle: number;
 }
 
-interface MindMapEdge {
+interface Edge {
   from: string;
   to: string;
   color: string;
 }
 
-/* ------------------------------------------------------------ */
-/* GRAPH GENERATOR */
-/* ------------------------------------------------------------ */
+/* ---------------------------- LAYOUT GENERATION --------------------------- */
 
-function buildMindMap(cx: number, cy: number) {
-  const nodes: MindMapNode[] = [];
-  const edges: MindMapEdge[] = [];
+function buildGraph(cx: number, cy: number) {
+  const nodes: Node[] = [];
+  const edges: Edge[] = [];
 
   nodes.push({
     id: "root",
-    label: "CREATIVE SYSTEMS",
+    label: "Skill Map",
     x: cx,
     y: cy,
-    color: "#777",
+    color: "#888",
     type: "root",
-    parentId: null,
     angle: 0,
   });
 
-  const catRadius = 280;
-  const skillRadius = 340;
+  const catRadius = 260;
+  const skillRadius = 200;
   const startAngle = -Math.PI * 0.75;
 
   CATEGORIES.forEach((cat, ci) => {
@@ -132,31 +125,32 @@ function buildMindMap(cx: number, cy: number) {
       y: catY,
       color: cat.color,
       type: "category",
-      parentId: "root",
+      parent: "root",
       angle,
     });
 
     edges.push({ from: "root", to: catId, color: cat.color });
 
-    const fanSpread = Math.min(0.7, 0.18 * cat.items.length);
+    const spread = Math.min(0.7, cat.items.length * 0.18);
 
     cat.items.forEach((item, si) => {
-      const t = (si / (cat.items.length - 1 || 1)) - 0.5;
-      const skillAngle = angle + t * fanSpread * 2;
+      const t = cat.items.length === 1 ? 0 : si / (cat.items.length - 1) - 0.5;
 
-      const skillX = catX + Math.cos(skillAngle) * skillRadius;
-      const skillY = catY + Math.sin(skillAngle) * skillRadius;
+      const skillAngle = angle + t * spread * 2;
+
+      const x = catX + Math.cos(skillAngle) * skillRadius;
+      const y = catY + Math.sin(skillAngle) * skillRadius;
 
       const skillId = `skill-${ci}-${si}`;
 
       nodes.push({
         id: skillId,
         label: item,
-        x: skillX,
-        y: skillY,
+        x,
+        y,
         color: cat.color,
         type: "skill",
-        parentId: catId,
+        parent: catId,
         angle: skillAngle,
       });
 
@@ -167,160 +161,139 @@ function buildMindMap(cx: number, cy: number) {
   return { nodes, edges };
 }
 
-/* ------------------------------------------------------------ */
-/* COMPONENT */
-/* ------------------------------------------------------------ */
+/* ------------------------------- COMPONENT -------------------------------- */
 
 export default function SkillConstellation() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const vw = 1400;
+  const vh = 1000;
+
+  const graph = useMemo(() => buildGraph(vw / 2, vh / 2), []);
+
+  const nodeMap = useMemo(
+    () => Object.fromEntries(graph.nodes.map((n) => [n.id, n])),
+    [graph.nodes]
+  );
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [hoverNode, setHoverNode] = useState<string | null>(null);
 
-  const vw = 1400;
-  const vh = 1050;
+  /* ----------------------------- INTERACTION ----------------------------- */
 
-  const graph = useMemo(() => buildMindMap(vw / 2, vh / 2), []);
+  function isDim(node: Node) {
+    if (!activeCategory) return false;
 
-  /* Fast lookup instead of .find() */
-  const nodeMap = useMemo(() => {
-    const map = new Map<string, MindMapNode>();
-    graph.nodes.forEach((n) => map.set(n.id, n));
-    return map;
-  }, [graph.nodes]);
+    if (node.type === "category") return node.label !== activeCategory;
 
-  /* Category toggle (desktop + mobile) */
+    if (node.type === "skill") {
+      const parent = nodeMap[node.parent!];
+      return parent.label !== activeCategory;
+    }
 
-  const toggleCategory = useCallback((name: string) => {
-    setActiveCategory((prev) => (prev === name ? null : name));
-  }, []);
+    return false;
+  }
+
+  /* ------------------------------- RENDER -------------------------------- */
 
   return (
-    <section
-      ref={sectionRef}
-      id="skills"
-      className="relative py-24"
-    >
-      <div className="container mx-auto px-6 max-w-7xl">
+    <section id="skills" className="relative py-24">
 
-        {/* -------------------------------------------------- */}
-        {/* SEO / CRAWLER FRIENDLY SKILL LIST */}
-        {/* -------------------------------------------------- */}
+      {/* SEO CONTENT (CRAWLABLE) */}
 
-        <div className="sr-only">
-          <h2>Skills</h2>
-          {CATEGORIES.map((cat) => (
-            <div key={cat.name}>
-              <h3>{cat.name}</h3>
-              <ul>
-                {cat.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+      <div className="sr-only">
+        <h2>Skills</h2>
 
-        <div className="flex flex-col md:flex-row gap-10">
-
-          {/* -------------------------------------------------- */}
-          {/* CATEGORY NAVIGATION */}
-          {/* -------------------------------------------------- */}
-
-          <div className="md:w-[220px] shrink-0">
-
-            <h3 className="font-mono uppercase tracking-[0.2em] text-sm">
-              Skill Map
-            </h3>
-
-            <ul className="mt-8 space-y-3">
-
-              {CATEGORIES.map((cat) => {
-                const active = activeCategory === cat.name;
-
-                return (
-                  <li key={cat.name}>
-                    <button
-                      onClick={() => toggleCategory(cat.name)}
-                      className="font-mono text-xs transition"
-                      style={{
-                        color: active ? "#00e5ff" : cat.color,
-                        opacity: activeCategory && !active ? 0.3 : 1,
-                      }}
-                    >
-                      {cat.name}
-                    </button>
-                  </li>
-                );
-              })}
+        {CATEGORIES.map((cat) => (
+          <section key={cat.name}>
+            <h3>{cat.name}</h3>
+            <ul>
+              {cat.items.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
             </ul>
-          </div>
-
-          {/* -------------------------------------------------- */}
-          {/* CONSTELLATION GRAPH */}
-          {/* -------------------------------------------------- */}
-
-          <div className="flex-1">
-
-            <svg
-              viewBox={`0 0 ${vw} ${vh}`}
-              className="w-full h-full"
-            >
-              {graph.edges.map((edge, i) => {
-                const from = nodeMap.get(edge.from)!;
-                const to = nodeMap.get(edge.to)!;
-
-                const dim =
-                  activeCategory &&
-                  !to.label.includes(activeCategory) &&
-                  to.type !== "root";
-
-                return (
-                  <line
-                    key={i}
-                    x1={from.x}
-                    y1={from.y}
-                    x2={to.x}
-                    y2={to.y}
-                    stroke={edge.color}
-                    strokeOpacity={dim ? 0.05 : 0.35}
-                  />
-                );
-              })}
-
-              {graph.nodes.map((node) => {
-                const dim =
-                  activeCategory &&
-                  node.type !== "root" &&
-                  !node.label.includes(activeCategory);
-
-                return (
-                  <g key={node.id}>
-                    <circle
-                      cx={node.x}
-                      cy={node.y}
-                      r={node.type === "root" ? 8 : 4}
-                      fill={node.color}
-                      opacity={dim ? 0.2 : 1}
-                    />
-
-                    {node.type !== "root" && (
-                      <text
-                        x={node.x + 10}
-                        y={node.y + 4}
-                        fontSize={12}
-                        fill={node.color}
-                        fontFamily="Space Mono"
-                      >
-                        {node.label}
-                      </text>
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-        </div>
+          </section>
+        ))}
       </div>
+
+      {/* VISUAL INTERACTIVE MAP */}
+
+      <svg viewBox={`0 0 ${vw} ${vh}`} className="w-full h-full">
+
+        {/* EDGES */}
+
+        {graph.edges.map((e, i) => {
+          const from = nodeMap[e.from];
+          const to = nodeMap[e.to];
+
+          const dim = activeCategory &&
+            CATEGORIES.find((c) => c.color === e.color)?.name !== activeCategory;
+
+          const mx = (from.x + to.x) / 2;
+          const my = (from.y + to.y) / 2;
+
+          const cx = mx + (vw / 2 - mx) * 0.15;
+          const cy = my + (vh / 2 - my) * 0.15;
+
+          return (
+            <path
+              key={i}
+              d={`M ${from.x} ${from.y} Q ${cx} ${cy} ${to.x} ${to.y}`}
+              stroke={e.color}
+              strokeWidth={to.type === "category" ? 1.5 : 0.8}
+              strokeOpacity={dim ? 0.05 : 0.35}
+              fill="none"
+            />
+          );
+        })}
+
+        {/* NODES */}
+
+        {graph.nodes.map((node) => {
+          const dim = isDim(node);
+          const hovered = hoverNode === node.id;
+
+          const r = node.type === "root" ? 8 : node.type === "category" ? 6 : 3.5;
+
+          return (
+            <g
+              key={node.id}
+              tabIndex={0}
+              role="button"
+              aria-label={node.label}
+              onMouseEnter={() => setHoverNode(node.id)}
+              onMouseLeave={() => setHoverNode(null)}
+              onFocus={() => setHoverNode(node.id)}
+              onBlur={() => setHoverNode(null)}
+              onClick={() => {
+                if (node.type === "category") {
+                  setActiveCategory(node.label);
+                }
+              }}
+            >
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r={hovered ? r * 1.4 : r}
+                fill={node.color}
+                opacity={dim ? 0.2 : 1}
+              />
+
+              {node.type !== "root" && (
+                <text
+                  x={node.x}
+                  y={node.y - 14}
+                  textAnchor="middle"
+                  fill={node.color}
+                  fontSize={12}
+                  fontFamily="Space Mono"
+                  opacity={dim ? 0.2 : 0.9}
+                >
+                  {node.label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
     </section>
   );
 }
