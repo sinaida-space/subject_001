@@ -7,13 +7,12 @@ const CATEGORIES = [
     color: '#00e5ff', // cyan
     items: [
       'TouchDesigner',
-      'DaVinci Resolve',
       'Generative AI systems',
-      'Projection-mapped visual systems',
+      'DaVinci Resolve post-production & color grading',
       'Real-time audio-reactive visuals',
+      'Projection mapping',
       'Procedural animation',
       'AI-assisted visual pipelines',
-      'Post-production & color grading',
     ],
   },
   {
