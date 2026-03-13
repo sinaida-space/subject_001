@@ -87,7 +87,7 @@ function PhotoBlock() {
 
         <img
           ref={imgRef}
-          src="/subject_001/sinaida-photo.jpg"
+          src="/sinaida-photo.jpg"
           alt="Sinaida"
           style={{
             width: '100%',
