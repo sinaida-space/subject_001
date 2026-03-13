@@ -26,7 +26,7 @@ export default function ContactSection() {
             </div>
           </div>
 
-          <div className={`col-span-12 md:col-span-9 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <div className={`col-span-12 md:col-span-9 transition-all duration-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {/* Collaboration callout — moved up */}
             <div className="mb-12">
               <h2 className="font-display text-2xl md:text-4xl font-light mb-8">
