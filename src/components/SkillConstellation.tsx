@@ -3,16 +3,6 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 // ── Data ────────────────────────────────────────────────────
 const CATEGORIES = [
   {
-    name: 'Research Interests',
-    color: '#cc66ff', // violet
-    items: [
-      'Computational aesthetics',
-      'Human-AI creative collaboration',
-      'Cognitive science of creativity',
-      'Human perception and generative media',
-    ],
-  },
-  {
     name: 'Creative Technology',
     color: '#00e5ff', // cyan
     items: [
@@ -24,6 +14,16 @@ const CATEGORIES = [
       'Procedural animation',
       'AI-assisted visual pipelines',
       'Post-production & color grading',
+    ],
+  },
+  {
+    name: 'Research Interests',
+    color: '#cc66ff', // violet
+    items: [
+      'Computational aesthetics',
+      'Human-AI creative collaboration',
+      'Cognitive science of creativity',
+      'Human perception and generative media',
     ],
   },
   {
@@ -45,7 +45,6 @@ const CATEGORIES = [
       'Data-driven creative workflows',
       'Algorithmic visual systems',
       'System architecture & optimization',
-      'Biomedical engineering (MSc)',
       'Creative web technologies',
     ],
   },
