@@ -3,14 +3,13 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 // ── Data ────────────────────────────────────────────────────
 const CATEGORIES = [
   {
-    name: 'Creative Direction',
-    color: '#ff3333', // red
+    name: 'Research Interests',
+    color: '#cc66ff', // violet
     items: [
-      'Event experience design',
-      'Visual narrative development',
-      'Aesthetic systems & visual language design',
-      'Narrative-driven visual systems',
-      'Concept design',
+      'Computational aesthetics',
+      'Human-AI creative collaboration',
+      'Cognitive science of creativity',
+      'Human perception and generative media',
     ],
   },
   {
@@ -51,13 +50,14 @@ const CATEGORIES = [
     ],
   },
   {
-    name: 'Research Interests',
-    color: '#cc66ff', // violet
+    name: 'Creative Direction',
+    color: '#ff3333', // red
     items: [
-      'Computational aesthetics',
-      'Human-AI creative collaboration',
-      'Cognitive science of creativity',
-      'Human perception and generative media',
+      'Event experience design',
+      'Visual narrative development',
+      'Aesthetic systems & visual language design',
+      'Narrative-driven visual systems',
+      'Concept design',
     ],
   },
 ];
