@@ -39,7 +39,7 @@ export default function ContactSection() {
             </div>
 
             <div className="font-clinical text-sm md:text-base text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-6">
-              <p className="my-3 py-[21px] pt-[21px] pb-0">Available for immersive installations, stage visuals, creative direction, experience design, and generative art commissions.<br /> Based in Prague, working globally.
+              <p className="my-3 py-[21px] pt-[21px] pb-0">Available for immersive installations, stage visuals, creative direction, release assets, experience design, and generative art commissions.<br /> Based in Prague, working globally.
               </p>
               <p className="my-3 py-[21px] pb-0 pt-[21px]">
 </p>
