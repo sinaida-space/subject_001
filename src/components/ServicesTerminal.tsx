@@ -205,7 +205,21 @@ function ServiceBlock({
     }
   }, [done, onDone]);
 
-  if (!active && outputs.length === 0) return null;
+  // Reserve layout space before the block animates in — prevents section height jumping
+  if (!active && outputs.length === 0) {
+    return (
+      <div style={{ visibility: 'hidden', pointerEvents: 'none', paddingBottom: '1rem', marginBottom: '0.5rem' }}>
+        <h3 className="font-mono text-base font-medium mb-2" style={{ color: '#00e5ff' }}>
+          {service.title}
+        </h3>
+        {descLines.map((line, i) => (
+          <div key={i} className="font-mono text-[13px]" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            {`  │ ${line}`}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const commandLine = outputs[0] ?? '';
   const displayCommand = glitchName
@@ -403,8 +417,11 @@ export default function ServicesTerminal() {
                   active={activeIndex >= i}
                   onDone={() => handleServiceDone(i)}
                 />
-                {i < SERVICES.length - 1 && activeIndex > i && (
-                  <div className="my-4 font-mono text-sm" style={{ opacity: 0.12 }}>
+                {i < SERVICES.length - 1 && (
+                  <div
+                    className="my-4 font-mono text-sm"
+                    style={{ opacity: activeIndex > i ? 0.12 : 0, visibility: activeIndex > i ? 'visible' : 'hidden' }}
+                  >
                     {SEPARATOR}
                   </div>
                 )}

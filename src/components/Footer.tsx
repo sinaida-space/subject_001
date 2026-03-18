@@ -21,9 +21,15 @@ export default function Footer() {
           <div className="col-span-6 md:col-span-2">
             <div className="clinical-label text-primary mb-4">Navigate</div>
             <div className="space-y-2">
-              {['Work', 'About', 'Process', 'Contact'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none">
-                  {item}
+              {[
+                { label: 'Work', href: '#work' },
+                { label: 'About', href: '#about' },
+                { label: 'Services', href: '#services' },
+                { label: 'Skills', href: '#skills' },
+                { label: 'Contact', href: '#contact' },
+              ].map((item) => (
+                <a key={item.label} href={item.href} className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none">
+                  {item.label}
                 </a>
               ))}
             </div>

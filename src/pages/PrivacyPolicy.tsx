@@ -9,7 +9,7 @@ const PrivacyPolicy = () => {
         <h1 className="font-display text-4xl font-light mb-8">Privacy Policy</h1>
 
         <div className="prose prose-invert font-clinical text-sm text-secondary-foreground space-y-6 leading-relaxed">
-          <p>Zinaida Krivchenko ("I", "me", or "the Website") is committed to protecting your personal data. This privacy policy will explain how I use the personal data collected from you when you use this website.</p>
+          <p>Sinaida Krivchenko ("I", "me", or "the Website") is committed to protecting your personal data. This privacy policy will explain how I use the personal data collected from you when you use this website.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">Topics</h2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
@@ -93,7 +93,7 @@ const PrivacyPolicy = () => {
             If you have any questions about this privacy policy, the data I hold on you, or you would like to exercise one of your data protection rights, please do not hesitate to contact me.
           </p>
           <p className="text-muted-foreground">
-            Name: Zinaida Krivchenko<br />
+            Name: Sinaida Krivchenko<br />
             Location: Prague, Czechia<br />
             Contact: Telegram @theswansarenotwhattheyseem
           </p>

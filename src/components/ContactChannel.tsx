@@ -342,8 +342,8 @@ export default function ContactChannel() {
             <WaveformCanvas mouseY={mouseY} sectionHeight={sectionHeight} isActive={mouseActive} />
           </div>
 
-          {/* Terminal text */}
-          <div className="max-w-2xl">
+          {/* Terminal text — min-height reserves final layout size, preventing jumps as text types */}
+          <div className="max-w-2xl" style={{ minHeight: 580 }}>
             {/* Sys line */}
             <div className="font-mono text-[12px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
               {inView ? '> COMM.SYS ONLINE — CHANNEL OPEN' : ''}
