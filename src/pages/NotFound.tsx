@@ -98,7 +98,6 @@ function PulsingECG({ onClick }: { onClick: () => void }) {
     }
     ctx.stroke();
 
-    // Glow baseline
     ctx.beginPath();
     ctx.strokeStyle = `hsla(0, 100%, 55%, ${bright ? 0.25 : 0.12})`;
     ctx.lineWidth = 3;
@@ -176,7 +175,6 @@ export default function NotFound() {
     >
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
 
-      {/* Particle background */}
       <Suspense fallback={null}>
         <div className="absolute inset-0 z-0">
           <ParticleField />
@@ -186,10 +184,8 @@ export default function NotFound() {
       <VHSOverlay />
       <CustomCursor />
 
-      {/* Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-2xl">
 
-        {/* Clinical label */}
         <div
           className="font-mono uppercase mb-6 tracking-widest text-xs"
           style={{ color: 'rgba(255,255,255,0.35)', letterSpacing: '0.3em' }}
@@ -197,7 +193,6 @@ export default function NotFound() {
           SINAIDA_OS v2.4.1 — NAVIGATION ERROR
         </div>
 
-        {/* 404 */}
         <h1
           className="font-mono select-none"
           style={{
@@ -215,14 +210,12 @@ export default function NotFound() {
           {glitched404}
         </h1>
 
-        {/* Subtitle */}
         <div className="mt-2 mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
           <span className="font-mono" style={{ fontSize: '1.1rem', letterSpacing: '0.12em' }}>
             — lost in the void.
           </span>
         </div>
 
-        {/* Terminal lines */}
         <div
           className="font-mono text-left w-full mb-10 space-y-1"
           style={{ color: 'rgba(0,229,255,0.55)', fontSize: '0.75rem' }}
@@ -232,11 +225,10 @@ export default function NotFound() {
           {line2.done && <div>{line3.displayed}{!line3.done && <span className="animate-terminal-cursor">█</span>}</div>}
         </div>
 
-        {/* Action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           <a
             href="/"
-            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 text-center transition-all duration-200"
+            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 flex items-center justify-center transition-all duration-200"
             style={{
               border: '1px solid #ff3333',
               color: '#ff3333',
@@ -257,7 +249,7 @@ export default function NotFound() {
             href="https://open.spotify.com/playlist/2Hs1OUJppCUNZRxZh5bppa"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 text-center transition-all duration-200"
+            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 flex items-center justify-center transition-all duration-200"
             style={{
               border: '1px solid rgba(0,229,255,0.4)',
               color: 'rgba(0,229,255,0.7)',
@@ -274,12 +266,11 @@ export default function NotFound() {
               (e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none';
             }}
           >
-            ♪ get lost in space ↗
+            ♪ drift into space ↗
           </a>
         </div>
 
-        {/* Bottom label + ECG easter egg */}
-        <div className="mt-12 flex flex-col items-center gap-3">
+        <div className="mt-16 mb-4 flex flex-col items-center gap-6">
           <PulsingECG onClick={() => setSnakeOpen(true)} />
           <div
             className="font-mono text-xs uppercase tracking-widest"
