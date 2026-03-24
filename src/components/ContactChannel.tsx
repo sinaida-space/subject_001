@@ -164,17 +164,19 @@ function useTyper(text: string, speed: number, startDelay: number, trigger: bool
     if (!trigger || started.current) return;
     started.current = true;
     let i = 0;
-    const timeout = setTimeout(() => {
-      const iv = setInterval(() => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) {
-          clearInterval(iv);
-          setDone(true);
-        }
-      }, speed);
-    }, startDelay);
-    return () => clearTimeout(timeout);
+    let tid: ReturnType<typeof setTimeout>;
+
+    const typeNext = () => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) { setDone(true); return; }
+      // Jitter: 60–140 % of base speed → organic machine-typing feel
+      const next = speed > 0 ? speed * (0.6 + Math.random() * 0.8) : 0;
+      tid = setTimeout(typeNext, next);
+    };
+
+    tid = setTimeout(typeNext, startDelay);
+    return () => clearTimeout(tid);
   }, [trigger, text, speed, startDelay]);
 
   return { displayed, done };
@@ -236,30 +238,30 @@ export default function ContactChannel() {
     mouseTimer.current = setTimeout(() => setMouseActive(false), 2000);
   }, []);
 
-  // Typing sequences — heading completes in ~2s total
+  // Typing sequences — snappy machine-typing feel
   const sysLine = useTyper('> COMM.SYS ONLINE — CHANNEL OPEN', 0, 0, inView);
-  const openFor = useTyper('Open for', 30, 100, inView);
-  const collab = useTyper('Collaboration', 30, 100 + 8 * 30 + 40, inView);
+  const openFor = useTyper('Open for', 12, 100, inView);
+  const collab = useTyper('Collaboration', 12, 100 + 8 * 12 + 40, inView);
 
   // Continue after heading types
-  const transmissionDelay = 100 + (8 + 13) * 30 + 40 + 150;
-  const txHeader = useTyper('> incoming_transmission.decode() —', 18, transmissionDelay, inView);
+  const transmissionDelay = 100 + (8 + 13) * 12 + 40 + 120;
+  const txHeader = useTyper('> incoming_transmission.decode() —', 8, transmissionDelay, inView);
 
   const para1 = 'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let\'s talk.';
-  const p1Delay = transmissionDelay + 34 * 18 + 200;
-  const typed1 = useTyper(para1, 12, p1Delay, inView);
+  const p1Delay = transmissionDelay + 34 * 8 + 160;
+  const typed1 = useTyper(para1, 5, p1Delay, inView);
 
-  const availDelay = p1Delay + para1.length * 12 + 300;
-  const availHeader = useTyper('> available_for.list() —', 18, availDelay, inView);
+  const availDelay = p1Delay + para1.length * 5 + 200;
+  const availHeader = useTyper('> available_for.list() —', 8, availDelay, inView);
 
   const para2 = 'Immersive installations  ·  Creative direction\nStage visuals  ·  Exhibition design\nGenerative art commissions\n──────────────────────────\nBased in Prague. Working globally.';
-  const p2Delay = availDelay + 24 * 18 + 200;
-  const typed2 = useTyper(para2, 10, p2Delay, inView);
+  const p2Delay = availDelay + 24 * 8 + 160;
+  const typed2 = useTyper(para2, 4, p2Delay, inView);
 
   const ctaVisible = typed2.done;
 
-  const finalDelay = p2Delay + para2.length * 10 + 600;
-  const finalLine = useTyper('> channel remains open. awaiting response', 18, finalDelay, inView);
+  const finalDelay = p2Delay + para2.length * 4 + 300;
+  const finalLine = useTyper('> channel remains open. awaiting response', 8, finalDelay, inView);
 
   return (
     <section
@@ -365,7 +367,17 @@ export default function ContactChannel() {
             </div>
 
             <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.75)' }}>
-              {typed1.displayed}
+              {(() => {
+                const marker = "— let's talk.";
+                const idx = typed1.displayed.indexOf('— let');
+                if (idx === -1) return typed1.displayed;
+                return (
+                  <>
+                    {typed1.displayed.slice(0, idx)}
+                    <span style={{ color: '#ff3333', fontWeight: 700 }}>{typed1.displayed.slice(idx)}</span>
+                  </>
+                );
+              })()}
             </p>
 
             {/* Available for */}
