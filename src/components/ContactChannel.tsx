@@ -1,7 +1,13 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, type MutableRefObject } from 'react';
+
+type WaveformInteraction = {
+  mouseY: number;
+  sectionHeight: number;
+  isActive: boolean;
+};
 
 // ── Waveform Canvas ─────────────────────────────────────────
-function WaveformCanvas({ mouseY, sectionHeight, isActive }: { mouseY: number; sectionHeight: number; isActive: boolean }) {
+function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<WaveformInteraction> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tRef = useRef(0);
   const amplitudeRef = useRef(0.3);
@@ -17,20 +23,23 @@ function WaveformCanvas({ mouseY, sectionHeight, isActive }: { mouseY: number; s
     const resize = () => {
       const rect = canvas.parentElement?.getBoundingClientRect();
       if (rect) {
-        canvas.width = rect.width * window.devicePixelRatio;
-        canvas.height = 120 * window.devicePixelRatio;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = 120 * dpr;
         canvas.style.width = rect.width + 'px';
         canvas.style.height = '120px';
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
       }
     };
     resize();
     window.addEventListener('resize', resize);
 
     const draw = () => {
-      const w = canvas.width / window.devicePixelRatio;
-      const h = canvas.height / window.devicePixelRatio;
-      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width / dpr;
+      const h = canvas.height / dpr;
+      const { mouseY, sectionHeight, isActive } = interactionRef.current;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
       // Scan lines
@@ -92,7 +101,7 @@ function WaveformCanvas({ mouseY, sectionHeight, isActive }: { mouseY: number; s
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [mouseY, sectionHeight, isActive]);
+  }, [interactionRef]);
 
   return <canvas ref={canvasRef} className="w-full" style={{ height: 120 }} />;
 }
@@ -210,10 +219,12 @@ function GlitchText({ text, active, className, style }: { text: string; active: 
 export default function ContactChannel() {
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
-  const [mouseY, setMouseY] = useState(0);
-  const [mouseActive, setMouseActive] = useState(false);
-  const [sectionHeight, setSectionHeight] = useState(1);
   const mouseTimer = useRef<ReturnType<typeof setTimeout>>();
+  const interactionRef = useRef<WaveformInteraction>({
+    mouseY: 0,
+    sectionHeight: 1,
+    isActive: false,
+  });
 
   // IntersectionObserver
   useEffect(() => {
@@ -231,12 +242,23 @@ export default function ContactChannel() {
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const rect = sectionRef.current?.getBoundingClientRect();
     if (!rect) return;
-    setMouseY(e.clientY - rect.top);
-    setSectionHeight(rect.height);
-    setMouseActive(true);
+
+    interactionRef.current.mouseY = e.clientY - rect.top;
+    interactionRef.current.sectionHeight = rect.height;
+    interactionRef.current.isActive = true;
+
     clearTimeout(mouseTimer.current);
-    mouseTimer.current = setTimeout(() => setMouseActive(false), 2000);
+    mouseTimer.current = setTimeout(() => {
+      interactionRef.current.isActive = false;
+    }, 2000);
   }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    interactionRef.current.isActive = false;
+    clearTimeout(mouseTimer.current);
+  }, []);
+
+  useEffect(() => () => clearTimeout(mouseTimer.current), []);
 
   // Typing sequences — snappy machine-typing feel
   const sysLine = useTyper('> COMM.SYS ONLINE — CHANNEL OPEN', 0, 0, inView);
@@ -269,6 +291,7 @@ export default function ContactChannel() {
       id="contact"
       className="relative z-10 py-24 overflow-hidden"
       onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Scanline + particle keyframes */}
       <style>{`
@@ -341,7 +364,7 @@ export default function ContactChannel() {
           <div className="flex-1">
           {/* Waveform */}
           <div className="mb-10">
-            <WaveformCanvas mouseY={mouseY} sectionHeight={sectionHeight} isActive={mouseActive} />
+            <WaveformCanvas interactionRef={interactionRef} />
           </div>
 
           {/* Terminal text */}

@@ -307,7 +307,13 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
       container.removeEventListener('wheel', handleWheel);
       container.removeEventListener('click', handleClick);
       cancelAnimationFrame(animFrame);
-      panels.forEach((p) => { p.geometry.dispose(); (p.material as THREE.MeshBasicMaterial).dispose(); });
+      panels.forEach((panel) => {
+        const material = panel.material as THREE.MeshBasicMaterial;
+        material.map?.dispose();
+        material.map = null;
+        material.dispose();
+        panel.geometry.dispose();
+      });
       renderer.dispose();
     };
   }, [isMobile, projects, panelHeights]);

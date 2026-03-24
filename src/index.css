@@ -72,9 +72,17 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-mono);
-    cursor: none;
     overflow-x: hidden;
     background: radial-gradient(circle at center, hsl(var(--background)), hsl(var(--background) / 0.85));
+  }
+
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
+    cursor: none !important;
+  }
+
+  body:not(.has-custom-cursor) .cursor-none {
+    cursor: inherit !important;
   }
 
   h1, h2, h3, h4, h5, h6 {

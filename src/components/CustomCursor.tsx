@@ -7,6 +7,8 @@ export default function CustomCursor() {
   const target = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    document.body.classList.add('has-custom-cursor');
+
     const handleMove = (e: MouseEvent) => {
       target.current = { x: e.clientX, y: e.clientY };
     };
@@ -29,6 +31,7 @@ export default function CustomCursor() {
     raf = requestAnimationFrame(animate);
 
     return () => {
+      document.body.classList.remove('has-custom-cursor');
       window.removeEventListener('mousemove', handleMove);
       cancelAnimationFrame(raf);
     };
