@@ -93,6 +93,8 @@ function useTypingSequence(
             if (cancelled.current) return;
             const charIndex = c;
             await new Promise<void>(r => {
+              // Jitter: 60–140% of base speed for machine-typing feel
+              const jitter = line.speed > 0 ? line.speed * (0.6 + Math.random() * 0.8) : 0;
               const t = setTimeout(() => {
                 setOutputs(prev => {
                   const next = [...prev];
@@ -100,7 +102,7 @@ function useTypingSequence(
                   return next;
                 });
                 r();
-              }, line.speed);
+              }, jitter);
               timeouts.push(t);
             });
           }
