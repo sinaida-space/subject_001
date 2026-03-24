@@ -188,21 +188,18 @@ export default function AboutSection() {
                   </div>
                 </Reveal>
 
-                {/* Block 3 — body text */}
+                {/* Block 3 — belief statement */}
                 <Reveal delay={600}>
                   <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
-                    <p className="mb-4">
-                      I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
-                    </p>
                     <p>
-                      I create visual worlds designed to be experienced in physical spaces. I help arts organisations build the visual identity, digital infrastructure, and audience strategy that makes their work visible and financially sustainable.
+                      I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
                     </p>
                   </div>
                 </Reveal>
 
                 {/* Block 4 — statement cascade */}
-                <Reveal>
-                  <div className="mb-8" style={{ lineHeight: 2.2 }}>
+                <Reveal delay={700}>
+                  <div className="mb-7" style={{ lineHeight: 2.2 }}>
                     <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)' }}>
                       Human first.
                     </div>
@@ -212,7 +209,16 @@ export default function AboutSection() {
                   </div>
                 </Reveal>
 
-                {/* Block 5 — footer data */}
+                {/* Block 5 — value proposition */}
+                <Reveal delay={800}>
+                  <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
+                    <p>
+                      I create visual worlds designed to be experienced in physical spaces. I help arts organisations build the visual identity, digital infrastructure, and audience strategy that makes their work visible and financially sustainable.
+                    </p>
+                  </div>
+                </Reveal>
+
+                {/* Block 6 — footer data */}
                 <Reveal delay={900}>
                   <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
