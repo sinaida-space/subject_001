@@ -201,7 +201,7 @@ export default function AboutSection() {
                 </Reveal>
 
                 {/* Block 4 — statement cascade */}
-                <Reveal delay={750}>
+                <Reveal>
                   <div className="mb-8" style={{ lineHeight: 2.2 }}>
                     <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)' }}>
                       Human first.
