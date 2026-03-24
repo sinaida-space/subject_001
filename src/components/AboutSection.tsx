@@ -191,7 +191,7 @@ export default function AboutSection() {
                   </div>
                 </Reveal>
                 <Reveal delay={900}>
-                  <div className="flex flex-wrap gap-4 mb-8">
+                  <div className="flex flex-wrap gap-4 mt-10 mb-10">
                     <a
                       href="mailto:gallant_mod5v@icloud.com"
                       className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
