@@ -393,7 +393,7 @@ export default function ServicesTerminal() {
           <div style={{ opacity: 0.35 }} className="text-sm mb-8 leading-relaxed">
             <div>{`SINAIDA_OS v2.4.1 — CREATIVE SYSTEMS TERMINAL`}</div>
             <div>{`Loading service modules... [████████████] 100%`}</div>
-            <div>{`4 modules active. Type index to expand.`}</div>
+            <div>{`4 modules active.`}</div>
           </div>
 
           {/* Service blocks */}
