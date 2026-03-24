@@ -2,7 +2,7 @@ const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background py-24">
       <div className="container mx-auto px-6 max-w-3xl">
-        <a href="/" className="clinical-label text-primary hover:text-accent transition-colors mb-8 inline-block cursor-none">
+        <a href="/" className="clinical-label text-primary hover:text-accent transition-colors mb-8 inline-block">
           ← Back
         </a>
 
