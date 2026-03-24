@@ -396,7 +396,7 @@ export default function ContactChannel() {
 
             {/* CTA Buttons */}
             <div
-              className="flex flex-wrap gap-4 mb-10 transition-opacity duration-600"
+              className="flex flex-wrap gap-4 mt-10 mb-12 transition-opacity duration-600"
               style={{ opacity: ctaVisible ? 1 : 0 }}
             >
               <a
