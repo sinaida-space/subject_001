@@ -21,14 +21,14 @@ export default function Footer() {
           <div className="col-span-6 md:col-span-2">
             <div className="clinical-label text-primary mb-4">Navigate</div>
             <div className="space-y-2">
-              {['Work', 'About', 'Process', 'Contact'].map((item) => (
+              {['Work', 'About', 'Services','Contact'].map((item) => (
                 <a key={item} href={`#${item.toLowerCase()}`} className="block font-clinical text-xs text-muted-foreground hover:text-foreground transition-colors cursor-none">
                   {item}
                 </a>
               ))}
             </div>
           </div>
-          <div className="col-span-6 md:col-span-2">
+          <div className="col-span-6 md:col-span-2
             <div className="clinical-label text-primary mb-4">Connect</div>
             <div className="space-y-2">
               {[
