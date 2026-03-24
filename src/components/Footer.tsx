@@ -28,7 +28,7 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          <div className="col-span-6 md:col-span-2
+          <div className="col-span-6 md:col-span-2">
             <div className="clinical-label text-primary mb-4">Connect</div>
             <div className="space-y-2">
               {[
