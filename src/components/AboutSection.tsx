@@ -192,10 +192,10 @@ export default function AboutSection() {
                 <Reveal delay={600}>
                   <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
                     <p className="mb-4">
-                      I operate at the threshold where diagnostic precision meets digital organisms — where the analytical tools of science become the aesthetic tools of immersive experience.
+                      I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
                     </p>
                     <p>
-                      The work spans stages, exhibitions, and live environments. Real-time visuals built in TouchDesigner. Cinematic worlds rendered through diffusion and post-production. Systems that respond, breathe, and perform.
+                      I create visual worlds designed to be experienced in physical spaces. I help arts organisations build the visual identity, digital infrastructure, and audience strategy that makes their work visible and financially sustainable.
                     </p>
                   </div>
                 </Reveal>
@@ -204,10 +204,10 @@ export default function AboutSection() {
                 <Reveal delay={750}>
                   <div className="mb-8" style={{ lineHeight: 2.2 }}>
                     <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)' }}>
-                      The latent space is not a metaphor.
+                      Human first.
                     </div>
                     <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', paddingLeft: 24 }}>
-                      It's a territory.
+                      Digital second.
                     </div>
                   </div>
                 </Reveal>
