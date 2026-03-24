@@ -123,9 +123,7 @@ export default function AboutSection() {
         <DustReveal>
           <div className="section-divider mb-16" />
         </DustReveal>
-
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-          {/* Left label */}
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
               <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
@@ -136,8 +134,6 @@ export default function AboutSection() {
               </div>
             </Reveal>
           </div>
-
-          {/* Right content */}
           <div className="flex-1">
             <Reveal delay={50}>
               <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-10">
@@ -145,20 +141,16 @@ export default function AboutSection() {
                 <span className="text-primary font-bold"> human expression</span>
               </h2>
             </Reveal>
-
             <div className="flex flex-col md:flex-row items-start gap-12">
               <Reveal delay={150}>
                 <PhotoBlock />
               </Reveal>
-
               <div className="flex-1 min-w-0">
-
                 <Reveal delay={300}>
                   <div className="font-mono mb-7" style={{ fontSize: 12, color: '#00e5ff', opacity: 0.45, letterSpacing: '0.2em' }}>
                     {'> BIO_FILE.load() — SUBJECT: SINAIDA — STATUS: ACTIVE'}
                   </div>
                 </Reveal>
-
                 <Reveal delay={450}>
                   <div className="mb-8">
                     {[
@@ -174,7 +166,6 @@ export default function AboutSection() {
                     ))}
                   </div>
                 </Reveal>
-
                 <Reveal delay={600}>
                   <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
                     <p>
@@ -182,7 +173,6 @@ export default function AboutSection() {
                     </p>
                   </div>
                 </Reveal>
-
                 <Reveal delay={700}>
                   <div className="mb-7" style={{ lineHeight: 2.2 }}>
                     <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)' }}>
@@ -193,7 +183,6 @@ export default function AboutSection() {
                     </div>
                   </div>
                 </Reveal>
-
                 <Reveal delay={800}>
                   <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
                     <p>
@@ -201,12 +190,11 @@ export default function AboutSection() {
                     </p>
                   </div>
                 </Reveal>
-
                 <Reveal delay={900}>
                   <div className="flex flex-wrap gap-4 mb-8">
                     <a
                       href="mailto:gallant_mod5v@icloud.com"
-                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-8 py-4 transition-all duration-300 cursor-pointer select-none"
                       style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
                       onMouseEnter={e => { e.currentTarget.style.background = '#ff3333'; e.currentTarget.style.color = '#000'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,51,51,0.06)'; e.currentTarget.style.color = '#ff3333'; }}
@@ -217,7 +205,7 @@ export default function AboutSection() {
                       href="https://www.instagram.com/sin.ai.da/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-8 py-4 transition-all duration-300 cursor-pointer select-none"
                       style={{ border: '1px solid rgba(0,229,255,0.4)', color: '#00e5ff' }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.08)'; e.currentTarget.style.borderColor = '#00e5ff'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)'; }}
@@ -228,7 +216,7 @@ export default function AboutSection() {
                       href="https://www.linkedin.com/in/sinaida"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-8 py-4 transition-all duration-300 cursor-pointer select-none"
                       style={{ border: '1px solid rgba(0,229,255,0.4)', color: '#00e5ff' }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.08)'; e.currentTarget.style.borderColor = '#00e5ff'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)'; }}
@@ -237,7 +225,6 @@ export default function AboutSection() {
                     </a>
                   </div>
                 </Reveal>
-
                 <Reveal delay={1000}>
                   <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
@@ -247,7 +234,6 @@ export default function AboutSection() {
                     {'AVAILABLE: Projects between engineering and emotion'}
                   </div>
                 </Reveal>
-
               </div>
             </div>
           </div>
