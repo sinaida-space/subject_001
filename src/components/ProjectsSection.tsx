@@ -56,8 +56,7 @@ const PROJECTS: Project[] = [
     tags: ['Generative', 'Audio-Reactive', 'Real-time'],
     tools: ['TouchDesigner', 'Midjourney', 'Suno'],
     links: [
-      { label: 'Behance', url: 'https://www.behance.net/gallery/245415773/Synesthetic-Bloom-An-Audio-Responsive-Digital-Organism' },
-      { label: 'YouTube', url: 'https://youtu.be/pzq0BSVzw28' },
+      { label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' },
     ],
   },
 ];
