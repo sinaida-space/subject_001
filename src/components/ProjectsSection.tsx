@@ -54,7 +54,7 @@ const PROJECTS: Project[] = [
       'Sound transforms into pulsating architecture — a digital structure with a heartbeat synchronized to its auditory environment.',
     image: projectSynesthetic,
     tags: ['Generative', 'Audio-Reactive', 'Real-time'],
-    tools: ['TouchDesigner', 'Midjourney', 'Suno'],
+    tools: ['TouchDesigner', 'Suno'],
     links: [
       { label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' },
     ],
