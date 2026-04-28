@@ -141,19 +141,21 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
               <div className="col-span-12 md:col-span-4 space-y-6">
                 {/* Tags */}
-                <div>
-                  <span className="clinical-label text-primary block mb-3">TAGS</span>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-[12px] font-mono uppercase tracking-wider text-accent border border-accent/20 px-2 py-0.5"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                {project.tags.length > 0 && (
+                  <div>
+                    <span className="clinical-label text-primary block mb-3">TAGS</span>
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[12px] font-mono uppercase tracking-wider text-accent border border-accent/20 px-2 py-0.5"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Tools */}
                 <div>

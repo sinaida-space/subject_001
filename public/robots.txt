@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sinaida-space.github.io/subject_001/sitemap.xml
+Sitemap: https://sinaida.eu/sitemap.xml
