@@ -24,7 +24,7 @@ const PROJECTS: Project[] = [
     description:
       'AI-generated aesthetics mapped onto fluid surfaces. Digital textures interacting with the physics of water and red-light environments.',
     image: projectSubmerged,
-    tags: ['Installation', 'Interactive', 'Projection'],
+    tags: ['Projection Mapping', 'Interactive Installation', 'AI Visuals'],
     tools: ['TouchDesigner', 'Midjourney', 'DaVinci Resolve'],
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
@@ -39,7 +39,7 @@ const PROJECTS: Project[] = [
     description:
       'Exploring infertility, biological finality, and AI. If a silicon brain produces a "stochastic legacy," where does the soul reside?',
     image: projectLegacy,
-    tags: ['GenAI', 'Conceptual', 'Series'],
+    tags: ['AI Image Series', 'Conceptual Art', 'Visual Research'],
     tools: ['Midjourney', 'Higgsfield.ai', 'Affinity'],
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245414325/Legacy-in-the-Age-of-Stochastic-Output' },
@@ -53,7 +53,7 @@ const PROJECTS: Project[] = [
     description:
       'Sound transforms into pulsating architecture — a digital structure with a heartbeat synchronized to its auditory environment.',
     image: projectSynesthetic,
-    tags: [],
+    tags: ['Audio-Reactive', 'Generative System', 'Real-Time Visuals'],
     tools: ['TouchDesigner', 'Suno'],
     links: [
       { label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' },
