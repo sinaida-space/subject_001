@@ -53,7 +53,7 @@ const PROJECTS: Project[] = [
     description:
       'Sound transforms into pulsating architecture — a digital structure with a heartbeat synchronized to its auditory environment.',
     image: projectSynesthetic,
-    tags: ['Generative', 'Audio-Reactive', 'Real-time'],
+    tags: [],
     tools: ['TouchDesigner', 'Suno'],
     links: [
       { label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' },
@@ -144,19 +144,23 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             transition={{ duration: 0.6, delay: 0.6 }}
           >
             {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs font-clinical uppercase tracking-wider text-accent/80 border border-accent/20 px-2 py-1"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {project.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs font-clinical uppercase tracking-wider text-accent/80 border border-accent/20 px-2 py-1"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* Separator */}
-            <div className="hidden md:block w-px h-4 bg-border" />
+            {project.tags.length > 0 && project.links && (
+              <div className="hidden md:block w-px h-4 bg-border" />
+            )}
 
             {/* External Links */}
             {project.links && (

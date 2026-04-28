@@ -1,7 +1,12 @@
 import { readFileSync, writeFileSync } from 'fs';
+
 const file = 'dist/index.html';
 const html = readFileSync(file, 'utf8');
-const seo = `<div id="seo" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)"><h1>Sinaida Krivchenko - Visual Artist and Creative Director, Prague</h1><p>Prague-based visual artist and creative director. Generative AI, immersive installations, projection mapping, stage visuals, and creative direction for live performance and cultural institutions. Background in biomedical engineering MSc and GE IT leadership program across four countries.</p><h2>Services</h2><ul><li>Generative AI visual direction - campaign imagery, key art, production visuals</li><li>Stage and projection design - real-time generative environments using TouchDesigner</li><li>Creative direction for cultural institutions - visual identity, digital infrastructure, audience strategy</li><li>Immersive installation design - interactive and responsive visual systems</li><li>Digital content and social campaigns for arts organisations</li></ul><h2>Work</h2><ul><li>Submerged Realities - projection mapping, AI-generated aesthetics on fluid surfaces</li><li>Legacy in the Age of Stochastic Output - image series on infertility, biological finality, and AI</li><li>Synesthetic Bloom - audio-responsive digital organism in TouchDesigner</li></ul><h2>Skills</h2><p>TouchDesigner, Midjourney, Generative AI, Real-time audio-reactive visuals, Procedural animation, Post-production, Color grading, Creative direction, Biomedical engineering MSc, Systems design thinking, Algorithmic visual systems, Creative web development.</p><h2>Contact</h2><p>Prague, working globally. instagram.com/sin.ai.da linkedin.com/in/sinaida</p></div>`;
-const out = html.replace('<div id="root"></div>', '<div id="root"></div>' + seo);
-writeFileSync(file, out);
-console.log('SEO injected.');
+const out = html.replace(/<div id="seo"[\s\S]*?<\/div>/, '');
+
+if (out !== html) {
+  writeFileSync(file, out);
+  console.log('Removed legacy hidden SEO block.');
+} else {
+  console.log('SEO fallback preserved via noscript block.');
+}

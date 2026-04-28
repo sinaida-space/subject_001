@@ -55,11 +55,10 @@ const PROJECTS = [
     description:
       'Sound transforms into pulsating architecture — a digital structure with a heartbeat synchronized to its auditory environment.',
     image: projectSynesthetic,
-    tags: ['Generative', 'Audio-Reactive', 'Real-time'],
-    tools: ['TouchDesigner', 'Midjourney', 'Suno'],
+    tags: [],
+    tools: ['TouchDesigner', 'Suno'],
     links: [
-      { label: 'Behance', url: 'https://www.behance.net/gallery/245415773/Synesthetic-Bloom-An-Audio-Responsive-Digital-Organism' },
-      { label: 'YouTube', url: 'https://youtu.be/pzq0BSVzw28' },
+      { label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' },
     ],
   },
 ];

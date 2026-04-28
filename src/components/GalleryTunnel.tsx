@@ -63,11 +63,13 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
           <span className="clinical-label text-accent">{project.subtitle}</span>
           <h2 className="font-display text-3xl text-foreground mt-2 mb-4">{project.title}</h2>
           <p className="text-sm text-muted-foreground font-clinical leading-relaxed mb-6">{project.description}</p>
-          <div className="flex flex-wrap gap-2 mb-6">
-            {project.tags.map((tag) => (
-              <span key={tag} className="text-[12px] font-mono uppercase tracking-wider text-accent/80 border border-accent/20 px-2 py-1">{tag}</span>
-            ))}
-          </div>
+          {project.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {project.tags.map((tag) => (
+                <span key={tag} className="text-[12px] font-mono uppercase tracking-wider text-accent/80 border border-accent/20 px-2 py-1">{tag}</span>
+              ))}
+            </div>
+          )}
           <div className="flex flex-wrap gap-2 mb-6">
             {project.tools.map((tool) => (
               <span key={tool} className="text-[12px] font-mono text-muted-foreground">{tool}</span>
@@ -97,11 +99,13 @@ function MobileProjectCard({ project, index }: { project: Project; index: number
         <span className="clinical-label text-accent">{String(index + 1).padStart(2, '0')} — {project.subtitle}</span>
         <h3 className="font-display text-xl text-foreground mt-2 mb-3">{project.title}</h3>
         <p className="text-sm text-muted-foreground font-clinical leading-relaxed mb-4">{project.description}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.tags.map((tag) => (
-            <span key={tag} className="text-[12px] font-mono uppercase tracking-wider text-accent/80 border border-accent/20 px-2 py-1">{tag}</span>
-          ))}
-        </div>
+        {project.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {project.tags.map((tag) => (
+              <span key={tag} className="text-[12px] font-mono uppercase tracking-wider text-accent/80 border border-accent/20 px-2 py-1">{tag}</span>
+            ))}
+          </div>
+        )}
         {project.links && (
           <div className="flex gap-3">
             {project.links.map((link) => (
