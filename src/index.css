@@ -180,7 +180,29 @@
       hsl(var(--foreground) / 0.03) 15.5%,
       transparent 15.5%
     );
-    animation: vhs-drift 4s linear infinite;
+    animation: vhs-drift 12s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.001ms !important;
+    }
+
+    .crt-scanlines,
+    .vhs-noise-bars {
+      opacity: 0.35;
+      animation: none !important;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+      display: none;
+    }
   }
 
   @keyframes vhs-drift {
@@ -217,6 +239,23 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: hsl(var(--muted-foreground));
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-rail {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
+    touch-action: pan-x pan-y;
+    scroll-padding-inline: 1.5rem;
   }
 
   /* Hover reveal */

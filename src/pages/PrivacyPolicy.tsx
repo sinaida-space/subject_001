@@ -32,14 +32,14 @@ const PrivacyPolicy = () => {
           <h2 className="font-display text-lg text-foreground mt-8">What data do I collect?</h2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
             <li>Personal identification information (Name, email address, etc.) should you choose to reach out via contact forms or external links.</li>
-            <li>Technical data such as IP addresses and browser types via standard web cookies.</li>
+            <li>Basic technical data that may be processed by the website hosting provider, such as IP address, browser type, and request metadata.</li>
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">How do I collect your data?</h2>
           <p className="text-muted-foreground">You directly provide most of the data I collect. I collect and process data when you:</p>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
             <li>Voluntarily complete a contact form or provide feedback via email or Telegram.</li>
-            <li>Use or view my website via your browser's cookies.</li>
+            <li>Use or view my website, where basic technical signals may be processed by my hosting provider.</li>
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">How will I use your data?</h2>
@@ -65,18 +65,18 @@ const PrivacyPolicy = () => {
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">Cookies</h2>
-          <p className="text-muted-foreground">Cookies are text files placed on your computer to collect standard Internet log information and visitor behavior information. When you visit my website, I may collect information from you automatically through cookies or similar technology.</p>
+          <p className="text-muted-foreground">Cookies and local storage are browser technologies used to remember preferences or support website functionality. This website does not use analytics cookies.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">How do I use cookies?</h2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-            <li>Understanding how you use my website.</li>
-            <li>Keeping the "Terminal" interface functional for your session.</li>
+            <li>Remembering whether you have accepted, declined, or limited the cookie notice.</li>
+            <li>Keeping interactive website elements functional during your session.</li>
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">What types of cookies do I use?</h2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-            <li>Functionality – I use these cookies so that I recognize you on my website and remember your previously selected preferences.</li>
-            <li>Analytics – I use these cookies to understand how visitors interact with the site's interface.</li>
+            <li>Functionality – I use local browser storage to remember your selected preferences.</li>
+            <li>Analytics – I do not currently use a dedicated analytics service on this website.</li>
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">How to manage cookies</h2>

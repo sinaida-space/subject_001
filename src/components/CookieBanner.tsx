@@ -35,8 +35,8 @@ const CookieBanner = () => {
           <div className="flex-1">
             <h3 className="font-display text-sm font-medium mb-2 text-foreground">Cookie Consent</h3>
             <p className="font-clinical text-xs text-muted-foreground leading-relaxed">
-              This website uses cookies to enhance your browsing experience and analyze site traffic. 
-              We respect your privacy and comply with GDPR regulations. Learn more in our{' '}
+              This website stores your consent choice locally and uses essential browser storage for
+              basic site functionality. Learn more in our{' '}
               <a 
                 href="/privacy" 
                 className="text-primary hover:text-primary/80 underline"

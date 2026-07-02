@@ -8,6 +8,10 @@ export default function HeroSection() {
     setIsVisible(true);
   }, []);
 
+  const scrollToContact = () => {
+    document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -45,28 +49,21 @@ export default function HeroSection() {
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
           }>
           
-          <div className="border-l border-primary/30 pl-8 space-y-6">
+          <div className="border-l border-primary/30 pl-8 space-y-5">
             <p className="font-mono text-[13px] leading-relaxed my-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
-              ​Transforming complex ideas into visual systems designed for physical spaces, such as
-              events, exhibitions, performances, and curated environments.
+              Living visual systems for stages, concerts, performances, and spaces where sound
+              becomes light.
             </p>
-            <div className="flex flex-wrap gap-3 text-xs font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              <span className="border border-border px-3 py-1.5">Digital Strategy</span>
-              <span className="border border-border px-3 py-1.5">Gen AI</span>
-              <span className="border border-border px-3 py-1.5">​Experience Design</span>
+            <div className="font-mono text-[11px] uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              Stage visuals · Projection worlds · Generative image systems
             </div>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div
-          className={`col-span-12 mt-16 transition-all duration-1000 delay-500 ${
-          isVisible ? 'opacity-100' : 'opacity-0'}`
-          }>
-          
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <div className="w-px h-16 bg-gradient-to-b from-primary/60 to-transparent" />
-            <span className="clinical-label">Scroll to explore</span>
+            <button
+              type="button"
+              onClick={scrollToContact}
+              className="font-mono text-[12px] uppercase tracking-[0.15em] px-5 py-3 border border-primary text-primary bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none"
+            >
+              Contact me
+            </button>
           </div>
         </div>
       </div>

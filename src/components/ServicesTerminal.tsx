@@ -26,22 +26,6 @@ const SERVICES = [
 const GLITCH_CHARS = '█▓▒░⣿⠿╗╔║═';
 const SEPARATOR = '────────────────────────────────────────────';
 
-function splitDescription(desc: string, maxLen = 58): string[] {
-  const words = desc.split(' ');
-  const lines: string[] = [];
-  let current = '';
-  for (const word of words) {
-    if (current.length + word.length + 1 > maxLen && current) {
-      lines.push(current);
-      current = word;
-    } else {
-      current = current ? current + ' ' + word : word;
-    }
-  }
-  if (current) lines.push(current);
-  return lines;
-}
-
 function useTypingSequence(
   lines: { text: string; speed: number; preDelay?: number; type: 'type' | 'fill' | 'instant' }[],
   active: boolean,
@@ -155,20 +139,14 @@ function ServiceBlock({
   const [glitchName, setGlitchName] = useState<string | null>(null);
   const [evaporated, setEvaporated] = useState(false);
   const [evaporating, setEvaporating] = useState(false);
-  const descLines = splitDescription(service.description);
 
   const lines = [
     { text: `$ load_module --id=${service.code} --name="${service.title}"`, speed: 4, type: 'type' as const },
     { text: '> initializing...', speed: 3, type: 'type' as const, preDelay: 10 },
     { text: 'fill', speed: 25, type: 'fill' as const, preDelay: 10 },
-    ...descLines.map((l, i) => ({
-      text: `  │ ${l}`,
-      speed: 3,
-      type: 'type' as const,
-      preDelay: i === 0 ? 10 : 0,
-    })),
-    { text: '> module loaded.', speed: 0, type: 'instant' as const, preDelay: 20 },
+    { text: service.description, speed: 3, type: 'type' as const, preDelay: 10 },
   ];
+  const blockMinHeight = `${Math.max(9, lines.length * 1.35)}rem`;
 
   const handleNameTyped = useCallback(() => {
     const name = service.title;
@@ -225,16 +203,15 @@ function ServiceBlock({
           borderBottom: hovered ? '1px solid #00e5ff' : '1px solid transparent',
           paddingBottom: '1rem',
           marginBottom: '0.5rem',
+          minHeight: blockMinHeight,
         }}
       >
         <h3 className="font-mono text-base font-medium mb-2" style={{ color: '#00e5ff' }}>
           {service.title}
         </h3>
-        {descLines.map((line, i) => (
-          <div key={i} className="font-mono text-[13px]" style={{ color: 'rgba(255,255,255,0.75)' }}>
-            {`  │ ${line}`}
-          </div>
-        ))}
+        <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          {service.description}
+        </p>
         {hovered && (
           <span className="animate-terminal-cursor" style={{ color: '#00e5ff' }}>{`> _`}</span>
         )}
@@ -254,6 +231,7 @@ function ServiceBlock({
         borderBottom: hovered && done ? '1px solid #00e5ff' : '1px solid transparent',
         paddingBottom: '1rem',
         marginBottom: '0.5rem',
+        minHeight: blockMinHeight,
       }}
     >
       {/* Line 1: command */}
@@ -296,25 +274,10 @@ function ServiceBlock({
         </div>
       )}
 
-      {/* Description lines */}
-      {descLines.map((_, i) => {
-        const idx = 3 + i;
-        if (outputs[idx] === undefined) return null;
-        return (
-          <div key={i} className="font-mono text-[13px]" style={{ color: 'rgba(255,255,255,0.75)' }}>
-            {outputs[idx]}
-          </div>
-        );
-      })}
-
-      {/* Module loaded */}
-      {outputs[lines.length - 1] !== undefined && (
-        <div style={{
-          color: '#00e5ff',
-          opacity: evaporating ? 0 : 0.4,
-          filter: chromeFilter,
-          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
-        }}>{outputs[lines.length - 1]}</div>
+      {outputs[3] !== undefined && (
+        <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          {outputs[3]}
+        </p>
       )}
 
       {/* Hover blinking cursor */}
@@ -329,20 +292,11 @@ export default function ServicesTerminal() {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [key, setKey] = useState(0);
-  const [skipAnimation, setSkipAnimation] = useState(false);
   const hasPlayedRef = useRef(false);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-
-    // Check if user is NOT at the top on mount — if so, skip animation
-    if (window.scrollY > 200) {
-      setSkipAnimation(true);
-      setActiveIndex(SERVICES.length - 1);
-      hasPlayedRef.current = true;
-      return;
-    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -391,15 +345,14 @@ export default function ServicesTerminal() {
           <div className="flex-1 font-mono">
           {/* Terminal header */}
           <div style={{ opacity: 0.35 }} className="text-sm mb-8 leading-relaxed">
-            <div>{`SINAIDA_OS v2.4.1 — CREATIVE SYSTEMS TERMINAL`}</div>
+            <div>{`SINAIDA_OS v2.4.1 // CREATIVE SYSTEMS TERMINAL`}</div>
             <div>{`Loading service modules... [████████████] 100%`}</div>
-            <div>{`4 modules active.`}</div>
           </div>
 
           {/* Service blocks */}
           <div key={key} className="space-y-2">
             {SERVICES.map((service, i) => (
-              <div key={service.code}>
+              <div key={service.code} style={{ minHeight: '9rem' }}>
                 <ServiceBlock
                   service={service}
                   active={activeIndex >= i}
