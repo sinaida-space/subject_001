@@ -31,6 +31,121 @@ function Reveal({ delay = 0, children }: { delay?: number; children: React.React
   );
 }
 
+function scrambleText(text: string, amount: number) {
+  const chars = '░▒▓█/\\_';
+  return text
+    .split('')
+    .map((char) => {
+      if (char === ' ' || char === '.' || char === ',') return char;
+      return Math.random() < amount ? chars[Math.floor(Math.random() * chars.length)] : char;
+    })
+    .join('');
+}
+
+function BioSignalLock() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [locked, setLocked] = useState(false);
+  const [noise, setNoise] = useState('acquiring signal');
+
+  const rows = [
+    ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
+    ['DIVERGENCE', 'Ballet. General Electric IT Leadership Program. Generative systems.'],
+    ['CURRENT STATE', 'TouchDesigner visuals + audio-reactive stage systems.'],
+  ];
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setVisible(true);
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    let frame = 0;
+    const interval = setInterval(() => {
+      frame += 1;
+      setNoise(`x:${(50.08 + Math.random() * 0.08).toFixed(4)} y:${(14.39 + Math.random() * 0.08).toFixed(4)} freq:${(84 + Math.random() * 32).toFixed(1)}`);
+      if (frame > 12) {
+        clearInterval(interval);
+        setLocked(true);
+        setNoise('signal locked');
+      }
+    }, 55);
+    return () => clearInterval(interval);
+  }, [visible]);
+
+  return (
+    <div
+      ref={ref}
+      className="relative overflow-hidden mb-8"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'opacity 0.4s ease, transform 0.4s ease',
+      }}
+    >
+      <style>{`
+        @keyframes bio-scan {
+          0% { transform: translateY(-100%); opacity: 0; }
+          18% { opacity: 0.8; }
+          100% { transform: translateY(360%); opacity: 0; }
+        }
+        @keyframes bio-lock-pulse {
+          0%, 100% { opacity: 0.28; }
+          50% { opacity: 0.75; }
+        }
+      `}</style>
+      {!locked && (
+        <div
+          className="absolute left-0 right-0 h-10 pointer-events-none"
+          style={{
+            top: 0,
+            background: 'linear-gradient(to bottom, transparent, rgba(0,229,255,0.22), transparent)',
+            animation: 'bio-scan 0.8s linear infinite',
+          }}
+        />
+      )}
+      <div className="font-mono mb-5" style={{ fontSize: 12, color: '#00e5ff', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
+        {locked ? '> BIO_SIGNAL.lock() // SUBJECT: SINAIDA // STATUS: ACTIVE' : `> ${noise}`}
+      </div>
+      <div className="space-y-3">
+        {rows.map(([key, val], index) => {
+          const amount = locked ? 0 : Math.max(0.08, 0.38 - index * 0.08);
+          return (
+            <div
+              key={key}
+              className="font-mono"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '140px 20px 1fr',
+                gap: '0 4px',
+                fontSize: 12,
+                color: 'rgba(255,255,255,0.5)',
+                letterSpacing: '0.08em',
+                transition: 'color 0.35s ease',
+              }}
+            >
+              <span style={{ color: locked ? 'rgba(255,255,255,0.75)' : '#ff3333', animation: locked ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
+                {locked ? key : scrambleText(key, amount)}
+              </span>
+              <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
+              <span>{locked ? val : scrambleText(val, amount)}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Photo Block ──────────────────────────────────────────────
 function PhotoBlock() {
   const imgRef = useRef<HTMLImageElement>(null);
@@ -146,26 +261,7 @@ export default function AboutSection() {
                 <PhotoBlock />
               </Reveal>
               <div className="flex-1 min-w-0">
-                <Reveal delay={300}>
-                  <div className="font-mono mb-7" style={{ fontSize: 12, color: '#00e5ff', opacity: 0.45, letterSpacing: '0.2em' }}>
-                    {'> BIO_FILE.load() — SUBJECT: SINAIDA — STATUS: ACTIVE'}
-                  </div>
-                </Reveal>
-                <Reveal delay={450}>
-                  <div className="mb-8">
-                    {[
-                      ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
-                      ['DIVERGENCE', 'Ballet. General Electric IT Leadership Program. Generative systems.'],
-                      ['CURRENT STATE', 'AI visual art + creative direction.'],
-                    ].map(([key, val]) => (
-                      <div key={key} className="font-mono" style={{ display: 'grid', gridTemplateColumns: '140px 20px 1fr', gap: '0 4px', marginBottom: 10, fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
-                        <span style={{ color: 'rgba(255,255,255,0.7)' }}>{key}</span>
-                        <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
-                        <span>{val}</span>
-                      </div>
-                    ))}
-                  </div>
-                </Reveal>
+                <BioSignalLock />
                 <Reveal delay={600}>
                   <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
                     <p>
@@ -186,46 +282,11 @@ export default function AboutSection() {
                 <Reveal delay={800}>
                   <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
                     <p>
-                      I create visual worlds designed to be experienced in physical spaces. I help arts organisations build the visual identity, digital infrastructure, and audience strategy that makes their work visible and financially sustainable.
+                      I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.
                     </p>
                   </div>
                 </Reveal>
                 <Reveal delay={900}>
-                  <div className="flex flex-wrap gap-4 mt-10 mb-10">
-                    <a
-                      href="mailto:gallant_mod5v@icloud.com"
-                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
-                      style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#ff3333'; e.currentTarget.style.color = '#000'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,51,51,0.06)'; e.currentTarget.style.color = '#ff3333'; }}
-                    >
-                      EMAIL ME ↗
-                    </a>
-                    <a
-                      href="https://www.instagram.com/sin.ai.da/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
-                      style={{ border: '1px solid rgba(0,229,255,0.4)', color: '#00e5ff' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.08)'; e.currentTarget.style.borderColor = '#00e5ff'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)'; }}
-                    >
-                      FOLLOW ON INSTAGRAM ↗
-                    </a>
-                    <a
-                      href="https://www.linkedin.com/in/sinaida"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
-                      style={{ border: '1px solid rgba(0,229,255,0.4)', color: '#00e5ff' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.08)'; e.currentTarget.style.borderColor = '#00e5ff'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)'; }}
-                    >
-                      CONNECT ON LINKEDIN ↗
-                    </a>
-                  </div>
-                </Reveal>
-                <Reveal delay={1000}>
                   <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
                     <span style={{ color: '#ff3333' }}> · </span>

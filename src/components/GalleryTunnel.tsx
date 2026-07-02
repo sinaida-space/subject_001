@@ -91,12 +91,12 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
   );
 }
 
-function MobileProjectCard({ project, index }: { project: Project; index: number }) {
+function MobileProjectCard({ project }: { project: Project; index: number }) {
   return (
-    <div className="relative overflow-hidden border border-border/30 mb-6">
+    <article className="relative overflow-hidden border border-border/30 w-full">
       <VHSImage src={project.image} alt={project.title} />
       <div className="p-6">
-        <span className="clinical-label text-accent">{String(index + 1).padStart(2, '0')} — {project.subtitle}</span>
+        <span className="clinical-label text-accent">{project.subtitle}</span>
         <h3 className="font-display text-xl text-foreground mt-2 mb-3">{project.title}</h3>
         <p className="text-sm text-muted-foreground font-clinical leading-relaxed mb-4">{project.description}</p>
         {project.tags.length > 0 && (
@@ -117,7 +117,7 @@ function MobileProjectCard({ project, index }: { project: Project; index: number
           </div>
         )}
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -335,10 +335,12 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
                 [ RECENT WORK ]
               </div>
             </div>
-            <div className="flex-1">
-              {projects.map((project, i) => (
-                <MobileProjectCard key={project.id} project={project} index={i} />
-              ))}
+            <div className="flex-1 min-w-0">
+              <div className="space-y-8">
+                {projects.map((project, i) => (
+                  <MobileProjectCard key={project.id} project={project} index={i} />
+                ))}
+              </div>
             </div>
           </div>
         </div>

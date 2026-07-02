@@ -10,7 +10,7 @@ export default function Footer() {
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
-          <div className="col-span-12 md:col-span-4">
+          <div className="col-span-12 md:col-span-4 mb-8 md:mb-0">
             <div onClick={() => setSnakeOpen(true)} title="..." style={{ cursor: 'pointer', display: 'inline-block' }}>
               <Logo />
             </div>
@@ -55,7 +55,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="section-divider mt-8 mb-6" />
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-6 md:flex-row md:justify-between md:items-center">
           <span className="clinical-label text-muted-foreground">Website design and development by Sinaida Krivchenko | Prague, CZ</span>
           <span className="clinical-label text-muted-foreground">Are we more than the data we leave behind?</span>
         </div>

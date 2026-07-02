@@ -260,21 +260,21 @@ export default function ContactChannel() {
 
   useEffect(() => () => clearTimeout(mouseTimer.current), []);
 
-  // Typing sequences — snappy machine-typing feel
-  const sysLine = useTyper('> COMM.SYS ONLINE — CHANNEL OPEN', 0, 0, inView);
+  // Typing sequences: snappy machine-typing feel
+  const sysLine = useTyper('> COMM.SYS ONLINE // CHANNEL OPEN', 0, 0, inView);
   const openFor = useTyper('Open for', 12, 100, inView);
   const collab = useTyper('Collaboration', 12, 100 + 8 * 12 + 40, inView);
 
   // Continue after heading types
   const transmissionDelay = 100 + (8 + 13) * 12 + 40 + 120;
-  const txHeader = useTyper('> incoming_transmission.decode() —', 8, transmissionDelay, inView);
+  const txHeader = useTyper('> incoming_transmission.decode() //', 8, transmissionDelay, inView);
 
-  const para1 = 'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let\'s talk.';
+  const para1 = 'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion, let\'s talk.';
   const p1Delay = transmissionDelay + 34 * 8 + 160;
   const typed1 = useTyper(para1, 5, p1Delay, inView);
 
   const availDelay = p1Delay + para1.length * 5 + 200;
-  const availHeader = useTyper('> available_for.list() —', 8, availDelay, inView);
+  const availHeader = useTyper('> available_for.list() //', 8, availDelay, inView);
 
   const para2 = 'Immersive installations  ·  Creative direction\nStage visuals  ·  Exhibition design\nGenerative art commissions\n──────────────────────────\nBased in Prague. Working globally.';
   const p2Delay = availDelay + 24 * 8 + 160;
@@ -283,7 +283,7 @@ export default function ContactChannel() {
   const ctaVisible = typed2.done;
 
   const finalDelay = p2Delay + para2.length * 4 + 300;
-  const finalLine = useTyper('> channel remains open. awaiting response', 8, finalDelay, inView);
+  const finalLine = useTyper('> channel open for new signals', 8, finalDelay, inView);
 
   return (
     <section
@@ -371,7 +371,7 @@ export default function ContactChannel() {
           <div className="max-w-2xl">
             {/* Sys line */}
             <div className="font-mono text-[12px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
-              {inView ? '> COMM.SYS ONLINE — CHANNEL OPEN' : ''}
+              {inView ? '> COMM.SYS ONLINE // CHANNEL OPEN' : ''}
             </div>
 
             {/* Heading */}
@@ -391,8 +391,7 @@ export default function ContactChannel() {
 
             <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.75)' }}>
               {(() => {
-                const marker = "— let's talk.";
-                const idx = typed1.displayed.indexOf('— let');
+                const idx = typed1.displayed.indexOf("let's talk.");
                 if (idx === -1) return typed1.displayed;
                 return (
                   <>

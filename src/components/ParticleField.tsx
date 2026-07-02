@@ -48,6 +48,7 @@ function Particles() {
   const meshRef = useRef<THREE.Points>(null);
   const trailRef = useRef<THREE.Points>(null);
   const mouseRef = useRef({ x: 0, y: 0, active: false, prevX: 0, prevY: 0, speed: 0 });
+  const activityRef = useRef(0);
   const scrollRef = useRef(0);
   const lastScrollRef = useRef(0);
   const velocityRef = useRef(0);
@@ -111,6 +112,7 @@ function Particles() {
   const trailVelocitiesRef = useRef(new Float32Array(TRAIL_COUNT * 3).fill(0));
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
     const nx = (e.clientX / window.innerWidth) * 2 - 1;
     const ny = -(e.clientY / window.innerHeight) * 2 + 1;
     const dx = nx - mouseRef.current.x;
@@ -121,12 +123,14 @@ function Particles() {
     mouseRef.current.x = nx;
     mouseRef.current.y = ny;
     mouseRef.current.active = true;
+    activityRef.current = Math.min(1, activityRef.current + mouseRef.current.speed * 8);
   }, []);
 
   const handleScroll = useCallback(() => {
     const prev = scrollRef.current;
     scrollRef.current = window.scrollY;
     scrollDirRef.current = scrollRef.current > prev ? -1 : 1;
+    activityRef.current = Math.min(1, activityRef.current + Math.min(Math.abs(scrollRef.current - prev) * 0.01, 0.6));
   }, []);
 
   useEffect(() => {
@@ -155,7 +159,9 @@ function Particles() {
     lastScrollRef.current = scrollRef.current;
     velocityRef.current = THREE.MathUtils.lerp(velocityRef.current, scrollAbs * 0.015, 0.15);
 
-    const isActive = mouseRef.current.active || velocityRef.current > 0.005;
+    activityRef.current = THREE.MathUtils.damp(activityRef.current, 0, 2.4, delta);
+    const activity = Math.max(activityRef.current, Math.min(velocityRef.current * 2, 1));
+    const isActive = activity > 0.01;
 
     // === TRAIL: Dreamy expanding steam ===
     if (trailRef.current) {
@@ -170,8 +176,8 @@ function Particles() {
       const vels = trailVelocitiesRef.current;
 
       // Spawn from cursor movement
-      if (mouseSpeed > 0.003) {
-        const spawnCount = Math.min(Math.floor(mouseSpeed * 50) + 2, 8);
+      if (mouseSpeed > 0.004) {
+        const spawnCount = Math.min(Math.floor(mouseSpeed * 30) + 1, 5);
         for (let s = 0; s < spawnCount; s++) {
           const idx = trailIndexRef.current % TRAIL_COUNT;
           const t = s / spawnCount;
@@ -210,7 +216,7 @@ function Particles() {
 
       // Spawn particles on scroll too
       if (scrollAbs > 2) {
-        const scrollSpawn = Math.min(Math.floor(scrollAbs * 0.3), 6);
+        const scrollSpawn = Math.min(Math.floor(scrollAbs * 0.18), 4);
         for (let s = 0; s < scrollSpawn; s++) {
           const idx = trailIndexRef.current % TRAIL_COUNT;
           // Spawn across visible area
@@ -240,7 +246,7 @@ function Particles() {
 
       // Update trail particles — expand + drift like dissipating steam
       for (let i = 0; i < TRAIL_COUNT; i++) {
-        ages[i] += delta * 1.0; // ~1 second lifetime
+        ages[i] += delta * 0.8;
         const life = ages[i];
         trailAgeArray[i] = life;
 
@@ -271,9 +277,8 @@ function Particles() {
       const by = basePositions[ix + 1];
       const bz = basePositions[ix + 2];
 
-      // Gentle ambient floating always
-      const floatX = Math.sin(timeRef.current * 0.3 + i * 0.1) * 0.02;
-      const floatY = Math.cos(timeRef.current * 0.2 + i * 0.15) * 0.015;
+      const floatX = Math.sin(timeRef.current * 0.25 + i * 0.1) * 0.012 * activity;
+      const floatY = Math.cos(timeRef.current * 0.18 + i * 0.15) * 0.01 * activity;
 
       if (isActive) {
         const dx = posArray[ix] - mx;
@@ -281,26 +286,26 @@ function Particles() {
         const dist = Math.sqrt(dx * dx + dy * dy);
         const influence = Math.max(0, 1 - dist / 4);
 
-        const speedMult = 1 + mouseSpeed * 6;
-        const pushX = influence * dx * 0.2 * speedMult;
-        const pushY = influence * dy * 0.2 * speedMult;
-        const bloom = influence * Math.sin(timeRef.current * 2 + i) * 0.15 * speedMult;
+        const speedMult = 1 + mouseSpeed * 4;
+        const pushX = influence * dx * 0.14 * speedMult * activity;
+        const pushY = influence * dy * 0.14 * speedMult * activity;
+        const bloom = influence * Math.sin(timeRef.current * 1.4 + i) * 0.08 * speedMult * activity;
 
         // Scroll makes particles drift like wind
-        const scrollWind = velocityRef.current * Math.sin(i * 0.05 + timeRef.current) * 3;
-        const scrollLift = velocityRef.current * Math.cos(i * 0.08 + timeRef.current * 0.7) * 2;
+        const scrollWind = velocityRef.current * Math.sin(i * 0.05 + timeRef.current) * 2;
+        const scrollLift = velocityRef.current * Math.cos(i * 0.08 + timeRef.current * 0.7) * 1.4;
 
         const targetX = bx + pushX + scrollWind + floatX;
         const targetY = by + pushY + bloom + scrollLift * scrollDirRef.current + floatY;
         const targetZ = bz + influence * 1.0 * speedMult;
 
-        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], targetX, delta * 1.0);
-        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], targetY, delta * 1.0);
-        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], targetZ, delta * 1.0);
+        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], targetX, delta * 0.85);
+        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], targetY, delta * 0.85);
+        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], targetZ, delta * 0.85);
       } else {
-        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], bx + floatX, delta * 0.2);
-        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], by + floatY, delta * 0.2);
-        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], bz, delta * 0.2);
+        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], bx, delta * 1.4);
+        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], by, delta * 1.4);
+        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], bz, delta * 1.4);
       }
     }
 
@@ -327,7 +332,7 @@ function Particles() {
           <bufferAttribute attach="attributes-color" count={PARTICLE_COUNT} array={colors} itemSize={3} />
           <bufferAttribute attach="attributes-size" count={PARTICLE_COUNT} array={sizes} itemSize={1} />
         </bufferGeometry>
-        <pointsMaterial size={0.02} vertexColors transparent opacity={0.6} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+        <pointsMaterial size={0.018} vertexColors transparent opacity={0.42} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
 
       {/* Trail particles — dreamy expanding steam */}
@@ -355,7 +360,7 @@ export default function ParticleField() {
         <Particles />
         <EffectComposer>
           <Bloom
-            intensity={2.2}
+            intensity={1.25}
             luminanceThreshold={0.05}
             luminanceSmoothing={0.95}
             mipmapBlur
