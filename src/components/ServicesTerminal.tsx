@@ -1,288 +1,65 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRef } from 'react';
+import { projectById } from '@/data/projects';
+
+// Pull the flagship proof line from the single source of truth in projects.ts,
+// so this copy can't drift from the real project data.
+const redkiePtitsy = projectById('redkie-ptitsy');
+const redkiePtitsyName = redkiePtitsy?.title.split('—')[0].trim();
+const redkiePtitsyProof = redkiePtitsy
+  ? `${redkiePtitsyName} — 19 unique projections, one per song.`
+  : undefined;
 
 const SERVICES = [
   {
     code: 'SRV.001',
-    title: 'Immersive Visuals',
-    description: 'Visual systems for event spaces, stages, exhibitions, and projection mapping. Interactive and realtime environments.',
+    title: 'For music festivals & concerts',
+    description:
+      'Audio-reactive stage visuals built per song or per set — real-time TouchDesigner systems that listen to the live mix. Delivered as a turnkey show or operated live.',
+    leadTime: 'Typical lead time: 4–8 weeks depending on set length.',
+    brief: 'Brief to show: send the setlist and stage dimensions.',
+    proof: redkiePtitsyProof,
   },
   {
     code: 'SRV.002',
-    title: 'Creative Direction',
-    description: 'Developing consistent visual languages across video, static media, and interactive installations.',
+    title: 'For theater & dance',
+    description:
+      'Responsive scenography: projections that react to performers, sound, and story — from concept with the director through to opening night.',
+    leadTime: 'Typical lead time: 8–12 weeks, from first concept meeting.',
+    brief: 'Brief to show: send the script or choreography notes and venue specs.',
   },
   {
     code: 'SRV.003',
-    title: 'Digital Art',
-    description: 'Custom audio-reactive and data-driven procedural animations for performances and curated environments.',
-  },
-  {
-    code: 'SRV.004',
-    title: 'Conceptual Storytelling',
-    description: 'Translating complex philosophical and ethical themes into compelling visual narratives.',
+    title: 'For venues, brands & institutions',
+    description:
+      'Immersive installations and generative visual identities — projection-mapped spaces and systems built to run unattended.',
+    leadTime: 'Typical lead time: 6–10 weeks depending on scope.',
+    brief: 'Brief to show: send the space (photos/plans) and the occasion.',
   },
 ];
 
-const GLITCH_CHARS = '█▓▒░⣿⠿╗╔║═';
 const SEPARATOR = '────────────────────────────────────────────';
 
-function useTypingSequence(
-  lines: { text: string; speed: number; preDelay?: number; type: 'type' | 'fill' | 'instant' }[],
-  active: boolean,
-  onNameTyped?: () => void,
-  nameLineIndex?: number
-) {
-  const [outputs, setOutputs] = useState<string[]>([]);
-  const [currentLine, setCurrentLine] = useState(-1);
-  const [done, setDone] = useState(false);
-  const cancelled = useRef(false);
-
-  const reset = useCallback(() => {
-    cancelled.current = true;
-    setOutputs([]);
-    setCurrentLine(-1);
-    setDone(false);
-  }, []);
-
-  useEffect(() => {
-    if (!active) return;
-    cancelled.current = false;
-
-    let timeouts: ReturnType<typeof setTimeout>[] = [];
-
-    async function run() {
-      for (let i = 0; i < lines.length; i++) {
-        if (cancelled.current) return;
-        const line = lines[i];
-
-        // pre-delay
-        if (line.preDelay) {
-          await new Promise<void>(r => {
-            const t = setTimeout(r, line.preDelay);
-            timeouts.push(t);
-          });
-        }
-        if (cancelled.current) return;
-
-        setCurrentLine(i);
-
-        if (line.type === 'instant') {
-          setOutputs(prev => {
-            const next = [...prev];
-            next[i] = line.text;
-            return next;
-          });
-        } else if (line.type === 'type') {
-          for (let c = 0; c <= line.text.length; c++) {
-            if (cancelled.current) return;
-            const charIndex = c;
-            await new Promise<void>(r => {
-              // Jitter: 60–140% of base speed for machine-typing feel
-              const jitter = line.speed > 0 ? line.speed * (0.6 + Math.random() * 0.8) : 0;
-              const t = setTimeout(() => {
-                setOutputs(prev => {
-                  const next = [...prev];
-                  next[i] = line.text.slice(0, charIndex);
-                  return next;
-                });
-                r();
-              }, jitter);
-              timeouts.push(t);
-            });
-          }
-          if (i === nameLineIndex && onNameTyped) {
-            onNameTyped();
-          }
-        } else if (line.type === 'fill') {
-          const total = 10;
-          for (let f = 0; f <= total; f++) {
-            if (cancelled.current) return;
-            const fillCount = f;
-            await new Promise<void>(r => {
-              const t = setTimeout(() => {
-                const filled = '█'.repeat(fillCount) + '░'.repeat(total - fillCount);
-                setOutputs(prev => {
-                  const next = [...prev];
-                  next[i] = filled;
-                  return next;
-                });
-                r();
-              }, 60);
-              timeouts.push(t);
-            });
-          }
-        }
-      }
-      if (!cancelled.current) setDone(true);
-    }
-
-    run();
-    return () => {
-      cancelled.current = true;
-      timeouts.forEach(clearTimeout);
-    };
-  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return { outputs, currentLine, done, reset };
-}
-
-function ServiceBlock({
-  service,
-  active,
-  onDone,
-}: {
-  service: typeof SERVICES[0];
-  active: boolean;
-  onDone: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-  const [glitchName, setGlitchName] = useState<string | null>(null);
-  const [evaporated, setEvaporated] = useState(false);
-  const [evaporating, setEvaporating] = useState(false);
-
-  const lines = [
-    { text: `$ load_module --id=${service.code} --name="${service.title}"`, speed: 4, type: 'type' as const },
-    { text: '> initializing...', speed: 3, type: 'type' as const, preDelay: 10 },
-    { text: 'fill', speed: 25, type: 'fill' as const, preDelay: 10 },
-    { text: service.description, speed: 3, type: 'type' as const, preDelay: 10 },
-  ];
-  const blockMinHeight = `${Math.max(9, lines.length * 1.35)}rem`;
-
-  const handleNameTyped = useCallback(() => {
-    const name = service.title;
-    let glitchCount = 0;
-    const glitchInterval = setInterval(() => {
-      if (glitchCount >= 3) {
-        clearInterval(glitchInterval);
-        setGlitchName(null);
-        return;
-      }
-      const chars = name.split('');
-      const numReplace = 2 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < numReplace; i++) {
-        const idx = Math.floor(Math.random() * chars.length);
-        chars[idx] = GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
-      }
-      setGlitchName(chars.join(''));
-      setTimeout(() => setGlitchName(null), 60);
-      glitchCount++;
-    }, 130);
-  }, [service.title]);
-
-  const { outputs, done } = useTypingSequence(lines, active, handleNameTyped, 0);
-
-  useEffect(() => {
-    if (done) {
-      onDone();
-      // Start evaporation after 3 seconds
-      const t = setTimeout(() => {
-        setEvaporating(true);
-        // After animation completes, hide terminal chrome
-        const t2 = setTimeout(() => setEvaporated(true), 800);
-        return () => clearTimeout(t2);
-      }, 3000);
-      return () => clearTimeout(t);
-    }
-  }, [done, onDone]);
-
-  if (!active && outputs.length === 0) return null;
-
-  const commandLine = outputs[0] ?? '';
-  const displayCommand = glitchName
-    ? commandLine.replace(`--name="${service.title}"`, `--name="${glitchName}"`)
-    : commandLine;
-
-  // After evaporation, show only the clean content
-  if (evaporated) {
-    return (
-      <div
-        className={`transition-all duration-200 font-mono text-sm leading-relaxed ${hovered ? 'translate-x-2' : ''}`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          borderBottom: hovered ? '1px solid #00e5ff' : '1px solid transparent',
-          paddingBottom: '1rem',
-          marginBottom: '0.5rem',
-          minHeight: blockMinHeight,
-        }}
-      >
-        <h3 className="font-mono text-base font-medium mb-2" style={{ color: '#00e5ff' }}>
-          {service.title}
-        </h3>
-        <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
-          {service.description}
-        </p>
-        {hovered && (
-          <span className="animate-terminal-cursor" style={{ color: '#00e5ff' }}>{`> _`}</span>
-        )}
-      </div>
-    );
-  }
-
-  const chromeOpacity = evaporating ? 0 : 1;
-  const chromeFilter = evaporating ? 'blur(8px)' : 'none';
-
+function ServiceBlock({ service }: { service: typeof SERVICES[0] }) {
   return (
-    <div
-      className={`transition-all duration-200 font-mono text-sm leading-relaxed ${hovered && done ? 'translate-x-2' : ''}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        borderBottom: hovered && done ? '1px solid #00e5ff' : '1px solid transparent',
-        paddingBottom: '1rem',
-        marginBottom: '0.5rem',
-        minHeight: blockMinHeight,
-      }}
-    >
-      {/* Line 1: command */}
-      <div
-        className="whitespace-pre-wrap"
-        style={{
-          color: '#00e5ff',
-          textShadow: glitchName ? '2px 0 #ff0000, -2px 0 #00ffff' : 'none',
-          opacity: chromeOpacity,
-          filter: chromeFilter,
-          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
-        }}
-      >
-        {displayCommand}
-        {outputs[0] !== undefined && !done && outputs.length === 1 && (
-          <span className="animate-terminal-cursor">█</span>
-        )}
-      </div>
-
-      {/* Line 2: initializing */}
-      {outputs[1] !== undefined && (
-        <div style={{
-          color: 'rgba(255,255,255,0.5)',
-          opacity: chromeOpacity,
-          filter: chromeFilter,
-          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
-        }}>{outputs[1]}</div>
-      )}
-
-      {/* Line 3: progress bar */}
-      {outputs[2] !== undefined && (
-        <div style={{
-          opacity: chromeOpacity,
-          filter: chromeFilter,
-          transition: 'opacity 0.8s ease-out, filter 0.8s ease-out',
-        }}>
-          <span style={{ color: '#ff3333' }}>{`> STATUS: ACTIVE `}</span>
-          <span style={{ color: '#00ff88' }}>{outputs[2]}</span>
-          <span style={{ color: 'rgba(255,255,255,0.5)' }}> 100%</span>
-        </div>
-      )}
-
-      {outputs[3] !== undefined && (
-        <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.75)' }}>
-          {outputs[3]}
+    <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
+      <div style={{ color: '#00e5ff' }}>{`$ load_module --id=${service.code}`}</div>
+      <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: '#00e5ff' }}>
+        {service.title}
+      </h3>
+      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.87)' }}>
+        {service.description}
+      </p>
+      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.60)' }}>
+        {service.leadTime}
+      </p>
+      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.60)' }}>
+        {service.brief}
+      </p>
+      {service.proof && (
+        <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.60)' }}>
+          <span style={{ color: '#ff3333' }}>{'> '}</span>
+          {service.proof}
         </p>
-      )}
-
-      {/* Hover blinking cursor */}
-      {hovered && done && !evaporating && (
-        <span className="animate-terminal-cursor" style={{ color: '#00e5ff' }}>{`> _`}</span>
       )}
     </div>
   );
@@ -290,33 +67,6 @@ function ServiceBlock({
 
 export default function ServicesTerminal() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const [key, setKey] = useState(0);
-  const hasPlayedRef = useRef(false);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasPlayedRef.current) {
-          hasPlayedRef.current = true;
-          setKey(k => k + 1);
-          setActiveIndex(0);
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleServiceDone = useCallback((index: number) => {
-    if (index < SERVICES.length - 1) {
-      setActiveIndex(index + 1);
-    }
-  }, []);
 
   return (
     <section
@@ -343,22 +93,18 @@ export default function ServicesTerminal() {
 
           {/* RIGHT COLUMN */}
           <div className="flex-1 font-mono">
-          {/* Terminal header */}
+          {/* Terminal frame: static chrome, no reveal delay on content below */}
           <div style={{ opacity: 0.35 }} className="text-sm mb-8 leading-relaxed">
             <div>{`SINAIDA_OS v2.4.1 // CREATIVE SYSTEMS TERMINAL`}</div>
-            <div>{`Loading service modules... [████████████] 100%`}</div>
+            <div>{`Service modules loaded [████████████] 100%`}</div>
           </div>
 
-          {/* Service blocks */}
-          <div key={key} className="space-y-2">
+          {/* Service blocks — full content renders immediately, no typing/reveal */}
+          <div className="space-y-2">
             {SERVICES.map((service, i) => (
-              <div key={service.code} style={{ minHeight: '9rem' }}>
-                <ServiceBlock
-                  service={service}
-                  active={activeIndex >= i}
-                  onDone={() => handleServiceDone(i)}
-                />
-                {i < SERVICES.length - 1 && activeIndex > i && (
+              <div key={service.code}>
+                <ServiceBlock service={service} />
+                {i < SERVICES.length - 1 && (
                   <div className="my-4 font-mono text-sm" style={{ opacity: 0.12 }}>
                     {SEPARATOR}
                   </div>
