@@ -4,7 +4,6 @@ import type { GraphNode } from '@/data/graph';
 import { projectById } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
-import LegendWindow from './LegendWindow';
 import PlainSignalIndex from './PlainSignalIndex';
 import ProjectDetail from './ProjectDetail';
 
@@ -30,19 +29,12 @@ export default function Constellation() {
           {/* LEFT COLUMN — label + legend */}
           <div className="shrink-0 md:sticky md:top-[15vh] md:w-[220px] md:self-start">
             <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
-              Selected Works
-            </div>
-            <div className="mt-2 font-mono" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
-              [ SIGNAL MAP ]
+              Body of Work
             </div>
 
             <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-white/70">
-              Skills and every project, one living graph. Trace a star, or read it plainly.
+              Every skill and every project, one living graph.
             </p>
-
-            <div className="mt-8">
-              <LegendWindow />
-            </div>
           </div>
 
           {/* RIGHT COLUMN — the graph, or its plain reading */}
