@@ -19,7 +19,7 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center z-10 pt-40 md:pt-32 lg:pt-36 pb-16 md:pb-20">
+      className="relative min-h-screen flex flex-col items-center justify-center z-10 pt-40 md:pt-32 lg:pt-36 pb-16 md:pb-20">
       
       <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl grid grid-cols-12 gap-10 md:gap-8 lg:gap-12 items-end">
         {/* Main title area */}
