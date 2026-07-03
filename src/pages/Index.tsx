@@ -1,101 +1,48 @@
 import { lazy, Suspense } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
+import Constellation from '@/components/constellation/Constellation';
+import SelectedWorks from '@/components/SelectedWorks';
 import AboutSection from '@/components/AboutSection';
-import GalleryTunnel from '@/components/GalleryTunnel';
-import SkillConstellation from '@/components/SkillConstellation';
+import ExperimentsTools from '@/components/ExperimentsTools';
 import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import CustomCursor from '@/components/CustomCursor';
-import VHSOverlay from '@/components/VHSOverlay';
 import CookieBanner from '@/components/CookieBanner';
-import ScrollWind from '@/components/ScrollWind';
-
-import projectSubmerged from '@/assets/project-submerged-cover.png';
-import projectLegacy from '@/assets/project-legacy-cover.jpg';
-import projectSynesthetic from '@/assets/project-synesthetic-cover.png';
+import { useRenderMode } from '@/hooks/useRenderMode';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
-const PROJECTS = [
-  {
-    id: 'submerged',
-    title: 'Submerged Realities',
-    subtitle: 'Projection Mapping Study',
-    description:
-      'AI-generated aesthetics mapped onto fluid surfaces. Digital textures interacting with the physics of water and red-light environments.',
-    image: projectSubmerged,
-    tags: ['Projection Mapping', 'Interactive Installation', 'AI Visuals'],
-    tools: ['TouchDesigner', 'Midjourney', 'DaVinci Resolve'],
-    links: [
-      { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
-      { label: 'YouTube', url: 'https://youtube.com/shorts/7qgDlifWno0' },
-      { label: 'Instagram', url: 'https://www.instagram.com/p/DVVB4K9gh9x/' },
-    ],
-  },
-  {
-    id: 'legacy',
-    title: 'Legacy in the Age of Stochastic Output',
-    subtitle: 'Image Series',
-    description:
-      'Exploring infertility, biological finality, and AI. If a silicon brain produces a "stochastic legacy," where does the soul reside?',
-    image: projectLegacy,
-    tags: ['AI Image Series', 'Conceptual Art', 'Visual Research'],
-    tools: ['Midjourney', 'Higgsfield.ai', 'Affinity'],
-    links: [
-      { label: 'Behance', url: 'https://www.behance.net/gallery/245414325/Legacy-in-the-Age-of-Stochastic-Output' },
-      { label: 'Instagram', url: 'https://www.instagram.com/p/DTsKFpxAloa/' },
-    ],
-  },
-  {
-    id: 'synesthetic',
-    title: 'Synesthetic Bloom',
-    subtitle: 'Audio-Responsive Digital Organism',
-    description:
-      'Sound transforms into pulsating architecture — a digital structure with a heartbeat synchronized to its auditory environment.',
-    image: projectSynesthetic,
-    tags: ['Audio-Reactive', 'Generative System', 'Real-Time Visuals'],
-    tools: ['TouchDesigner', 'Suno'],
-    links: [
-      { label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' },
-    ],
-  },
-];
-
 const Index = () => {
+  const { mode } = useRenderMode();
+  const full = mode === 'full';
+
   return (
     <div className="relative min-h-screen bg-background grid-overlay">
-      {/* Three.js Background */}
-      <Suspense fallback={null}>
-        <ParticleField />
-      </Suspense>
+      {/* Cosmic starfield backdrop — full mode only; lite uses the CSS gradient */}
+      {full && (
+        <Suspense fallback={null}>
+          <ParticleField />
+        </Suspense>
+      )}
 
-      {/* Scroll Wind Particles */}
-      <ScrollWind />
+      {/* Custom cursor — component self-limits to fine pointers */}
+      {full && <CustomCursor />}
 
-      {/* Custom Cursor */}
-      <CustomCursor />
-
-      {/* VHS + CRT Overlay */}
-      <VHSOverlay />
-
-      {/* Header */}
       <Header />
 
-      {/* Page Content */}
       <main>
         <HeroSection />
-        <GalleryTunnel projects={PROJECTS} />
+        <Constellation />
+        <SelectedWorks />
         <AboutSection />
+        <ExperimentsTools />
         <ServicesTerminal />
-        <SkillConstellation />
         <ContactChannel />
       </main>
 
       <Footer />
-      
-      {/* Cookie Banner */}
       <CookieBanner />
     </div>
   );
