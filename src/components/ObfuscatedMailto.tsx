@@ -1,0 +1,41 @@
+/**
+ * ObfuscatedMailto
+ * Renders a mailto link that assembles the email address only at click time,
+ * preventing the plain address from appearing in initial HTML or accessibility trees.
+ */
+
+interface ObfuscatedMailtoProps {
+  label: string;
+  className?: string;
+  style?: React.CSSProperties;
+  onMouseEnter?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onMouseLeave?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
+
+export default function ObfuscatedMailto({
+  label,
+  className,
+  style,
+  onMouseEnter,
+  onMouseLeave,
+}: ObfuscatedMailtoProps) {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // Assemble address only on click, mirroring ContactSection.tsx pattern
+    const address = ['gallant', '_mod5v', '@', 'icloud', '.com'].join('');
+    window.location.href = `mailto:${address}`;
+  };
+
+  return (
+    <a
+      href="#"
+      onClick={handleClick}
+      className={className}
+      style={style}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {label}
+    </a>
+  );
+}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, type MutableRefObject } from 'react';
+import ObfuscatedMailto from './ObfuscatedMailto';
 
 type WaveformInteraction = {
   mouseY: number;
@@ -332,13 +333,11 @@ export default function ContactChannel() {
 
           {/* Social links */}
           <div className="mt-10 space-y-3">
-            <a
-              href="mailto:gallant_mod5v@icloud.com"
+            <ObfuscatedMailto
+              label="→ EMAIL"
               className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
               style={{ color: '#00e5ff', opacity: 0.5 }}
-            >
-              → EMAIL
-            </a>
+            />
             <a
               href="https://www.instagram.com/sin.ai.da/"
               target="_blank"
@@ -421,8 +420,8 @@ export default function ContactChannel() {
               className="flex flex-wrap gap-4 mt-10 mb-12 transition-opacity duration-600"
               style={{ opacity: ctaVisible ? 1 : 0 }}
             >
-              <a
-                href="mailto:gallant_mod5v@icloud.com"
+              <ObfuscatedMailto
+                label="EMAIL ME ↗"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid #ff3333',
@@ -437,9 +436,7 @@ export default function ContactChannel() {
                   e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
                   e.currentTarget.style.color = '#ff3333';
                 }}
-              >
-                EMAIL ME ↗
-              </a>
+              />
               <a
                 href="https://www.instagram.com/sin.ai.da/"
                 target="_blank"
