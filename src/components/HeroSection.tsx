@@ -38,7 +38,7 @@ export default function HeroSection() {
               <br />
               Meets
               <br />
-              <span className="neon-glow-accent text-accent">Imagination</span>
+              <span className="neon-glow-accent text-accent font-bitm tracking-normal">Imagination</span>
             </h1>
           </div>
         </div>
@@ -50,12 +50,12 @@ export default function HeroSection() {
           }>
           
           <div className="border-l border-primary/30 pl-8 space-y-5">
-            <p className="font-mono text-[13px] leading-relaxed my-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
-              Living visual systems for stages, concerts, performances, and spaces where sound
-              becomes light.
+            <p className="font-mono text-[15px] leading-relaxed my-4" style={{ color: 'rgba(255,255,255,0.82)' }}>
+              Transforming complex ideas into visual systems for stages, concerts, performances,
+              and spaces where sound becomes light.
             </p>
-            <div className="font-mono text-[11px] uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
-              Stage visuals · Projection worlds · Generative image systems
+            <div className="font-mono text-[12px] uppercase tracking-[0.18em]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Experience design · Stage visuals · New media art
             </div>
             <button
               type="button"

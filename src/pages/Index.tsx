@@ -1,13 +1,14 @@
 import { lazy, Suspense } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
+import AboutSection from '@/components/AboutSection';
 import Constellation from '@/components/constellation/Constellation';
 import SelectedWorks from '@/components/SelectedWorks';
-import AboutSection from '@/components/AboutSection';
 import ExperimentsTools from '@/components/ExperimentsTools';
 import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
+import SectionBreak from '@/components/SectionBreak';
 import CustomCursor from '@/components/CustomCursor';
 import CookieBanner from '@/components/CookieBanner';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -33,11 +34,18 @@ const Index = () => {
       <Header />
 
       <main>
+        {/* WHY — who she is, human first */}
         <HeroSection />
-        <Constellation />
-        <SelectedWorks />
         <AboutSection />
+        <SectionBreak />
+        {/* HOW — the craft as one living system */}
+        <Constellation />
+        <SectionBreak />
+        {/* WHAT — the proof, then the play, then how to hire */}
+        <SelectedWorks />
+        <SectionBreak />
         <ExperimentsTools />
+        <SectionBreak />
         <ServicesTerminal />
         <ContactChannel />
       </main>

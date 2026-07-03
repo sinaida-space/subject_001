@@ -22,12 +22,12 @@ export default function Constellation() {
               Constellation
             </div>
             <div className="mt-2 font-mono" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
-              [ SIGNAL MAP ]
+              [ HOW IT CONNECTS ]
             </div>
 
-            <p className="mt-6 max-w-[220px] font-mono text-[12px] leading-relaxed text-white/60">
-              Skills and works as one living graph. Trace a skill to see the work it powers —
-              or open a star.
+            <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-white/70">
+              A map of how the work fits together. The bright stars are projects; the small ones
+              are the skills and tools behind them.
             </p>
 
             {/* legend */}
@@ -43,8 +43,8 @@ export default function Constellation() {
               ))}
             </div>
 
-            <div className="mt-8 font-mono text-[10px] uppercase tracking-[0.18em] text-white/25">
-              {mode === 'full' ? 'hover · drag · click' : 'tap a star'}
+            <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
+              {mode === 'full' ? 'hover · drag · click a star' : 'tap a star'}
             </div>
           </div>
 
@@ -59,14 +59,14 @@ export default function Constellation() {
             )}
 
             {/* live caption of the focused project (screen-reader + mobile friendly) */}
-            <div className="mt-2 min-h-[2.5rem] font-mono text-[12px] text-white/60" aria-live="polite">
+            <div className="mt-2 min-h-[2.5rem] font-mono text-[13px] leading-relaxed text-white/70" aria-live="polite">
               {active ? (
                 <span>
                   <span style={{ color: '#f2efe9' }}>{active.title}</span>
-                  {active.tagline ? <span className="text-white/45"> — {active.tagline}</span> : null}
+                  {active.tagline ? <span className="text-white/55"> — {active.tagline}</span> : null}
                 </span>
               ) : (
-                <span className="text-white/30">Bright stars are works · faint stars are skills</span>
+                <span className="text-white/40">Explore a star to trace what it connects to.</span>
               )}
             </div>
           </div>
