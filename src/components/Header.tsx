@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import Logo from './Logo';
 
 const NAV_ITEMS = [
-  { label: 'Gallery', href: '#work' },
+  { label: 'Works', href: '#work' },
+  { label: 'Constellation', href: '#constellation' },
+  { label: 'Play', href: '#experiments' },
   { label: 'About', href: '#about' },
-  { label: 'Services', href: '#services' },
 ];
 
 export default function Header() {

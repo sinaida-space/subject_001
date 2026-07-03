@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
+import { useRenderMode } from '@/hooks/useRenderMode';
 
 export default function Footer() {
   const [snakeOpen, setSnakeOpen] = useState(false);
+  const { mode, toggle } = useRenderMode();
 
   return (
     <footer className="relative z-10 border-t border-border py-12">
@@ -57,7 +59,18 @@ export default function Footer() {
         <div className="section-divider mt-8 mb-6" />
         <div className="flex flex-col gap-6 md:flex-row md:justify-between md:items-center">
           <span className="clinical-label text-muted-foreground">Website design and development by Sinaida Krivchenko | Prague, CZ</span>
-          <span className="clinical-label text-muted-foreground">Are we more than the data we leave behind?</span>
+          <div className="flex items-center gap-6">
+            <button
+              type="button"
+              onClick={toggle}
+              className="clinical-label cursor-none text-muted-foreground transition-colors hover:text-foreground"
+              aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
+              title="Toggle visual intensity"
+            >
+              MODE: <span className="text-primary">{mode === 'full' ? 'FULL' : 'LITE'}</span>
+            </button>
+            <span className="clinical-label text-muted-foreground">Are we more than the data we leave behind?</span>
+          </div>
         </div>
       </div>
     </footer>
