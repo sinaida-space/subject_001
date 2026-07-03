@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import Logo from './Logo';
-import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
   { label: 'Work', href: '#work' },
   { label: 'About', href: '#about' },
+  { label: 'Services', href: '#services' },
+  { label: 'Contact', href: '#contact' },
 ];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { mode, toggle } = useRenderMode();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -65,31 +65,6 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-5">
-            <div
-              className="flex items-center font-mono text-[10px] tracking-[0.15em]"
-              style={{ border: '1px solid rgba(255,255,255,0.15)' }}
-              role="group"
-              aria-label="Signal Map view"
-            >
-              <button
-                type="button"
-                onClick={() => mode !== 'full' && toggle()}
-                className="cursor-none px-3 py-1.5 transition-colors"
-                style={mode === 'full' ? { color: '#CC1414', background: 'rgba(204,20,20,0.12)' } : { color: 'rgba(255,255,255,0.4)' }}
-                aria-pressed={mode === 'full'}
-              >
-                MAP
-              </button>
-              <button
-                type="button"
-                onClick={() => mode !== 'lite' && toggle()}
-                className="cursor-none px-3 py-1.5 transition-colors"
-                style={mode === 'lite' ? { color: '#CC1414', background: 'rgba(204,20,20,0.12)' } : { color: 'rgba(255,255,255,0.4)' }}
-                aria-pressed={mode === 'lite'}
-              >
-                PLAIN SIGNAL
-              </button>
-            </div>
             <a
               href="#contact"
               className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
@@ -130,7 +105,7 @@ export default function Header() {
           [ NAV.SYS // OPEN ]
         </div>
 
-        {NAV_ITEMS.map((item, i) => (
+        {NAV_ITEMS.filter((item) => item.label !== 'Contact').map((item, i) => (
           <a
             key={item.label}
             href={item.href}
@@ -176,25 +151,6 @@ export default function Header() {
         >
           CONTACT
         </a>
-
-        <button
-          type="button"
-          onClick={() => toggle()}
-          style={{
-            marginTop: 40,
-            fontFamily: 'monospace',
-            fontSize: 12,
-            letterSpacing: '0.18em',
-            color: 'rgba(255,255,255,0.55)',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            textAlign: 'left',
-          }}
-          aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
-        >
-          VIEW: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'SIGNAL MAP' : 'PLAIN SIGNAL'}</span>
-        </button>
 
         <div style={{ marginTop: 40, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
