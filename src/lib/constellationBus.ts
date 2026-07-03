@@ -1,6 +1,6 @@
-// Tiny pub/sub connecting the Constellation and the content lists, both ways:
-//  · highlight(id)  — a list row is hovered → light up its node
-//  · focusWork(id)  — a project star is clicked → open + scroll its Selected Works row
+// Tiny pub/sub connecting the Signal Map graph and its Plain Signal index, both ways:
+//  · highlight(id)  — an index row is hovered → light up its node
+//  · focusWork(id)  — a project star or index row is clicked → open its detail popup
 
 type Listener = (id: string | null) => void;
 

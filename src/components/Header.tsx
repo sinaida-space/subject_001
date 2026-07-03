@@ -4,8 +4,6 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
   { label: 'Work', href: '#work' },
-  { label: 'Skills', href: '#constellation' },
-  { label: 'Playground', href: '#experiments' },
   { label: 'About', href: '#about' },
 ];
 
@@ -67,15 +65,31 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-5">
-            <button
-              type="button"
-              onClick={toggle}
-              className="clinical-label cursor-none text-muted-foreground transition-colors hover:text-foreground"
-              title="Toggle visual intensity"
-              aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
+            <div
+              className="flex items-center font-mono text-[10px] tracking-[0.15em]"
+              style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+              role="group"
+              aria-label="Signal Map view"
             >
-              {mode === 'full' ? 'FULL' : 'LITE'}
-            </button>
+              <button
+                type="button"
+                onClick={() => mode !== 'full' && toggle()}
+                className="cursor-none px-3 py-1.5 transition-colors"
+                style={mode === 'full' ? { color: '#CC1414', background: 'rgba(204,20,20,0.12)' } : { color: 'rgba(255,255,255,0.4)' }}
+                aria-pressed={mode === 'full'}
+              >
+                MAP
+              </button>
+              <button
+                type="button"
+                onClick={() => mode !== 'lite' && toggle()}
+                className="cursor-none px-3 py-1.5 transition-colors"
+                style={mode === 'lite' ? { color: '#CC1414', background: 'rgba(204,20,20,0.12)' } : { color: 'rgba(255,255,255,0.4)' }}
+                aria-pressed={mode === 'lite'}
+              >
+                PLAIN SIGNAL
+              </button>
+            </div>
             <a
               href="#contact"
               className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
@@ -179,7 +193,7 @@ export default function Header() {
           }}
           aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
         >
-          VISUAL MODE: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'FULL' : 'LITE'}</span>
+          VIEW: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'SIGNAL MAP' : 'PLAIN SIGNAL'}</span>
         </button>
 
         <div style={{ marginTop: 40, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>

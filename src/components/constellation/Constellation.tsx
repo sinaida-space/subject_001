@@ -1,60 +1,62 @@
-import { Suspense, lazy, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
-import { CATEGORY_COLORS, CATEGORY_LABEL, type Category, type GraphNode } from '@/data/graph';
+import type { GraphNode } from '@/data/graph';
+import { projectById } from '@/data/projects';
+import { constellationBus } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
+import LegendWindow from './LegendWindow';
+import PlainSignalIndex from './PlainSignalIndex';
+import ProjectDetail from './ProjectDetail';
 
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
-
-const CATEGORIES = Object.keys(CATEGORY_COLORS) as Category[];
 
 export default function Constellation() {
   const { mode } = useRenderMode();
   const [active, setActive] = useState<GraphNode['project'] | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
+  useEffect(() => {
+    const unsub = constellationBus.subscribeFocus((id) => setOpenId(id));
+    return () => unsub();
+  }, []);
+
+  const openProject = openId ? projectById(openId) : undefined;
+
   return (
-    <section ref={sectionRef} id="constellation" className="relative z-10 py-24">
+    <section ref={sectionRef} id="work" className="relative z-10 py-24">
       <div className="container mx-auto max-w-7xl px-6">
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
-          {/* LEFT COLUMN — label + legend (matches site pattern) */}
-          <div className="shrink-0 md:sticky md:top-[15vh] md:w-[200px] md:self-start">
+          {/* LEFT COLUMN — label + legend */}
+          <div className="shrink-0 md:sticky md:top-[15vh] md:w-[220px] md:self-start">
             <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
-              Constellation
+              Selected Works
             </div>
             <div className="mt-2 font-mono" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
-              [ HOW IT CONNECTS ]
+              [ SIGNAL MAP ]
             </div>
 
             <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-white/70">
-              The skills behind the work. Trace one to see what it powers.
+              Skills and every project, one living graph. Trace a star, or read it plainly.
             </p>
 
-            {/* legend */}
-            <div className="mt-8 space-y-2">
-              {CATEGORIES.map((c) => (
-                <div key={c} className="flex items-center gap-2 font-mono text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  <span
-                    className="inline-block h-2 w-2 rounded-full"
-                    style={{ background: CATEGORY_COLORS[c], boxShadow: `0 0 6px ${CATEGORY_COLORS[c]}` }}
-                  />
-                  {CATEGORY_LABEL[c]}
-                </div>
-              ))}
+            <div className="mt-8">
+              <LegendWindow />
             </div>
           </div>
 
-          {/* RIGHT COLUMN — the graph */}
+          {/* RIGHT COLUMN — the graph, or its plain reading */}
           <div className="relative flex-1">
             {mode === 'full' ? (
               <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
                 <ConstellationFull onActiveProject={setActive} />
               </Suspense>
             ) : (
-              <ConstellationLite onActiveProject={setActive} />
+              <PlainSignalIndex />
             )}
 
             {/* live caption of the focused project (screen-reader + mobile friendly) */}
-            {active && (
+            {mode === 'full' && active && (
               <div className="mt-2 min-h-[2.5rem] font-mono text-[13px] leading-relaxed text-white/70" aria-live="polite">
                 <span style={{ color: '#f2efe9' }}>{active.title}</span>
                 {active.tagline ? <span className="text-white/55"> — {active.tagline}</span> : null}
@@ -63,6 +65,8 @@ export default function Constellation() {
           </div>
         </div>
       </div>
+
+      {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}
     </section>
   );
 }

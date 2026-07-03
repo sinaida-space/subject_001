@@ -3,8 +3,8 @@ import { buildGraph, buildAdjacency, type GraphNode } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 
-const VW = 1000;
-const VH = 680;
+const VW = 1100;
+const VH = 780;
 
 interface Props {
   onActiveProject?: (p: GraphNode['project'] | null) => void;
@@ -34,16 +34,11 @@ export default function ConstellationLite({ onActiveProject }: Props) {
   };
 
   const activate = (n: GraphNode) => {
-    if (n.project?.url) {
-      window.open(n.project.url, '_blank', 'noopener,noreferrer');
-    } else if (n.project?.featured) {
-      constellationBus.focusWork(n.id);
-      document.getElementById(`work-${n.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    if (n.project) constellationBus.focusWork(n.id);
   };
 
   return (
-    <div className="relative w-full" style={{ height: 'clamp(420px, 66vh, 720px)' }}>
+    <div className="relative w-full" style={{ height: 'clamp(480px, 76vh, 860px)' }}>
       <svg viewBox={`0 0 ${VW} ${VH}`} className="h-full w-full" preserveAspectRatio="xMidYMid meet">
         {/* edges */}
         {edges.map((e, i) => {
@@ -74,19 +69,20 @@ export default function ConstellationLite({ onActiveProject }: Props) {
           if (active && !isActive && !isNeighbor) opacity = 0.3;
           const r = n.kind === 'project' ? 3 + n.weight * 3 : 2.4;
           // Skill-first: skills carry labels by default; project names only
-          // surface once the visitor traces into that star.
-          const showLabel = n.kind === 'skill' ? true : isActive || !!isNeighbor;
+          // surface once the visitor traces into that star — except the two
+          // hero works and the accent skills, which stay named at all times.
+          const showLabel = n.kind === 'skill' ? true : isActive || !!isNeighbor || !!n.accent;
           const labelAlpha = active
             ? isActive
               ? 1
               : isNeighbor
                 ? 0.85
                 : n.kind === 'skill'
-                  ? 0.12
-                  : 0
+                  ? (n.accent ? 0.55 : 0.12)
+                  : (n.accent ? 0.85 : 0)
             : n.kind === 'skill'
-              ? 0.68
-              : 0;
+              ? (n.accent ? 0.9 : 0.68)
+              : (n.accent ? 0.85 : 0);
           return (
             <g
               key={n.id}
