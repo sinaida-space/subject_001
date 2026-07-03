@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Logo from './Logo';
+import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
   { label: 'Works', href: '#work' },
@@ -11,6 +12,7 @@ const NAV_ITEMS = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { mode, toggle } = useRenderMode();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -64,15 +66,26 @@ export default function Header() {
             ))}
           </nav>
 
-          <a
-            href="#contact"
-            className="hidden md:block font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
-            style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
-            onMouseEnter={contactEnter}
-            onMouseLeave={contactLeave}
-          >
-            CONTACT
-          </a>
+          <div className="hidden md:flex items-center gap-5">
+            <button
+              type="button"
+              onClick={toggle}
+              className="clinical-label cursor-none text-muted-foreground transition-colors hover:text-foreground"
+              title="Toggle visual intensity"
+              aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
+            >
+              {mode === 'full' ? 'FULL' : 'LITE'}
+            </button>
+            <a
+              href="#contact"
+              className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
+              style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
+              onMouseEnter={contactEnter}
+              onMouseLeave={contactLeave}
+            >
+              CONTACT
+            </a>
+          </div>
 
           <button
             className="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-[6px]"
@@ -150,7 +163,26 @@ export default function Header() {
           CONTACT
         </a>
 
-        <div style={{ marginTop: 64, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
+        <button
+          type="button"
+          onClick={() => toggle()}
+          style={{
+            marginTop: 40,
+            fontFamily: 'monospace',
+            fontSize: 12,
+            letterSpacing: '0.18em',
+            color: 'rgba(255,255,255,0.55)',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            textAlign: 'left',
+          }}
+          aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
+        >
+          VISUAL MODE: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'FULL' : 'LITE'}</span>
+        </button>
+
+        <div style={{ marginTop: 40, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>

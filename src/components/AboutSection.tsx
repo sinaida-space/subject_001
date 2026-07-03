@@ -263,7 +263,7 @@ export default function AboutSection() {
               <div className="flex-1 min-w-0">
                 <BioSignalLock />
                 <Reveal delay={600}>
-                  <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', lineHeight: 1.85 }}>
                     <p>
                       I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
                     </p>
@@ -280,14 +280,14 @@ export default function AboutSection() {
                   </div>
                 </Reveal>
                 <Reveal delay={800}>
-                  <div className="font-mono mb-7" style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.9 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', lineHeight: 1.85 }}>
                     <p>
                       I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.
                     </p>
                   </div>
                 </Reveal>
                 <Reveal delay={900}>
-                  <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em' }}>
+                  <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
                     <span style={{ color: '#ff3333' }}> · </span>
                     {'REACH: Global'}

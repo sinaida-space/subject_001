@@ -2,6 +2,10 @@
 // Consumed by: the Constellation graph, Selected Works rows, Experiments list,
 // and (via the SEO script / llms.txt) the static content layer.
 
+import workSubmerged from '@/assets/work-submerged.jpg';
+import workLegacy from '@/assets/work-legacy.jpg';
+import workSynesthetic from '@/assets/work-synesthetic.jpg';
+
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
   | 'installation' // projection mapping / immersive
@@ -32,6 +36,8 @@ export interface Project {
   url?: string;
   /** YouTube id for an inline lazy embed */
   video?: string;
+  /** still image (used when there is no video) */
+  image?: string;
   links?: ProjectLink[];
   badges?: Badge[];
   /** shows as an expandable row in Selected Works */
@@ -47,9 +53,9 @@ export const PROJECTS: Project[] = [
     title: 'Redkie Ptitsy — Live Concert Visuals',
     year: '2026',
     kind: 'stage',
-    tagline: '19 audio-reactive projections, one per song · Sklad №3, Moscow',
+    tagline: 'Live at Sklad №3, Moscow · 26 March 2026 · 19 projections, one per song',
     blurb:
-      'A full-set stage backdrop for the band Redkie Ptitsy at Sklad №3, Moscow. Nineteen unique audio-reactive projections — one crafted for each song — built as real-time TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.',
+      'Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nineteen unique audio-reactive projections — one crafted for each song — ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: [
       'touchdesigner',
@@ -79,6 +85,7 @@ export const PROJECTS: Project[] = [
       'AI-generated aesthetics mapped onto moving water — digital textures interacting with the physics of fluid and red-light environments. A study in how generative imagery behaves once it leaves the screen and lands on a living surface.',
     tools: ['TouchDesigner', 'AI visuals', 'DaVinci Resolve'],
     skills: ['projection-mapping', 'generative-ai', 'touchdesigner', 'davinci', 'concept-design'],
+    image: workSubmerged,
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
       { label: 'YouTube', url: 'https://youtube.com/shorts/7qgDlifWno0' },
@@ -96,6 +103,7 @@ export const PROJECTS: Project[] = [
       'Sound transformed into pulsating architecture — a digital structure whose heartbeat is synchronised to its auditory environment. Proof of the real-time sound-to-visual craft that drives the stage work.',
     tools: ['TouchDesigner', 'Suno'],
     skills: ['touchdesigner', 'audio-reactive', 'algorithmic-systems', 'generative-ai'],
+    image: workSynesthetic,
     video: 'TP9bAl6Juk8',
     links: [{ label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' }],
     featured: true,
@@ -112,6 +120,7 @@ export const PROJECTS: Project[] = [
       'A conceptual image series exploring infertility, biological finality, and artificial intelligence. If a silicon brain produces a "stochastic legacy", where does the soul reside? The narrative depth behind the visual practice.',
     tools: ['Generative AI', 'Higgsfield.ai', 'Affinity'],
     skills: ['generative-ai', 'visual-narrative', 'concept-design', 'computational-aesthetics', 'human-ai'],
+    image: workLegacy,
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245414325/Legacy-in-the-Age-of-Stochastic-Output' },
       { label: 'Instagram', url: 'https://www.instagram.com/p/DTsKFpxAloa/' },

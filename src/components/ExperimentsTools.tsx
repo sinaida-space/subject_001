@@ -16,7 +16,7 @@ function LinkRow({ project }: { project: Project }) {
         <span className="font-display text-lg text-foreground transition-colors group-hover:text-accent">
           {project.title}
         </span>
-        <span className="ml-3 font-mono text-[12px] text-white/50">{project.tagline}</span>
+        <span className="ml-3 font-mono text-[13px] text-white/60">{project.tagline}</span>
       </span>
       {project.badges && (
         <span className="flex shrink-0 gap-1.5">
@@ -47,7 +47,7 @@ export default function ExperimentsTools() {
             <div className="mt-2 font-mono" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
               [ PLAYGROUND ]
             </div>
-            <p className="mt-6 max-w-[220px] font-mono text-[12px] leading-relaxed text-white/50">
+            <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-white/65">
               Small interactive pieces and utilities. Hover a line to find it in the constellation.
             </p>
           </div>

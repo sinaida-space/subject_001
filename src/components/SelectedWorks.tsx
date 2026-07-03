@@ -70,12 +70,12 @@ function WorkRow({ project }: { project: Project }) {
         className="group flex w-full items-baseline gap-4 text-left"
         aria-expanded={open}
       >
-        <span className="w-12 shrink-0 font-mono text-[12px] text-white/40">{project.year ?? '—'}</span>
+        <span className="w-14 shrink-0 pt-1 font-mono text-[13px] text-white/45">{project.year ?? ''}</span>
         <span className="flex-1">
           <span className="font-display text-xl text-foreground transition-colors group-hover:text-primary md:text-2xl">
             {project.title}
           </span>
-          <span className="mt-1 block font-mono text-[12px] leading-relaxed text-white/55">{project.tagline}</span>
+          <span className="mt-1.5 block font-mono text-[14px] leading-relaxed text-white/65">{project.tagline}</span>
         </span>
         <span
           className="mt-1 shrink-0 font-mono text-[18px] text-primary transition-transform"
@@ -120,11 +120,20 @@ function WorkRow({ project }: { project: Project }) {
               </div>
             )}
           </div>
-          {project.video && (
+          {project.video ? (
             <div className="self-start">
               <VideoEmbed id={project.video} title={project.title} />
             </div>
-          )}
+          ) : project.image ? (
+            <div className="self-start overflow-hidden border border-white/10">
+              <img
+                src={project.image}
+                alt={project.title}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          ) : null}
         </div>
       )}
     </div>
