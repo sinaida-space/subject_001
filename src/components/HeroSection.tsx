@@ -38,7 +38,7 @@ export default function HeroSection() {
               <br />
               Meets
               <br />
-              <span className="neon-glow-accent text-accent font-bitm tracking-normal">Imagination</span>
+              <span className="neon-glow-accent text-accent">Imagination</span>
             </h1>
           </div>
         </div>
@@ -54,8 +54,13 @@ export default function HeroSection() {
               Transforming complex ideas into visual systems for stages, concerts, performances,
               and spaces where sound becomes light.
             </p>
-            <div className="font-mono text-[12px] uppercase tracking-[0.18em]" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Experience design · Stage visuals · New media art
+            <div className="flex flex-col gap-2.5 font-mono text-[12px] uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              {['Experience design', 'Stage visuals', 'New media art'].map((t) => (
+                <span key={t} className="flex items-center gap-2.5">
+                  <span className="inline-block h-1 w-1 rounded-full bg-primary/60" />
+                  {t}
+                </span>
+              ))}
             </div>
             <button
               type="button"
