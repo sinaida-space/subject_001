@@ -23,7 +23,6 @@ export interface ProjectLink {
 export interface Project {
   id: string;
   title: string;
-  year?: string;
   kind: ProjectKind;
   /** one-line descriptor, used in lists and as constellation tooltip */
   tagline: string;
@@ -51,7 +50,6 @@ export const PROJECTS: Project[] = [
   {
     id: 'redkie-ptitsy',
     title: 'Redkie Ptitsy — Live Concert Visuals',
-    year: '2026',
     kind: 'stage',
     tagline: 'Live at Sklad №3, Moscow · 26 March 2026 · 19 projections, one per song',
     blurb:

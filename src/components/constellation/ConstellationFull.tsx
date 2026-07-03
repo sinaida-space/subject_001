@@ -309,6 +309,9 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     }
 
     // ── labels ──
+    // Skill-first: the small skill stars carry the labels by default (this is
+    // a map of craft, not a project list). Project stars stay quiet white
+    // points until the visitor traces into them via hover/tap.
     const isMobile = w < 640;
     ctx.textBaseline = 'middle';
     for (const n of nodes) {
@@ -317,14 +320,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       let show = false;
       let alpha = 0;
       if (n.kind === 'project') {
-        // Desktop: all project stars are always named. Mobile: only on tap
-        // (persistent labels overlap/clip on a narrow canvas).
-        show = isMobile ? isActive || !!isNeighbor : true;
-        alpha = active ? (isActive ? 1 : isNeighbor ? 0.85 : 0.12) : 0.82;
-      } else {
-        // skills: only when active cluster involves them, or hovered
         show = isActive || !!isNeighbor;
-        alpha = isActive ? 1 : isNeighbor ? 0.7 : 0;
+        alpha = isActive ? 1 : isNeighbor ? 0.85 : 0;
+      } else {
+        // skills: always labeled, dimmed a touch when a different cluster is active
+        show = !isMobile || isActive || !!isNeighbor;
+        alpha = active ? (isActive ? 1 : isNeighbor ? 0.9 : 0.1) : 0.68;
       }
       if (!show || alpha <= 0.02) continue;
       const fs = n.kind === 'project' ? (n.weight >= 1.4 ? 13 : 12) : 11;
