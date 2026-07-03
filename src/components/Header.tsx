@@ -3,9 +3,9 @@ import Logo from './Logo';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
-  { label: 'Works', href: '#work' },
-  { label: 'Constellation', href: '#constellation' },
-  { label: 'Play', href: '#experiments' },
+  { label: 'Work', href: '#work' },
+  { label: 'Skills', href: '#constellation' },
+  { label: 'Playground', href: '#experiments' },
   { label: 'About', href: '#about' },
 ];
 

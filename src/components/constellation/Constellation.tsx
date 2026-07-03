@@ -26,8 +26,7 @@ export default function Constellation() {
             </div>
 
             <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-white/70">
-              A map of how the work fits together. The bright stars are projects; the small ones
-              are the skills and tools behind them.
+              The skills behind the work. Trace one to see what it powers.
             </p>
 
             {/* legend */}
@@ -42,10 +41,6 @@ export default function Constellation() {
                 </div>
               ))}
             </div>
-
-            <div className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
-              {mode === 'full' ? 'hover · drag · click a star' : 'tap a star'}
-            </div>
           </div>
 
           {/* RIGHT COLUMN — the graph */}
@@ -59,16 +54,12 @@ export default function Constellation() {
             )}
 
             {/* live caption of the focused project (screen-reader + mobile friendly) */}
-            <div className="mt-2 min-h-[2.5rem] font-mono text-[13px] leading-relaxed text-white/70" aria-live="polite">
-              {active ? (
-                <span>
-                  <span style={{ color: '#f2efe9' }}>{active.title}</span>
-                  {active.tagline ? <span className="text-white/55"> — {active.tagline}</span> : null}
-                </span>
-              ) : (
-                <span className="text-white/40">Explore a star to trace what it connects to.</span>
-              )}
-            </div>
+            {active && (
+              <div className="mt-2 min-h-[2.5rem] font-mono text-[13px] leading-relaxed text-white/70" aria-live="polite">
+                <span style={{ color: '#f2efe9' }}>{active.title}</span>
+                {active.tagline ? <span className="text-white/55"> — {active.tagline}</span> : null}
+              </div>
+            )}
           </div>
         </div>
       </div>

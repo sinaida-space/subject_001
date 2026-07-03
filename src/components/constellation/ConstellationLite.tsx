@@ -73,18 +73,19 @@ export default function ConstellationLite({ onActiveProject }: Props) {
           let opacity = 1;
           if (active && !isActive && !isNeighbor) opacity = 0.3;
           const r = n.kind === 'project' ? 3 + n.weight * 3 : 2.4;
-          const showLabel =
-            n.kind === 'project' ? true : isActive || !!isNeighbor;
+          // Skill-first: skills carry labels by default; project names only
+          // surface once the visitor traces into that star.
+          const showLabel = n.kind === 'skill' ? true : isActive || !!isNeighbor;
           const labelAlpha = active
             ? isActive
               ? 1
               : isNeighbor
-                ? 0.8
-                : n.kind === 'project'
-                  ? 0.15
+                ? 0.85
+                : n.kind === 'skill'
+                  ? 0.12
                   : 0
-            : n.kind === 'project'
-              ? 0.8
+            : n.kind === 'skill'
+              ? 0.68
               : 0;
           return (
             <g

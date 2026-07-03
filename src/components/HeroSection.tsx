@@ -54,11 +54,14 @@ export default function HeroSection() {
               Transforming complex ideas into visual systems for stages, concerts, performances,
               and spaces where sound becomes light.
             </p>
-            <div className="flex flex-col gap-2.5 font-mono text-[12px] uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-              {['Experience design', 'Stage visuals', 'New media art'].map((t) => (
-                <span key={t} className="flex items-center gap-2.5">
-                  <span className="inline-block h-1 w-1 rounded-full bg-primary/60" />
+            <div className="flex flex-col gap-2 font-mono text-[13px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {['experience_design', 'stage_visuals', 'new_media_art'].map((t, i, arr) => (
+                <span key={t} className="flex items-center gap-2">
+                  <span className="text-primary/70">$</span>
                   {t}
+                  {i === arr.length - 1 && (
+                    <span className="inline-block h-[1em] w-[7px] bg-accent/80 animate-terminal-cursor" />
+                  )}
                 </span>
               ))}
             </div>
