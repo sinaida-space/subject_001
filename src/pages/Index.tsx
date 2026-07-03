@@ -3,8 +3,6 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import Constellation from '@/components/constellation/Constellation';
-import SelectedWorks from '@/components/SelectedWorks';
-import ExperimentsTools from '@/components/ExperimentsTools';
 import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
@@ -38,13 +36,8 @@ const Index = () => {
         <HeroSection />
         <AboutSection />
         <SectionBreak />
-        {/* HOW — the craft as one living system */}
+        {/* HOW + WHAT — skills and every project, one living Signal Map */}
         <Constellation />
-        <SectionBreak />
-        {/* WHAT — the proof, then the play, then how to hire */}
-        <SelectedWorks />
-        <SectionBreak />
-        <ExperimentsTools />
         <SectionBreak />
         <ServicesTerminal />
         <ContactChannel />

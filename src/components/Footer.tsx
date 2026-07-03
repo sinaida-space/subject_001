@@ -26,8 +26,7 @@ export default function Footer() {
               <div className="clinical-label mb-5 text-primary">Navigate</div>
               <div className="space-y-3.5">
                 {[
-                  { label: 'Works', href: '#work' },
-                  { label: 'Constellation', href: '#constellation' },
+                  { label: 'Work', href: '#work' },
                   { label: 'About', href: '#about' },
                   { label: 'Services', href: '#services' },
                   { label: 'Contact', href: '#contact' },
@@ -69,7 +68,7 @@ export default function Footer() {
                   aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
                   title="Toggle visual intensity"
                 >
-                  Visual mode: <span className="text-primary">{mode === 'full' ? 'Full' : 'Lite'}</span>
+                  View: <span className="text-primary">{mode === 'full' ? 'Signal Map' : 'Plain Signal'}</span>
                 </button>
               </div>
             </div>

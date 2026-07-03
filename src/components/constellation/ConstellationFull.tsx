@@ -11,6 +11,7 @@ interface RNode {
   color: string;
   weight: number;
   project?: GraphNode['project'];
+  accent?: boolean;
   hx: number; // home x (layout)
   hy: number;
   x: number; // live x
@@ -118,6 +119,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         color: n.color,
         weight: n.weight,
         project: n.project,
+        accent: n.accent,
         hx: n.x,
         hy: n.y,
         x: old?.x ?? n.x,
@@ -277,8 +279,8 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       const isActive = n.id === active;
       const isNeighbor = neighbors?.has(n.id);
       let intensity = 1;
-      if (active && !isActive && !isNeighbor) intensity = 0.28;
-      const hover = isActive ? 1.7 : isNeighbor ? 1.25 : 1;
+      if (active && !isActive && !isNeighbor) intensity = n.accent ? 0.55 : 0.28;
+      const hover = isActive ? 1.7 : isNeighbor ? 1.25 : n.accent ? 1.15 : 1;
       const spr = glowSprite(n.color);
       const base = n.kind === 'project' ? 12 + n.weight * 12 : 9;
       const s = base * hover * (0.85 + 0.15 * Math.sin(t * 1.3 + n.phase));
@@ -293,8 +295,8 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       const isActive = n.id === active;
       const isNeighbor = neighbors?.has(n.id);
       let intensity = 1;
-      if (active && !isActive && !isNeighbor) intensity = 0.35;
-      const rr = n.r * (isActive ? 1.5 : 1) * n.glow;
+      if (active && !isActive && !isNeighbor) intensity = n.accent ? 0.6 : 0.35;
+      const rr = n.r * (isActive ? 1.5 : n.accent ? 1.15 : 1) * n.glow;
       ctx.beginPath();
       ctx.arc(n.x, n.y, rr, 0, Math.PI * 2);
       ctx.fillStyle = n.kind === 'project' ? hexA('#ffffff', 0.9 * intensity * n.glow) : hexA(n.color, 0.9 * intensity * n.glow);
@@ -311,7 +313,8 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     // ── labels ──
     // Skill-first: the small skill stars carry the labels by default (this is
     // a map of craft, not a project list). Project stars stay quiet white
-    // points until the visitor traces into them via hover/tap.
+    // points until the visitor traces into them via hover/tap — except the
+    // two hero works and the accent skills, which stay named at all times.
     const isMobile = w < 640;
     ctx.textBaseline = 'middle';
     for (const n of nodes) {
@@ -320,16 +323,16 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       let show = false;
       let alpha = 0;
       if (n.kind === 'project') {
-        show = isActive || !!isNeighbor;
-        alpha = isActive ? 1 : isNeighbor ? 0.85 : 0;
+        show = isActive || !!isNeighbor || !!n.accent;
+        alpha = isActive ? 1 : isNeighbor ? 0.85 : n.accent ? 0.85 : 0;
       } else {
         // skills: always labeled, dimmed a touch when a different cluster is active
-        show = !isMobile || isActive || !!isNeighbor;
-        alpha = active ? (isActive ? 1 : isNeighbor ? 0.9 : 0.1) : 0.68;
+        show = !isMobile || isActive || !!isNeighbor || !!n.accent;
+        alpha = active ? (isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.55 : 0.1) : n.accent ? 0.9 : 0.68;
       }
       if (!show || alpha <= 0.02) continue;
       const fs = n.kind === 'project' ? (n.weight >= 1.4 ? 13 : 12) : 11;
-      ctx.font = `${n.kind === 'project' ? 500 : 400} ${fs}px 'Space Mono', monospace`;
+      ctx.font = `${n.kind === 'project' || n.accent ? 500 : 400} ${fs}px 'Space Mono', monospace`;
       // Flip the label to the left when it would run off the right edge.
       const tw = ctx.measureText(n.label).width;
       const flip = n.x + n.r + 8 + tw > w - 6;
@@ -454,12 +457,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   };
 
   const navigate = (node: RNode) => {
-    if (node.project?.url) {
-      window.open(node.project.url, '_blank', 'noopener,noreferrer');
-    } else if (node.project?.featured) {
-      constellationBus.focusWork(node.id);
-      document.getElementById(`work-${node.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    if (node.project) constellationBus.focusWork(node.id);
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
@@ -506,7 +504,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   };
 
   return (
-    <div ref={wrapRef} className="relative w-full" style={{ height: 'clamp(440px, 72vh, 780px)' }}>
+    <div ref={wrapRef} className="relative w-full" style={{ height: 'clamp(520px, 84vh, 940px)' }}>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 touch-none"

@@ -2,6 +2,7 @@
 // Consumed by: the Constellation graph, Selected Works rows, Experiments list,
 // and (via the SEO script / llms.txt) the static content layer.
 
+import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
 import workSubmerged from '@/assets/work-submerged.jpg';
 import workLegacy from '@/assets/work-legacy.jpg';
 import workSynesthetic from '@/assets/work-synesthetic.jpg';
@@ -41,6 +42,8 @@ export interface Project {
   badges?: Badge[];
   /** shows as an expandable row in Selected Works */
   featured?: boolean;
+  /** always-labeled star in the Signal Map — the two flagship works */
+  hero?: boolean;
   /** relative visual weight of the star in the constellation (1 = default) */
   weight?: number;
 }
@@ -63,6 +66,7 @@ export const PROJECTS: Project[] = [
       'event-design',
       'visual-narrative',
     ],
+    image: workRedkiePtitsy,
     video: 'bDDAXRlz5FQ',
     links: [
       { label: 'Live (YouTube)', url: 'https://youtube.com/shorts/bDDAXRlz5FQ' },
@@ -70,6 +74,7 @@ export const PROJECTS: Project[] = [
     ],
     badges: ['sound'],
     featured: true,
+    hero: true,
     weight: 1.6,
   },
 
@@ -82,7 +87,7 @@ export const PROJECTS: Project[] = [
     blurb:
       'AI-generated aesthetics mapped onto moving water — digital textures interacting with the physics of fluid and red-light environments. A study in how generative imagery behaves once it leaves the screen and lands on a living surface.',
     tools: ['TouchDesigner', 'AI visuals', 'DaVinci Resolve'],
-    skills: ['projection-mapping', 'generative-ai', 'touchdesigner', 'davinci', 'concept-design'],
+    skills: ['projection-mapping', 'generative-ai', 'touchdesigner', 'davinci', 'concept-design', 'interactive-installations'],
     image: workSubmerged,
     links: [
       { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
@@ -100,7 +105,7 @@ export const PROJECTS: Project[] = [
     blurb:
       'Sound transformed into pulsating architecture — a digital structure whose heartbeat is synchronised to its auditory environment. Proof of the real-time sound-to-visual craft that drives the stage work.',
     tools: ['TouchDesigner', 'Suno'],
-    skills: ['touchdesigner', 'audio-reactive', 'algorithmic-systems', 'generative-ai'],
+    skills: ['touchdesigner', 'audio-reactive', 'algorithmic-systems', 'generative-ai', 'interactive-installations'],
     image: workSynesthetic,
     video: 'TP9bAl6Juk8',
     links: [{ label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' }],
@@ -132,18 +137,21 @@ export const PROJECTS: Project[] = [
     id: 'stereolove',
     title: 'Stereolove',
     kind: 'game',
-    tagline: 'Hand-tracking question game · camera',
+    tagline: 'Hand-tracking question game · motion reactive',
+    blurb: 'A question game you search for answers in an off-axis projection space.',
     tools: ['Web', 'Camera / hand tracking'],
-    skills: ['creative-web', 'perception-media', 'human-ai', 'concept-design'],
+    skills: ['creative-web', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
     badges: ['camera'],
+    hero: true,
     weight: 1,
   },
   {
     id: 'void',
     title: 'Void',
     kind: 'game',
-    tagline: 'One-shot ritual · sound on',
+    tagline: 'Interactive question game',
+    blurb: 'A single, irreversible pass through a dark, interactive sound-led ritual.',
     tools: ['Web', 'Sound'],
     skills: ['creative-web', 'concept-design', 'visual-narrative'],
     url: 'https://veil-of-sight.lovable.app',
@@ -154,7 +162,8 @@ export const PROJECTS: Project[] = [
     id: 'the-well',
     title: 'The Well',
     kind: 'game',
-    tagline: 'Questions by theme · cursor-reactive',
+    tagline: 'Questions by theme',
+    blurb: 'Questions grouped by theme. Shaders provide the atmosphere.',
     tools: ['Web', 'Cursor interaction'],
     skills: ['creative-web', 'visual-narrative', 'perception-media'],
     url: 'https://sinaida-space.github.io/the-well/',
@@ -166,10 +175,22 @@ export const PROJECTS: Project[] = [
     title: 'Crystal',
     kind: 'game',
     tagline: 'Scroll-driven crystal forge',
+    blurb: 'Scroll and tap the questions to search for the answers within you.',
     tools: ['Web', 'Scroll animation'],
     skills: ['creative-web', 'algorithmic-systems', 'generative-ai'],
     url: 'https://mind-crystal-forge.lovable.app',
     badges: ['scroll'],
+    weight: 1,
+  },
+  {
+    id: 'leela-mirror',
+    title: 'Leela Mirror',
+    kind: 'game',
+    tagline: 'Self-exploration game based on ancient Indian Leela',
+    blurb: 'An online self-exploration game based on the ancient Indian game of Leela.',
+    tools: ['Web'],
+    skills: ['creative-web', 'concept-design', 'visual-narrative'],
+    url: 'https://leela-mirror.lovable.app/',
     weight: 1,
   },
 
@@ -179,6 +200,7 @@ export const PROJECTS: Project[] = [
     title: 'Seedance Director',
     kind: 'tool',
     tagline: 'Prompter GPT for Seedance',
+    blurb: 'A custom GPT that streamlines prompts for Seedance.',
     tools: ['Custom GPT'],
     skills: ['generative-ai', 'tech-strategy'],
     url: 'https://chatgpt.com/g/g-69f13ad1c9f48191853247023b576bfb-seedance-director-by-sinaida',
@@ -189,6 +211,7 @@ export const PROJECTS: Project[] = [
     title: 'Dreamscape Navigator',
     kind: 'tool',
     tagline: 'Creative-problem guides (RU)',
+    blurb: 'Guided prompts in Russian for working through a creative or personal block.',
     tools: ['Web', 'Guides'],
     skills: ['concept-design', 'tech-strategy', 'human-ai'],
     url: 'https://dreamscape-navigator-24.lovable.app',
@@ -197,6 +220,18 @@ export const PROJECTS: Project[] = [
       { label: 'Вопросы к себе', url: 'https://sinaida-space.github.io/voprosy_k_sebe/' },
     ],
     badges: ['ru'],
+    weight: 0.9,
+  },
+  {
+    id: 'mahler',
+    title: 'Mahler — The Orchestrator',
+    kind: 'tool',
+    tagline: 'Orchestrator for Claude',
+    blurb: 'A multi-model orchestrator for Claude, designed to maximize ROI on tokens.',
+    tools: ['Claude', 'GitHub'],
+    skills: ['tech-strategy', 'system-architecture', 'ai-orchestration', 'algorithmic-systems'],
+    url: 'https://github.com/sinaida-space/mahler-the-orchestrator',
+    links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/mahler-the-orchestrator' }],
     weight: 0.9,
   },
 ];

@@ -26,16 +26,19 @@ export interface Skill {
   id: string;
   label: string;
   category: Category;
+  /** always-labeled skill in the Signal Map — the top signals a producer scans for */
+  accent?: boolean;
 }
 
 export const SKILLS: Skill[] = [
   // tech
-  { id: 'touchdesigner', label: 'TouchDesigner', category: 'tech' },
+  { id: 'touchdesigner', label: 'TouchDesigner', category: 'tech', accent: true },
   { id: 'audio-reactive', label: 'Real-time audio-reactive', category: 'tech' },
   { id: 'projection-mapping', label: 'Projection mapping', category: 'tech' },
   { id: 'generative-ai', label: 'Generative AI systems', category: 'tech' },
   { id: 'davinci', label: 'DaVinci Resolve', category: 'tech' },
   { id: 'creative-web', label: 'Creative web technology', category: 'tech' },
+  { id: 'interactive-installations', label: 'Interactive installations', category: 'tech', accent: true },
   // direction
   { id: 'creative-direction', label: 'Creative direction', category: 'direction' },
   { id: 'visual-narrative', label: 'Visual narrative', category: 'direction' },
@@ -44,7 +47,7 @@ export const SKILLS: Skill[] = [
   // strategy
   { id: 'tech-strategy', label: 'Creative technology strategy', category: 'strategy' },
   { id: 'interdisciplinary', label: 'Interdisciplinary leadership', category: 'strategy' },
-  { id: 'experience-design', label: 'Digital experience design', category: 'strategy' },
+  { id: 'experience-design', label: 'Digital experience design', category: 'strategy', accent: true },
   // research
   { id: 'computational-aesthetics', label: 'Computational aesthetics', category: 'research' },
   { id: 'human-ai', label: 'Human–AI collaboration', category: 'research' },
@@ -53,6 +56,7 @@ export const SKILLS: Skill[] = [
   { id: 'algorithmic-systems', label: 'Algorithmic visual systems', category: 'analytical' },
   { id: 'system-architecture', label: 'System architecture', category: 'analytical' },
   { id: 'data-workflows', label: 'Data-driven workflows', category: 'analytical' },
+  { id: 'ai-orchestration', label: 'AI orchestration', category: 'analytical' },
 ];
 
 export const skillById = (id: string): Skill | undefined => SKILLS.find((s) => s.id === id);
@@ -68,6 +72,8 @@ export interface GraphNode {
   weight: number;
   /** projects only: their full record for click behaviour + tooltips */
   project?: Project;
+  /** always-labeled node in the Signal Map (hero project or accent skill) */
+  accent?: boolean;
 }
 
 export interface GraphEdge {
@@ -94,6 +100,7 @@ export function buildGraph(): { nodes: GraphNode[]; edges: GraphEdge[] } {
       category: s.category,
       color: CATEGORY_COLORS[s.category],
       weight: 0.62,
+      accent: s.accent,
     });
   });
 
@@ -109,6 +116,7 @@ export function buildGraph(): { nodes: GraphNode[]; edges: GraphEdge[] } {
       color: CATEGORY_COLORS[category],
       weight: p.weight ?? 1,
       project: p,
+      accent: p.hero,
     });
 
     p.skills.forEach((sid) => {
