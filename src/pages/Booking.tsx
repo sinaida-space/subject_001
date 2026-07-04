@@ -26,12 +26,6 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
       <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.60)' }}>
         {service.brief}
       </p>
-      {service.proof && (
-        <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.60)' }}>
-          <span style={{ color: '#ff3333' }}>{'> '}</span>
-          {service.proof}
-        </p>
-      )}
     </div>
   );
 }
@@ -128,8 +122,7 @@ export default function Booking() {
             </p>
             <p>
               <span style={{ color: '#00e5ff' }}>Lead time — </span>
-              Typical lead time: 4–8 weeks depending on scope, longer for full theater productions.
-              Earlier is always better — see per-service lead times above.
+              Varies by scope — see the lead time under each service above. Earlier is always better.
             </p>
           </div>
         </section>

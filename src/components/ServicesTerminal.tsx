@@ -1,45 +1,9 @@
 import { useRef } from 'react';
-import { projectById } from '@/data/projects';
-
-// Pull the flagship proof line from the single source of truth in projects.ts,
-// so this copy can't drift from the real project data.
-const redkiePtitsy = projectById('redkie-ptitsy');
-const redkiePtitsyName = redkiePtitsy?.title.split('—')[0].trim();
-const redkiePtitsyProof = redkiePtitsy
-  ? `${redkiePtitsyName} — 19 unique projections, one per song.`
-  : undefined;
-
-const SERVICES = [
-  {
-    code: 'SRV.001',
-    title: 'For music festivals & concerts',
-    description:
-      'Audio-reactive stage visuals built per song or per set — real-time TouchDesigner systems that listen to the live mix. Delivered as a turnkey show or operated live.',
-    leadTime: 'Typical lead time: 4–8 weeks depending on set length.',
-    brief: 'Brief to show: send the setlist and stage dimensions.',
-    proof: redkiePtitsyProof,
-  },
-  {
-    code: 'SRV.002',
-    title: 'For theater & dance',
-    description:
-      'Responsive scenography: projections that react to performers, sound, and story — from concept with the director through to opening night.',
-    leadTime: 'Typical lead time: 8–12 weeks, from first concept meeting.',
-    brief: 'Brief to show: send the script or choreography notes and venue specs.',
-  },
-  {
-    code: 'SRV.003',
-    title: 'For venues, brands & institutions',
-    description:
-      'Immersive installations and generative visual identities — projection-mapped spaces and systems built to run unattended.',
-    leadTime: 'Typical lead time: 6–10 weeks depending on scope.',
-    brief: 'Brief to show: send the space (photos/plans) and the occasion.',
-  },
-];
+import { SERVICES, type Service } from '@/data/services';
 
 const SEPARATOR = '────────────────────────────────────────────';
 
-function ServiceBlock({ service }: { service: typeof SERVICES[0] }) {
+function ServiceBlock({ service }: { service: Service }) {
   return (
     <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
       <div style={{ color: '#00e5ff' }}>{`$ load_module --id=${service.code}`}</div>
@@ -55,12 +19,6 @@ function ServiceBlock({ service }: { service: typeof SERVICES[0] }) {
       <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.60)' }}>
         {service.brief}
       </p>
-      {service.proof && (
-        <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.60)' }}>
-          <span style={{ color: '#ff3333' }}>{'> '}</span>
-          {service.proof}
-        </p>
-      )}
     </div>
   );
 }

@@ -33,7 +33,7 @@ export default function Constellation() {
             </div>
 
             <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-white/70">
-              Every skill and every project, one living graph.
+              Selected skills and projects, one living graph.
             </p>
           </div>
 

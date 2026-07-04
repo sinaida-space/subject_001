@@ -1,18 +1,5 @@
-// ── Shared service copy for /booking ──
-// Lifted verbatim from src/components/ServicesTerminal.tsx (buyer-language copy).
-// NOTE: ServicesTerminal.tsx keeps its own inline copy of these same three blocks —
-// this file is NOT yet imported by ServicesTerminal.tsx (deferred to avoid a merge
-// conflict with recently-landed work). If you edit this copy, also update
-// ServicesTerminal.tsx's SERVICES array to keep the two in sync until that
-// refactor lands.
-
-import { projectById } from '@/data/projects';
-
-const redkiePtitsy = projectById('redkie-ptitsy');
-const redkiePtitsyName = redkiePtitsy?.title.split('—')[0].trim();
-const redkiePtitsyProof = redkiePtitsy
-  ? `${redkiePtitsyName} — 19 unique projections, one per song.`
-  : undefined;
+// ── Single source of truth for service copy — consumed by ServicesTerminal
+// (homepage) and Booking (/booking). Edit once, both surfaces update. ──
 
 export interface Service {
   code: string;
@@ -20,7 +7,6 @@ export interface Service {
   description: string;
   leadTime: string;
   brief: string;
-  proof?: string;
 }
 
 export const SERVICES: Service[] = [
@@ -31,7 +17,6 @@ export const SERVICES: Service[] = [
       'Audio-reactive stage visuals built per song or per set — real-time TouchDesigner systems that listen to the live mix. Delivered as a turnkey show or operated live.',
     leadTime: 'Typical lead time: 4–8 weeks depending on set length.',
     brief: 'Brief to show: send the setlist and stage dimensions.',
-    proof: redkiePtitsyProof,
   },
   {
     code: 'SRV.002',

@@ -95,7 +95,7 @@ export default function HeroSection() {
                 className="font-mono text-[12px]"
                 style={{ color: 'rgba(255,255,255,0.60)' }}
               >
-                Currently booking 2026–27 · Prague, works worldwide
+                Prague, works worldwide
               </p>
               <div className="flex items-center gap-3">
                 <button
