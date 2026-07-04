@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Project, ProjectKind } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
@@ -12,19 +12,6 @@ const KIND_LABEL: Record<ProjectKind, string> = {
   game: 'Interactive',
   tool: 'Tool',
 };
-
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia('(min-width: 768px)').matches : true,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)');
-    const onChange = () => setIsDesktop(mq.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
-  return isDesktop;
-}
 
 // Internal case-study pages, keyed by project id. Currently just the one
 // template built in Task 6; add future `/work/<slug>` entries here.
@@ -131,41 +118,52 @@ function Readout({ project }: { project: Project }) {
   );
 }
 
+// Opens as a small desktop-app-style window: a titlebar with a close
+// control, floating over a dimmed but still-visible backdrop — not a
+// full-black overlay, not a page-reflowing inline panel. Same treatment on
+// every screen size. The open/close transition is a single, fast (180ms)
+// fade + scale triggered directly by the click that opened it — no idle
+// animation, no page scroll required to reach it.
 export default function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
-  const isDesktop = useIsDesktop();
-  const panelRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Mount closed, then flip to open on the next frame so the transition
+    // actually plays instead of snapping straight to its end state.
+    const raf = requestAnimationFrame(() => setMounted(true));
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
-    // Only lock page scroll for the mobile modal; the inline desktop panel scrolls with the page.
-    if (!isDesktop) document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
     return () => {
+      cancelAnimationFrame(raf);
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
     };
-  }, [onClose, isDesktop]);
-
-  // Bring the inline readout into view when it opens (or when switching projects) on desktop.
-  useEffect(() => {
-    if (isDesktop && panelRef.current) {
-      panelRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [isDesktop, project.id]);
+  }, [onClose]);
 
   const headerLabel = project.title.split(' — ')[0].toUpperCase();
 
-  // ── Desktop: inline readout docked below the canvas, inside #work (no overlay) ──
-  if (isDesktop) {
-    return (
+  return (
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-black/55 p-4 transition-opacity duration-[180ms]"
+      style={{ opacity: mounted ? 1 : 0 }}
+      onClick={onClose}
+    >
       <div
-        ref={panelRef}
-        className="relative mt-8 w-full"
-        style={{ background: '#060606', border: '1px solid #CC1414', boxShadow: '0 0 40px rgba(204,20,20,0.18)' }}
-        role="region"
+        className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out"
+        style={{
+          background: '#060606',
+          border: '1px solid #CC1414',
+          boxShadow: '0 0 40px rgba(204,20,20,0.22)',
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? 'scale(1)' : 'scale(0.97)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
         aria-label={`${project.title} — project readout`}
       >
-        <div style={{ borderBottom: '1px solid #1a1a1a', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: '#0a0a0a', borderBottom: '1px solid #1a1a1a', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
@@ -177,35 +175,9 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
             [ CLOSE ]
           </button>
         </div>
-        <Readout project={project} />
-      </div>
-    );
-  }
-
-  // ── Mobile: full-screen modal (small screens make an overlay reasonable) ──
-  return (
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-black/85 p-4 backdrop-blur-md"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-3xl"
-        style={{ background: '#060606', border: '1px solid #CC1414', boxShadow: '0 0 60px rgba(204,20,20,0.25)' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ borderBottom: '1px solid #1a1a1a', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
-            {headerLabel}
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{ fontFamily: 'monospace', fontSize: '10px', color: '#555', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
-          >
-            [ ESC ]
-          </button>
+        <div className="max-h-[80vh] overflow-y-auto">
+          <Readout project={project} />
         </div>
-        <Readout project={project} />
       </div>
     </div>
   );

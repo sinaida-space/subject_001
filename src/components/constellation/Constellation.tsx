@@ -60,9 +60,8 @@ export default function Constellation() {
               {openProject ? `Opened ${openProject.title}. ${openProject.tagline}` : ''}
             </div>
 
-            {/* Readout: inline-docked below the canvas on desktop, full-screen modal on mobile.
-               Both variants live inside ProjectDetail; the modal uses fixed positioning so this
-               DOM placement only affects the desktop inline panel (docked here, within #work). */}
+            {/* Readout opens as a fixed-position modal window (ProjectDetail) —
+               same treatment on every screen size, doesn't affect page layout. */}
             {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}
 
             {/* Plain-text reading always sits below the map (or is the whole thing, in lite mode) —
