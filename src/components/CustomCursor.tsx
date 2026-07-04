@@ -99,16 +99,11 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Goo filter so the two idle circles read as one soft organic blob */}
-      <svg width="0" height="0" aria-hidden="true">
-        <filter id="cursor-goo">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
-          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -11" result="goo" />
-          <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-        </filter>
-      </svg>
-
-      {/* Idle circular blob — follows the pointer spring, hidden while wrapping a target */}
+      {/* Idle circular blob — follows the pointer spring, hidden while wrapping a target.
+          No SVG filter here: combining an SVG url() filter with mix-blend-mode on the
+          same element silently breaks rendering in this browser (verified — the element
+          measured correctly positioned/opaque in the DOM but painted nothing). The blend
+          mode alone already reads correctly against both dark and light backgrounds. */}
       <div ref={wrapRef} className="fixed top-0 left-0 z-[10000] pointer-events-none" style={{ willChange: 'transform' }}>
         <div
           className="absolute rounded-full bg-primary/70 mix-blend-difference transition-opacity duration-200"
@@ -117,7 +112,6 @@ export default function CustomCursor() {
             height: IDLE_SIZE,
             left: -IDLE_SIZE / 2,
             top: -IDLE_SIZE / 2,
-            filter: 'url(#cursor-goo)',
             opacity: wrapping ? 0 : 1,
             boxShadow: '0 0 15px hsl(0 100% 55% / 0.25), 0 0 30px hsl(0 100% 55% / 0.12)',
           }}
@@ -136,7 +130,6 @@ export default function CustomCursor() {
               height: hoverRect.height + 12,
               borderRadius: 14,
               transitionDuration: '260ms',
-              filter: 'url(#cursor-goo)',
               mixBlendMode: 'difference',
             }}
           />
