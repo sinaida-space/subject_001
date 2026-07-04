@@ -84,9 +84,15 @@
     background: radial-gradient(circle at center, hsl(var(--background)), hsl(var(--background) / 0.85));
   }
 
+  /* Tinted arrow cursor — a plain OS-style pointer recolored in the site's
+     red, not a custom JS-driven cursor. Zero runtime cost: it's a static
+     image the browser paints itself, no rAF loop, no pointer listeners. */
   body.has-custom-cursor,
   body.has-custom-cursor * {
-    cursor: none !important;
+    cursor:
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M1 1 L1 16 L5 12.7 L7.6 18.4 L10.3 17.1 L7.7 11.4 L13 11.4 Z" fill="%23CC1414" stroke="%231a0000" stroke-width="1" stroke-linejoin="round"/></svg>')
+      1 1,
+      auto !important;
   }
 
   body:not(.has-custom-cursor) .cursor-none {
