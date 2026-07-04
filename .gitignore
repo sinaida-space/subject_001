@@ -25,3 +25,6 @@ dist-ssr
 
 # Local design/source assets — not deployed
 website_sources/
+
+# Agent worktree sandboxes — never part of the tracked tree
+.claude/worktrees/
