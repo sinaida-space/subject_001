@@ -36,7 +36,7 @@ export const SKILLS: Skill[] = [
   { id: 'audio-reactive', label: 'Real-time audio-reactive', category: 'tech' },
   { id: 'projection-mapping', label: 'Projection mapping', category: 'tech' },
   { id: 'generative-ai', label: 'Generative AI systems', category: 'tech' },
-  { id: 'davinci', label: 'DaVinci Resolve', category: 'tech' },
+  { id: 'davinci', label: 'Editing and color grading', category: 'tech' },
   { id: 'creative-web', label: 'Creative web technology', category: 'tech' },
   { id: 'interactive-installations', label: 'Interactive installations', category: 'tech', accent: true },
   // direction
