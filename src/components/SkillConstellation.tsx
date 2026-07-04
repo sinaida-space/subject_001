@@ -25,7 +25,7 @@ const CATEGORIES = [
   },
   {
     name: 'Creative Technology',
-    color: '#00e5ff', // cyan
+    color: 'hsl(var(--accent))', // cyan
     items: [
       'TouchDesigner',
       'DaVinvi Resolve',
@@ -263,7 +263,7 @@ export default function SkillConstellation() {
             </div>
             <div
               className="font-mono mt-2"
-              style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}
+              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}
             >
               [ SKILLS ]
             </div>
@@ -277,14 +277,14 @@ export default function SkillConstellation() {
                   key={cat.name}
                   className="font-mono text-xs cursor-pointer transition-all duration-200 select-none"
                   style={{
-                    color: isActive ? '#00e5ff' : cat.color,
+                    color: isActive ? 'hsl(var(--accent))' : cat.color,
                     opacity: dimmed ? 0.25 : isActive ? 1 : 0.7,
                     paddingLeft: isActive ? '8px' : '0px',
                   }}
                   onMouseEnter={() => setActiveCategory(cat.name)}
                   onMouseLeave={() => setActiveCategory(null)}
                 >
-                  {isActive && <span style={{ color: '#00e5ff', marginRight: 4 }}>▸</span>}
+                  {isActive && <span style={{ color: 'hsl(var(--accent))', marginRight: 4 }}>▸</span>}
                   {cat.name}
                 </div>
               );

@@ -25,10 +25,8 @@ function ModeIcon({ mode }: { mode: 'full' | 'lite' }) {
     );
   }
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="4" y1="12" x2="20" y2="12" />
-      <line x1="4" y1="18" x2="20" y2="18" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="3" fill="currentColor" />
     </svg>
   );
 }
@@ -94,16 +92,16 @@ export default function Header() {
             <button
               type="button"
               onClick={() => toggle()}
-              className="cursor-none flex items-center justify-center w-8 h-8 transition-colors text-primary-legible hover:text-accent"
-              style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+              className="cursor-none flex items-center justify-center w-9 h-9 transition-colors text-primary-legible/70 hover:text-accent"
+              style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
-              title={mode === 'full' ? 'Full (Signal Map)' : 'Light (Plain Signal)'}
+              title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
             >
               <ModeIcon mode={mode} />
             </button>
             <a
               href="#contact"
-              className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
+              className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 flex items-center h-9 transition-all duration-300 cursor-none"
               style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
               onMouseEnter={contactEnter}
               onMouseLeave={contactLeave}
@@ -116,22 +114,22 @@ export default function Header() {
             <button
               type="button"
               onClick={() => toggle()}
-              className="flex items-center justify-center w-9 h-9 transition-colors text-primary-legible"
-              style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+              className="flex items-center justify-center w-9 h-9 transition-colors text-primary-legible/70"
+              style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
-              title={mode === 'full' ? 'Full (Signal Map)' : 'Light (Plain Signal)'}
+              title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
             >
               <ModeIcon mode={mode} />
             </button>
             <button
-              className="flex flex-col justify-center items-center w-10 h-10 gap-[6px]"
+              className="flex flex-col justify-center items-center w-9 h-9 gap-[5px]"
               onClick={() => setMenuOpen(!menuOpen)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, zIndex: 60 }}
+              style={{ background: 'none', border: '1px solid #ff3333', cursor: 'pointer', padding: 0, zIndex: 60 }}
               aria-label="Menu"
             >
-              <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(7.5px) rotate(45deg)' : 'none' }} />
-              <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
-              <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(-7.5px) rotate(-45deg)' : 'none' }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none') }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', opacity: mode === 'lite' ? 1 : (menuOpen ? 0 : 1) }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none') }} />
             </button>
           </div>
 
@@ -141,11 +139,11 @@ export default function Header() {
       <div
         className="md:hidden fixed inset-0 z-40 flex flex-col justify-center items-start"
         style={{
-          background: 'rgba(4,4,4,0.97)',
-          backdropFilter: 'blur(12px)',
+          background: mode === 'lite' ? '#ffffff' : 'rgba(4,4,4,0.97)',
+          backdropFilter: mode === 'lite' ? 'none' : 'blur(12px)',
           opacity: menuOpen ? 1 : 0,
           pointerEvents: menuOpen ? 'all' : 'none',
-          transition: 'opacity 0.3s ease',
+          transition: mode === 'lite' ? 'none' : 'opacity 0.3s ease',
           paddingLeft: 40,
         }}
       >
@@ -163,13 +161,13 @@ export default function Header() {
               fontFamily: 'monospace',
               fontSize: 28,
               fontWeight: 300,
-              color: '#ffffff',
+              color: mode === 'lite' ? '#0a0a0a' : '#ffffff',
               letterSpacing: '0.1em',
               marginBottom: 20,
               textDecoration: 'none',
               opacity: menuOpen ? 1 : 0,
-              transform: menuOpen ? 'translateX(0)' : 'translateX(-16px)',
-              transition: `opacity 0.35s ease ${i * 70}ms, transform 0.35s ease ${i * 70}ms`,
+              transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateX(0)' : 'translateX(-16px)'),
+              transition: mode === 'lite' ? 'none' : `opacity 0.35s ease ${i * 70}ms, transform 0.35s ease ${i * 70}ms`,
             }}
           >
             <span style={{ color: '#ff3333', marginRight: 14, fontSize: 11, letterSpacing: '0.2em' }}>
@@ -193,14 +191,14 @@ export default function Header() {
             background: 'rgba(255,51,51,0.06)',
             textDecoration: 'none',
             opacity: menuOpen ? 1 : 0,
-            transform: menuOpen ? 'translateX(0)' : 'translateX(-16px)',
-            transition: `opacity 0.35s ease ${NAV_ITEMS.length * 70}ms, transform 0.35s ease ${NAV_ITEMS.length * 70}ms`,
+            transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateX(0)' : 'translateX(-16px)'),
+            transition: mode === 'lite' ? 'none' : `opacity 0.35s ease ${NAV_ITEMS.length * 70}ms, transform 0.35s ease ${NAV_ITEMS.length * 70}ms`,
           }}
         >
           CONTACT
         </a>
 
-        <div style={{ marginTop: 40, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 40, fontFamily: 'monospace', fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>

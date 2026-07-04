@@ -715,8 +715,8 @@ export default function ConstellationFull({ onActiveProject }: Props) {
           className="pointer-events-none absolute z-20 max-w-[240px] -translate-y-full font-mono"
           style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
         >
-          <div className="border border-white/10 bg-black/80 px-3 py-2 backdrop-blur-sm">
-            <div className="text-[11px] leading-snug text-white/70">{tooltip.node.project.tagline}</div>
+          <div className="border border-foreground/10 bg-black/80 px-3 py-2 backdrop-blur-sm">
+            <div className="text-[11px] leading-snug text-foreground/70">{tooltip.node.project.tagline}</div>
           </div>
         </div>
       )}

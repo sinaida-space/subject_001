@@ -6,17 +6,17 @@ const SEPARATOR = '────────────────────�
 function ServiceBlock({ service }: { service: Service }) {
   return (
     <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <div style={{ color: '#00e5ff' }}>{`$ load_module --id=${service.code}`}</div>
-      <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: '#00e5ff' }}>
+      <div style={{ color: 'hsl(var(--accent))' }}>{`$ load_module --id=${service.code}`}</div>
+      <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: 'hsl(var(--accent))' }}>
         {service.title}
       </h3>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.87)' }}>
+      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
         {service.description}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.60)' }}>
+      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.leadTime}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.60)' }}>
+      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.brief}
       </p>
     </div>
@@ -43,7 +43,7 @@ export default function ServicesTerminal() {
             </div>
             <div
               className="font-mono mt-2"
-              style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}
+              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}
             >
               [ VALUE // ACTIVE ]
             </div>

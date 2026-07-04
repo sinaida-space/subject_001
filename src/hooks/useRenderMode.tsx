@@ -69,6 +69,10 @@ export function RenderModeProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-mode', mode);
+  }, [mode]);
+
   const value = useMemo<Ctx>(
     () => ({
       mode,

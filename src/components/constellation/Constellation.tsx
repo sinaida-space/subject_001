@@ -38,7 +38,7 @@ export default function Constellation() {
               Body of Work
             </div>
 
-            <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-white/70">
+            <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-foreground/70">
               Selected skills and projects, one living graph.
             </p>
           </div>

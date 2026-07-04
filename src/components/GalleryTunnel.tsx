@@ -331,7 +331,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
               <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
                 Selected Projects
               </div>
-              <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
                 [ RECENT WORK ]
               </div>
             </div>
@@ -363,7 +363,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
             <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
               Selected Projects
             </div>
-            <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
               [ RECENT WORK ]
             </div>
           </div>

@@ -38,17 +38,17 @@ export default function Press() {
 
         {/* Bio */}
         <section className="mb-14">
-          <div className="font-mono mb-6" style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', lineHeight: 1.85 }}>
+          <div className="font-mono mb-6" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
             <p>I believe that technology is only meaningful when it helps people feel seen, heard, and connected.</p>
           </div>
-          <div className="font-mono mb-6" style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', lineHeight: 1.85 }}>
+          <div className="font-mono mb-6" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
             <p>
               I build living visual systems for stages, concerts, and performance spaces. They breathe
               with sound, respond to bodies, and turn light, image, and generative code into a shared
               atmosphere.
             </p>
           </div>
-          <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>
+          <div className="font-mono" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
             {'LOCATION: Prague'}
             <span style={{ color: '#ff3333' }}> · </span>
             {'REACH: Global'}
@@ -72,10 +72,10 @@ export default function Press() {
                     style={{ border: '1px solid rgba(255,51,51,0.3)' }}
                   />
                 )}
-                <div className="font-mono mt-2" style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+                <div className="font-mono mt-2" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.6)' }}>
                   {project.title.split('—')[0].trim()}
                 </div>
-                <div className="font-mono mt-1" style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+                <div className="font-mono mt-1" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.4)' }}>
                   {project.tagline}
                 </div>
               </div>
@@ -86,7 +86,7 @@ export default function Press() {
         {/* Tech basics */}
         <section className="mb-14">
           <div className="clinical-label text-primary-legible mb-6">Tech basics</div>
-          <ul className="font-mono text-[13px] space-y-2" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          <ul className="font-mono text-[13px] space-y-2" style={{ color: 'hsl(var(--foreground) / 0.75)' }}>
             {TECH_BASICS.map((item) => (
               <li key={item}>
                 <span style={{ color: '#ff3333' }}>{'> '}</span>

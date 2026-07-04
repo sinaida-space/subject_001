@@ -16,7 +16,7 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
   const [playing, setPlaying] = useState(false);
   return (
     <div
-      className="relative w-full overflow-hidden border border-white/10 bg-black mx-auto"
+      className="relative w-full overflow-hidden border border-foreground/10 bg-black mx-auto"
       style={
         maxHeightVh
           ? { aspectRatio: '16 / 9', maxHeight: `${maxHeightVh}vh`, width: `min(100%, calc(${maxHeightVh}vh * 16 / 9))` }

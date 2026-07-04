@@ -50,11 +50,11 @@ export default function HeroSection() {
           }>
           
           <div className="border-l border-primary/30 pl-8 space-y-5">
-            <p className="font-mono text-[15px] leading-relaxed my-4" style={{ color: 'rgba(255,255,255,0.82)' }}>
+            <p className="font-mono text-[15px] leading-relaxed my-4" style={{ color: 'hsl(var(--foreground) / 0.82)' }}>
               Transforming complex ideas into visual systems for stages, concerts, performances,
               and spaces where sound becomes light.
             </p>
-            <div className="flex flex-col gap-2 font-mono text-[13px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            <div className="flex flex-col gap-2 font-mono text-[13px]" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
               {['experience_design', 'stage_visuals', 'new_media_art'].map((t, i, arr) => (
                 <span key={t} className="flex items-center gap-2">
                   <span className="text-primary/70">$</span>
