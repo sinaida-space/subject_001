@@ -9,6 +9,30 @@ const NAV_ITEMS = [
   { label: 'Contact', href: '#contact' },
 ];
 
+// Network (full/Signal Map) vs. list (light/Plain Signal) — the icon itself
+// shows which mode is currently active.
+function ModeIcon({ mode }: { mode: 'full' | 'lite' }) {
+  if (mode === 'full') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <circle cx="12" cy="5" r="2.1" />
+        <circle cx="5" cy="18" r="2.1" />
+        <circle cx="19" cy="18" r="2.1" />
+        <line x1="12" y1="7.1" x2="6.3" y2="16.2" />
+        <line x1="12" y1="7.1" x2="17.7" y2="16.2" />
+        <line x1="7.1" y1="18" x2="16.9" y2="18" />
+      </svg>
+    );
+  }
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="18" x2="20" y2="18" />
+    </svg>
+  );
+}
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -67,31 +91,16 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-5">
-            <div
-              className="flex items-center font-mono text-[10px] tracking-[0.15em]"
+            <button
+              type="button"
+              onClick={() => toggle()}
+              className="cursor-none flex items-center justify-center w-8 h-8 transition-colors text-primary-legible hover:text-accent"
               style={{ border: '1px solid rgba(255,255,255,0.15)' }}
-              role="group"
-              aria-label="Site rendering mode"
+              aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
+              title={mode === 'full' ? 'Full (Signal Map)' : 'Light (Plain Signal)'}
             >
-              <button
-                type="button"
-                onClick={() => mode !== 'full' && toggle()}
-                className="cursor-none px-3 py-1.5 transition-colors"
-                style={mode === 'full' ? { color: '#CC1414', background: 'rgba(204,20,20,0.12)' } : { color: 'rgba(255,255,255,0.4)' }}
-                aria-pressed={mode === 'full'}
-              >
-                FULL
-              </button>
-              <button
-                type="button"
-                onClick={() => mode !== 'lite' && toggle()}
-                className="cursor-none px-3 py-1.5 transition-colors"
-                style={mode === 'lite' ? { color: '#CC1414', background: 'rgba(204,20,20,0.12)' } : { color: 'rgba(255,255,255,0.4)' }}
-                aria-pressed={mode === 'lite'}
-              >
-                LIGHT
-              </button>
-            </div>
+              <ModeIcon mode={mode} />
+            </button>
             <a
               href="#contact"
               className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-300 cursor-none"
@@ -103,16 +112,28 @@ export default function Header() {
             </a>
           </div>
 
-          <button
-            className="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-[6px]"
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, zIndex: 60 }}
-            aria-label="Menu"
-          >
-            <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(7.5px) rotate(45deg)' : 'none' }} />
-            <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
-            <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(-7.5px) rotate(-45deg)' : 'none' }} />
-          </button>
+          <div className="md:hidden flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => toggle()}
+              className="flex items-center justify-center w-9 h-9 transition-colors text-primary-legible"
+              style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+              aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
+              title={mode === 'full' ? 'Full (Signal Map)' : 'Light (Plain Signal)'}
+            >
+              <ModeIcon mode={mode} />
+            </button>
+            <button
+              className="flex flex-col justify-center items-center w-10 h-10 gap-[6px]"
+              onClick={() => setMenuOpen(!menuOpen)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, zIndex: 60 }}
+              aria-label="Menu"
+            >
+              <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(7.5px) rotate(45deg)' : 'none' }} />
+              <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
+              <span style={{ display: 'block', width: 22, height: 1.5, background: '#ffffff', transition: 'all 0.3s', transform: menuOpen ? 'translateY(-7.5px) rotate(-45deg)' : 'none' }} />
+            </button>
+          </div>
 
         </div>
       </header>
@@ -179,26 +200,7 @@ export default function Header() {
           CONTACT
         </a>
 
-        <button
-          type="button"
-          onClick={() => toggle()}
-          style={{
-            marginTop: 40,
-            fontFamily: 'monospace',
-            fontSize: 12,
-            letterSpacing: '0.18em',
-            color: 'rgba(255,255,255,0.55)',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            textAlign: 'left',
-          }}
-          aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
-        >
-          VIEW: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'FULL' : 'LIGHT'}</span>
-        </button>
-
-        <div style={{ marginTop: 24, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 40, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>
