@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Project, ProjectKind } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
+import DisplacementImage from '@/components/DisplacementImage';
 
 const KIND_LABEL: Record<ProjectKind, string> = {
   stage: 'Stage',
@@ -49,12 +50,13 @@ function Readout({ project }: { project: Project }) {
         <VideoEmbed id={project.video} title={project.title} />
       ) : project.image ? (
         <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '46vh' }}>
-          <img
+          <DisplacementImage
             src={project.image}
             alt={project.title}
             onLoad={() => setImgLoaded(true)}
-            className="max-h-[46vh] w-full object-cover"
+            className="max-h-[46vh] w-full"
             style={{ position: 'absolute', inset: 0, height: '100%' }}
+            imgClassName="max-h-[46vh] w-full object-cover"
           />
           <HeartbeatPlaceholder loaded={imgLoaded} width="100%" height="100%" className="absolute inset-0" />
         </div>

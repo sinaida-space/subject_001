@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projectById } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
+import DisplacementImage from '@/components/DisplacementImage';
+import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import NotFound from '@/pages/NotFound';
 
 const SITE_NAME = 'sin.ai.da';
@@ -53,6 +55,7 @@ function ProcessCard({ label, detail }: { label: string; detail: string }) {
 export default function WorkCase() {
   const { slug } = useParams<{ slug: string }>();
   const project = projectById(slug ?? '');
+  const [heroLoaded, setHeroLoaded] = useState(false);
 
   const title = project ? `${project.title} — Case Study | ${SITE_NAME}` : '';
   const description = project
@@ -102,6 +105,20 @@ export default function WorkCase() {
           <p className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-white/80">
             {project.blurb}
           </p>
+        )}
+
+        {/* ── Hero still — pointer-driven ripple on desktop, static on touch ── */}
+        {project.image && (
+          <div className="relative mt-10 w-full" style={{ aspectRatio: '16 / 9' }}>
+            <DisplacementImage
+              src={project.image}
+              alt={project.title}
+              onLoad={() => setHeroLoaded(true)}
+              style={{ position: 'absolute', inset: 0, height: '100%', width: '100%' }}
+              imgClassName="h-full w-full object-cover"
+            />
+            <HeartbeatPlaceholder loaded={heroLoaded} width="100%" height="100%" className="absolute inset-0" />
+          </div>
         )}
 
         {/* ── 19 projections, count + format, not a fabricated per-song list ── */}
