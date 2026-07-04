@@ -54,11 +54,19 @@ export default function Constellation() {
                 {active.tagline ? <span className="text-white/55"> — {active.tagline}</span> : null}
               </div>
             )}
+
+            {/* announce the opened project to screen readers regardless of visual presentation */}
+            <div className="sr-only" aria-live="polite">
+              {openProject ? `Opened ${openProject.title}. ${openProject.tagline}` : ''}
+            </div>
+
+            {/* Readout: inline-docked below the canvas on desktop, full-screen modal on mobile.
+               Both variants live inside ProjectDetail; the modal uses fixed positioning so this
+               DOM placement only affects the desktop inline panel (docked here, within #work). */}
+            {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}
           </div>
         </div>
       </div>
-
-      {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}
     </section>
   );
 }
