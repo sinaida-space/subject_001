@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { Project, ProjectKind } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
@@ -23,6 +24,12 @@ function useIsDesktop() {
   }, []);
   return isDesktop;
 }
+
+// Internal case-study pages, keyed by project id. Currently just the one
+// template built in Task 6; add future `/work/<slug>` entries here.
+const CASE_PAGES: Record<string, string> = {
+  'redkie-ptitsy': '/work/redkie-ptitsy',
+};
 
 function projectLinks(project: Project) {
   const links = [...(project.links ?? [])];
@@ -94,8 +101,16 @@ function Readout({ project }: { project: Project }) {
           </div>
         )}
 
-        {links.length > 0 && (
+        {(links.length > 0 || CASE_PAGES[project.id]) && (
           <div className="mt-5 flex flex-wrap gap-4">
+            {CASE_PAGES[project.id] && (
+              <Link
+                to={CASE_PAGES[project.id]}
+                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+              >
+                View full case study →
+              </Link>
+            )}
             {links.map((l) => (
               <a
                 key={l.url}
