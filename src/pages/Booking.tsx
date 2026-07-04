@@ -37,7 +37,7 @@ export default function Booking() {
     document.title = 'Booking — Sinaida Krivchenko';
     const meta = document.querySelector('meta[name="description"]');
     const content =
-      'Book Sinaida Krivchenko for live audio-reactive visuals, theater scenography, and immersive installations. Services, process, and practicalities for festivals, theaters, and venues.';
+      'Work with Sinaida Krivchenko: live audio-reactive visuals for festivals and concerts, plus capability for theater, dance, venues, and institutions. Services, process, and practicalities.';
     if (meta) {
       meta.setAttribute('content', content);
     } else {
@@ -61,7 +61,11 @@ export default function Booking() {
         <h1 className="font-display text-4xl md:text-5xl font-light mb-4">
           Work with <span className="text-primary font-bold">me</span>
         </h1>
-        <p className="font-mono text-[14px] leading-relaxed mb-16" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        <p className="font-mono text-[15px] leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.82)' }}>
+          Human first. Digital second. I build living visual systems for stages, concerts, and
+          performance spaces — this page is what actually happens if you hire me for one.
+        </p>
+        <p className="font-mono text-[14px] leading-relaxed mb-16" style={{ color: 'rgba(255,255,255,0.6)' }}>
           Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
         </p>
 
@@ -84,7 +88,11 @@ export default function Booking() {
 
         {/* Process */}
         <section className="mb-20">
-          <div className="clinical-label text-primary-legible mb-6">Process</div>
+          <div className="clinical-label text-primary-legible mb-3">Process</div>
+          <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            Structured the way I ran technical projects for years before this — brief, concept,
+            build, rehearsal, show. Nothing invented for the website.
+          </p>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (
               <div key={step.code} className="flex-1 font-mono">
