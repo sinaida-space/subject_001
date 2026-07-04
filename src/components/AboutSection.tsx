@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import DustReveal from '@/components/DustReveal';
+import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 
 // ── Stagger fade-in helper ───────────────────────────────────
 function Reveal({ delay = 0, children }: { delay?: number; children: React.ReactNode }) {
@@ -149,6 +150,7 @@ function BioSignalLock() {
 // ── Photo Block ──────────────────────────────────────────────
 function PhotoBlock() {
   const imgRef = useRef<HTMLImageElement>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const handleMouseEnter = () => {
     const img = imgRef.current;
@@ -198,16 +200,29 @@ function PhotoBlock() {
             z-index: 2;
           }
         `}</style>
-        <img
-          ref={imgRef}
-          src="/sinaida-photo.jpg"
-          alt="Sinaida"
-          style={{
-            width: '100%',
-            display: 'block',
-            filter: 'contrast(1.08) brightness(0.92) saturate(0.85)',
-          }}
-        />
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1' }}>
+          <img
+            ref={imgRef}
+            src="/sinaida-photo.jpg"
+            alt="Sinaida"
+            onLoad={() => setImgLoaded(true)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              display: 'block',
+              objectFit: 'cover',
+              filter: 'contrast(1.08) brightness(0.92) saturate(0.85)',
+            }}
+          />
+          <HeartbeatPlaceholder
+            loaded={imgLoaded}
+            width="100%"
+            height="100%"
+            className="absolute inset-0"
+          />
+        </div>
         <div
           style={{
             position: 'absolute',

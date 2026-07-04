@@ -19,7 +19,11 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen bg-background grid-overlay">
-      {/* Cosmic starfield backdrop — full mode only; lite uses the CSS gradient */}
+      {/* Cosmic starfield backdrop — full mode only; lite uses the CSS gradient.
+          fallback={null} is intentional, not a CLS gap: ParticleField renders
+          `fixed inset-0`, so it's a background layer with zero in-flow height —
+          nothing on the page reserves space for it, and it can never shift
+          layout whether it's present or not. */}
       {full && (
         <Suspense fallback={null}>
           <ParticleField />
