@@ -409,12 +409,13 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     }
 
     // ── labels ──
-    // Declutter + color discipline: skill labels sit in a neutral warm-gray at rest
-    // and only take on their category color when active/neighbor (hover response) —
-    // no ambient rainbow. Project names stay quiet until traced into, except the two
-    // hero works and the accent skills, which stay named at all times. Before drawing
-    // any label we test its bounding box against labels already drawn this frame and
-    // skip on collision, so no two labels ever overlap.
+    // Every star is always named — no exceptions. Skills are the emphasized
+    // layer now (brighter, uniform size — they're the site's real vocabulary
+    // of craft); projects are quieter and a size smaller (specific instances
+    // of that vocabulary, not the headline). Before drawing a label we try a
+    // few candidate positions to dodge already-drawn ones; if every candidate
+    // still collides we draw it anyway at the last candidate — a star is
+    // never left silently blank.
     ctx.textBaseline = 'middle';
     const drawn: { x1: number; y1: number; x2: number; y2: number }[] = [];
     const LABEL_H = 15; // approx line box height for collision tests
@@ -422,62 +423,65 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     for (const n of nodes) {
       const isActive = n.id === active;
       const isNeighbor = neighbors?.has(n.id);
-      let show = false;
-      let alpha = 0;
+      let alpha: number;
       let useCategoryColor = false;
+      let fs: number;
+      const fontWeight = n.kind === 'skill' ? 500 : 400;
+
       if (n.kind === 'project') {
-        // Every project is always named now — consistency was the ask (a mix
-        // of always-shown hero labels and hover-only others read as broken).
-        // Same collision-skip logic below still guarantees no two labels
-        // overlap; hero/accent projects just start brighter.
-        show = true;
+        fs = isActive ? 12 : isNeighbor ? 11 : 9;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.4 : 0.2;
+          alpha = isActive ? 1 : isNeighbor ? 0.85 : n.accent ? 0.3 : 0.16;
         } else {
           // Hero labels recede toward the regular baseline as heroFadeRef fades,
           // so the whole "first highlight" (edges + label brightness) recedes
           // together rather than just the connecting lines dimming alone.
-          alpha = n.accent ? 0.65 + 0.2 * heroFadeRef.current : 0.65;
+          alpha = n.accent ? 0.4 + 0.15 * heroFadeRef.current : 0.4;
         }
       } else {
-        // Skills are always named — small and dim at rest, brighten and enlarge
-        // on hover/neighbor so the graph reads as legible at a glance instead of
-        // requiring a hover to discover what's there.
-        show = true;
+        fs = isActive ? 13 : isNeighbor ? 12 : 11; // uniform at rest regardless of accent
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.4 : 0.12;
+          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.35 : 0.15;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
-          alpha = n.accent ? 0.55 : 0.32;
+          alpha = 0.75; // brighter, uniform baseline — no accent/non-accent split
           useCategoryColor = false; // neutral warm-gray at rest
         }
       }
-      if (!show || alpha <= 0.02) continue;
-      const fs =
-        n.kind === 'project'
-          ? n.weight >= 1.4 ? 13 : 12
-          : isActive ? 13 : isNeighbor ? 12 : 9;
-      ctx.font = `${n.kind === 'project' || n.accent ? 500 : 400} ${fs}px 'Space Mono', monospace`;
-      // Flip the label to the left when it would run off the right edge.
+      if (alpha <= 0.02) continue;
+      ctx.font = `${fontWeight} ${fs}px 'Space Mono', monospace`;
       const tw = ctx.measureText(n.label).width;
-      const flip = n.x + n.r + 8 + tw > w - 6;
-      const lx = flip ? n.x - n.r - 8 - tw : n.x + n.r + 8;
-      const ty = n.y;
-      // collision check against already-drawn labels this frame
-      const box = { x1: lx - 2, y1: ty - LABEL_H / 2, x2: lx + tw + 2, y2: ty + LABEL_H / 2 };
-      let collides = false;
-      for (const d of drawn) {
-        if (box.x1 < d.x2 && box.x2 > d.x1 && box.y1 < d.y2 && box.y2 > d.y1) {
-          collides = true;
-          break;
+
+      // Candidate placements, tried in order: right, left, below, above.
+      // First one that doesn't collide wins; if none do, use the last one
+      // anyway rather than hiding the label.
+      const candidates: { lx: number; ty: number; flip: boolean }[] = [
+        { lx: n.x + n.r + 8, ty: n.y, flip: false },
+        { lx: n.x - n.r - 8 - tw, ty: n.y, flip: true },
+        { lx: n.x - tw / 2, ty: n.y + n.r + 12, flip: false },
+        { lx: n.x - tw / 2, ty: n.y - n.r - 12, flip: false },
+      ];
+      let chosen = candidates[0];
+      for (const c of candidates) {
+        const box = { x1: c.lx - 2, y1: c.ty - LABEL_H / 2, x2: c.lx + tw + 2, y2: c.ty + LABEL_H / 2 };
+        let collides = box.x1 < 6 || box.x2 > w - 6; // off-canvas doesn't count as "clear"
+        if (!collides) {
+          for (const d of drawn) {
+            if (box.x1 < d.x2 && box.x2 > d.x1 && box.y1 < d.y2 && box.y2 > d.y1) {
+              collides = true;
+              break;
+            }
+          }
         }
+        chosen = c;
+        if (!collides) break; // good candidate found, stop here
       }
-      // Never let a hovered/active label be suppressed — it wins over ambient ones.
-      if (collides && !isActive) continue;
+      const { lx, ty, flip } = chosen;
+      const box = { x1: lx - 2, y1: ty - LABEL_H / 2, x2: lx + tw + 2, y2: ty + LABEL_H / 2 };
       drawn.push(box);
       labelBoxesRef.current.set(n.id, box);
       ctx.textAlign = flip ? 'right' : 'left';
-      const tx = flip ? n.x - n.r - 8 : n.x + n.r + 8;
+      const tx = flip ? lx + tw : lx;
       let color: string;
       if (n.kind === 'project') color = hexA('#f2efe9', alpha);
       else if (useCategoryColor) color = hexA(n.color, alpha);
@@ -684,7 +688,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   };
 
   return (
-    <div ref={wrapRef} className="relative w-full" style={{ height: 'clamp(520px, 84vh, 940px)' }}>
+    <div ref={wrapRef} className="relative w-full" style={{ height: 'clamp(560px, 90vh, 1000px)' }}>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 touch-none"
@@ -694,26 +698,13 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerLeave}
       />
-      {tooltip && (
+      {tooltip?.node.project?.tagline && (
         <div
           className="pointer-events-none absolute z-20 max-w-[240px] -translate-y-full font-mono"
           style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
         >
           <div className="border border-white/10 bg-black/80 px-3 py-2 backdrop-blur-sm">
-            <div
-              className="text-[12px] font-medium"
-              style={{ color: tooltip.node.kind === 'project' ? '#f2efe9' : tooltip.node.color }}
-            >
-              {tooltip.node.kind === 'project' ? tooltip.node.project?.title : tooltip.node.label}
-            </div>
-            {tooltip.node.project?.tagline && (
-              <div className="mt-1 text-[10px] leading-snug text-white/55">{tooltip.node.project.tagline}</div>
-            )}
-            {tooltip.node.project && (
-              <div className="mt-1.5 text-[9px] uppercase tracking-[0.2em] text-white/35">
-                {tooltip.node.project.url ? 'open ↗' : tooltip.node.project.featured ? 'view below ↓' : ''}
-              </div>
-            )}
+            <div className="text-[11px] leading-snug text-white/70">{tooltip.node.project.tagline}</div>
           </div>
         </div>
       )}
