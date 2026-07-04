@@ -37,14 +37,12 @@ export default function Constellation() {
             </p>
           </div>
 
-          {/* RIGHT COLUMN — the graph, or its plain reading */}
+          {/* RIGHT COLUMN — the graph, always paired with its plain reading below */}
           <div className="relative flex-1">
-            {mode === 'full' ? (
+            {mode === 'full' && (
               <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
                 <ConstellationFull onActiveProject={setActive} />
               </Suspense>
-            ) : (
-              <PlainSignalIndex />
             )}
 
             {/* live caption of the focused project (screen-reader + mobile friendly) */}
@@ -64,6 +62,12 @@ export default function Constellation() {
                Both variants live inside ProjectDetail; the modal uses fixed positioning so this
                DOM placement only affects the desktop inline panel (docked here, within #work). */}
             {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}
+
+            {/* Plain-text reading always sits below the map (or is the whole thing, in lite mode) —
+               map and index coexist, no manual toggle picks one over the other. */}
+            <div className={mode === 'full' ? 'mt-16' : undefined}>
+              <PlainSignalIndex />
+            </div>
           </div>
         </div>
       </div>
