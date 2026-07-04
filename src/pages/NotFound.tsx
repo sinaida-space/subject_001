@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import VHSOverlay from '@/components/VHSOverlay';
-import CustomCursor from '@/components/CustomCursor';
 import SnakeEasterEgg from '@/components/SnakeEasterEgg';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
@@ -193,7 +192,6 @@ export default function NotFound() {
       </Suspense>
 
       <VHSOverlay />
-      <CustomCursor />
 
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-2xl">
 
