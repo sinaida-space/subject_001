@@ -59,7 +59,7 @@ function useTyper(text: string, speed: number, delay: number) {
 function PulsingECG({ onClick }: { onClick: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const phaseRef = useRef(0);
-  const rafRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
   const [hovered, setHovered] = useState(false);
 
   const drawECG = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, phase: number, bright: boolean) => {
@@ -113,14 +113,25 @@ function PulsingECG({ onClick }: { onClick: () => void }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const animate = () => {
-      phaseRef.current += 0.028;
-      drawECG(ctx, canvas.width, canvas.height, phaseRef.current, hovered);
+    // Motion only on interaction: the pulse scrolls its phase while the mystery
+    // button is hovered. When not hovered, draw a single static rest frame and
+    // stop scheduling — no perpetual idle loop. Hovering re-runs this effect
+    // (hovered is a dep) and restarts the pulse.
+    if (hovered) {
+      const animate = () => {
+        phaseRef.current += 0.028;
+        drawECG(ctx, canvas.width, canvas.height, phaseRef.current, true);
+        rafRef.current = requestAnimationFrame(animate);
+      };
       rafRef.current = requestAnimationFrame(animate);
-    };
+      return () => {
+        if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      };
+    }
 
-    rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
+    // Rest frame at the current (frozen) phase, un-hovered intensity.
+    drawECG(ctx, canvas.width, canvas.height, phaseRef.current, false);
   }, [drawECG, hovered]);
 
   return (
