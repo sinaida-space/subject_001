@@ -262,7 +262,7 @@ export default function ContactChannel() {
           {/* LEFT COLUMN */}
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <div
-              className="font-mono uppercase text-primary"
+              className="font-mono uppercase text-primary-legible"
               style={{ letterSpacing: '0.2em', fontSize: 12 }}
             >
               Contact

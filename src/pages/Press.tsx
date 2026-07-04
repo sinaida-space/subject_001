@@ -25,11 +25,11 @@ export default function Press() {
   return (
     <div className="min-h-screen bg-background py-24">
       <div className="container mx-auto px-6 max-w-3xl">
-        <a href="/" className="clinical-label text-primary hover:text-accent transition-colors mb-8 inline-block">
+        <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
           ← Back
         </a>
 
-        <div className="font-mono uppercase text-primary mb-2" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+        <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
           Press
         </div>
         <h1 className="font-display text-4xl md:text-5xl font-light mb-10">
@@ -59,7 +59,7 @@ export default function Press() {
 
         {/* Representative work */}
         <section className="mb-14">
-          <div className="clinical-label text-primary mb-6">Selected work</div>
+          <div className="clinical-label text-primary-legible mb-6">Selected work</div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {stills.map((project) => (
               <div key={project.id}>
@@ -85,7 +85,7 @@ export default function Press() {
 
         {/* Tech basics */}
         <section className="mb-14">
-          <div className="clinical-label text-primary mb-6">Tech basics</div>
+          <div className="clinical-label text-primary-legible mb-6">Tech basics</div>
           <ul className="font-mono text-[13px] space-y-2" style={{ color: 'rgba(255,255,255,0.75)' }}>
             {TECH_BASICS.map((item) => (
               <li key={item}>
@@ -98,7 +98,7 @@ export default function Press() {
 
         {/* Contact */}
         <section>
-          <div className="clinical-label text-primary mb-6">Contact</div>
+          <div className="clinical-label text-primary-legible mb-6">Contact</div>
           <ObfuscatedMailto
             label="EMAIL ME ↗"
             className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"

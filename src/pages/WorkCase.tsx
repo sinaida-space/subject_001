@@ -71,7 +71,7 @@ export default function WorkCase() {
       <div className="container mx-auto max-w-3xl px-6">
         <Link
           to="/"
-          className="clinical-label mb-8 inline-block text-primary transition-colors hover:text-accent"
+          className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
         >
           ← Back
         </Link>
