@@ -17,15 +17,15 @@ export default function HeroSection() {
       ref={sectionRef}
       className="relative min-h-screen flex flex-col items-center justify-center z-10 pt-40 md:pt-32 lg:pt-36 pb-16 md:pb-20">
       
-      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl grid grid-cols-12 gap-10 md:gap-8 lg:gap-12 items-end">
+      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl flex flex-col gap-10 md:gap-8 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-end">
         {/* Main title area */}
-        <div className="col-span-12 lg:col-span-8 py-10 md:py-12 lg:py-16">
+        <div className="lg:col-span-8 py-10 md:py-12 lg:py-16 min-w-0">
           <div
             className={`transition-all duration-1000 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
             }>
             
-            <p className="clinical-label mb-6 text-primary-legible">
+            <p className="clinical-label mb-6 text-primary-legible break-words">
               SINAIDA KRIVCHENKO | VISUAL ARTIST AND DIGITAL STRATEGIST
             </p>
             <h1
@@ -45,7 +45,7 @@ export default function HeroSection() {
 
         {/* Side info */}
         <div
-          className={`col-span-12 lg:col-span-4 transition-all duration-1000 delay-300 ${
+          className={`lg:col-span-4 transition-all duration-1000 delay-300 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
           }>
           
