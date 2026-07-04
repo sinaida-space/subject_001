@@ -184,6 +184,19 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     return null;
   }, []);
 
+  // Only project nodes get a floating tooltip — it carries tagline + an
+  // action hint the canvas label doesn't show. Skill nodes have nothing
+  // beyond their name, which the canvas already labels directly, so a
+  // tooltip there would just duplicate it on screen.
+  const showTooltip = useCallback((node: RNode) => {
+    if (node.kind !== 'project') {
+      setTooltip(null);
+      return;
+    }
+    const { w } = sizeRef.current;
+    setTooltip({ x: Math.min(w - 20, node.x), y: node.y, node });
+  }, []);
+
   const setActive = useCallback(
     (id: string | null) => {
       if (activeRef.current === id) return;
@@ -374,7 +387,6 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     // hero works and the accent skills, which stay named at all times. Before drawing
     // any label we test its bounding box against labels already drawn this frame and
     // skip on collision, so no two labels ever overlap.
-    const isMobile = w < 640;
     ctx.textBaseline = 'middle';
     const drawn: { x1: number; y1: number; x2: number; y2: number }[] = [];
     const LABEL_H = 15; // approx line box height for collision tests
@@ -389,19 +401,23 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         show = isActive || !!isNeighbor || !!n.accent;
         alpha = isActive ? 1 : isNeighbor ? 0.85 : n.accent ? 0.85 : 0;
       } else {
-        // skills: named only on hover/active/neighbor, or if they're accent skills.
-        // Mobile matches desktop now — hidden until tapped (no always-on clutter).
-        show = isActive || !!isNeighbor || !!n.accent;
+        // Skills are always named — small and dim at rest, brighten and enlarge
+        // on hover/neighbor so the graph reads as legible at a glance instead of
+        // requiring a hover to discover what's there.
+        show = true;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.55 : 0;
+          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.4 : 0.12;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
-          alpha = n.accent ? 0.9 : 0;
-          useCategoryColor = false; // accent skills at rest read as neutral warm-gray
+          alpha = n.accent ? 0.55 : 0.32;
+          useCategoryColor = false; // neutral warm-gray at rest
         }
       }
       if (!show || alpha <= 0.02) continue;
-      const fs = n.kind === 'project' ? (n.weight >= 1.4 ? 13 : 12) : 11;
+      const fs =
+        n.kind === 'project'
+          ? n.weight >= 1.4 ? 13 : 12
+          : isActive ? 13 : isNeighbor ? 12 : 9;
       ctx.font = `${n.kind === 'project' || n.accent ? 500 : 400} ${fs}px 'Space Mono', monospace`;
       // Flip the label to the left when it would run off the right edge.
       const tw = ctx.measureText(n.label).width;
@@ -519,8 +535,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       setActive(id);
       const node = id ? nodesRef.current.find((n) => n.id === id) : null;
       if (node) {
-        const { w } = sizeRef.current;
-        setTooltip({ x: Math.min(w - 20, node.x), y: node.y, node });
+        showTooltip(node);
       } else if (!pointerRef.current.inside) {
         setTooltip(null);
       }
@@ -535,7 +550,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       unsub();
       stop();
     };
-  }, [layout, start, stop, setActive, updateScrollParallax]);
+  }, [layout, start, stop, setActive, updateScrollParallax, showTooltip]);
 
   // ── pointer handlers ──
   const toLocal = (e: React.PointerEvent) => {
@@ -572,12 +587,8 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     if (e.pointerType === 'mouse' && !drag.moved) {
       const node = hitTest(x, y);
       setActive(node ? node.id : null);
-      if (node) {
-        const { w } = sizeRef.current;
-        setTooltip({ x: Math.min(w - 20, node.x), y: node.y, node });
-      } else {
-        setTooltip(null);
-      }
+      if (node) showTooltip(node);
+      else setTooltip(null);
     }
     canvasRef.current!.style.cursor = hitTest(x, y) ? 'pointer' : 'default';
     start(); // pointer moved → resume the loop (settles & stops when input ceases)
@@ -607,8 +618,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
           lastTapRef.current = null;
         } else {
           setActive(node.id);
-          const { w } = sizeRef.current;
-          setTooltip({ x: Math.min(w - 20, node.x), y: node.y, node });
+          showTooltip(node);
           lastTapRef.current = node.id;
         }
       } else {
