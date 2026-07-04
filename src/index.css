@@ -151,6 +151,24 @@
     animation: glitch-shift 0.3s steps(3) infinite;
   }
 
+  /* ECG lock pulse — traces a hovered target's outline once, never loops */
+  .cursor-lock-pulse {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: cursor-lock-trace 320ms ease-out 1;
+  }
+
+  @keyframes cursor-lock-trace {
+    from {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+      opacity: 0.35;
+    }
+  }
+
   /* Dithered image effect */
   .dither-image {
     filter: contrast(1.5) grayscale(0.8) brightness(0.6);
