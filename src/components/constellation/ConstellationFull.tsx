@@ -90,6 +90,10 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   const sizeRef = useRef({ w: 0, h: 0, dpr: 1 });
 
   const activeRef = useRef<string | null>(null); // hovered / selected node id
+  // Rendered label bounding boxes from the last frame, so the hit test can
+  // count "hovering the label text" as hovering the node it belongs to — not
+  // just the tiny star dot. Rebuilt every frame from what's actually drawn.
+  const labelBoxesRef = useRef<Map<string, { x1: number; y1: number; x2: number; y2: number }>>(new Map());
   const pointerRef = useRef({ x: -9999, y: -9999, inside: false });
   // Parallax target: where the input wants the field to drift toward this frame.
   // (0,0) = home. Recomputed only on pointermove (desktop) or scroll (touch).
@@ -154,6 +158,9 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   }, []);
 
   // ── Hit testing (css px, live positions) ──
+  // Counts as a hit if the pointer is either near the star's core OR anywhere
+  // over that node's currently-rendered label text — a visible label is part
+  // of the target, not just decoration next to it.
   const hitTest = useCallback((px: number, py: number): RNode | null => {
     let best: RNode | null = null;
     let bestD = Infinity;
@@ -167,7 +174,14 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         best = n;
       }
     }
-    return best;
+    if (best) return best;
+    for (const n of nodesRef.current) {
+      const box = labelBoxesRef.current.get(n.id);
+      if (box && px >= box.x1 && px <= box.x2 && py >= box.y1 && py <= box.y2) {
+        return n;
+      }
+    }
+    return null;
   }, []);
 
   const setActive = useCallback(
@@ -286,9 +300,10 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       const a = nodeById(e.a);
       const b = nodeById(e.b);
       const touchesActive = !!active && (e.a === active || e.b === active);
-      // Hero chains lit at rest; everything else quiet haze.
-      let op = HERO_EDGES.has(i) ? 0.35 : 0.07;
-      if (active) op = touchesActive ? 0.5 : 0.025;
+      // Hero chains lit at rest; everything else a much quieter haze — a
+      // lighter ambient web reads as spacious instead of a dense net of lines.
+      let op = HERO_EDGES.has(i) ? 0.22 : 0.035;
+      if (active) op = touchesActive ? 0.5 : 0.015;
       ctx.strokeStyle = hexA(e.color, op);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
@@ -363,6 +378,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     ctx.textBaseline = 'middle';
     const drawn: { x1: number; y1: number; x2: number; y2: number }[] = [];
     const LABEL_H = 15; // approx line box height for collision tests
+    labelBoxesRef.current.clear(); // rebuilt below from what's actually drawn this frame
     for (const n of nodes) {
       const isActive = n.id === active;
       const isNeighbor = neighbors?.has(n.id);
@@ -404,6 +420,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       // Never let a hovered/active label be suppressed — it wins over ambient ones.
       if (collides && !isActive) continue;
       drawn.push(box);
+      labelBoxesRef.current.set(n.id, box);
       ctx.textAlign = flip ? 'right' : 'left';
       const tx = flip ? n.x - n.r - 8 : n.x + n.r + 8;
       let color: string;

@@ -57,7 +57,7 @@ export function computeLayout(
   const index = new Map(nodes.map((n, i) => [n.id, i]));
 
   // Force parameters, tuned for this scale.
-  const k = Math.min(width, height) * 0.16; // ideal edge length
+  const k = Math.min(width, height) * 0.2; // ideal edge length — more spread, less clustered
   const repulse = k * k * 0.9;
   const centerPull = 0.012;
 
@@ -122,8 +122,8 @@ export function computeLayout(
     maxX = Math.max(maxX, p.x);
     maxY = Math.max(maxY, p.y);
   }
-  const padX = width * 0.1;
-  const padY = height * 0.12;
+  const padX = width * 0.06;
+  const padY = height * 0.07;
   const spanX = maxX - minX || 1;
   const spanY = maxY - minY || 1;
   const scale = Math.min((width - padX * 2) / spanX, (height - padY * 2) / spanY);
