@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import SectionBreak from '@/components/SectionBreak';
 import CustomCursor from '@/components/CustomCursor';
 import CookieBanner from '@/components/CookieBanner';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
@@ -24,10 +25,24 @@ const Index = () => {
           `fixed inset-0`, so it's a background layer with zero in-flow height —
           nothing on the page reserves space for it, and it can never shift
           layout whether it's present or not. */}
+      {/* fallback={null}: if real WebGLRenderer construction throws despite the
+          feature-probe passing (GPU-blocklisted / locked-down hardware), the
+          starfield silently disappears and the rest of the page renders
+          normally. We deliberately do NOT call useRenderMode().toggle() here:
+          toggle() persists 'lite' to localStorage and marks the mode as
+          user-overridden (see useRenderMode.tsx), which would permanently
+          lock that browser out of full mode on every future visit — even
+          after a driver update or on different hardware. A one-off render
+          failure isn't the kind of durable preference that override is meant
+          to capture. CustomCursor is unmounted the same way ParticleField's
+          fallback is invisible: cosmetic-only, so leaving it mounted under
+          a still-"full" mode is a fine, low-risk inconsistency. */}
       {full && (
-        <Suspense fallback={null}>
-          <ParticleField />
-        </Suspense>
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <ParticleField />
+          </Suspense>
+        </ErrorBoundary>
       )}
 
       {/* Custom cursor — component self-limits to fine pointers */}
