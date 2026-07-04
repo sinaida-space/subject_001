@@ -11,27 +11,27 @@ export interface Service {
 
 export const SERVICES: Service[] = [
   {
-    code: 'SRV.001',
+    code: 'festivals',
     title: 'For music festivals & concerts',
     description:
       'Audio-reactive stage visuals built per song or per set — real-time TouchDesigner systems that listen to the live mix. Delivered as a turnkey show or operated live.',
-    leadTime: 'Typical lead time: 4–8 weeks depending on set length.',
+    leadTime: 'Lead time depends on set length and scope — confirmed once the brief is in.',
     brief: 'Brief to show: send the setlist and stage dimensions.',
   },
   {
-    code: 'SRV.002',
+    code: 'theater',
     title: 'For theater & dance',
     description:
       'Responsive scenography: real-time systems that react to performers, sound, and story — developed with the creative team from first concept onward.',
-    leadTime: 'Typical lead time: 8–12 weeks, from first concept meeting.',
+    leadTime: 'Lead time depends on production scope — confirmed once the brief is in.',
     brief: 'Brief to show: send the script or choreography notes and venue specs.',
   },
   {
-    code: 'SRV.003',
+    code: 'venues',
     title: 'For venues, brands & institutions',
     description:
       'Immersive installations and generative visual identities — the same real-time systems behind independent works like Submerged Realities and Synesthetic Bloom, adapted for a space and designed to run unattended.',
-    leadTime: 'Typical lead time: 6–10 weeks depending on scope.',
+    leadTime: 'Lead time depends on the space and scope — confirmed once the brief is in.',
     brief: 'Brief to show: send the space (photos/plans) and the occasion.',
   },
 ];

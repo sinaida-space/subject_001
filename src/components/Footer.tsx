@@ -15,7 +15,7 @@ export default function Footer() {
               <Logo />
             </div>
             <p className="mt-5 max-w-xs font-mono text-[13px] leading-relaxed text-white/55">
-              Sinaida Krivchenko<br />Digital artist · Live visuals · Immersive systems
+              Sinaida Krivchenko<br />Visual artist and digital strategist
             </p>
           </div>
 
