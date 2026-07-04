@@ -64,8 +64,10 @@ export default function Constellation() {
                same treatment on every screen size, doesn't affect page layout. */}
             {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}
 
-            {/* Plain-text reading always sits below the map (or is the whole thing, in lite mode) —
-               map and index coexist, no manual toggle picks one over the other. */}
+            {/* Plain-text reading always sits below the map in full mode; in
+               lite mode (auto-detected or manually toggled via Header/Footer)
+               it's the whole section — a fully semantic, keyboard-navigable
+               list with no canvas/WebGL dependency. */}
             <div className={mode === 'full' ? 'mt-16' : undefined}>
               <PlainSignalIndex />
             </div>

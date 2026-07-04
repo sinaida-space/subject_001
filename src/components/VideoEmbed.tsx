@@ -1,11 +1,28 @@
 import { useState } from 'react';
 
+interface VideoEmbedProps {
+  id: string;
+  title: string;
+  /** Caps the rendered height so the video can't force a scrollable
+   * container (e.g. inside a fixed-height modal). Width shrinks to match,
+   * staying centered — the video never grows past this regardless of how
+   * wide its parent is. Omit for the previous unconstrained width-driven size. */
+  maxHeightVh?: number;
+}
+
 // Lazy YouTube facade — a poster + play button; the heavy iframe only mounts
 // after a click. Keeps LCP fast and CLS ≈ 0.
-export default function VideoEmbed({ id, title }: { id: string; title: string }) {
+export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) {
   const [playing, setPlaying] = useState(false);
   return (
-    <div className="relative aspect-video w-full overflow-hidden border border-white/10 bg-black">
+    <div
+      className="relative w-full overflow-hidden border border-white/10 bg-black mx-auto"
+      style={
+        maxHeightVh
+          ? { aspectRatio: '16 / 9', maxHeight: `${maxHeightVh}vh`, width: `min(100%, calc(${maxHeightVh}vh * 16 / 9))` }
+          : { aspectRatio: '16 / 9' }
+      }
+    >
       {playing ? (
         <iframe
           className="absolute inset-0 h-full w-full"
