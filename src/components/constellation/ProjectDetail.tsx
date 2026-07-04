@@ -1,10 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { Project } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
+import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 
 // Terminal-window popup for any project star or index row — same chrome as
 // SnakeEasterEgg (dark bg, red border, [ ESC ] to close).
 export default function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
@@ -46,7 +49,16 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         {project.video ? (
           <VideoEmbed id={project.video} title={project.title} />
         ) : project.image ? (
-          <img src={project.image} alt={project.title} className="max-h-[46vh] w-full object-cover" />
+          <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '46vh' }}>
+            <img
+              src={project.image}
+              alt={project.title}
+              onLoad={() => setImgLoaded(true)}
+              className="max-h-[46vh] w-full object-cover"
+              style={{ position: 'absolute', inset: 0, height: '100%' }}
+            />
+            <HeartbeatPlaceholder loaded={imgLoaded} width="100%" height="100%" className="absolute inset-0" />
+          </div>
         ) : null}
 
         <div className="p-6 md:p-8">
