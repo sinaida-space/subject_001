@@ -29,7 +29,7 @@ export default function HeroSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
             }>
             
-            <p className="clinical-label mb-6 text-primary">
+            <p className="clinical-label mb-6 text-primary-legible">
               SINAIDA KRIVCHENKO | VISUAL ARTIST AND DIGITAL STRATEGIST
             </p>
             <h1
@@ -72,7 +72,7 @@ export default function HeroSection() {
             <button
               type="button"
               onClick={scrollToContact}
-              className="font-mono text-[12px] uppercase tracking-[0.15em] px-5 py-3 border border-primary text-primary bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none"
+              className="font-mono text-[12px] uppercase tracking-[0.15em] px-5 py-3 border border-primary text-primary-legible bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none"
             >
               Contact me
             </button>
@@ -101,14 +101,14 @@ export default function HeroSection() {
                 <button
                   type="button"
                   onClick={scrollToWork}
-                  className="font-mono text-[12px] uppercase tracking-[0.1em] px-4 py-2 border border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none whitespace-nowrap"
+                  className="font-mono text-[12px] uppercase tracking-[0.1em] px-4 py-2 border border-primary/40 text-primary-legible hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none whitespace-nowrap"
                 >
                   See work ↓
                 </button>
                 <button
                   type="button"
                   onClick={scrollToContact}
-                  className="font-mono text-[12px] uppercase tracking-[0.1em] px-4 py-2 border border-primary text-primary bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none whitespace-nowrap"
+                  className="font-mono text-[12px] uppercase tracking-[0.1em] px-4 py-2 border border-primary text-primary-legible bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none whitespace-nowrap"
                 >
                   Contact →
                 </button>

@@ -57,11 +57,11 @@ export default function Booking() {
   return (
     <div className="min-h-screen bg-background py-24">
       <div className="container mx-auto px-6 max-w-4xl">
-        <a href="/" className="clinical-label text-primary hover:text-accent transition-colors mb-8 inline-block">
+        <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
           ← Back
         </a>
 
-        <div className="font-mono uppercase text-primary mb-2" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+        <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
           Booking
         </div>
         <h1 className="font-display text-4xl md:text-5xl font-light mb-4">
@@ -73,7 +73,7 @@ export default function Booking() {
 
         {/* Services */}
         <section className="mb-20">
-          <div className="clinical-label text-primary mb-6">Services</div>
+          <div className="clinical-label text-primary-legible mb-6">Services</div>
           <div className="space-y-2">
             {SERVICES.map((service, i) => (
               <div key={service.code}>
@@ -90,7 +90,7 @@ export default function Booking() {
 
         {/* Process */}
         <section className="mb-20">
-          <div className="clinical-label text-primary mb-6">Process</div>
+          <div className="clinical-label text-primary-legible mb-6">Process</div>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (
               <div key={step.code} className="flex-1 font-mono">
@@ -113,7 +113,7 @@ export default function Booking() {
 
         {/* Practicalities */}
         <section className="mb-20">
-          <div className="clinical-label text-primary mb-6">Practicalities</div>
+          <div className="clinical-label text-primary-legible mb-6">Practicalities</div>
           <div className="font-mono text-[13px] leading-relaxed space-y-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
             <p>
               <span style={{ color: '#00e5ff' }}>Travel — </span>
@@ -136,7 +136,7 @@ export default function Booking() {
 
         {/* Contact */}
         <section>
-          <div className="clinical-label text-primary mb-6">Contact</div>
+          <div className="clinical-label text-primary-legible mb-6">Contact</div>
           <p className="font-mono text-[13px] leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
             Send the occasion, space, and timeline — a reply follows with next steps.
           </p>

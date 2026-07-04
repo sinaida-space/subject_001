@@ -21,7 +21,7 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-8 md:col-span-8 md:grid-cols-3">
             <div>
-              <div className="clinical-label mb-5 text-primary">Navigate</div>
+              <div className="clinical-label mb-5 text-primary-legible">Navigate</div>
               <div className="space-y-3.5">
                 {[
                   { label: 'Work', href: '#work' },
@@ -37,7 +37,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <div className="clinical-label mb-5 text-primary">Connect</div>
+              <div className="clinical-label mb-5 text-primary-legible">Connect</div>
               <div className="space-y-3.5">
                 {[
                   { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
@@ -54,7 +54,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <div className="clinical-label mb-5 text-primary">More</div>
+              <div className="clinical-label mb-5 text-primary-legible">More</div>
               <div className="space-y-3.5">
                 <a href="/booking" className="block font-mono text-[14px] text-white/60 transition-colors hover:text-foreground cursor-none">
                   Booking

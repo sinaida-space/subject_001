@@ -16,6 +16,11 @@
 
     --primary: 352 87% 40%;
     --primary-foreground: 0 0% 100%;
+    /* Same hue/saturation as --primary, lightness raised to clear WCAG AA
+       4.5:1 against --background for SMALL informational text only (labels,
+       eyebrows, ~12px). Large text/headings, buttons, and decorative accents
+       must keep using --primary — do not replace those. See AA contrast fix. */
+    --primary-legible: 352 87% 52%;
 
     --secondary: 240 6% 10%;
     --secondary-foreground: 0 0% 75%;
