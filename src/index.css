@@ -41,9 +41,12 @@
     --particle-white: 40 67% 96%;
     --bloom-cyan: 180 100% 45%;
 
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-mono: 'Space Mono', monospace;
-    --font-clinical: 'IBM Plex Mono', monospace;
+    /* Metrically-close system fallbacks so `font-display: swap` (set on the
+       Google Fonts link in index.html) doesn't cause a visible text reflow
+       once the webfont swaps in. */
+    --font-display: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+    --font-clinical: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
     --scanline-opacity: 0.04;
     --glitch-intensity: 0;

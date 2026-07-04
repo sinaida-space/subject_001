@@ -38,7 +38,11 @@ export default function Constellation() {
           </div>
 
           {/* RIGHT COLUMN — the graph, always paired with its plain reading below */}
-          <div className="relative flex-1">
+          {/* CLS fix: reserve the taller of Lite/Full's own heights here, at the
+              outer wrapper, so swapping the Suspense fallback (Lite) for the
+              loaded ConstellationFull never shifts anything below this section.
+              Purely a height-reservation wrapper — no motion/physics touched. */}
+          <div className="relative flex-1" style={mode === 'full' ? { minHeight: 'clamp(520px, 84vh, 940px)' } : undefined}>
             {mode === 'full' && (
               <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
                 <ConstellationFull onActiveProject={setActive} />

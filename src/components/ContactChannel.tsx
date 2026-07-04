@@ -164,80 +164,23 @@ function FreqDisplay() {
   );
 }
 
-// ── Typing Engine ───────────────────────────────────────────
-function useTyper(text: string, speed: number, startDelay: number, trigger: boolean) {
-  const [displayed, setDisplayed] = useState('');
-  const [done, setDone] = useState(false);
-  const started = useRef(false);
-
-  useEffect(() => {
-    if (!trigger || started.current) return;
-    started.current = true;
-    let i = 0;
-    let tid: ReturnType<typeof setTimeout>;
-
-    const typeNext = () => {
-      i++;
-      setDisplayed(text.slice(0, i));
-      if (i >= text.length) { setDone(true); return; }
-      // Jitter: 60–140 % of base speed → organic machine-typing feel
-      const next = speed > 0 ? speed * (0.6 + Math.random() * 0.8) : 0;
-      tid = setTimeout(typeNext, next);
-    };
-
-    tid = setTimeout(typeNext, startDelay);
-    return () => clearTimeout(tid);
-  }, [trigger, text, speed, startDelay]);
-
-  return { displayed, done };
-}
-
-// ── Glitch Text ─────────────────────────────────────────────
-function GlitchText({ text, active, className, style }: { text: string; active: boolean; className?: string; style?: React.CSSProperties }) {
-  const [display, setDisplay] = useState(text);
-  const glitchChars = '░▒▓█';
-
-  useEffect(() => {
-    if (!active) { setDisplay(text); return; }
-    let frame = 0;
-    const iv = setInterval(() => {
-      frame++;
-      if (frame > 8) { setDisplay(text); clearInterval(iv); return; }
-      const arr = text.split('');
-      for (let j = 0; j < 3; j++) {
-        const idx = Math.floor(Math.random() * arr.length);
-        arr[idx] = glitchChars[Math.floor(Math.random() * glitchChars.length)];
-      }
-      setDisplay(arr.join(''));
-    }, 60);
-    return () => clearInterval(iv);
-  }, [active, text]);
-
-  return <span className={className} style={style}>{display}</span>;
-}
-
 // ── Main Component ──────────────────────────────────────────
+// Static copy — renders instantly, no typing/reveal gating (same rule applied
+// to ServicesTerminal/HeroSection in Task 4): this section's content must not
+// be gated behind a character-by-character reveal.
+const PARA_1 =
+  'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion, let\'s talk.';
+const PARA_2 =
+  'Immersive installations  ·  Creative direction\nStage visuals  ·  Exhibition design\nGenerative art commissions\n──────────────────────────\nBased in Prague. Working globally.';
+
 export default function ContactChannel() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [inView, setInView] = useState(false);
   const mouseTimer = useRef<ReturnType<typeof setTimeout>>();
   const interactionRef = useRef<WaveformInteraction>({
     mouseY: 0,
     sectionHeight: 1,
     isActive: false,
   });
-
-  // IntersectionObserver
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setInView(true); },
-      { threshold: 0.15 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   // Mouse tracking on section
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -260,31 +203,6 @@ export default function ContactChannel() {
   }, []);
 
   useEffect(() => () => clearTimeout(mouseTimer.current), []);
-
-  // Typing sequences: snappy machine-typing feel
-  const sysLine = useTyper('> COMM.SYS ONLINE // CHANNEL OPEN', 0, 0, inView);
-  const openFor = useTyper('Open for', 12, 100, inView);
-  const collab = useTyper('Collaboration', 12, 100 + 8 * 12 + 40, inView);
-
-  // Continue after heading types
-  const transmissionDelay = 100 + (8 + 13) * 12 + 40 + 120;
-  const txHeader = useTyper('> incoming_transmission.decode() //', 8, transmissionDelay, inView);
-
-  const para1 = 'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion, let\'s talk.';
-  const p1Delay = transmissionDelay + 34 * 8 + 160;
-  const typed1 = useTyper(para1, 5, p1Delay, inView);
-
-  const availDelay = p1Delay + para1.length * 5 + 200;
-  const availHeader = useTyper('> available_for.list() //', 8, availDelay, inView);
-
-  const para2 = 'Immersive installations  ·  Creative direction\nStage visuals  ·  Exhibition design\nGenerative art commissions\n──────────────────────────\nBased in Prague. Working globally.';
-  const p2Delay = availDelay + 24 * 8 + 160;
-  const typed2 = useTyper(para2, 4, p2Delay, inView);
-
-  const ctaVisible = typed2.done;
-
-  const finalDelay = p2Delay + para2.length * 4 + 300;
-  const finalLine = useTyper('> channel open for new signals', 8, finalDelay, inView);
 
   return (
     <section
@@ -370,32 +288,32 @@ export default function ContactChannel() {
           <div className="max-w-2xl">
             {/* Sys line */}
             <div className="font-mono text-[12px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
-              {inView ? '> COMM.SYS ONLINE // CHANNEL OPEN' : ''}
+              {'> COMM.SYS ONLINE // CHANNEL OPEN'}
             </div>
 
             {/* Heading */}
             <h2 className="mb-8">
               <span className="block text-foreground font-light" style={{ fontSize: 'clamp(32px, 4vw, 52px)' }}>
-                {openFor.displayed}
+                Open for
               </span>
               <span className="block font-bold" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#ff3333' }}>
-                {collab.displayed}
+                Collaboration
               </span>
             </h2>
 
             {/* Transmission */}
             <div className="font-mono text-[12px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
-              {txHeader.displayed}
+              {'> incoming_transmission.decode() //'}
             </div>
 
-            <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.87)' }}>
               {(() => {
-                const idx = typed1.displayed.indexOf("let's talk.");
-                if (idx === -1) return typed1.displayed;
+                const idx = PARA_1.indexOf("let's talk.");
+                if (idx === -1) return PARA_1;
                 return (
                   <>
-                    {typed1.displayed.slice(0, idx)}
-                    <span style={{ color: '#ff3333', fontWeight: 700 }}>{typed1.displayed.slice(idx)}</span>
+                    {PARA_1.slice(0, idx)}
+                    <span style={{ color: '#ff3333', fontWeight: 700 }}>{PARA_1.slice(idx)}</span>
                   </>
                 );
               })()}
@@ -403,11 +321,11 @@ export default function ContactChannel() {
 
             {/* Available for */}
             <div className="font-mono text-[12px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
-              {availHeader.displayed}
+              {'> available_for.list() //'}
             </div>
 
-            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.75)' }}>
-              {typed2.displayed.split('·').map((seg, i, arr) => (
+            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.87)' }}>
+              {PARA_2.split('·').map((seg, i, arr) => (
                 <span key={i}>
                   {seg}
                   {i < arr.length - 1 && <span style={{ color: '#ff3333' }}>·</span>}
@@ -416,10 +334,7 @@ export default function ContactChannel() {
             </div>
 
             {/* CTA Buttons */}
-            <div
-              className="flex flex-wrap gap-4 mt-10 mb-12 transition-opacity duration-600"
-              style={{ opacity: ctaVisible ? 1 : 0 }}
-            >
+            <div className="flex flex-wrap gap-4 mt-10 mb-12">
               <ObfuscatedMailto
                 label="EMAIL ME ↗"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
@@ -479,12 +394,11 @@ export default function ContactChannel() {
               </a>
             </div>
 
-            {/* Final line */}
+            {/* Final line — decorative-only, so the low opacity here is fine
+                (informational text above uses .75/.87, never this low). */}
             <div className="font-mono text-[12px]" style={{ color: '#00e5ff', opacity: 0.3 }}>
-              {finalLine.displayed}
-              {finalLine.done && (
-                <span style={{ animation: 'blink-cursor 1s step-end infinite' }}>_</span>
-              )}
+              {'> channel open for new signals'}
+              <span style={{ animation: 'blink-cursor 1s step-end infinite' }}>_</span>
             </div>
           </div>
           </div>
