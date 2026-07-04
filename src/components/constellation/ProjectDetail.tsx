@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectKind } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
+import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 
 const KIND_LABEL: Record<ProjectKind, string> = {
   stage: 'Stage',
@@ -34,12 +35,22 @@ function projectLinks(project: Project) {
 // Shared inner content — media, kind badge, one-line context, title, blurb, tools, links.
 function Readout({ project }: { project: Project }) {
   const links = projectLinks(project);
+  const [imgLoaded, setImgLoaded] = useState(false);
   return (
     <>
       {project.video ? (
         <VideoEmbed id={project.video} title={project.title} />
       ) : project.image ? (
-        <img src={project.image} alt={project.title} className="max-h-[46vh] w-full object-cover" />
+        <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '46vh' }}>
+          <img
+            src={project.image}
+            alt={project.title}
+            onLoad={() => setImgLoaded(true)}
+            className="max-h-[46vh] w-full object-cover"
+            style={{ position: 'absolute', inset: 0, height: '100%' }}
+          />
+          <HeartbeatPlaceholder loaded={imgLoaded} width="100%" height="100%" className="absolute inset-0" />
+        </div>
       ) : null}
 
       <div className="p-6 md:p-8">
