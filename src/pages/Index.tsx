@@ -7,7 +7,6 @@ import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import SectionBreak from '@/components/SectionBreak';
-import CustomCursor from '@/components/CustomCursor';
 import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -34,9 +33,8 @@ const Index = () => {
           lock that browser out of full mode on every future visit — even
           after a driver update or on different hardware. A one-off render
           failure isn't the kind of durable preference that override is meant
-          to capture. CustomCursor is unmounted the same way ParticleField's
-          fallback is invisible: cosmetic-only, so leaving it mounted under
-          a still-"full" mode is a fine, low-risk inconsistency. */}
+          to capture. (The custom cursor now mounts once at the App level,
+          shared across every route, not duplicated per page.) */}
       {full && (
         <ErrorBoundary fallback={null}>
           <Suspense fallback={null}>
@@ -44,9 +42,6 @@ const Index = () => {
           </Suspense>
         </ErrorBoundary>
       )}
-
-      {/* Custom cursor — component self-limits to fine pointers */}
-      {full && <CustomCursor />}
 
       <Header />
 
