@@ -58,7 +58,7 @@ export default function Header() {
 
           <nav className="hidden md:flex items-center gap-8">
             {NAV_ITEMS.map((item) => (
-              <a key={item.label} href={item.href} className="clinical-label hover:text-primary transition-colors duration-300 cursor-none">
+              <a key={item.label} href={item.href} className="clinical-label hover:text-primary-legible transition-colors duration-300 cursor-none">
                 {item.label}
               </a>
             ))}
