@@ -5,15 +5,20 @@ type WaveformInteraction = {
   mouseY: number;
   sectionHeight: number;
   isActive: boolean;
+  // Set by WaveformCanvas so the parent's pointer handler can restart the loop
+  // after it self-terminates at rest (see motion-law rAF fix).
+  ensureRunning?: () => void;
 };
+
+const AMP_FLOOR = 0.3;
 
 // ── Waveform Canvas ─────────────────────────────────────────
 function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<WaveformInteraction> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tRef = useRef(0);
-  const amplitudeRef = useRef(0.3);
+  const amplitudeRef = useRef(AMP_FLOOR);
   const lastMoveRef = useRef(0);
-  const rafRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -59,8 +64,13 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
         amplitudeRef.current = Math.min(1.0, amplitudeRef.current + 0.02);
         lastMoveRef.current = now;
       } else if (now - lastMoveRef.current > 200) {
-        amplitudeRef.current = Math.max(0.3, amplitudeRef.current - 0.005);
+        amplitudeRef.current = Math.max(AMP_FLOOR, amplitudeRef.current - 0.005);
       }
+
+      // Settled = no active pointer input and amplitude has decayed to its floor.
+      // In that state the wave has nothing left to animate, so freeze the phase
+      // and let the loop self-terminate below (resumes on the next pointer move).
+      const settled = !isActive && amplitudeRef.current <= AMP_FLOOR + 1e-3;
 
       const t = tRef.current;
       const amp = amplitudeRef.current;
@@ -93,14 +103,29 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
       // Main
       drawWave(0, 1);
 
+      if (settled) {
+        // Rest frame drawn; stop scheduling and hold this static image.
+        rafRef.current = null;
+        return;
+      }
+
       tRef.current += 0.016;
       rafRef.current = requestAnimationFrame(draw);
     };
 
+    const ensureRunning = () => {
+      if (rafRef.current == null) rafRef.current = requestAnimationFrame(draw);
+    };
+    // Let the parent's pointer handler restart the loop after it settles.
+    interactionRef.current.ensureRunning = ensureRunning;
+
     rafRef.current = requestAnimationFrame(draw);
     return () => {
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafRef.current);
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      if (interactionRef.current.ensureRunning === ensureRunning) {
+        interactionRef.current.ensureRunning = undefined;
+      }
     };
   }, [interactionRef]);
 
@@ -190,6 +215,8 @@ export default function ContactChannel() {
     interactionRef.current.mouseY = e.clientY - rect.top;
     interactionRef.current.sectionHeight = rect.height;
     interactionRef.current.isActive = true;
+    // Pointer motion is the natural resume trigger for the settled waveform loop.
+    interactionRef.current.ensureRunning?.();
 
     clearTimeout(mouseTimer.current);
     mouseTimer.current = setTimeout(() => {

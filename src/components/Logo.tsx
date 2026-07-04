@@ -5,7 +5,7 @@ export default function Logo({ className = '' }: { className?: string }) {
   const scrollRef = useRef(0);
   const lastScrollRef = useRef(0);
   const phaseRef = useRef(0);
-  const rafRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
   const activeRef = useRef(false);
   const decayRef = useRef(0);
 
@@ -67,12 +67,6 @@ export default function Logo({ className = '' }: { className?: string }) {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      scrollRef.current = window.scrollY;
-      activeRef.current = true;
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -97,16 +91,33 @@ export default function Logo({ className = '' }: { className?: string }) {
         drawECG(ctx, canvas.width, canvas.height, phaseRef.current, 0.3);
       }
 
+      // Self-terminate once the scroll-driven pulse has fully decayed: the phase
+      // stops advancing and the drawn baseline is static, so scheduling more
+      // frames would be a perpetual idle loop. Resumes from the scroll handler.
+      if (decayRef.current <= 0.01 && !activeRef.current) {
+        rafRef.current = null;
+        return;
+      }
       rafRef.current = requestAnimationFrame(animate);
     };
-    
-    // Initial draw
+
+    const ensureLoopRunning = () => {
+      if (rafRef.current == null) rafRef.current = requestAnimationFrame(animate);
+    };
+
+    const handleScroll = () => {
+      scrollRef.current = window.scrollY;
+      activeRef.current = true;
+      ensureLoopRunning(); // scroll is the natural resume trigger
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Initial draw — one settled static frame; the loop stays parked until a scroll.
     drawECG(ctx, canvas.width, canvas.height, 0, 0.3);
-    rafRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      cancelAnimationFrame(rafRef.current);
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
     };
   }, [drawECG]);
 
