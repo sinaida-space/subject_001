@@ -9,6 +9,14 @@ const HOVER_SELECTOR = 'a, button, [role="button"], .cursor-none, canvas, input,
 const IDLE_TIMEOUT_MS = 2000;
 const IDLE_SIZE = 18; // effective blob diameter at rest
 
+// The wrap-lock effect reads as a precise "targeting" outline on small
+// controls (buttons, links, nav items). On large block-level targets — a
+// full-width list row, a card — wrapping the whole thing in a difference-blend
+// box instead looks like a rendering glitch, not an outline. Past this size,
+// the cursor just follows normally instead of wrapping.
+const MAX_WRAP_WIDTH = 320;
+const MAX_WRAP_HEIGHT = 64;
+
 export default function CustomCursor() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const pos = useRef({ x: 0, y: 0 });
@@ -49,6 +57,7 @@ export default function CustomCursor() {
       if (!el || el === currentTargetRef.current) return;
       currentTargetRef.current = el;
       const rect = el.getBoundingClientRect();
+      if (rect.width > MAX_WRAP_WIDTH || rect.height > MAX_WRAP_HEIGHT) return; // too big to wrap
       setHoverRect(rect);
       setPulseKey((k) => k + 1); // fire the lock pulse once per new hover target
     };

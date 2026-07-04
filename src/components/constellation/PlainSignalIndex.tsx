@@ -20,7 +20,7 @@ function Row({ project }: { project: Project }) {
       onClick={() => constellationBus.focusWork(project.id)}
       onMouseEnter={() => constellationBus.highlight(project.id)}
       onMouseLeave={() => constellationBus.highlight(null)}
-      className="group flex w-full items-baseline gap-3 border-t border-white/10 py-4 text-left transition-colors hover:bg-white/[0.02]"
+      className="group flex w-full items-baseline gap-3 border-t border-l-2 border-l-transparent border-white/10 py-4 pl-3 -ml-3 text-left transition-colors hover:border-l-primary hover:bg-white/[0.04]"
     >
       <span className="font-mono text-[14px] text-accent transition-transform group-hover:translate-x-1">→</span>
       <span className="flex-1">

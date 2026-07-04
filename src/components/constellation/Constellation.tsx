@@ -49,15 +49,13 @@ export default function Constellation() {
               </Suspense>
             )}
 
-            {/* live caption of the focused project (screen-reader + mobile friendly) */}
-            {mode === 'full' && active && (
-              <div className="mt-2 min-h-[2.5rem] font-mono text-[13px] leading-relaxed text-white/70" aria-live="polite">
-                <span style={{ color: '#f2efe9' }}>{active.title}</span>
-                {active.tagline ? <span className="text-white/55"> — {active.tagline}</span> : null}
-              </div>
-            )}
-
-            {/* announce the opened project to screen readers regardless of visual presentation */}
+            {/* announce the hovered/opened project to screen readers only — a
+               second visible caption here duplicated the project's name and
+               tagline that the map/list already show directly, so it's
+               sr-only now instead of a second visible line. */}
+            <div className="sr-only" aria-live="polite">
+              {active ? `${active.title}${active.tagline ? `. ${active.tagline}` : ''}` : ''}
+            </div>
             <div className="sr-only" aria-live="polite">
               {openProject ? `Opened ${openProject.title}. ${openProject.tagline}` : ''}
             </div>
