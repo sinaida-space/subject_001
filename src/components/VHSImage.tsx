@@ -30,7 +30,7 @@ export default function VHSImage({ src, alt, className = '', aspectRatio = '16/1
       className={`vhs-project-frame relative overflow-hidden ${className}`}
       style={{
         border: '1px solid rgba(255,51,51,0.4)',
-        boxShadow: '0 0 0 1px rgba(0,229,255,0.15), inset 0 0 30px rgba(0,0,0,0.5)',
+        boxShadow: '0 0 0 1px hsl(var(--accent) / 0.15), inset 0 0 30px rgba(0,0,0,0.5)',
         aspectRatio,
       }}
       onMouseEnter={handleMouseEnter}
@@ -38,7 +38,7 @@ export default function VHSImage({ src, alt, className = '', aspectRatio = '16/1
       {/* Corner brackets — top-right cyan, bottom-left red */}
       <div
         className="absolute top-[-1px] right-[-1px] w-[18px] h-[18px] pointer-events-none z-[2]"
-        style={{ borderTop: '2px solid #00e5ff', borderRight: '2px solid #00e5ff' }}
+        style={{ borderTop: '2px solid hsl(var(--accent))', borderRight: '2px solid hsl(var(--accent))' }}
       />
       <div
         className="absolute bottom-[-1px] left-[-1px] w-[18px] h-[18px] pointer-events-none z-[2]"

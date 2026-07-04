@@ -64,7 +64,7 @@ function Readout({ project }: { project: Project }) {
           >
             {KIND_LABEL[project.kind]}
           </span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-white/55">
+          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
             {project.tagline}
           </span>
         </div>
@@ -72,7 +72,7 @@ function Readout({ project }: { project: Project }) {
         <h3 className="mt-2 font-display text-2xl text-foreground md:text-3xl">{project.title}</h3>
 
         {project.blurb && (
-          <p className="mt-3 max-w-[62ch] font-mono text-[14px] leading-snug text-white/80">
+          <p className="mt-3 max-w-[62ch] font-mono text-[14px] leading-snug text-foreground/80">
             {project.blurb}
           </p>
         )}
@@ -82,7 +82,7 @@ function Readout({ project }: { project: Project }) {
             {project.tools.map((t) => (
               <span
                 key={t}
-                style={{ border: '1px solid #1a1a1a', padding: '4px 8px', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)' }}
+                style={{ border: '1px solid #1a1a1a', padding: '4px 8px', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
               >
                 {t}
               </span>

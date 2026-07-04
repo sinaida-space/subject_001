@@ -110,12 +110,12 @@ function BioSignalLock() {
           className="absolute left-0 right-0 h-10 pointer-events-none"
           style={{
             top: 0,
-            background: 'linear-gradient(to bottom, transparent, rgba(0,229,255,0.22), transparent)',
+            background: 'linear-gradient(to bottom, transparent, hsl(var(--accent) / 0.22), transparent)',
             animation: 'bio-scan 0.8s linear infinite',
           }}
         />
       )}
-      <div className="font-mono mb-5" style={{ fontSize: 12, color: '#00e5ff', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
+      <div className="font-mono mb-5" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
         {locked ? '> BIO_SIGNAL.lock() // SUBJECT: SINAIDA // STATUS: ACTIVE' : `> ${noise}`}
       </div>
       <div className="space-y-3">
@@ -130,12 +130,12 @@ function BioSignalLock() {
                 gridTemplateColumns: '140px 20px 1fr',
                 gap: '0 4px',
                 fontSize: 12,
-                color: 'rgba(255,255,255,0.5)',
+                color: 'hsl(var(--foreground) / 0.5)',
                 letterSpacing: '0.08em',
                 transition: 'color 0.35s ease',
               }}
             >
-              <span style={{ color: locked ? 'rgba(255,255,255,0.75)' : '#ff3333', animation: locked ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
+              <span style={{ color: locked ? 'hsl(var(--foreground) / 0.75)' : '#ff3333', animation: locked ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
                 {locked ? key : scrambleText(key, amount)}
               </span>
               <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
@@ -176,7 +176,7 @@ function PhotoBlock() {
         style={{
           position: 'relative',
           border: '1px solid rgba(255,51,51,0.4)',
-          boxShadow: '0 0 0 1px rgba(0,229,255,0.15), inset 0 0 30px rgba(0,0,0,0.5)',
+          boxShadow: '0 0 0 1px hsl(var(--accent) / 0.15), inset 0 0 30px rgba(0,0,0,0.5)',
         }}
       >
         <style>{`
@@ -185,8 +185,8 @@ function PhotoBlock() {
             position: absolute;
             top: -1px; right: -1px;
             width: 18px; height: 18px;
-            border-top: 2px solid #00e5ff;
-            border-right: 2px solid #00e5ff;
+            border-top: 2px solid hsl(var(--accent));
+            border-right: 2px solid hsl(var(--accent));
             pointer-events: none;
             z-index: 2;
           }
@@ -236,10 +236,10 @@ function PhotoBlock() {
       <span className="block font-mono mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
         SUBJECT_001
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: '#00e5ff', opacity: 0.8, letterSpacing: '0.3em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
         VISUAL ARTIST AND DIGITAL STRATEGIST
       </span>
     </div>
@@ -262,7 +262,7 @@ export default function AboutSection() {
               <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
                 About
               </div>
-              <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
                 [ BIO ]
               </div>
             </Reveal>
@@ -281,7 +281,7 @@ export default function AboutSection() {
               <div className="flex-1 min-w-0">
                 <BioSignalLock />
                 <Reveal delay={600}>
-                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', lineHeight: 1.85 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
                       I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
                     </p>
@@ -289,23 +289,23 @@ export default function AboutSection() {
                 </Reveal>
                 <Reveal delay={700}>
                   <div className="mb-7" style={{ lineHeight: 2.2 }}>
-                    <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)' }}>
+                    <div className="font-mono" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.9)' }}>
                       Human first.
                     </div>
-                    <div className="font-mono" style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', paddingLeft: 24 }}>
+                    <div className="font-mono" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
                       Digital second.
                     </div>
                   </div>
                 </Reveal>
                 <Reveal delay={800}>
-                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'rgba(255,255,255,0.82)', lineHeight: 1.85 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
                       I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.
                     </p>
                   </div>
                 </Reveal>
                 <Reveal delay={900}>
-                  <div className="font-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>
+                  <div className="font-mono" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
                     <span style={{ color: '#ff3333' }}> · </span>
                     {'REACH: Global'}

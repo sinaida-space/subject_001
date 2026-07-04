@@ -197,7 +197,7 @@ export default function NotFound() {
 
         <div
           className="font-mono uppercase mb-6 tracking-widest text-xs"
-          style={{ color: 'rgba(255,255,255,0.35)', letterSpacing: '0.3em' }}
+          style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em' }}
         >
           SINAIDA_OS v2.4.1 — NAVIGATION ERROR
         </div>
@@ -219,7 +219,7 @@ export default function NotFound() {
           {glitched404}
         </h1>
 
-        <div className="mt-2 mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <div className="mt-2 mb-8" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
           <span className="font-mono" style={{ fontSize: '1.1rem', letterSpacing: '0.12em' }}>
             — lost in the void.
           </span>
@@ -283,7 +283,7 @@ export default function NotFound() {
           <PulsingECG onClick={() => setSnakeOpen(true)} />
           <div
             className="font-mono text-xs uppercase tracking-widest"
-            style={{ color: 'rgba(255,255,255,0.2)', letterSpacing: '0.25em' }}
+            style={{ color: 'hsl(var(--foreground) / 0.2)', letterSpacing: '0.25em' }}
           >
             sin.ai.da · prague · {new Date().getFullYear()}
           </div>

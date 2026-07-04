@@ -17,13 +17,13 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
       <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: '#00e5ff' }}>
         {service.title}
       </h3>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.87)' }}>
+      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
         {service.description}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'rgba(255,255,255,0.60)' }}>
+      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.leadTime}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.60)' }}>
+      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.brief}
       </p>
     </div>
@@ -61,11 +61,11 @@ export default function Booking() {
         <h1 className="font-display text-4xl md:text-5xl font-light mb-4">
           Work with <span className="text-primary font-bold">me</span>
         </h1>
-        <p className="font-mono text-[15px] leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.82)' }}>
+        <p className="font-mono text-[15px] leading-relaxed mb-4" style={{ color: 'hsl(var(--foreground) / 0.82)' }}>
           Human first. Digital second. I build living visual systems for stages, concerts, and
           performance spaces — this page is what actually happens if you hire me for one.
         </p>
-        <p className="font-mono text-[14px] leading-relaxed mb-16" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <p className="font-mono text-[14px] leading-relaxed mb-16" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
           Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
         </p>
 
@@ -89,7 +89,7 @@ export default function Booking() {
         {/* Process */}
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-3">Process</div>
-          <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'hsl(var(--foreground) / 0.55)' }}>
             Structured the way I ran technical projects for years before this — brief, concept,
             build, rehearsal, show. Nothing invented for the website.
           </p>
@@ -100,11 +100,11 @@ export default function Booking() {
                 <div className="text-base font-medium mt-1 mb-1" style={{ color: '#00e5ff' }}>
                   {step.label}
                 </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                <p className="text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
                   {step.detail}
                 </p>
                 {i < PROCESS_STEPS.length - 1 && (
-                  <div className="hidden md:block mt-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                  <div className="hidden md:block mt-4" style={{ color: 'hsl(var(--foreground) / 0.2)' }}>
                     →
                   </div>
                 )}
@@ -116,7 +116,7 @@ export default function Booking() {
         {/* Practicalities */}
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-6">Practicalities</div>
-          <div className="font-mono text-[13px] leading-relaxed space-y-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          <div className="font-mono text-[13px] leading-relaxed space-y-4" style={{ color: 'hsl(var(--foreground) / 0.75)' }}>
             <p>
               <span style={{ color: '#00e5ff' }}>Travel — </span>
               Based in Prague, working globally. Touring and international bookings are welcome;
@@ -138,7 +138,7 @@ export default function Booking() {
         {/* Contact */}
         <section>
           <div className="clinical-label text-primary-legible mb-6">Contact</div>
-          <p className="font-mono text-[13px] leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          <p className="font-mono text-[13px] leading-relaxed mb-4" style={{ color: 'hsl(var(--foreground) / 0.75)' }}>
             Send the occasion, space, and timeline — a reply follows with next steps.
           </p>
           <ObfuscatedMailto

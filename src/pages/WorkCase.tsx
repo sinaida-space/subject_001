@@ -47,7 +47,7 @@ function ProcessCard({ label, detail }: { label: string; detail: string }) {
       >
         {label}
       </div>
-      <p className="mt-2 font-mono text-[12px] leading-relaxed text-white/55">{detail}</p>
+      <p className="mt-2 font-mono text-[12px] leading-relaxed text-foreground/55">{detail}</p>
     </div>
   );
 }
@@ -91,7 +91,7 @@ export default function WorkCase() {
           >
             Stage
           </span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-white/55">
+          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
             {project.tagline}
           </span>
         </div>
@@ -102,7 +102,7 @@ export default function WorkCase() {
 
         {/* ── The brief ── */}
         {project.blurb && (
-          <p className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-white/80">
+          <p className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/80">
             {project.blurb}
           </p>
         )}
@@ -131,7 +131,7 @@ export default function WorkCase() {
             <div className="font-mono text-[13px] uppercase tracking-[0.12em] text-white">
               Audio-reactive projections, one per song
             </div>
-            <p className="mt-2 max-w-[55ch] font-mono text-[13px] leading-relaxed text-white/55">
+            <p className="mt-2 max-w-[55ch] font-mono text-[13px] leading-relaxed text-foreground/55">
               A full-set backdrop: each song in the set got its own real-time TouchDesigner system,
               built to listen to the live mix and respond in the room — no two songs share a look.
             </p>
@@ -141,7 +141,7 @@ export default function WorkCase() {
         {/* ── Tech stack ── */}
         {project.tools && (
           <div className="mt-8">
-            <div className="clinical-label mb-3 text-white/45">Tech stack</div>
+            <div className="clinical-label mb-3 text-foreground/45">Tech stack</div>
             <div className="flex flex-wrap gap-2">
               {project.tools.map((t) => (
                 <span
@@ -152,7 +152,7 @@ export default function WorkCase() {
                     fontFamily: 'monospace',
                     fontSize: '10px',
                     letterSpacing: '0.15em',
-                    color: 'rgba(255,255,255,0.55)',
+                    color: 'hsl(var(--foreground) / 0.55)',
                   }}
                 >
                   {t}
@@ -165,14 +165,14 @@ export default function WorkCase() {
         {/* ── Lazy video ── */}
         {project.video && (
           <div className="mt-10">
-            <div className="clinical-label mb-3 text-white/45">Live at Sklad №3</div>
+            <div className="clinical-label mb-3 text-foreground/45">Live at Sklad №3</div>
             <VideoEmbed id={project.video} title={project.title} />
           </div>
         )}
 
         {/* ── Process strip — labeled placeholders, not fabricated screenshots ── */}
         <div className="mt-10">
-          <div className="clinical-label mb-3 text-white/45">Method</div>
+          <div className="clinical-label mb-3 text-foreground/45">Method</div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <ProcessCard
               label="Signal chain"
@@ -215,7 +215,7 @@ export default function WorkCase() {
           <h2 className="font-display text-2xl font-light text-foreground">
             What a festival can order
           </h2>
-          <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-white/80">
+          <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-foreground/80">
             This is the service behind the show: a real-time TouchDesigner system built to listen
             to your live mix and respond per song, delivered as a turnkey visual set or operated
             live on the night. Same signal chain, built for your stage, your setlist, your rider.{' '}

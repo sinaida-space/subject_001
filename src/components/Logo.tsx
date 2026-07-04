@@ -1,6 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { useRenderMode } from '@/hooks/useRenderMode';
 
 export default function Logo({ className = '' }: { className?: string }) {
+  const { mode } = useRenderMode();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollRef = useRef(0);
   const lastScrollRef = useRef(0);
@@ -72,6 +74,11 @@ export default function Logo({ className = '' }: { className?: string }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    if (mode === 'lite') {
+      drawECG(ctx, canvas.width, canvas.height, 0, 0.3);
+      return;
+    }
+
     const animate = () => {
       const scrollDelta = Math.abs(scrollRef.current - lastScrollRef.current);
       lastScrollRef.current = scrollRef.current;
@@ -119,7 +126,7 @@ export default function Logo({ className = '' }: { className?: string }) {
       window.removeEventListener('scroll', handleScroll);
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
     };
-  }, [drawECG]);
+  }, [drawECG, mode]);
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback, type MutableRefObject } from 'react';
 import ObfuscatedMailto from './ObfuscatedMailto';
+import { useRenderMode } from '@/hooks/useRenderMode';
 
 type WaveformInteraction = {
   mouseY: number;
@@ -14,6 +15,7 @@ const AMP_FLOOR = 0.3;
 
 // ── Waveform Canvas ─────────────────────────────────────────
 function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<WaveformInteraction> }) {
+  const { mode } = useRenderMode();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tRef = useRef(0);
   const amplitudeRef = useRef(AMP_FLOOR);
@@ -49,7 +51,7 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
       ctx.clearRect(0, 0, w, h);
 
       // Scan lines
-      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.strokeStyle = 'hsl(var(--foreground) / 0.04)';
       ctx.lineWidth = 0.5;
       for (let x = 0; x < w; x += 40) {
         ctx.beginPath();
@@ -113,6 +115,11 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
       rafRef.current = requestAnimationFrame(draw);
     };
 
+    if (mode === 'lite') {
+      draw();
+      return () => window.removeEventListener('resize', resize);
+    }
+
     const ensureRunning = () => {
       if (rafRef.current == null) rafRef.current = requestAnimationFrame(draw);
     };
@@ -127,7 +134,7 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
         interactionRef.current.ensureRunning = undefined;
       }
     };
-  }, [interactionRef]);
+  }, [interactionRef, mode]);
 
   return <canvas ref={canvasRef} className="w-full" style={{ height: 120 }} />;
 }
@@ -154,7 +161,7 @@ function SignalBars() {
             width: 4,
             height: heights[i],
             borderRadius: 1,
-            background: b <= active ? '#00e5ff' : '#00e5ff',
+            background: b <= active ? 'hsl(var(--accent))' : 'hsl(var(--accent))',
             opacity: b <= active ? 1 : 0.15,
           }}
         />
@@ -182,7 +189,7 @@ function FreqDisplay() {
   return (
     <div
       className="absolute top-[6%] right-[4%] font-mono text-[12px] z-10 select-none"
-      style={{ color: glitch ? '#ff3333' : '#00e5ff', opacity: 0.4, transition: 'color 0.05s' }}
+      style={{ color: glitch ? '#ff3333' : 'hsl(var(--accent))', opacity: 0.4, transition: 'color 0.05s' }}
     >
       FREQ: {freq} Hz
     </div>
@@ -267,12 +274,12 @@ export default function ContactChannel() {
             >
               Contact
             </div>
-            <div className="font-mono mt-2" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
               [ COMM.SYS // OPEN ]
             </div>
 
             <SignalBars />
-            <div className="font-mono mt-2 select-none" style={{ color: '#00e5ff', opacity: 0.4, fontSize: 12 }}>
+            <div className="font-mono mt-2 select-none" style={{ color: 'hsl(var(--accent))', opacity: 0.4, fontSize: 12 }}>
               SIGNAL: STRONG
             </div>
 
@@ -281,14 +288,14 @@ export default function ContactChannel() {
             <ObfuscatedMailto
               label="→ EMAIL"
               className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
-              style={{ color: '#00e5ff', opacity: 0.5 }}
+              style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
             />
             <a
               href="https://www.instagram.com/sin.ai.da/"
               target="_blank"
               rel="noopener noreferrer"
               className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
-              style={{ color: '#00e5ff', opacity: 0.5 }}
+              style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
             >
               → INSTAGRAM
             </a>
@@ -297,7 +304,7 @@ export default function ContactChannel() {
               target="_blank"
               rel="noopener noreferrer"
               className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
-              style={{ color: '#00e5ff', opacity: 0.5 }}
+              style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
             >
               → LINKEDIN
             </a>
@@ -314,7 +321,7 @@ export default function ContactChannel() {
           {/* Terminal text */}
           <div className="max-w-2xl">
             {/* Sys line */}
-            <div className="font-mono text-[12px] mb-6" style={{ color: '#00e5ff', opacity: 0.5 }}>
+            <div className="font-mono text-[12px] mb-6" style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}>
               {'> COMM.SYS ONLINE // CHANNEL OPEN'}
             </div>
 
@@ -329,11 +336,11 @@ export default function ContactChannel() {
             </h2>
 
             {/* Transmission */}
-            <div className="font-mono text-[12px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
+            <div className="font-mono text-[12px] mb-3" style={{ color: 'hsl(var(--accent))', opacity: 0.45 }}>
               {'> incoming_transmission.decode() //'}
             </div>
 
-            <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.87)' }}>
+            <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
               {(() => {
                 const idx = PARA_1.indexOf("let's talk.");
                 if (idx === -1) return PARA_1;
@@ -347,11 +354,11 @@ export default function ContactChannel() {
             </p>
 
             {/* Available for */}
-            <div className="font-mono text-[12px] mb-3" style={{ color: '#00e5ff', opacity: 0.45 }}>
+            <div className="font-mono text-[12px] mb-3" style={{ color: 'hsl(var(--accent))', opacity: 0.45 }}>
               {'> available_for.list() //'}
             </div>
 
-            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.87)' }}>
+            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
               {PARA_2.split('·').map((seg, i, arr) => (
                 <span key={i}>
                   {seg}
@@ -385,16 +392,16 @@ export default function ContactChannel() {
                 rel="noopener noreferrer"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
-                  border: '1px solid rgba(0,229,255,0.4)',
-                  color: '#00e5ff',
+                  border: '1px solid hsl(var(--accent) / 0.4)',
+                  color: 'hsl(var(--accent))',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(0,229,255,0.08)';
-                  e.currentTarget.style.borderColor = '#00e5ff';
+                  e.currentTarget.style.background = 'hsl(var(--accent) / 0.08)';
+                  e.currentTarget.style.borderColor = 'hsl(var(--accent))';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)';
+                  e.currentTarget.style.borderColor = 'hsl(var(--accent) / 0.4)';
                 }}
               >
                 FOLLOW ON INSTAGRAM ↗
@@ -405,16 +412,16 @@ export default function ContactChannel() {
                 rel="noopener noreferrer"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
-                  border: '1px solid rgba(0,229,255,0.4)',
-                  color: '#00e5ff',
+                  border: '1px solid hsl(var(--accent) / 0.4)',
+                  color: 'hsl(var(--accent))',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(0,229,255,0.08)';
-                  e.currentTarget.style.borderColor = '#00e5ff';
+                  e.currentTarget.style.background = 'hsl(var(--accent) / 0.08)';
+                  e.currentTarget.style.borderColor = 'hsl(var(--accent))';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)';
+                  e.currentTarget.style.borderColor = 'hsl(var(--accent) / 0.4)';
                 }}
               >
                 CONNECT ON LINKEDIN ↗
@@ -423,7 +430,7 @@ export default function ContactChannel() {
 
             {/* Final line — decorative-only, so the low opacity here is fine
                 (informational text above uses .75/.87, never this low). */}
-            <div className="font-mono text-[12px]" style={{ color: '#00e5ff', opacity: 0.3 }}>
+            <div className="font-mono text-[12px]" style={{ color: 'hsl(var(--accent))', opacity: 0.3 }}>
               {'> channel open for new signals'}
               <span style={{ animation: 'blink-cursor 1s step-end infinite' }}>_</span>
             </div>
