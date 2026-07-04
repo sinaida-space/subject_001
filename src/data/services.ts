@@ -22,7 +22,7 @@ export const SERVICES: Service[] = [
     code: 'SRV.002',
     title: 'For theater & dance',
     description:
-      'Responsive scenography: projections that react to performers, sound, and story — from concept with the director through to opening night.',
+      'Responsive scenography: real-time systems that react to performers, sound, and story — developed with the creative team from first concept onward.',
     leadTime: 'Typical lead time: 8–12 weeks, from first concept meeting.',
     brief: 'Brief to show: send the script or choreography notes and venue specs.',
   },
@@ -30,7 +30,7 @@ export const SERVICES: Service[] = [
     code: 'SRV.003',
     title: 'For venues, brands & institutions',
     description:
-      'Immersive installations and generative visual identities — projection-mapped spaces and systems built to run unattended.',
+      'Immersive installations and generative visual identities — the same real-time systems behind independent works like Submerged Realities and Synesthetic Bloom, adapted for a space and designed to run unattended.',
     leadTime: 'Typical lead time: 6–10 weeks depending on scope.',
     brief: 'Brief to show: send the space (photos/plans) and the occasion.',
   },
