@@ -42,7 +42,7 @@ export default function Constellation() {
               outer wrapper, so swapping the Suspense fallback (Lite) for the
               loaded ConstellationFull never shifts anything below this section.
               Purely a height-reservation wrapper — no motion/physics touched. */}
-          <div className="relative flex-1" style={mode === 'full' ? { minHeight: 'clamp(520px, 84vh, 940px)' } : undefined}>
+          <div className="relative flex-1" style={mode === 'full' ? { minHeight: 'clamp(560px, 90vh, 1000px)' } : undefined}>
             {mode === 'full' && (
               <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
                 <ConstellationFull onActiveProject={setActive} />

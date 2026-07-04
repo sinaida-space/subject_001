@@ -58,7 +58,10 @@ export function computeLayout(
 
   // Force parameters, tuned for this scale.
   const k = Math.min(width, height) * 0.2; // ideal edge length — more spread, less clustered
-  const repulse = k * k * 0.9;
+  // Stronger repulsion relative to attraction — with every node now always
+  // labeled, more breathing room between nodes matters more than a tight
+  // "constellation" shape ("the graph should have enough air inside it").
+  const repulse = k * k * 1.3;
   const centerPull = 0.012;
 
   for (let it = 0; it < iterations; it++) {
