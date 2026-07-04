@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
-import { useRenderMode } from '@/hooks/useRenderMode';
 
 export default function Footer() {
   const [snakeOpen, setSnakeOpen] = useState(false);
-  const { mode, toggle } = useRenderMode();
 
   return (
     <footer className="relative z-10 border-t border-border py-16 md:py-20">
@@ -61,15 +59,6 @@ export default function Footer() {
                 <a href="/privacy" className="block font-mono text-[14px] text-white/60 transition-colors hover:text-foreground cursor-none">
                   Privacy Policy
                 </a>
-                <button
-                  type="button"
-                  onClick={toggle}
-                  className="block font-mono text-[14px] text-white/60 transition-colors hover:text-foreground cursor-none"
-                  aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
-                  title="Toggle visual intensity"
-                >
-                  View: <span className="text-primary">{mode === 'full' ? 'Signal Map' : 'Plain Signal'}</span>
-                </button>
               </div>
             </div>
           </div>
