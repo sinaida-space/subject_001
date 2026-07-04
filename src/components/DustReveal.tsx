@@ -21,6 +21,7 @@ export default function DustReveal({ children, className = '' }: DustRevealProps
   const [isRevealed, setIsRevealed] = useState(false);
   const [canvasOpacity, setCanvasOpacity] = useState(1);
   const revealProgressRef = useRef(0);
+  const isRevealedRef = useRef(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -142,14 +143,27 @@ export default function DustReveal({ children, className = '' }: DustRevealProps
     scene.add(particles);
 
     let time = 0;
-    let animationId: number;
     let targetProgress = 0;
+    const rafRef = { id: null as number | null };
 
-    // Intersection observer
+    // ── Self-terminating loop guard. The dust reveal is scroll-driven: the
+    // IntersectionObserver below sets targetProgress when the divider enters the
+    // viewport, which is the only natural trigger. Once revealProgress has caught
+    // up to its target and particles are settled, we draw one final frame and
+    // stop scheduling — nothing animates without a scroll action, no perpetual
+    // idle shimmer loop. A fresh intersection change resumes it.
+    const ensureLoop = () => {
+      if (rafRef.id == null) {
+        rafRef.id = requestAnimationFrame(animate);
+      }
+    };
+
+    // Intersection observer — the natural (scroll-driven) trigger for reveal.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.intersectionRatio > 0.15) {
           targetProgress = 1;
+          ensureLoop(); // resume the loop so the reveal can progress, then it self-terminates
         }
       },
       { threshold: [0, 0.15, 0.3, 0.5] }
@@ -157,13 +171,16 @@ export default function DustReveal({ children, className = '' }: DustRevealProps
     observer.observe(container);
 
     const animate = () => {
-      animationId = requestAnimationFrame(animate);
       time += 0.016;
 
-      // Smooth progress
+      // Smooth progress toward target
       const progress = revealProgressRef.current;
       revealProgressRef.current += (targetProgress - progress) * 0.02;
       material.uniforms.uProgress.value = revealProgressRef.current;
+
+      // Settled when the reveal has effectively converged on its target and the
+      // particle field has finished its dissolve (canvas fully faded out).
+      const settled = Math.abs(targetProgress - revealProgressRef.current) < 0.001;
 
       const posArray = geometry.attributes.position.array as Float32Array;
 
@@ -193,8 +210,10 @@ export default function DustReveal({ children, className = '' }: DustRevealProps
           posArray[ix] += vel.x * (1 - revealProgressRef.current);
           posArray[ix + 1] += vel.y * (1 - revealProgressRef.current);
         } else {
-          // Settled - just tiny shimmer
-          const shimmer = Math.sin(time * 3 + i * 0.1) * 0.3;
+          // Settling toward final resting positions. While the reveal is still
+          // converging this eases particles home; once settled (below) the loop
+          // stops, so this is not a perpetual idle shimmer.
+          const shimmer = settled ? 0 : Math.sin(time * 3 + i * 0.1) * 0.3;
           posArray[ix + 1] = vel.targetY + shimmer;
         }
       }
@@ -205,14 +224,23 @@ export default function DustReveal({ children, className = '' }: DustRevealProps
       if (revealProgressRef.current > 0.85) {
         setCanvasOpacity(1 - (revealProgressRef.current - 0.85) / 0.15);
       }
-      if (revealProgressRef.current > 0.5 && !isRevealed) {
+      if (revealProgressRef.current > 0.5 && !isRevealedRef.current) {
+        isRevealedRef.current = true;
         setIsRevealed(true);
       }
 
       renderer.render(scene, camera);
+
+      // Keep scheduling only while motion is still settling. Once at rest, this
+      // was the final frame — stop until the observer fires again on scroll.
+      if (settled) {
+        rafRef.id = null;
+        return;
+      }
+      rafRef.id = requestAnimationFrame(animate);
     };
 
-    animate();
+    ensureLoop();
 
     // Handle resize
     const handleResize = () => {
@@ -228,12 +256,18 @@ export default function DustReveal({ children, className = '' }: DustRevealProps
     return () => {
       window.removeEventListener('resize', handleResize);
       observer.disconnect();
-      cancelAnimationFrame(animationId);
+      if (rafRef.id != null) cancelAnimationFrame(rafRef.id);
       geometry.dispose();
       material.dispose();
       renderer.dispose();
     };
-  }, [isRevealed]);
+    // Mount once. `isRevealed` is intentionally not a dependency: re-running this
+    // effect mid-reveal tears down and recreates the scene, which (with the
+    // persistent revealProgressRef) causes the loop to oscillate and never settle
+    // — a perpetual motion-law violation. The one-shot reveal is guarded by
+    // isRevealedRef instead, so this effect is stable for the component's life.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
