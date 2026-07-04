@@ -34,6 +34,10 @@ const ADJ = buildAdjacency(GEDGES);
 // buildGraph). These render "lit" at rest so the two flagship chains read as lead
 // stars without any hover. Static baseline opacity — not a timer, motion-law compliant.
 const HERO_PROJECT_IDS = new Set(GNODES.filter((n) => n.kind === 'project' && n.accent).map((n) => n.id));
+// Stable project order for the touch/scroll cycling below — same order the
+// graph is built in, not dependent on runtime layout.
+const PROJECT_NODE_IDS = GNODES.filter((n) => n.kind === 'project').map((n) => n.id);
+
 const HERO_EDGES = new Set<number>();
 GEDGES.forEach((e, i) => {
   if (HERO_PROJECT_IDS.has(e.a) || HERO_PROJECT_IDS.has(e.b)) HERO_EDGES.add(i);
@@ -95,6 +99,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   // just the tiny star dot. Rebuilt every frame from what's actually drawn.
   const labelBoxesRef = useRef<Map<string, { x1: number; y1: number; x2: number; y2: number }>>(new Map());
   const pointerRef = useRef({ x: -9999, y: -9999, inside: false });
+  // Hero baseline opacity, eased rather than snapped: 1 = full "just opened"
+  // highlight on Redkie Ptitsy/Stereolove's edges, fading toward 0 the moment
+  // the pointer engages the canvas at all (not just when hovering a specific
+  // star) — "the first thing you see, then it recedes once you start looking
+  // around." Springs back to 1 once the pointer leaves and settles again.
+  const heroFadeRef = useRef(1);
   // Parallax target: where the input wants the field to drift toward this frame.
   // (0,0) = home. Recomputed only on pointermove (desktop) or scroll (touch).
   const parallaxRef = useRef({ tx: 0, ty: 0, cx: 0, cy: 0 });
@@ -228,10 +238,19 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     const range = 22; // small drift range in css px
     parallaxRef.current.tx = 0;
     parallaxRef.current.ty = (p - 0.5) * 2 * range;
+
+    // Scroll also cycles which project (and its connected skills) is
+    // highlighted — the mobile equivalent of desktop hover, since there's no
+    // hover on touch. Divides the section's scroll range evenly across every
+    // project in stable order.
+    if (PROJECT_NODE_IDS.length) {
+      const idx = Math.min(PROJECT_NODE_IDS.length - 1, Math.floor(p * PROJECT_NODE_IDS.length));
+      setActive(PROJECT_NODE_IDS[idx]);
+    }
+
     lastInputRef.current = performance.now();
     start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setActive]);
 
   // ── The frame ──
   const frame = useCallback(() => {
@@ -266,9 +285,17 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
 
+    let settling = false; // any node (or the hero fade) still meaningfully in motion?
+
+    // Ease the hero baseline toward faded once the pointer is present/engaged
+    // (desktop) or the section has been scrolled into active use (touch);
+    // ease back toward full once it disengages. A spring, not a snap.
+    const heroFadeTarget = ptr.inside || (IS_COARSE && active) ? 0.25 : 1;
+    heroFadeRef.current += (heroFadeTarget - heroFadeRef.current) * 0.05;
+    if (Math.abs(heroFadeTarget - heroFadeRef.current) > 0.01) settling = true;
+
     // ── physics: spring each node toward home + input-driven parallax offset ──
     const drag = dragRef.current;
-    let settling = false; // any node still meaningfully in motion?
     for (const n of nodes) {
       if (drag.node === n && drag.moved) {
         n.x = ptr.x;
@@ -313,9 +340,10 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       const a = nodeById(e.a);
       const b = nodeById(e.b);
       const touchesActive = !!active && (e.a === active || e.b === active);
-      // Hero chains lit at rest; everything else a much quieter haze — a
+      // Hero chains lit at rest, fading (heroFadeRef) once the pointer
+      // engages the canvas at all; everything else a much quieter haze — a
       // lighter ambient web reads as spacious instead of a dense net of lines.
-      let op = HERO_EDGES.has(i) ? 0.22 : 0.035;
+      let op = HERO_EDGES.has(i) ? 0.22 * heroFadeRef.current : 0.035;
       if (active) op = touchesActive ? 0.5 : 0.015;
       ctx.strokeStyle = hexA(e.color, op);
       ctx.beginPath();
@@ -398,8 +426,19 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       let alpha = 0;
       let useCategoryColor = false;
       if (n.kind === 'project') {
-        show = isActive || !!isNeighbor || !!n.accent;
-        alpha = isActive ? 1 : isNeighbor ? 0.85 : n.accent ? 0.85 : 0;
+        // Every project is always named now — consistency was the ask (a mix
+        // of always-shown hero labels and hover-only others read as broken).
+        // Same collision-skip logic below still guarantees no two labels
+        // overlap; hero/accent projects just start brighter.
+        show = true;
+        if (active) {
+          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.4 : 0.2;
+        } else {
+          // Hero labels recede toward the regular baseline as heroFadeRef fades,
+          // so the whole "first highlight" (edges + label brightness) recedes
+          // together rather than just the connecting lines dimming alone.
+          alpha = n.accent ? 0.65 + 0.2 * heroFadeRef.current : 0.65;
+        }
       } else {
         // Skills are always named — small and dim at rest, brighten and enlarge
         // on hover/neighbor so the graph reads as legible at a glance instead of

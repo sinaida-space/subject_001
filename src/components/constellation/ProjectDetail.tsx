@@ -34,7 +34,7 @@ function Readout({ project }: { project: Project }) {
   return (
     <>
       {project.video ? (
-        <VideoEmbed id={project.video} title={project.title} />
+        <VideoEmbed id={project.video} title={project.title} maxHeightVh={34} />
       ) : project.image ? (
         <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '46vh' }}>
           <DisplacementImage
@@ -49,7 +49,7 @@ function Readout({ project }: { project: Project }) {
         </div>
       ) : null}
 
-      <div className="p-6 md:p-8">
+      <div className="p-5 md:p-6">
         <div className="flex flex-wrap items-center gap-3">
           <span
             style={{
@@ -69,16 +69,16 @@ function Readout({ project }: { project: Project }) {
           </span>
         </div>
 
-        <h3 className="mt-3 font-display text-2xl text-foreground md:text-3xl">{project.title}</h3>
+        <h3 className="mt-2 font-display text-2xl text-foreground md:text-3xl">{project.title}</h3>
 
         {project.blurb && (
-          <p className="mt-4 max-w-[62ch] font-mono text-[15px] leading-relaxed text-white/80">
+          <p className="mt-3 max-w-[62ch] font-mono text-[14px] leading-snug text-white/80">
             {project.blurb}
           </p>
         )}
 
         {project.tools && (
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {project.tools.map((t) => (
               <span
                 key={t}
@@ -91,7 +91,7 @@ function Readout({ project }: { project: Project }) {
         )}
 
         {(links.length > 0 || CASE_PAGES[project.id]) && (
-          <div className="mt-5 flex flex-wrap gap-4">
+          <div className="mt-3 flex flex-wrap gap-4">
             {CASE_PAGES[project.id] && (
               <Link
                 to={CASE_PAGES[project.id]}
@@ -175,7 +175,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
             [ CLOSE ]
           </button>
         </div>
-        <div className="max-h-[80vh] overflow-y-auto">
+        <div className="max-h-[88vh] overflow-y-auto">
           <Readout project={project} />
         </div>
       </div>
