@@ -1,13 +1,19 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import type { GraphNode } from '@/data/graph';
-import { projectById } from '@/data/projects';
+import { projectById, PROJECTS } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
 import PlainSignalIndex from './PlainSignalIndex';
 import ProjectDetail from './ProjectDetail';
 
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
+
+const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
+// Mirrors ConstellationFull's MOBILE_BAND_HEIGHT — kept as a rough CLS
+// estimate here since the exact content-driven height is computed inside
+// ConstellationFull itself once it mounts.
+const MOBILE_RESERVED_HEIGHT = Math.max(640, PROJECTS.length * 640);
 
 export default function Constellation() {
   const { mode } = useRenderMode();
@@ -42,7 +48,14 @@ export default function Constellation() {
               outer wrapper, so swapping the Suspense fallback (Lite) for the
               loaded ConstellationFull never shifts anything below this section.
               Purely a height-reservation wrapper — no motion/physics touched. */}
-          <div className="relative flex-1" style={mode === 'full' ? { minHeight: 'clamp(560px, 90vh, 1000px)' } : undefined}>
+          <div
+            className="relative flex-1"
+            style={
+              mode === 'full'
+                ? { minHeight: IS_COARSE ? `${MOBILE_RESERVED_HEIGHT}px` : 'clamp(560px, 90vh, 1000px)' }
+                : undefined
+            }
+          >
             {mode === 'full' && (
               <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
                 <ConstellationFull onActiveProject={setActive} />

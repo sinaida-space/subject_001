@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildGraph, buildAdjacency, type GraphNode } from '@/data/graph';
-import { computeLayout } from '@/lib/layout';
+import { computeLayout, computeTopDownLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 
 // ── Runtime node (base "home" from layout + live physics) ──
@@ -37,6 +37,9 @@ const HERO_PROJECT_IDS = new Set(GNODES.filter((n) => n.kind === 'project' && n.
 // Stable project order for the touch/scroll cycling below — same order the
 // graph is built in, not dependent on runtime layout.
 const PROJECT_NODE_IDS = GNODES.filter((n) => n.kind === 'project').map((n) => n.id);
+// Vertical space each project gets in the mobile top-down layout — tall
+// enough that a project's own skill cluster has real room to breathe.
+const MOBILE_BAND_HEIGHT = 640;
 
 const HERO_EDGES = new Set<number>();
 GEDGES.forEach((e, i) => {
@@ -123,6 +126,11 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   const lastTapRef = useRef<string | null>(null); // touch: id previewed by last tap
 
   const [tooltip, setTooltip] = useState<{ x: number; y: number; node: RNode } | null>(null);
+  // Only used on touch/coarse devices — the wrapper's height becomes content
+  // driven (one band per project) instead of a fixed viewport-relative clamp,
+  // so scrolling the page scrolls through the graph "top-down" a chapter at a
+  // time. Desktop ignores this entirely (stays at the CSS clamp height).
+  const [mobileHeight, setMobileHeight] = useState<number | null>(null);
 
   // ── Layout / sizing ──
   const layout = useCallback(() => {
@@ -131,7 +139,8 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     if (!wrap || !canvas) return;
     const rect = wrap.getBoundingClientRect();
     const w = rect.width;
-    const h = rect.height;
+    const h = IS_COARSE ? Math.max(MOBILE_BAND_HEIGHT, PROJECT_NODE_IDS.length * MOBILE_BAND_HEIGHT) : rect.height;
+    if (IS_COARSE && h !== mobileHeight) setMobileHeight(h);
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     sizeRef.current = { w, h, dpr };
     canvas.width = Math.round(w * dpr);
@@ -141,7 +150,9 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     parallaxRef.current.cx = w / 2;
     parallaxRef.current.cy = h / 2;
 
-    const { nodes } = computeLayout(GNODES, GEDGES, { width: w, height: h });
+    const { nodes } = IS_COARSE
+      ? computeTopDownLayout(GNODES, GEDGES, { width: w, bandHeight: MOBILE_BAND_HEIGHT })
+      : computeLayout(GNODES, GEDGES, { width: w, height: h });
     const prev = new Map(nodesRef.current.map((n) => [n.id, n]));
     nodesRef.current = nodes.map((n) => {
       const old = prev.get(n.id);
@@ -165,7 +176,8 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         r,
       };
     });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobileHeight]);
 
   // ── Hit testing (css px, live positions) ──
   // Counts as a hit if the pointer is either near the star's core OR anywhere
@@ -688,7 +700,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   };
 
   return (
-    <div ref={wrapRef} className="relative w-full" style={{ height: 'clamp(560px, 90vh, 1000px)' }}>
+    <div ref={wrapRef} className="relative w-full" style={{ height: mobileHeight ? `${mobileHeight}px` : 'clamp(560px, 90vh, 1000px)' }}>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 touch-none"
