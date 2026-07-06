@@ -1,5 +1,5 @@
 // ── Single source of truth for service copy — consumed by ServicesTerminal
-// (homepage) and Booking (/booking). Edit once, both surfaces update. ──
+// (homepage) and Collaborate (/collaborate). Edit once, both surfaces update. ──
 
 export interface Service {
   code: string;

@@ -3,14 +3,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const Booking = lazy(() => import("./pages/Booking"));
-const Press = lazy(() => import("./pages/Press"));
+const Collaborate = lazy(() => import("./pages/Collaborate"));
 const WorkCase = lazy(() => import("./pages/WorkCase"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -39,8 +38,10 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/booking" element={<Booking />} />
-              <Route path="/press" element={<Press />} />
+              <Route path="/collaborate" element={<Collaborate />} />
+              {/* Old routes live in shared links and search results — keep redirecting */}
+              <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
+              <Route path="/press" element={<Navigate to="/collaborate" replace />} />
               <Route path="/work/:slug" element={<WorkCase />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
