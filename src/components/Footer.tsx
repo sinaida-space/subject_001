@@ -58,11 +58,8 @@ export default function Footer() {
             <div>
               <div className="clinical-label mb-5 text-primary-legible">More</div>
               <div className="space-y-3.5">
-                <a href="/booking" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
-                  Booking
-                </a>
-                <a href="/press" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
-                  Press
+                <a href="/collaborate" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                  Work with me
                 </a>
                 <a href="/privacy" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Privacy Policy
