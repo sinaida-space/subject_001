@@ -117,7 +117,11 @@ export function computeLayout(
     }
   }
 
-  // Normalise into the viewport with padding, preserving aspect.
+  // Normalise into the viewport. Each axis is scaled independently so the
+  // graph always fills the padded box in BOTH dimensions — on a wide canvas
+  // the field stretches horizontally instead of huddling in an aspect-locked
+  // blob. Padding is a guaranteed ≥10% clear margin on every side (with a
+  // floor in px so labels drawn beside edge nodes still have room).
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
   for (const p of pos) {
     minX = Math.min(minX, p.x);
@@ -125,18 +129,17 @@ export function computeLayout(
     maxX = Math.max(maxX, p.x);
     maxY = Math.max(maxY, p.y);
   }
-  const padX = width * 0.06;
-  const padY = height * 0.07;
+  const padX = Math.max(width * 0.1, 110);
+  const padY = Math.max(height * 0.1, 56);
   const spanX = maxX - minX || 1;
   const spanY = maxY - minY || 1;
-  const scale = Math.min((width - padX * 2) / spanX, (height - padY * 2) / spanY);
-  const offX = (width - spanX * scale) / 2;
-  const offY = (height - spanY * scale) / 2;
+  const scaleX = Math.max((width - padX * 2) / spanX, 0.01);
+  const scaleY = Math.max((height - padY * 2) / spanY, 0.01);
 
   const laidOut: LaidOutNode[] = nodes.map((n, i) => ({
     ...n,
-    x: (pos[i].x - minX) * scale + offX,
-    y: (pos[i].y - minY) * scale + offY,
+    x: (pos[i].x - minX) * scaleX + padX,
+    y: (pos[i].y - minY) * scaleY + padY,
   }));
 
   return { nodes: laidOut, width, height };
@@ -162,8 +165,10 @@ export function computeTopDownLayout(
   const height = Math.max(bandHeight, projects.length * bandHeight);
 
   const projectIndex = new Map(projects.map((p, i) => [p.id, i]));
-  const projectX = (i: number) => (i % 2 === 0 ? width * 0.38 : width * 0.62);
+  const projectX = (i: number) => (i % 2 === 0 ? width * 0.4 : width * 0.6);
   const projectY = (i: number) => (i + 0.5) * bandHeight;
+  // ≥10% clear margin left and right — nothing may hug the viewport edge.
+  const edgeX = width * 0.1;
 
   const positions = new Map<string, { x: number; y: number }>();
   projects.forEach((p, i) => {
@@ -192,17 +197,20 @@ export function computeTopDownLayout(
 
   const GOLDEN_ANGLE = 137.5 * (Math.PI / 180);
   const halfBand = bandHeight / 2 - 48; // keep clear of the next band
-  const maxRadiusX = width * 0.42;
+  const maxRadiusX = width * 0.34;
 
   clusters.forEach((ids, homeIdx) => {
     const center = { x: projectX(homeIdx), y: projectY(homeIdx) };
     ids.forEach((id, i) => {
       const angle = i * GOLDEN_ANGLE;
-      const radius = 70 + (i % 4) * 34;
-      const x = Math.min(width - 20, Math.max(20, center.x + Math.cos(angle) * radius));
-      const yRaw = center.y + Math.sin(angle) * radius * 0.55;
+      // Wider radius steps and a taller ellipse than before — the cluster
+      // breathes vertically through its band instead of packing around the
+      // project star (labels were colliding at phone widths).
+      const radius = 84 + (i % 4) * 44;
+      const x = Math.min(width - edgeX, Math.max(edgeX, center.x + Math.cos(angle) * radius));
+      const yRaw = center.y + Math.sin(angle) * radius * 0.9;
       const y = Math.min(center.y + halfBand, Math.max(center.y - halfBand, yRaw));
-      positions.set(id, { x: Math.min(width - 20, Math.max(20, Math.min(x, center.x + maxRadiusX))), y });
+      positions.set(id, { x: Math.min(width - edgeX, Math.max(edgeX, Math.min(x, center.x + maxRadiusX))), y });
     });
   });
 
