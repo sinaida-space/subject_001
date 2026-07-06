@@ -113,6 +113,26 @@ export const PROJECTS: Project[] = [
     weight: 1.3,
   },
 
+  {
+    id: 'the-eyes-chico',
+    title: 'The Eyes Chico',
+    kind: 'installation',
+    tagline: 'Acrylic painting turned immersive installation & web experience · with Alisa Feer',
+    blurb:
+      'A collaboration with artist Alisa Feer: her acrylic painting is the origin of the piece, translated into a living digital scene that exists twice — as an immersive projection installation and as a web experience anyone can step into. Pigment holds still; code refuses to. A study in what a painting gains, and what it guards, when it starts to move.',
+    tools: ['Web', 'Acrylic on canvas'],
+    skills: ['interactive-installations', 'creative-web', 'visual-narrative', 'concept-design', 'perception-media'],
+    url: 'https://sinaida-space.github.io/the-eyes-chico/',
+    video: 'dvNl1G2fVLM',
+    links: [
+      { label: 'Enter the website', url: 'https://sinaida-space.github.io/the-eyes-chico/' },
+      { label: 'Installation (YouTube)', url: 'https://youtube.com/shorts/dvNl1G2fVLM' },
+      { label: 'Alisa Feer', url: 'https://uvaliss.ru/' },
+    ],
+    featured: true,
+    weight: 1.3,
+  },
+
   // ── Conceptual ─────────────────────────────────────────────
   {
     id: 'legacy',
