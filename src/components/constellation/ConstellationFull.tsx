@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildGraph, buildAdjacency, type GraphNode } from '@/data/graph';
 import { computeLayout, computeTopDownLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
+import { startStarTone, updateStarTone, endStarTone, disposeStarSound } from '@/lib/starDragSound';
 
 // ── Runtime node (base "home" from layout + live physics) ──
 interface RNode {
@@ -604,6 +605,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       io.disconnect();
       unsub();
       stop();
+      disposeStarSound();
     };
   }, [layout, start, stop, setActive, updateScrollParallax, showTooltip]);
 
@@ -636,7 +638,16 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     lastInputRef.current = performance.now();
     const drag = dragRef.current;
     if (drag.node) {
-      if (Math.hypot(x - drag.downX, y - drag.downY) > 4) drag.moved = true;
+      if (!drag.moved && Math.hypot(x - drag.downX, y - drag.downY) > 4) {
+        drag.moved = true;
+        // Easter egg: dragging a star plays a soft drone. Started here (inside
+        // an active pointer gesture) so autoplay policy is satisfied.
+        startStarTone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1));
+      }
+      if (drag.moved) {
+        const stretch = Math.min(1, Math.hypot(x - drag.node.hx, y - drag.node.hy) / 220);
+        updateStarTone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1), stretch);
+      }
     }
     // hover highlight + tooltip (desktop)
     if (e.pointerType === 'mouse' && !drag.moved) {
@@ -661,6 +672,14 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       canvasRef.current?.releasePointerCapture?.(e.pointerId);
     } catch {
       /* ignore */
+    }
+    if (drag.moved && node) {
+      // Release the dragged star: end the drone with its ECG beep and fire
+      // pulses down the star's edges as it springs home.
+      endStarTone();
+      GEDGES.forEach((ge, i) => {
+        if (ge.a === node.id || ge.b === node.id) pulsesRef.current.push({ edge: i, t: 0 });
+      });
     }
     if (wasTap) {
       if (node && e.pointerType === 'mouse') {
@@ -689,6 +708,15 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     start();
   };
 
+  // Touch drags can be cancelled by the browser (e.g. an OS gesture steals the
+  // pointer) — kill the drone and drop the drag without treating it as a tap.
+  const onPointerCancel = () => {
+    if (dragRef.current.moved) endStarTone();
+    dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0 };
+    lastInputRef.current = performance.now();
+    start();
+  };
+
   const onPointerLeave = () => {
     pointerRef.current.inside = false;
     lastInputRef.current = performance.now();
@@ -708,6 +736,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerLeave}
       />
       {tooltip?.node.project?.tagline && (

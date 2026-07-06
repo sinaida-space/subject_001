@@ -39,6 +39,7 @@ export const SKILLS: Skill[] = [
   { id: 'davinci', label: 'Editing and color grading', category: 'tech' },
   { id: 'creative-web', label: 'Creative web technology', category: 'tech' },
   { id: 'interactive-installations', label: 'Interactive installations', category: 'tech', accent: true },
+  { id: 'body-tracking', label: 'Body & gesture tracking', category: 'tech', accent: true },
   // direction
   { id: 'creative-direction', label: 'Creative direction', category: 'direction' },
   { id: 'visual-narrative', label: 'Visual narrative', category: 'direction' },
