@@ -9,7 +9,7 @@ const KIND_LABEL: Record<ProjectKind, string> = {
   stage: 'Stage',
   installation: 'Installation',
   conceptual: 'Conceptual',
-  game: 'Playground',
+  game: 'Perception research · camera-tracked',
   tool: 'Tools',
 };
 
