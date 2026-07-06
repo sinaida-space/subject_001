@@ -140,8 +140,13 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     if (!wrap || !canvas) return;
     const rect = wrap.getBoundingClientRect();
     const w = rect.width;
-    const h = IS_COARSE ? Math.max(MOBILE_BAND_HEIGHT, PROJECT_NODE_IDS.length * MOBILE_BAND_HEIGHT) : rect.height;
-    if (IS_COARSE && h !== mobileHeight) setMobileHeight(h);
+    // Band (top-down) layout is a function of narrowness, not input device:
+    // a free scatter physically cannot breathe under ~768px no matter how the
+    // page is being pointed at. Coarse pointers also always get bands.
+    const useBands = IS_COARSE || w < 768;
+    const h = useBands ? Math.max(MOBILE_BAND_HEIGHT, PROJECT_NODE_IDS.length * MOBILE_BAND_HEIGHT) : rect.height;
+    if (useBands && h !== mobileHeight) setMobileHeight(h);
+    else if (!useBands && mobileHeight !== null) setMobileHeight(null);
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     sizeRef.current = { w, h, dpr };
     canvas.width = Math.round(w * dpr);
@@ -151,7 +156,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     parallaxRef.current.cx = w / 2;
     parallaxRef.current.cy = h / 2;
 
-    const { nodes } = IS_COARSE
+    const { nodes } = useBands
       ? computeTopDownLayout(GNODES, GEDGES, { width: w, bandHeight: MOBILE_BAND_HEIGHT })
       : computeLayout(GNODES, GEDGES, { width: w, height: h });
     const prev = new Map(nodesRef.current.map((n) => [n.id, n]));
@@ -356,7 +361,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       // Hero chains lit at rest, fading (heroFadeRef) once the pointer
       // engages the canvas at all; everything else a much quieter haze — a
       // lighter ambient web reads as spacious instead of a dense net of lines.
-      let op = HERO_EDGES.has(i) ? 0.22 * heroFadeRef.current : 0.035;
+      let op = HERO_EDGES.has(i) ? 0.22 * heroFadeRef.current : 0.05;
       if (active) op = touchesActive ? 0.5 : 0.015;
       ctx.strokeStyle = hexA(e.color, op);
       ctx.beginPath();
@@ -432,6 +437,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     ctx.textBaseline = 'middle';
     const drawn: { x1: number; y1: number; x2: number; y2: number }[] = [];
     const LABEL_H = 15; // approx line box height for collision tests
+    // Star cores count as occupied space too — a label must dodge other
+    // nodes' dots, not just other labels (own-node candidates already sit
+    // clear of the own core by construction).
+    for (const n of nodes) {
+      drawn.push({ x1: n.x - n.r - 5, y1: n.y - n.r - 5, x2: n.x + n.r + 5, y2: n.y + n.r + 5 });
+    }
     labelBoxesRef.current.clear(); // rebuilt below from what's actually drawn this frame
     for (const n of nodes) {
       const isActive = n.id === active;
@@ -489,7 +500,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         chosen = c;
         if (!collides) break; // good candidate found, stop here
       }
-      const { lx, ty, flip } = chosen;
+      const { ty, flip } = chosen;
+      let { lx } = chosen;
+      // Whatever candidate won (or fell through), the text itself must stay
+      // on-canvas — shift it inside rather than letting it clip at the edge.
+      if (lx + tw > w - 6) lx = w - 6 - tw;
+      if (lx < 6) lx = 6;
       const box = { x1: lx - 2, y1: ty - LABEL_H / 2, x2: lx + tw + 2, y2: ty + LABEL_H / 2 };
       drawn.push(box);
       labelBoxesRef.current.set(n.id, box);
@@ -553,6 +569,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       }, 150);
     };
     window.addEventListener('resize', onResize);
+    // The wrap's width can change without any window resize (flex column →
+    // row after styles settle, scrollbar appearing, parent layout shifts) —
+    // this was leaving the canvas sized for a stale width, drawing the graph
+    // far off its visible column. Observe the element itself, not the window.
+    const ro = new ResizeObserver(onResize);
+    if (wrapRef.current) ro.observe(wrapRef.current);
 
     // Touch/mobile: scroll within the section drives parallax (never a timer).
     const onScroll = () => {
@@ -600,6 +622,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     return () => {
       mountedRef.current = false;
       window.removeEventListener('resize', onResize);
+      ro.disconnect();
       if (IS_COARSE) window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVis);
       io.disconnect();
@@ -728,7 +751,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   };
 
   return (
-    <div ref={wrapRef} className="relative w-full" style={{ height: mobileHeight ? `${mobileHeight}px` : 'clamp(560px, 90vh, 1000px)' }}>
+    <div ref={wrapRef} className="relative w-full" style={{ height: mobileHeight ? `${mobileHeight}px` : 'clamp(640px, 110vh, 1300px)' }}>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 touch-none"
