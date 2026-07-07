@@ -202,7 +202,28 @@ export default function Header() {
           CONTACT
         </a>
 
-        <div style={{ marginTop: 40, fontFamily: 'monospace', fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
+        <button
+          type="button"
+          onClick={() => toggle()}
+          style={{
+            marginTop: 32,
+            fontFamily: 'monospace',
+            fontSize: 12,
+            letterSpacing: '0.15em',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            color: mode === 'lite' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.45)',
+            opacity: menuOpen ? 1 : 0,
+            transition: mode === 'lite' ? 'none' : 'opacity 0.35s ease',
+          }}
+          aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
+        >
+          View: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
+        </button>
+
+        <div style={{ marginTop: 16, fontFamily: 'monospace', fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>
