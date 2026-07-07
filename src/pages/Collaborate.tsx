@@ -16,7 +16,7 @@ const TECH_BASICS = ['TouchDesigner', 'GLSL / real-time shaders', 'Audio-reactiv
 // Third-person boilerplate — written to be copy-pasted verbatim into program
 // booklets and press. Facts only: no availability, timeline, or client claims
 // beyond the two real credits.
-const BOILERPLATE = `Sinaida Krivchenko is a visual artist and digital strategist based in Prague, working globally. Trained as a biomedical engineer and shaped by a decade of creative direction in the cultural sector, she builds living visual systems for stages, concerts, and performance spaces — real-time TouchDesigner and GLSL work that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (commissioned live concert visuals, Moscow, 2026) and The Eyes Chico (interactive installation and web experience, with Alisa Feer).`;
+const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, working globally. Trained as a biomedical engineer and shaped by years of creative direction in the cultural sector, she builds living visual systems for stages, concerts, and performance spaces — real-time TouchDesigner and GLSL work that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (commissioned live concert visuals, Moscow, 2026) and The Eyes Chico (interactive installation and web experience, with Alisa Feer).`;
 
 function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
   return (
