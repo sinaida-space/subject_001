@@ -633,11 +633,11 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     rafRef.current = null;
   }, []);
 
-  // ── mount ──
+  // ── synth: set up once for the component's lifetime. Kept in its own
+  // effect (empty deps) so unrelated re-renders (e.g. layout's identity
+  // changing after setMobileHeight) never tear down and dispose() the
+  // AudioContext mid-interaction — that was silencing audio after a drag.
   useEffect(() => {
-    mountedRef.current = true;
-    layout();
-
     // Feed the synth the live star layout every step: projects become voices
     // (x = which 16th they fire on, y = pitch), skills' mean height bends the
     // filter. Reads current positions, so dragging a star re-writes the music.
@@ -669,6 +669,17 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       setSynthReady(true);
       setShowUnlockCard(true);
     });
+    return () => {
+      unsubUnlock();
+      synth.dispose();
+    };
+  }, []);
+
+  // ── mount ──
+  useEffect(() => {
+    mountedRef.current = true;
+    layout();
+
     // Draw one static frame immediately so the graph is visible at rest without
     // any input (the frame itself schedules nothing further if there's no motion).
     lastInputRef.current = performance.now();
@@ -742,9 +753,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       document.removeEventListener('visibilitychange', onVis);
       io.disconnect();
       unsub();
-      unsubUnlock();
       stop();
-      synth.dispose();
     };
   }, [layout, start, stop, setActive, updateScrollParallax, showTooltip]);
 
