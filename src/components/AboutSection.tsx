@@ -240,7 +240,7 @@ function PhotoBlock() {
         SINAIDA
       </span>
       <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
-        VISUAL ARTIST AND DIGITAL STRATEGIST
+        NEW MEDIA ARTIST
       </span>
     </div>
   );
