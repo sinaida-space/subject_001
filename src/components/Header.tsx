@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Logo from './Logo';
+import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
@@ -34,6 +35,7 @@ function ModeIcon({ mode }: { mode: 'full' | 'lite' }) {
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [snakeOpen, setSnakeOpen] = useState(false);
   const { mode, toggle } = useRenderMode();
 
   useEffect(() => {
@@ -48,8 +50,11 @@ export default function Header() {
   }, [menuOpen]);
 
   const scrollTop = (e: React.MouseEvent) => {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Elsewhere the <a href="/"> navigates home to the hero naturally.
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -73,12 +78,11 @@ export default function Header() {
 
   return (
     <>
+      {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : ''}`}>
         <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
 
-          <a href="#" onClick={scrollTop} style={{ cursor: 'none' }}>
-            <Logo />
-          </a>
+          <Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={scrollTop} />
 
           <nav className="hidden md:flex items-center gap-8">
             {NAV_ITEMS.map((item) => (

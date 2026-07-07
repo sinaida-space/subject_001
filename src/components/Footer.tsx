@@ -13,11 +13,18 @@ export default function Footer() {
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-4">
-            <div onClick={() => setSnakeOpen(true)} title="..." style={{ cursor: 'pointer', display: 'inline-block' }}>
-              <Logo />
-            </div>
+            <Logo
+              onEcgClick={() => setSnakeOpen(true)}
+              onNameClick={(e) => {
+                if (window.location.pathname === '/') {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                // Off the home page the <a href="/"> navigates to the hero naturally.
+              }}
+            />
             <p className="mt-5 max-w-xs font-mono text-[13px] leading-relaxed text-foreground/55">
-              Sinaida Krivchenko<br />Visual artist and digital strategist
+              Sinaida Krivchenko<br />New media artist
             </p>
           </div>
 
