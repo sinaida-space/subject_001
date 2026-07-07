@@ -57,7 +57,12 @@ export function computeLayout(
   const index = new Map(nodes.map((n, i) => [n.id, i]));
 
   // Force parameters, tuned for this scale.
-  const k = Math.min(width, height) * 0.2; // ideal edge length — more spread, less clustered
+  // Ideal edge length from Fruchterman-Reingold: proportional to
+  // sqrt(area / nodeCount). Unlike min(width,height), this adapts to the real
+  // box aspect — on a tall narrow (mobile) canvas it keeps connected nodes a
+  // sensible distance apart so the sim fills the height naturally instead of
+  // huddling into a width-locked blob that then has to be stretched.
+  const k = Math.sqrt((width * height) / Math.max(nodes.length, 1)) * 0.82; // ideal edge length
   // Stronger repulsion relative to attraction — with every node now always
   // labeled, more breathing room between nodes matters more than a tight
   // "constellation" shape ("the graph should have enough air inside it").

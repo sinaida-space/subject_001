@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildGraph, buildAdjacency, type GraphNode } from '@/data/graph';
-import { computeLayout, computeTopDownLayout } from '@/lib/layout';
+import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 import { startStarTone, updateStarTone, endStarTone, disposeStarSound } from '@/lib/starDragSound';
 
@@ -143,10 +143,14 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     // Band (top-down) layout is a function of narrowness, not input device:
     // a free scatter physically cannot breathe under ~768px no matter how the
     // page is being pointed at. Coarse pointers also always get bands.
-    const useBands = IS_COARSE || w < 768;
-    const h = useBands ? Math.max(MOBILE_BAND_HEIGHT, PROJECT_NODE_IDS.length * MOBILE_BAND_HEIGHT) : rect.height;
-    if (useBands && h !== mobileHeight) setMobileHeight(h);
-    else if (!useBands && mobileHeight !== null) setMobileHeight(null);
+    // Narrow viewports get a taller-than-wide canvas and the SAME force layout
+    // as desktop (now aspect-aware) — one connected web you scroll through,
+    // instead of isolated per-project bands that left big vertical voids and a
+    // curtain of long cross-band edges. Scroll still cycles the active project.
+    const narrow = IS_COARSE || w < 768;
+    const h = narrow ? Math.max(MOBILE_BAND_HEIGHT, Math.round(GNODES.length * 58)) : rect.height;
+    if (narrow && h !== mobileHeight) setMobileHeight(h);
+    else if (!narrow && mobileHeight !== null) setMobileHeight(null);
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     sizeRef.current = { w, h, dpr };
     canvas.width = Math.round(w * dpr);
@@ -156,9 +160,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     parallaxRef.current.cx = w / 2;
     parallaxRef.current.cy = h / 2;
 
-    const { nodes } = useBands
-      ? computeTopDownLayout(GNODES, GEDGES, { width: w, bandHeight: MOBILE_BAND_HEIGHT })
-      : computeLayout(GNODES, GEDGES, { width: w, height: h });
+    const { nodes } = computeLayout(GNODES, GEDGES, { width: w, height: h });
     const prev = new Map(nodesRef.current.map((n) => [n.id, n]));
     nodesRef.current = nodes.map((n) => {
       const old = prev.get(n.id);
@@ -476,14 +478,24 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       ctx.font = `${fontWeight} ${fs}px 'Space Mono', monospace`;
       const tw = ctx.measureText(n.label).width;
 
-      // Candidate placements, tried in order: right, left, below, above.
-      // First one that doesn't collide wins; if none do, use the last one
-      // anyway rather than hiding the label.
+      // Candidate placements, tried in order: right, left, below, above, then
+      // four diagonals and two stacked-further rows. First one that doesn't
+      // collide wins; if none do, use the last one anyway rather than hiding
+      // the label. The extra escape routes matter at narrow (mobile) widths
+      // where several skill labels crowd one hub star.
+      const rx = n.r + 8;
+      const vy = n.r + 12;
       const candidates: { lx: number; ty: number; flip: boolean }[] = [
-        { lx: n.x + n.r + 8, ty: n.y, flip: false },
-        { lx: n.x - n.r - 8 - tw, ty: n.y, flip: true },
-        { lx: n.x - tw / 2, ty: n.y + n.r + 12, flip: false },
-        { lx: n.x - tw / 2, ty: n.y - n.r - 12, flip: false },
+        { lx: n.x + rx, ty: n.y, flip: false },
+        { lx: n.x - rx - tw, ty: n.y, flip: true },
+        { lx: n.x - tw / 2, ty: n.y + vy, flip: false },
+        { lx: n.x - tw / 2, ty: n.y - vy, flip: false },
+        { lx: n.x + rx, ty: n.y + vy, flip: false },
+        { lx: n.x - rx - tw, ty: n.y + vy, flip: true },
+        { lx: n.x + rx, ty: n.y - vy, flip: false },
+        { lx: n.x - rx - tw, ty: n.y - vy, flip: true },
+        { lx: n.x - tw / 2, ty: n.y + vy + LABEL_H, flip: false },
+        { lx: n.x - tw / 2, ty: n.y - vy - LABEL_H, flip: false },
       ];
       let chosen = candidates[0];
       for (const c of candidates) {
