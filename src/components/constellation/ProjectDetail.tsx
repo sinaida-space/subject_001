@@ -82,7 +82,7 @@ function Readout({ project }: { project: Project }) {
             {project.tools.map((t) => (
               <span
                 key={t}
-                style={{ border: '1px solid #1a1a1a', padding: '4px 8px', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
+                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
               >
                 {t}
               </span>
@@ -152,7 +152,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
       <div
         className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out"
         style={{
-          background: '#060606',
+          background: 'hsl(var(--background))',
           border: '1px solid #CC1414',
           boxShadow: '0 0 40px rgba(204,20,20,0.22)',
           opacity: mounted ? 1 : 0,
@@ -163,14 +163,14 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-modal="true"
         aria-label={`${project.title} — project readout`}
       >
-        <div style={{ background: '#0a0a0a', borderBottom: '1px solid #1a1a1a', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{ fontFamily: 'monospace', fontSize: '10px', color: '#555', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+            style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
           >
             [ CLOSE ]
           </button>
