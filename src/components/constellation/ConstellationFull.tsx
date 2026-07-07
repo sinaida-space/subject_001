@@ -755,6 +755,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
+    // Prime the shared AudioContext here, synchronously, on every pointerdown —
+    // not just when a star is grabbed. iOS Safari only unlocks Web Audio
+    // output when resume() is reached inside a touchstart/mousedown/click
+    // handler; reaching it later via pointermove (the drag drone) does not
+    // count and left the context stuck suspended on real phones.
+    synth.primeFromGesture();
     const { x, y } = toLocal(e);
     pointerRef.current = { x, y, inside: true };
     lastInputRef.current = performance.now();

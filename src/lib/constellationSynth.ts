@@ -116,6 +116,40 @@ class ConstellationSynth {
     if (this.ctx?.state === 'suspended') void this.ctx.resume();
   }
 
+  private primedOnce = false;
+  /**
+   * Call synchronously from the FIRST event of a real user gesture —
+   * pointerdown/mousedown/touchstart/click — never from pointermove/touchmove.
+   * WebKit (iOS Safari) only allows AudioContext creation/resume to unlock
+   * audio when the call happens directly inside the handler for one of those
+   * "start" event types; a resume() reached via touchmove (e.g. mid-drag)
+   * does not count and can leave the context stuck suspended forever, even
+   * though the drag itself works fine. This was exactly the constellation's
+   * bug: the AudioContext was first touched inside startDrone(), which is
+   * only ever called from onPointerMove.
+   *
+   * Also plays one silent buffer through the context — the standard
+   * cross-browser "unlock" pattern (used by Howler/Tone.js) that fully
+   * activates output on the very first qualifying gesture, since resume()
+   * alone is occasionally not enough on older WebKit.
+   */
+  primeFromGesture() {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    this.resume();
+    if (this.primedOnce) return;
+    this.primedOnce = true;
+    try {
+      const buf = ctx.createBuffer(1, 1, ctx.sampleRate);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch {
+      /* non-fatal — resume() above is the primary unlock */
+    }
+  }
+
   // ── public wiring ──
   setVoiceSource(fn: () => VoiceFrame) {
     this.voiceSource = fn;
