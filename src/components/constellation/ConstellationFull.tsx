@@ -113,12 +113,26 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   // Parallax target: where the input wants the field to drift toward this frame.
   // (0,0) = home. Recomputed only on pointermove (desktop) or scroll (touch).
   const parallaxRef = useRef({ tx: 0, ty: 0, cx: 0, cy: 0 });
-  const dragRef = useRef<{ node: RNode | null; moved: boolean; downX: number; downY: number; downTime: number }>({
+  const dragRef = useRef<{
+    node: RNode | null;
+    moved: boolean;
+    downX: number;
+    downY: number;
+    downTime: number;
+    // Offset from the node's center to the exact point grabbed, so the star
+    // keeps its position relative to the finger/cursor instead of snapping its
+    // center to the pointer — mattered little for a precise mouse pointer, but
+    // a fat fingertip grabbing off-center made touch drags feel broken.
+    offX: number;
+    offY: number;
+  }>({
     node: null,
     moved: false,
     downX: 0,
     downY: 0,
     downTime: 0,
+    offX: 0,
+    offY: 0,
   });
   // Timestamp of the last real input (pointermove / scroll / hover / tap). The rAF
   // loop keeps scheduling only while there was input recently OR motion is still
@@ -203,15 +217,19 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   // ── Hit testing (css px, live positions) ──
   // Counts as a hit if the pointer is either near the star's core OR anywhere
   // over that node's currently-rendered label text — a visible label is part
-  // of the target, not just decoration next to it.
-  const hitTest = useCallback((px: number, py: number): RNode | null => {
+  // of the target, not just decoration next to it. `coarse` widens the core
+  // radius for touch: a fingertip's real contact area is far bigger than a
+  // mouse pointer's, and the original mouse-tuned padding (12–16px) meant most
+  // touch attempts to grab a star simply missed it.
+  const hitTest = useCallback((px: number, py: number, coarse = false): RNode | null => {
     let best: RNode | null = null;
     let bestD = Infinity;
+    const bonus = coarse ? 22 : 0;
     for (const n of nodesRef.current) {
       const dx = n.x - px;
       const dy = n.y - py;
       const d = Math.sqrt(dx * dx + dy * dy);
-      const pad = (n.kind === 'project' ? 16 : 12) + n.r;
+      const pad = (n.kind === 'project' ? 16 : 12) + n.r + bonus;
       if (d < pad && d < bestD) {
         bestD = d;
         best = n;
@@ -331,8 +349,13 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     const drag = dragRef.current;
     for (const n of nodes) {
       if (drag.node === n && drag.moved) {
-        n.x = ptr.x;
-        n.y = ptr.y;
+        // Keep the star's position relative to the exact point grabbed
+        // (offX/offY, captured on pointerdown) instead of snapping its center
+        // to the pointer — a mouse pointer is precise enough that this barely
+        // showed, but a fingertip grabbing off-center made touch drags look
+        // like the star was teleporting rather than following the finger.
+        n.x = ptr.x + drag.offX;
+        n.y = ptr.y + drag.offY;
         n.vx = 0;
         n.vy = 0;
         settling = true;
@@ -735,8 +758,16 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     const { x, y } = toLocal(e);
     pointerRef.current = { x, y, inside: true };
     lastInputRef.current = performance.now();
-    const node = hitTest(x, y);
-    dragRef.current = { node, moved: false, downX: x, downY: y, downTime: performance.now() };
+    const node = hitTest(x, y, e.pointerType !== 'mouse');
+    dragRef.current = {
+      node,
+      moved: false,
+      downX: x,
+      downY: y,
+      downTime: performance.now(),
+      offX: node ? node.x - x : 0,
+      offY: node ? node.y - y : 0,
+    };
     if (node) {
       setActive(node.id);
       try {
@@ -754,7 +785,11 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     lastInputRef.current = performance.now();
     const drag = dragRef.current;
     if (drag.node) {
-      if (!drag.moved && Math.hypot(x - drag.downX, y - drag.downY) > 4) {
+      // Touch needs a slightly larger move threshold than a mouse — a
+      // stationary fingertip jitters more than a mouse pointer, which was
+      // enough on its own to cross a 4px threshold and misfire as a drag.
+      const moveThreshold = e.pointerType === 'mouse' ? 4 : 9;
+      if (!drag.moved && Math.hypot(x - drag.downX, y - drag.downY) > moveThreshold) {
         drag.moved = true;
         // Easter egg teaser: dragging a star plays a soft drone. Started here
         // (inside an active pointer gesture) so autoplay policy is satisfied.
@@ -824,7 +859,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       }
     }
     // release drag → spring back handled by physics (home)
-    dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0 };
+    dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0, offX: 0, offY: 0 };
     lastInputRef.current = performance.now();
     start();
   };
@@ -833,7 +868,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   // pointer) — kill the drone and drop the drag without treating it as a tap.
   const onPointerCancel = () => {
     if (dragRef.current.moved) synth.endDrone();
-    dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0 };
+    dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0, offX: 0, offY: 0 };
     lastInputRef.current = performance.now();
     start();
   };
