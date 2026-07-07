@@ -105,7 +105,14 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
       >
         <button
           type="button"
-          onClick={() => synth.toggle()}
+          onClick={() => {
+            // Redundant with the pointerdown-level prime in ConstellationFull,
+            // but cheap and harmless — a second guaranteed unlock point in case
+            // the visitor's first touch on the whole page happens to be this
+            // button rather than a drag.
+            synth.primeFromGesture();
+            synth.toggle();
+          }}
           className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-primary transition-colors hover:bg-primary/10"
           aria-pressed={state.playing}
         >
