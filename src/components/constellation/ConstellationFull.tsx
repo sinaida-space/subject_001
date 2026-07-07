@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildGraph, buildAdjacency, type GraphNode } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
-import { startStarTone, updateStarTone, endStarTone, disposeStarSound } from '@/lib/starDragSound';
+import { synth, type VoiceKind } from '@/lib/constellationSynth';
+import SynthPanel from './SynthPanel';
 
 // ── Runtime node (base "home" from layout + live physics) ──
 interface RNode {
@@ -125,6 +126,14 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   // perpetual idle loop, nothing moves without a user action.
   const lastInputRef = useRef(0);
   const lastTapRef = useRef<string | null>(null); // touch: id previewed by last tap
+  // Stars dragged and dropped stay where you leave them (their "pinned"
+  // position) instead of springing home — that arrangement is the composition
+  // the synth reads. The spring physics still pull toward the pinned point, so
+  // the drop keeps its rubbery wobble. Reset (panel ■) clears this.
+  const pinnedRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  // One-second full-graph bloom on every drop: ramps to 1 on trigger, eases
+  // back to 0. Purely user-action-driven (a drop), so motion-law compliant.
+  const shineRef = useRef(0);
 
   const [tooltip, setTooltip] = useState<{ x: number; y: number; node: RNode } | null>(null);
   // Only used on touch/coarse devices — the wrapper's height becomes content
@@ -132,6 +141,10 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   // so scrolling the page scrolls through the graph "top-down" a chapter at a
   // time. Desktop ignores this entirely (stays at the CSS clamp height).
   const [mobileHeight, setMobileHeight] = useState<number | null>(null);
+  // The instrument reveals itself only after the first real drag: the control
+  // panel mounts, and a one-time "you found it" window appears.
+  const [synthReady, setSynthReady] = useState(false);
+  const [showUnlockCard, setShowUnlockCard] = useState(false);
 
   // ── Layout / sizing ──
   const layout = useCallback(() => {
@@ -325,9 +338,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         settling = true;
         continue;
       }
-      // Target = home + parallax drift (scaled by node depth). No time term.
-      let tx = n.hx + par.tx * n.depth;
-      let ty = n.hy + par.ty * n.depth;
+      // Target = pinned drop position (if this star was dragged & left there)
+      // or home + parallax drift (scaled by node depth). No time term either
+      // way, so it settles to rest. The spring below gives the drop its wobble.
+      const pin = pinnedRef.current.get(n.id);
+      let tx = pin ? pin.x : n.hx + par.tx * n.depth;
+      let ty = pin ? pin.y : n.hy + par.ty * n.depth;
       // pointer gravity (presence) — already correctly gated on ptr.inside
       if (ptr.inside && !IS_COARSE) {
         const dx = ptr.x - n.x;
@@ -537,6 +553,38 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     }
     ctx.textAlign = 'left';
 
+    // ── Playhead: while the sequencer runs, a thin ECG-red line sweeps the map
+    // left→right (x = time in the bar). Reading the synth clock, not a local
+    // timer — it exists only because the user pressed play.
+    const playhead = synth.getPlayhead();
+    if (playhead >= 0) {
+      const px = 6 + playhead * (w - 12);
+      const grad = ctx.createLinearGradient(px - 10, 0, px + 2, 0);
+      grad.addColorStop(0, 'rgba(255,59,82,0)');
+      grad.addColorStop(1, 'rgba(255,59,82,0.5)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(px - 10, 0, 10, h);
+      ctx.strokeStyle = 'rgba(255,80,100,0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(px, 0);
+      ctx.lineTo(px, h);
+      ctx.stroke();
+      settling = true; // keep animating while it plays
+    }
+
+    // ── Shine: one-second full-graph bloom on each drop. Eases back to 0.
+    if (shineRef.current > 0.004) {
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = hexA('#f2efe9', shineRef.current * 0.12);
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'source-over';
+      shineRef.current *= 0.92;
+      settling = true;
+    } else {
+      shineRef.current = 0;
+    }
+
     // ── Self-terminating loop: keep scheduling only while there was recent input
     // or motion is still settling. Once at rest, draw this final static frame and
     // stop — nothing animates without a user action, and the loop isn't perpetual.
@@ -566,6 +614,38 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   useEffect(() => {
     mountedRef.current = true;
     layout();
+
+    // Feed the synth the live star layout every step: projects become voices
+    // (x = which 16th they fire on, y = pitch), skills' mean height bends the
+    // filter. Reads current positions, so dragging a star re-writes the music.
+    synth.setVoiceSource(() => {
+      const { w, h } = sizeRef.current;
+      const voices = [];
+      let skillSum = 0;
+      let skillN = 0;
+      for (const n of nodesRef.current) {
+        const x01 = w ? n.x / w : 0.5;
+        const y01 = h ? n.y / h : 0.5;
+        if (n.kind === 'project') {
+          voices.push({
+            id: n.id,
+            kind: (n.project?.kind ?? 'conceptual') as VoiceKind,
+            x01: Math.min(0.999, Math.max(0, x01)),
+            y01: Math.min(1, Math.max(0, y01)),
+            weight: n.weight,
+            hero: n.accent,
+          });
+        } else {
+          skillSum += y01;
+          skillN++;
+        }
+      }
+      return { voices, skillTone: skillN ? skillSum / skillN : 0.5 };
+    });
+    const unsubUnlock = synth.onUnlock(() => {
+      setSynthReady(true);
+      setShowUnlockCard(true);
+    });
     // Draw one static frame immediately so the graph is visible at rest without
     // any input (the frame itself schedules nothing further if there's no motion).
     lastInputRef.current = performance.now();
@@ -639,8 +719,9 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       document.removeEventListener('visibilitychange', onVis);
       io.disconnect();
       unsub();
+      unsubUnlock();
       stop();
-      disposeStarSound();
+      synth.dispose();
     };
   }, [layout, start, stop, setActive, updateScrollParallax, showTooltip]);
 
@@ -675,13 +756,13 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     if (drag.node) {
       if (!drag.moved && Math.hypot(x - drag.downX, y - drag.downY) > 4) {
         drag.moved = true;
-        // Easter egg: dragging a star plays a soft drone. Started here (inside
-        // an active pointer gesture) so autoplay policy is satisfied.
-        startStarTone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1));
+        // Easter egg teaser: dragging a star plays a soft drone. Started here
+        // (inside an active pointer gesture) so autoplay policy is satisfied.
+        synth.startDrone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1));
       }
       if (drag.moved) {
         const stretch = Math.min(1, Math.hypot(x - drag.node.hx, y - drag.node.hy) / 220);
-        updateStarTone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1), stretch);
+        synth.updateDrone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1), stretch);
       }
     }
     // hover highlight + tooltip (desktop)
@@ -709,12 +790,17 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       /* ignore */
     }
     if (drag.moved && node) {
-      // Release the dragged star: end the drone with its ECG beep and fire
-      // pulses down the star's edges as it springs home.
-      endStarTone();
+      // Release the dragged star: it STAYS where dropped (pinned) instead of
+      // springing home — the spring still pulls toward the pin, keeping the
+      // wobble. End the drone with its ECG beep, flash the whole graph, fire
+      // pulses down the star's edges, and unlock the instrument the first time.
+      synth.endDrone();
+      pinnedRef.current.set(node.id, { x: node.x, y: node.y });
+      shineRef.current = 1;
       GEDGES.forEach((ge, i) => {
         if (ge.a === node.id || ge.b === node.id) pulsesRef.current.push({ edge: i, t: 0 });
       });
+      synth.markUnlocked();
     }
     if (wasTap) {
       if (node && e.pointerType === 'mouse') {
@@ -746,11 +832,20 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   // Touch drags can be cancelled by the browser (e.g. an OS gesture steals the
   // pointer) — kill the drone and drop the drag without treating it as a tap.
   const onPointerCancel = () => {
-    if (dragRef.current.moved) endStarTone();
+    if (dragRef.current.moved) synth.endDrone();
     dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0 };
     lastInputRef.current = performance.now();
     start();
   };
+
+  // Panel ■ reset: unpin every star so the whole field springs back to its
+  // home layout (keeps the wobble on the way). Sound keeps playing if it was.
+  const resetStars = useCallback(() => {
+    pinnedRef.current.clear();
+    shineRef.current = Math.max(shineRef.current, 0.6);
+    lastInputRef.current = performance.now();
+    start();
+  }, [start]);
 
   const onPointerLeave = () => {
     pointerRef.current.inside = false;
@@ -783,6 +878,14 @@ export default function ConstellationFull({ onActiveProject }: Props) {
             <div className="text-[11px] leading-snug text-foreground/70">{tooltip.node.project.tagline}</div>
           </div>
         </div>
+      )}
+
+      {synthReady && (
+        <SynthPanel
+          onReset={resetStars}
+          showUnlockCard={showUnlockCard}
+          onDismissCard={() => setShowUnlockCard(false)}
+        />
       )}
     </div>
   );
