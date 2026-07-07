@@ -1,7 +1,15 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
-export default function Logo({ className = '' }: { className?: string }) {
+export default function Logo({
+  className = '',
+  onEcgClick,
+  onNameClick,
+}: {
+  className?: string;
+  onEcgClick?: () => void;
+  onNameClick?: (e: React.MouseEvent) => void;
+}) {
   const { mode } = useRenderMode();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollRef = useRef(0);
@@ -128,18 +136,45 @@ export default function Logo({ className = '' }: { className?: string }) {
     };
   }, [drawECG, mode]);
 
+  const ecg = (
+    <canvas
+      ref={canvasRef}
+      width={120}
+      height={32}
+      className="h-8"
+      style={{ imageRendering: 'auto' }}
+    />
+  );
+
+  const name = (
+    <span className="font-display text-lg font-light tracking-widest text-foreground uppercase">
+      sin<span className="text-primary">.</span>ai<span className="text-primary">.</span>da
+    </span>
+  );
+
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <canvas
-        ref={canvasRef}
-        width={120}
-        height={32}
-        className="h-8"
-        style={{ imageRendering: 'auto' }}
-      />
-      <span className="font-display text-lg font-light tracking-widest text-foreground uppercase">
-        sin<span className="text-primary">.</span>ai<span className="text-primary">.</span>da
-      </span>
+      {onEcgClick ? (
+        <button
+          type="button"
+          onClick={onEcgClick}
+          title="..."
+          aria-label="ECG monitor"
+          className="cursor-none"
+          style={{ background: 'none', border: 'none', padding: 0, display: 'inline-flex' }}
+        >
+          {ecg}
+        </button>
+      ) : (
+        ecg
+      )}
+      {onNameClick ? (
+        <a href="/" onClick={onNameClick} aria-label="Sinaida — back to top" className="cursor-none">
+          {name}
+        </a>
+      ) : (
+        name
+      )}
     </div>
   );
 }
