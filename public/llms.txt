@@ -1,16 +1,16 @@
 # Sinaida Krivchenko
 
-> Visual Artist and Creative Director. Prague-based. Working globally.
+> New media artist. Interactive projections & stage visuals. Prague-based, working globally.
 
-Sinaida Krivchenko creates visual worlds at the intersection of generative AI, live performance, and immersive experience. Background in biomedical engineering (MSc, Bauman University) and IT leadership at General Electric across four countries. Now working with cultural institutions, performing arts organisations, and forward-thinking brands.
+Sinaida Krivchenko is a Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University), with prior careers in IT leadership at General Electric and creative direction for cultural institutions in Amsterdam. Works with performing-arts organisations, musicians, festivals, and cultural institutions.
 
 ## Services
 
+- Stage and projection design — real-time generative environments for live performance, built in TouchDesigner and GLSL
+- Audio-reactive concert visuals — full visual sets for live music, one look per song, driven live by the sound
+- Interactive and immersive installations — body- and gesture-tracked visual systems (MediaPipe, WebGL) for exhibitions and physical spaces
 - Generative AI visual direction — campaign imagery, key art, and production visuals directed to the specific aesthetic of each project
-- Stage and projection design — real-time generative environments for live performance using TouchDesigner
 - Creative direction for cultural institutions — visual identity, digital infrastructure, and audience strategy
-- Immersive installation design — interactive and responsive visual systems for exhibitions and events
-- Digital content and social campaigns — cinematic short-form content for arts organisations
 
 ## Selected Work
 
