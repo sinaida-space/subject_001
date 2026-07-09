@@ -1,0 +1,38 @@
+# Sinaida Krivchenko
+
+> Visual Artist and Creative Director. Prague-based. Working globally.
+
+Sinaida Krivchenko creates visual worlds at the intersection of generative AI, live performance, and immersive experience. Background in biomedical engineering (MSc, Bauman University) and IT leadership at General Electric across four countries. Now working with cultural institutions, performing arts organisations, and forward-thinking brands.
+
+## Services
+
+- Generative AI visual direction — campaign imagery, key art, and production visuals directed to the specific aesthetic of each project
+- Stage and projection design — real-time generative environments for live performance using TouchDesigner
+- Creative direction for cultural institutions — visual identity, digital infrastructure, and audience strategy
+- Immersive installation design — interactive and responsive visual systems for exhibitions and events
+- Digital content and social campaigns — cinematic short-form content for arts organisations
+
+## Selected Work
+
+- Redkie Ptitsy — Live Concert Visuals (https://sinaida.eu/work/redkie-ptitsy) — 19 audio-reactive projections, one per song, live at Sklad №3, Moscow, 26 March 2026
+- The Eyes Chico (https://the-eyes-chico.sinaida.eu/) — acrylic painting by Alisa Feer turned immersive projection installation and hand-tracked web experience (on-device MediaPipe)
+- Submerged Realities — projection mapping study, AI-generated aesthetics mapped onto fluid surfaces
+- Synesthetic Bloom — audio-responsive digital organism, sound transformed into pulsating visual architecture
+- Stereolove (https://sinaida-space.github.io/stereolove/) — head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume
+- Ethereal Path (https://sinaida-space.github.io/ethereal-path/) — off-axis WebGL descent steered by head and hand movement; the body is the controller
+- Legacy in the Age of Stochastic Output — image series exploring infertility, biological finality, and generative AI
+
+## Skills
+
+TouchDesigner, Generative AI Systems, Real-time audio-reactive visuals, Body & gesture tracking (MediaPipe), Projection mapping, GLSL / WebGL, Procedural animation, AI-assisted visual pipelines, Post-production, Color grading, Creative direction, Visual narrative development, Biomedical engineering MSc, Systems design thinking, Algorithmic visual systems, Creative web development.
+
+## Pages
+
+- Work with me — https://sinaida.eu/collaborate — services, process, press kit, and contact for festivals, theaters, and institutions
+
+## Contact
+
+- Website: https://sinaida.eu/
+- Instagram: https://www.instagram.com/sin.ai.da/
+- LinkedIn: https://www.linkedin.com/in/sinaida
+- Location: Prague, CZ
