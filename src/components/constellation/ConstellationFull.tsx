@@ -911,8 +911,13 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     <div ref={wrapRef} className="relative w-full" style={{ height: mobileHeight ? `${mobileHeight}px` : 'clamp(640px, 110vh, 1300px)' }}>
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 touch-none"
-        style={{ touchAction: 'none' }}
+        className="absolute inset-0"
+        // pan-y (not none): lets touch keep scrolling the page vertically.
+        // touch-action is resolved once at the start of each touch gesture,
+        // so this can't be toggled per-drag — a star grab still works via
+        // the pointer-capture + move-threshold logic below, it just no
+        // longer eats page scroll for touches that land elsewhere.
+        style={{ touchAction: 'pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
