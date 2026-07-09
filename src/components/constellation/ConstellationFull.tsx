@@ -785,12 +785,6 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     };
     if (node) {
       setActive(node.id);
-      // A star was actually grabbed: claim this touch gesture so the browser
-      // doesn't hand it to native scrolling mid-drag (which would cut the
-      // pointer sequence — and the drone sound — short). touch-action stays
-      // pan-y so untouched areas of the canvas still scroll normally; this
-      // preventDefault only fires for gestures that start on a star.
-      if (e.pointerType !== 'mouse') e.preventDefault();
       try {
         canvasRef.current?.setPointerCapture(e.pointerId);
       } catch {
@@ -912,6 +906,27 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     }
     start(); // resume so the field springs back home, then settles & stops
   };
+
+  // iOS Safari does not reliably honor preventDefault() called from a
+  // synthetic PointerEvent handler to suppress native touch scrolling — it
+  // only respects it on the raw TouchEvent. touch-action stays pan-y so the
+  // canvas scrolls by default; this native, non-passive touchstart is the
+  // only thing that actually claims the gesture when a star is grabbed,
+  // which is what keeps a real drag (and its drone) from being cut short by
+  // the page scrolling out from under it.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onTouchStart = (e: TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const t = e.touches[0];
+      const x = t.clientX - rect.left;
+      const y = t.clientY - rect.top;
+      if (hitTest(x, y, true)) e.preventDefault();
+    };
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    return () => canvas.removeEventListener('touchstart', onTouchStart);
+  }, [hitTest]);
 
   return (
     <div ref={wrapRef} className="relative w-full" style={{ height: mobileHeight ? `${mobileHeight}px` : 'clamp(640px, 110vh, 1300px)' }}>
