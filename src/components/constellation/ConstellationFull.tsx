@@ -785,6 +785,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     };
     if (node) {
       setActive(node.id);
+      // A star was actually grabbed: claim this touch gesture so the browser
+      // doesn't hand it to native scrolling mid-drag (which would cut the
+      // pointer sequence — and the drone sound — short). touch-action stays
+      // pan-y so untouched areas of the canvas still scroll normally; this
+      // preventDefault only fires for gestures that start on a star.
+      if (e.pointerType !== 'mouse') e.preventDefault();
       try {
         canvasRef.current?.setPointerCapture(e.pointerId);
       } catch {
