@@ -40,7 +40,9 @@ function Slider({
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="h-1 w-16 cursor-pointer appearance-none rounded-full bg-foreground/20 sm:w-20"
-        style={{ accentColor: 'hsl(var(--primary))' }}
+        // pan-y lets a vertical swipe on the slider scroll the page; horizontal
+        // still drags the thumb. Without this the range input eats the gesture.
+        style={{ accentColor: 'hsl(var(--primary))', touchAction: 'pan-y' }}
         aria-label={label}
       />
       <span className="w-7 text-right font-mono text-[9px] tabular-nums text-primary/80">{format(value)}</span>
@@ -101,7 +103,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
       {/* Transport / control bar */}
       <div
         className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border border-primary/50 bg-black/75 px-3 py-2 backdrop-blur-md"
-        style={{ boxShadow: '0 0 18px hsl(var(--primary) / 0.22)' }}
+        style={{ boxShadow: '0 0 18px hsl(var(--primary) / 0.22)', touchAction: 'pan-y' }}
       >
         <button
           type="button"

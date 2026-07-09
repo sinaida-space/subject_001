@@ -116,6 +116,33 @@ class ConstellationSynth {
     if (this.ctx?.state === 'suspended') void this.ctx.resume();
   }
 
+  // iOS rescue. An AudioContext first created during a gesture Safari does NOT
+  // treat as an audio activation (e.g. the pointerdown that begins a page
+  // scroll) can get stuck 'suspended' forever — resume() never takes, so the
+  // whole instrument is silent even though Play looks like it worked. The only
+  // reliable cure is to throw that context away and build a brand-new one from
+  // inside a real activating gesture (the Play button's click). Cheap enough
+  // to just do whenever we're about to start and the context isn't running.
+  private rebuildContext() {
+    if (this.ctx) {
+      try {
+        void this.ctx.close().catch(() => undefined);
+      } catch {
+        /* ignore */
+      }
+    }
+    this.ctx = null;
+    this.master = null;
+    this.filter = null;
+    this.delay = null;
+    this.feedback = null;
+    this.noiseBuf = null;
+    this.drone = null;
+    this.primedOnce = false;
+    this.ensure();
+    this.resume();
+  }
+
   private primedOnce = false;
   /**
    * Call synchronously from the FIRST event of a real user gesture —
@@ -137,6 +164,7 @@ class ConstellationSynth {
     const ctx = this.ensure();
     if (!ctx) return;
     this.resume();
+    this.unmuteIOS();
     if (this.primedOnce) return;
     this.primedOnce = true;
     try {
@@ -147,6 +175,29 @@ class ConstellationSynth {
       src.start(0);
     } catch {
       /* non-fatal — resume() above is the primary unlock */
+    }
+  }
+
+  // On iPhone the Web Audio API is silenced by the hardware ring/silent switch
+  // by default — "everything looks right, no sound." Playing a looping silent
+  // HTMLAudioElement from a user gesture flips the iOS audio session into the
+  // "playback" category, which ignores that switch, so the synth is audible
+  // even with the phone on mute. Same trick Howler/unmute-ios use.
+  private silentAudio: HTMLAudioElement | null = null;
+  private unmuteIOS() {
+    if (this.silentAudio || typeof Audio === 'undefined') return;
+    try {
+      const a = new Audio(
+        // 0.05s of silence, WAV — small enough to inline as a data URI
+        'data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQ4AAAAAAAAAAAAAAAAAAAAAAA==',
+      );
+      a.loop = true;
+      a.setAttribute('playsinline', '');
+      a.volume = 0.001;
+      void a.play().catch(() => undefined);
+      this.silentAudio = a;
+    } catch {
+      /* non-fatal */
     }
   }
 
@@ -188,9 +239,17 @@ class ConstellationSynth {
 
   // ── transport controls (called by the panel) ──
   play() {
-    const ctx = this.ensure();
+    let ctx = this.ensure();
     if (!ctx || this.state.playing) return;
+    // If the context is stuck (iOS scroll-poisoning, see rebuildContext),
+    // rebuild a fresh one now — we're inside the Play button's click gesture.
+    if (ctx.state !== 'running') {
+      this.rebuildContext();
+      ctx = this.ctx;
+      if (!ctx) return;
+    }
     this.resume();
+    this.unmuteIOS();
     this.state.playing = true;
     this.step = 0;
     this.nextStepTime = ctx.currentTime + 0.06;
