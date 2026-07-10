@@ -102,12 +102,12 @@ export default function WorkCase() {
           </div>
         )}
 
-        {/* ── 19 projections, count + format, not a fabricated per-song list ── */}
+        {/* ── 9 projections, count + format, not a fabricated per-song list ── */}
         <div
           className="mt-8 flex flex-col gap-4 sm:flex-row"
           style={{ border: '1px solid #CC1414', background: 'rgba(204,20,20,0.05)', padding: '20px' }}
         >
-          <div className="font-display text-5xl leading-none text-primary">19</div>
+          <div className="font-display text-5xl leading-none text-primary">9</div>
           <div>
             <div className="font-mono text-[13px] uppercase tracking-[0.12em] text-white">
               Audio-reactive projections, one per song
@@ -151,6 +151,17 @@ export default function WorkCase() {
           </div>
         )}
 
+        {/* ── Logo idents — a generative system, not intro bumpers ── */}
+        <div className="mt-10">
+          <div className="clinical-label mb-3 text-foreground/45">Nine logos, one code</div>
+          <VideoEmbed id="qpXGjDI2N64" title={`${project.title} — logo idents`} />
+          <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
+            Nine audio-reactive idents, one per track — real-time TouchDesigner treatments of
+            the band&rsquo;s logo and its variations, all driven by one signal: the band name —
+            Redkie Ptitsy, &ldquo;rare birds&rdquo; — encoded in morse.
+          </p>
+        </div>
+
         {/* ── Method — animated signal-chain diagram (CSS-only) ── */}
         <div className="mt-10">
           <div className="clinical-label mb-3 text-foreground/45">Method</div>
@@ -183,11 +194,11 @@ export default function WorkCase() {
             This is the service behind the show: a real-time TouchDesigner system built to listen
             to your live mix and respond per song, delivered as a turnkey visual set or operated
             live on the night. Same signal chain, built for your stage, your setlist, your rider.{' '}
-            <a href="/#services" className="text-accent transition-opacity hover:opacity-70">
+            <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
               See services
             </a>{' '}
             or{' '}
-            <a href="/#contact" className="text-accent transition-opacity hover:opacity-70">
+            <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
               get in touch
             </a>{' '}
             to brief a show.

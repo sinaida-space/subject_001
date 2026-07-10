@@ -10,7 +10,7 @@ const STAGES = [
     detail: 'Bands, beats and envelopes extracted in real time.',
   },
   {
-    label: 'Per-song patch ×19',
+    label: 'Per-song patch ×9',
     detail: 'One visual system per song — no two share a look.',
   },
   {
@@ -65,7 +65,7 @@ export default function SignalChain() {
         className="mb-3 font-mono text-[11px] tracking-[0.12em]"
         style={{ color: '#22d3ee' }}
       >
-        {'> signal_path.trace() // 19 patches loaded'}
+        {'> signal_path.trace() // 9 patches loaded'}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-stretch">
