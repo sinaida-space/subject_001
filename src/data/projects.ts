@@ -75,7 +75,6 @@ export const PROJECTS: Project[] = [
     image: workRedkiePtitsy,
     video: 'bDDAXRlz5FQ',
     links: [
-      { label: 'Live (YouTube)', url: 'https://youtube.com/shorts/bDDAXRlz5FQ' },
       { label: 'Redkie Ptitsy', url: 'https://band.link/redkieptitsy' },
     ],
     badges: ['sound'],
