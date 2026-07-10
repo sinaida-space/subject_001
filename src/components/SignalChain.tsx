@@ -47,7 +47,7 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
         .sc-connector { width: 1px; height: 28px; margin-left: 24px; background: #1a1a1a; }
         .sc-dot { left: -2px; animation: sc-dot-v ${CYCLE}s linear infinite; }
         @media (min-width: 640px) {
-          .sc-connector { width: auto; height: 1px; flex: 1 1 24px; margin-left: 0; align-self: center; }
+          .sc-connector { width: auto; height: 1px; flex: 0 0 24px; margin-left: 0; align-self: center; }
           .sc-dot { left: 0; top: -2px; animation: sc-dot-h ${CYCLE}s linear infinite; }
         }
         @media (prefers-reduced-motion: reduce) {

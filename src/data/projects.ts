@@ -203,14 +203,13 @@ export const PROJECTS: Project[] = [
     kind: 'installation',
     tagline: 'Acrylic painting turned immersive installation & web experience · with Alisa Feer',
     blurb:
-      'A collaboration with artist Alisa Feer: her acrylic painting is the origin of the piece, translated into a living digital scene that exists twice — as an immersive projection installation and as a web experience steered by bare hands, with on-device camera tracking (palm to steer, fist to dive, pinch to pick). Pigment holds still; code refuses to. A study in what a painting gains, and what it guards, when it starts to move.',
+      'A collaboration with artist Alisa Feer: her acrylic painting is the origin of the piece, translated into a living digital scene that exists as an immersive projection installation and as a web experience controlled by bare hands, with on-device camera tracking. Pigment holds still; code refuses to. The experience is designed for solo viewers to engage in self-discovery.',
     tools: ['Web', 'MediaPipe hand tracking', 'Acrylic on canvas'],
     skills: ['interactive-installations', 'creative-web', 'body-tracking', 'visual-narrative', 'concept-design', 'perception-media'],
     url: 'https://the-eyes-chico.sinaida.eu/',
     video: 'dvNl1G2fVLM',
     links: [
       { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
-      { label: 'Installation (YouTube)', url: 'https://youtube.com/shorts/dvNl1G2fVLM' },
       { label: 'Alisa Feer', url: 'https://uvaliss.ru/' },
       { label: 'Project sheet (PDF)', url: '/files/the-eyes-chico-project-sheet.pdf' },
     ],
@@ -221,15 +220,15 @@ export const PROJECTS: Project[] = [
     caseStudy: {
       kindLabel: 'Installation',
       intro: [
-        'It began as a conversation between two artists, each searching for her own way forward. Alisa Feer painted the first answer: a lit figure standing in a field of eyes — all the judging gazes that can throw a person off her own path — held still in acrylic on a single A4 sheet.',
-        'I translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way — all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface deliberately recalls old computers, slowing a person down enough to actually look. Pigment holds still; code refuses to.',
-        'The work exists twice. As a web experience it is finished and live — playable now in any browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Everything runs on-device; nothing is recorded. As an installation it is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026 — awaiting its first public room.',
+        'It began as a conversation between two artists, each searching for her own way forward. Alisa Feer painted the first answer: a lit figure standing in a field of eyes, all the judging gazes that can throw a person off her own path, held still in acrylic on a single A4 sheet.',
+        'I translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way, all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface deliberately recalls old computers, slowing a person down enough to actually look. Pigment holds still; code refuses to.',
+        'The work exists twice. As a web experience it is finished and live, playable now in any browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Everything runs on-device; nothing is recorded. As an installation it is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026.',
       ],
       heroCta: { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
       stat: {
         value: '50',
         heading: 'Questions only you can answer',
-        body: 'The figure crosses the field and meets fifty questions about selfhood. Nothing is recorded and nothing is scored — the only reader of the answers is the person giving them.',
+        body: 'The figure crosses the field and meets fifty questions about selfhood. Nothing is recorded and nothing is scored; the only reader of the answers is the person giving them.',
       },
       media: [
         {
@@ -242,10 +241,10 @@ export const PROJECTS: Project[] = [
       method: {
         trace: '> translation_path.trace() // pigment → light',
         stages: [
-          { label: 'Acrylic on canvas', detail: 'Alisa Feer’s original — acrylic and photo paper, A4, unique piece, July 2026.' },
-          { label: 'Digital field', detail: 'The painting rebuilt as a navigable scene — soul-figure, poppies, a horizon of eyes.' },
-          { label: 'Web experience', detail: 'Live in any browser; optional hand tracking runs on-device — palm to steer, fist to dive, pinch to pick.' },
-          { label: 'Installation', detail: 'A room lit red, one laptop, one projector — the same field at the scale of a wall.' },
+          { label: 'Acrylic on canvas', detail: 'Alisa Feer’s original: acrylic and photo paper, A4, unique piece, July 2026.' },
+          { label: 'Digital field', detail: 'The painting rebuilt as a navigable scene: soul-figure, poppies, a horizon of eyes.' },
+          { label: 'Web experience', detail: 'Live in any browser; optional hand tracking runs on-device, palm to steer, fist to dive, pinch to pick.' },
+          { label: 'Installation', detail: 'A room lit red, one laptop, one projector: the same field at the scale of a wall.' },
         ],
         footer: '> concept & painting: Alisa Feer · interactive design & code: Sinaida Krivchenko',
       },
@@ -260,7 +259,7 @@ export const PROJECTS: Project[] = [
       order: {
         heading: 'What a space can commission',
         body:
-          'The installation is ready for its first public room, and the full tech rider fits five lines: a room that can be darkened, red ambient light, one laptop running the web experience, one projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands — or brief an adaptation for their space. The field scales.',
+          'The installation is ready for its first public room, and the full tech rider fits five lines: a room that can be darkened, red ambient light, one laptop running the web experience, one projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands, or brief an adaptation for their space. The field scales.',
         suffix: 'to book its first room.',
       },
     },
