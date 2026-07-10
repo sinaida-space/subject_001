@@ -33,9 +33,12 @@ function usePageMeta(title: string, description: string) {
   }, [title, description]);
 }
 
+// Case pages are fully data-driven from `project.caseStudy` (src/data/projects.ts).
+// Projects without a caseStudy have no case page — the route 404s.
 export default function WorkCase() {
   const { slug } = useParams<{ slug: string }>();
   const project = projectById(slug ?? '');
+  const cs = project?.caseStudy;
   const [heroLoaded, setHeroLoaded] = useState(false);
 
   const title = project ? `${project.title} — Case Study | ${SITE_NAME}` : '';
@@ -45,7 +48,9 @@ export default function WorkCase() {
 
   usePageMeta(title || document.title, description || '');
 
-  if (!project) return <NotFound />;
+  if (!project || !cs) return <NotFound />;
+
+  const intro = cs.intro ?? (project.blurb ? [project.blurb] : []);
 
   return (
     <div className="min-h-screen bg-background py-24">
@@ -70,7 +75,7 @@ export default function WorkCase() {
               color: '#CC1414',
             }}
           >
-            Stage
+            {cs.kindLabel}
           </span>
           <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
             {project.tagline}
@@ -81,12 +86,15 @@ export default function WorkCase() {
           {project.title}
         </h1>
 
-        {/* ── The brief ── */}
-        {project.blurb && (
-          <p className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/80">
-            {project.blurb}
+        {/* ── The brief / narrative intro ── */}
+        {intro.map((p) => (
+          <p
+            key={p.slice(0, 32)}
+            className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/80"
+          >
+            {p}
           </p>
-        )}
+        ))}
 
         {/* ── Hero still — pointer-driven ripple on desktop, static on touch ── */}
         {project.image && (
@@ -102,22 +110,36 @@ export default function WorkCase() {
           </div>
         )}
 
-        {/* ── 9 projections, count + format, not a fabricated per-song list ── */}
-        <div
-          className="mt-8 flex flex-col gap-4 sm:flex-row"
-          style={{ border: '1px solid #CC1414', background: 'rgba(204,20,20,0.05)', padding: '20px' }}
-        >
-          <div className="font-display text-5xl leading-none text-primary">9</div>
-          <div>
-            <div className="font-mono text-[13px] uppercase tracking-[0.12em] text-white">
-              Audio-reactive projections, one per song
+        {/* ── Prominent case action (e.g. enter the live web experience) ── */}
+        {cs.heroCta && (
+          <a
+            href={cs.heroCta.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-block font-mono text-[13px] uppercase tracking-[0.15em] text-foreground transition-colors hover:text-accent"
+            style={{ border: '1px solid #CC1414', padding: '12px 24px' }}
+          >
+            {cs.heroCta.label} ↗
+          </a>
+        )}
+
+        {/* ── Big-number stat card ── */}
+        {cs.stat && (
+          <div
+            className="mt-8 flex flex-col gap-4 sm:flex-row"
+            style={{ border: '1px solid #CC1414', background: 'rgba(204,20,20,0.05)', padding: '20px' }}
+          >
+            <div className="font-display text-5xl leading-none text-primary">{cs.stat.value}</div>
+            <div>
+              <div className="font-mono text-[13px] uppercase tracking-[0.12em] text-white">
+                {cs.stat.heading}
+              </div>
+              <p className="mt-2 max-w-[55ch] font-mono text-[13px] leading-relaxed text-foreground/55">
+                {cs.stat.body}
+              </p>
             </div>
-            <p className="mt-2 max-w-[55ch] font-mono text-[13px] leading-relaxed text-foreground/55">
-              A full-set backdrop: each song in the set got its own real-time TouchDesigner system,
-              built to listen to the live mix and respond in the room — no two songs share a look.
-            </p>
           </div>
-        </div>
+        )}
 
         {/* ── Tech stack ── */}
         {project.tools && (
@@ -143,53 +165,67 @@ export default function WorkCase() {
           </div>
         )}
 
-        {/* ── The nine rendered visuals — muted, rights on the songs sit with the label ── */}
-        <div className="mt-10">
-          <div className="clinical-label mb-3 text-foreground/45">All nine, rendered</div>
-          <VideoEmbed id="13gl94oG4WU" title={`${project.title} — full set, rendered`} />
-          <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
-            No audio: the songs are the label&rsquo;s masters, rights unclear for redistribution.
-            This is the visual system running clean, not the room mix.
-          </p>
-        </div>
+        {/* ── Labeled media sections (lazy YouTube embeds) ── */}
+        {cs.media?.map((m) => (
+          <div key={m.video} className="mt-10">
+            <div className="clinical-label mb-3 text-foreground/45">{m.label}</div>
+            <VideoEmbed id={m.video} title={`${project.title} — ${m.label}`} />
+            {m.caption && (
+              <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
+                {m.caption}
+              </p>
+            )}
+          </div>
+        ))}
 
-        {/* ── Lazy video ── */}
-        {project.video && (
+        {/* ── Method — animated signal-chain diagram (CSS-only) ── */}
+        {cs.method && (
           <div className="mt-10">
-            <div className="clinical-label mb-3 text-foreground/45">Live at Sklad №3</div>
-            <VideoEmbed id={project.video} title={project.title} />
+            <div className="clinical-label mb-3 text-foreground/45">Method</div>
+            <SignalChain {...cs.method} />
           </div>
         )}
 
-        {/* ── Logo idents — a generative system, not intro bumpers ── */}
-        <div className="mt-10">
-          <div className="clinical-label mb-3 text-foreground/45">Nine logos, one code</div>
-          <VideoEmbed id="qpXGjDI2N64" title={`${project.title} — logo idents`} />
-          <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
-            The logo animations were performed in between the songs. Those are logo variations
-            that run through nine different TouchDesigner treatments, all driven by one signal:
-            the band name, Redkie Ptitsy (meaning, &ldquo;rare birds&rdquo;) encoded in Morse code.
-          </p>
-        </div>
+        {/* ── Credits ── */}
+        {cs.credits && (
+          <div className="mt-10">
+            <div className="clinical-label mb-3 text-foreground/45">Credits</div>
+            {cs.credits.map((c) => (
+              <p key={c} className="font-mono text-[12px] leading-relaxed text-foreground/60">
+                {c}
+              </p>
+            ))}
+          </div>
+        )}
 
-        {/* ── Method — animated signal-chain diagram (CSS-only) ── */}
-        <div className="mt-10">
-          <div className="clinical-label mb-3 text-foreground/45">Method</div>
-          <SignalChain />
-        </div>
+        {/* ── Case links ── */}
+        {cs.links && cs.links.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-4">
+            {cs.links.map((l) => (
+              <a
+                key={l.url}
+                href={l.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+              >
+                {l.label} ↗
+              </a>
+            ))}
+          </div>
+        )}
 
-        {/* ── What a festival can order ── */}
+        {/* ── Conversion block ── */}
         <div className="mt-14" style={{ borderTop: '1px solid #1a1a1a', paddingTop: '32px' }}>
           <h2 className="font-display text-2xl font-light text-foreground">
-            What a festival can order
+            {cs.order.heading}
           </h2>
           <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-foreground/80">
-            Book the same signal chain for your stage: live audio in, real-time TouchDesigner
-            per song, projected on the night, built for your show.{' '}
+            {cs.order.body}{' '}
             <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
               Get in touch
             </a>{' '}
-            to brief a show.
+            {cs.order.suffix}
           </p>
         </div>
       </div>

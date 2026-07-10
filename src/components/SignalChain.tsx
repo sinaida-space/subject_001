@@ -1,28 +1,23 @@
-// Animated signal-chain diagram for the Redkie Ptitsy case page.
+// Animated signal-chain diagram for case-study pages. Content comes from
+// the project's caseStudy.method data (see src/data/projects.ts).
 // CSS-only animation (no rAF loop), honors prefers-reduced-motion.
-const STAGES = [
-  {
-    label: 'Live audio in',
-    detail: 'Feed from the desk — the live mix enters as raw signal.',
-  },
-  {
-    label: 'CHOP analysis',
-    detail: 'Bands, beats and envelopes extracted in real time.',
-  },
-  {
-    label: 'Per-song patch ×9',
-    detail: 'One visual system per song — no two share a look.',
-  },
-  {
-    label: 'Projection',
-    detail: 'Light in the room, responding all night.',
-  },
-];
+export interface SignalChainStage {
+  label: string;
+  detail: string;
+}
+
+export interface SignalChainProps {
+  /** terminal-style caption above the chain, e.g. "> signal_path.trace() // 9 patches loaded" */
+  trace: string;
+  stages: SignalChainStage[];
+  /** terminal-style caption below the chain */
+  footer: string;
+}
 
 const CYCLE = 6; // seconds for one full traversal of the chain
-const NODE_STEP = CYCLE / STAGES.length;
 
-export default function SignalChain() {
+export default function SignalChain({ trace, stages, footer }: SignalChainProps) {
+  const nodeStep = CYCLE / stages.length;
   return (
     <div>
       <style>{`
@@ -65,20 +60,20 @@ export default function SignalChain() {
         className="mb-3 font-mono text-[11px] tracking-[0.12em]"
         style={{ color: '#22d3ee' }}
       >
-        {'> signal_path.trace() // 9 patches loaded'}
+        {trace}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-stretch">
-        {STAGES.map((stage, i) => (
+        {stages.map((stage, i) => (
           <div key={stage.label} className="contents">
             {i > 0 && (
               <div className="sc-connector" aria-hidden="true">
-                <div className="sc-dot" style={{ animationDelay: `${i * NODE_STEP - NODE_STEP * 0.75}s` }} />
+                <div className="sc-dot" style={{ animationDelay: `${i * nodeStep - nodeStep * 0.75}s` }} />
               </div>
             )}
             <div
               className="sc-node flex-1 sm:min-w-0"
-              style={{ background: '#0a0a0a', padding: '16px', animationDelay: `${i * NODE_STEP}s` }}
+              style={{ background: '#0a0a0a', padding: '16px', animationDelay: `${i * nodeStep}s` }}
             >
               <div
                 className="font-mono uppercase"
@@ -95,7 +90,7 @@ export default function SignalChain() {
       </div>
 
       <div className="mt-3 font-mono text-[11px] tracking-[0.12em] text-foreground/45">
-        {'> full-set run · Sklad №3, Moscow · 26 March 2026'}
+        {footer}
       </div>
     </div>
   );

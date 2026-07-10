@@ -6,6 +6,7 @@ import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
 import workSubmerged from '@/assets/work-submerged.jpg';
 import workLegacy from '@/assets/work-legacy.jpg';
 import workSynesthetic from '@/assets/work-synesthetic.jpg';
+import workEyesChico from '@/assets/work-eyes-chico.jpg';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
@@ -19,6 +20,44 @@ export type Badge = 'camera' | 'sound' | 'cursor' | 'scroll' | 'ru';
 export interface ProjectLink {
   label: string;
   url: string;
+}
+
+/** One labeled media section on a case page (YouTube embed + optional caption). */
+export interface CaseMedia {
+  label: string;
+  video: string;
+  caption?: string;
+}
+
+/** Content of the animated signal-chain diagram on a case page. */
+export interface CaseMethod {
+  trace: string;
+  stages: { label: string; detail: string }[];
+  footer: string;
+}
+
+/**
+ * Everything a /work/<id> case page needs beyond the base Project fields.
+ * A project without `caseStudy` has no case page (the route 404s).
+ */
+export interface CaseStudy {
+  /** badge text next to the tagline, e.g. "Stage" / "Installation" */
+  kindLabel: string;
+  /** narrative intro paragraphs; falls back to [blurb] when omitted */
+  intro?: string[];
+  /** prominent action rendered right under the hero still */
+  heroCta?: ProjectLink;
+  /** big-number stat card */
+  stat?: { value: string; heading: string; body: string };
+  /** labeled video sections, in order */
+  media?: CaseMedia[];
+  method?: CaseMethod;
+  /** attribution lines, rendered as a credits block */
+  credits?: string[];
+  /** external links rendered on the case page (project.links stays popup-only) */
+  links?: ProjectLink[];
+  /** closing conversion block; page appends "Get in touch <suffix>" */
+  order: { heading: string; body: string; suffix: string };
 }
 
 export interface Project {
@@ -52,6 +91,8 @@ export interface Project {
     paragraphs: string[];
     credits?: string[];
   };
+  /** dedicated /work/<id> case page content */
+  caseStudy?: CaseStudy;
 }
 
 export const PROJECTS: Project[] = [
@@ -81,6 +122,45 @@ export const PROJECTS: Project[] = [
     featured: true,
     hero: true,
     weight: 1.6,
+    caseStudy: {
+      kindLabel: 'Stage',
+      stat: {
+        value: '9',
+        heading: 'Audio-reactive projections, one per song',
+        body: 'A full-set backdrop: each song in the set got its own real-time TouchDesigner system, built to listen to the live mix and respond in the room — no two songs share a look.',
+      },
+      media: [
+        {
+          label: 'All nine, rendered',
+          video: '13gl94oG4WU',
+          caption:
+            'No audio: the songs are the label’s masters, rights unclear for redistribution. This is the visual system running clean, not the room mix.',
+        },
+        { label: 'Live at Sklad №3', video: 'bDDAXRlz5FQ' },
+        {
+          label: 'Nine logos, one code',
+          video: 'qpXGjDI2N64',
+          caption:
+            'The logo animations were performed in between the songs. Those are logo variations that run through nine different TouchDesigner treatments, all driven by one signal: the band name, Redkie Ptitsy (meaning, “rare birds”) encoded in Morse code.',
+        },
+      ],
+      method: {
+        trace: '> signal_path.trace() // 9 patches loaded',
+        stages: [
+          { label: 'Live audio in', detail: 'Feed from the desk — the live mix enters as raw signal.' },
+          { label: 'CHOP analysis', detail: 'Bands, beats and envelopes extracted in real time.' },
+          { label: 'Per-song patch ×9', detail: 'One visual system per song — no two share a look.' },
+          { label: 'Projection', detail: 'Light in the room, responding all night.' },
+        ],
+        footer: '> full-set run · Sklad №3, Moscow · 26 March 2026',
+      },
+      order: {
+        heading: 'What a festival can order',
+        body:
+          'Book the same signal chain for your stage: live audio in, real-time TouchDesigner per song, projected on the night, built for your show.',
+        suffix: 'to brief a show.',
+      },
+    },
   },
 
   // ── Installations ──────────────────────────────────────────
@@ -137,6 +217,53 @@ export const PROJECTS: Project[] = [
     badges: ['camera'],
     featured: true,
     weight: 1.3,
+    image: workEyesChico,
+    caseStudy: {
+      kindLabel: 'Installation',
+      intro: [
+        'It began as a conversation between two artists, each searching for her own way forward. Alisa Feer painted the first answer: a lit figure standing in a field of eyes — all the judging gazes that can throw a person off her own path — held still in acrylic on a single A4 sheet.',
+        'I translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way — all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface deliberately recalls old computers, slowing a person down enough to actually look. Pigment holds still; code refuses to.',
+        'The work exists twice. As a web experience it is finished and live — playable now in any browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Everything runs on-device; nothing is recorded. As an installation it is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026 — awaiting its first public room.',
+      ],
+      heroCta: { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
+      stat: {
+        value: '50',
+        heading: 'Questions only you can answer',
+        body: 'The figure crosses the field and meets fifty questions about selfhood. Nothing is recorded and nothing is scored — the only reader of the answers is the person giving them.',
+      },
+      media: [
+        {
+          label: 'The projection study',
+          video: 'dvNl1G2fVLM',
+          caption:
+            'The installation form, prototyped in red light: a projector mirrors the web experience at wall scale, and a raised palm steers the field.',
+        },
+      ],
+      method: {
+        trace: '> translation_path.trace() // pigment → light',
+        stages: [
+          { label: 'Acrylic on canvas', detail: 'Alisa Feer’s original — acrylic and photo paper, A4, unique piece, July 2026.' },
+          { label: 'Digital field', detail: 'The painting rebuilt as a navigable scene — soul-figure, poppies, a horizon of eyes.' },
+          { label: 'Web experience', detail: 'Live in any browser; optional hand tracking runs on-device — palm to steer, fist to dive, pinch to pick.' },
+          { label: 'Installation', detail: 'A room lit red, one laptop, one projector — the same field at the scale of a wall.' },
+        ],
+        footer: '> concept & painting: Alisa Feer · interactive design & code: Sinaida Krivchenko',
+      },
+      credits: [
+        'Concept & painting: Alisa Feer (Uvaliss) · uvaliss.ru · @uvaliss',
+        'Interactive design & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+      ],
+      links: [
+        { label: 'Alisa Feer', url: 'https://uvaliss.ru/' },
+        { label: 'Project sheet (PDF)', url: '/files/the-eyes-chico-project-sheet.pdf' },
+      ],
+      order: {
+        heading: 'What a space can commission',
+        body:
+          'The installation is ready for its first public room, and the full tech rider fits five lines: a room that can be darkened, red ambient light, one laptop running the web experience, one projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands — or brief an adaptation for their space. The field scales.',
+        suffix: 'to book its first room.',
+      },
+    },
   },
 
   // ── Conceptual ─────────────────────────────────────────────
