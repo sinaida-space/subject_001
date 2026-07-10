@@ -13,10 +13,11 @@ const KIND_LABEL: Record<ProjectKind, string> = {
   tool: 'Tool',
 };
 
-// Internal case-study pages, keyed by project id. Currently just the one
-// template built in Task 6; add future `/work/<slug>` entries here.
+// Internal case-study pages, keyed by project id — every project with a
+// `caseStudy` block in projects.ts gets a `/work/<id>` page.
 const CASE_PAGES: Record<string, string> = {
   'redkie-ptitsy': '/work/redkie-ptitsy',
+  'the-eyes-chico': '/work/the-eyes-chico',
 };
 
 function projectLinks(project: Project) {
