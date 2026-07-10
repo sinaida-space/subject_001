@@ -128,6 +128,7 @@ export const PROJECTS: Project[] = [
       { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
       { label: 'Installation (YouTube)', url: 'https://youtube.com/shorts/dvNl1G2fVLM' },
       { label: 'Alisa Feer', url: 'https://uvaliss.ru/' },
+      { label: 'Project sheet (PDF)', url: '/files/the-eyes-chico-project-sheet.pdf' },
     ],
     badges: ['camera'],
     featured: true,
