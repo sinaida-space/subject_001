@@ -46,6 +46,12 @@ export interface Project {
   hero?: boolean;
   /** relative visual weight of the star in the constellation (1 = default) */
   weight?: number;
+  /** full written piece behind the project — opens as a text popup */
+  essay?: {
+    contentWarning?: string;
+    paragraphs: string[];
+    credits?: string[];
+  };
 }
 
 export const PROJECTS: Project[] = [
@@ -89,9 +95,8 @@ export const PROJECTS: Project[] = [
     tools: ['TouchDesigner', 'AI visuals', 'DaVinci Resolve'],
     skills: ['projection-mapping', 'generative-ai', 'touchdesigner', 'davinci', 'concept-design', 'interactive-installations'],
     image: workSubmerged,
+    video: '7qgDlifWno0',
     links: [
-      { label: 'Behance', url: 'https://www.behance.net/gallery/245412721/Submerged-Realities-Projection-Mapping-Study' },
-      { label: 'YouTube', url: 'https://youtube.com/shorts/7qgDlifWno0' },
       { label: 'Instagram', url: 'https://www.instagram.com/p/DVVB4K9gh9x/' },
     ],
     featured: true,
@@ -147,10 +152,23 @@ export const PROJECTS: Project[] = [
     skills: ['generative-ai', 'visual-narrative', 'concept-design', 'computational-aesthetics', 'human-ai'],
     image: workLegacy,
     links: [
-      { label: 'Behance', url: 'https://www.behance.net/gallery/245414325/Legacy-in-the-Age-of-Stochastic-Output' },
       { label: 'Instagram', url: 'https://www.instagram.com/p/DTsKFpxAloa/' },
     ],
     weight: 1,
+    essay: {
+      contentWarning: 'CW: health.',
+      paragraphs: [
+        'How much can or should we outsource to the silicon brains?',
+        'The vast majority of the species on our planet leave their legacy by reproducing. First humans made a cognitive leap with tools. Then we decided that the mechanical utility is not enough for many of us to feel this world - we want to surround ourselves with aesthetics, seeking a legacy beyond biology.',
+        'AI is a yet another tool, but with the tectonic shift it brings, how can we now tell where the human idea ends and what we see is just a lucky result of a stochastic output? Should we now say that only organic brain processes deserve to be noticed?',
+        'I am 36. I do not have kids. Instead, I have an abnormal growth in my uterus, that has been giving me pain with each move for the recent year. I have never liked kids. Partially due to a psychological fear to bring a new life into a world, where I grew up always feeling I am not good enough because my father has never been around and only briefly appeared when I was a teen and never bothered since. With each single day my fear of not having kids and not leaving someone after me is growing exponentially. Last year, when I wanted to freeze my egg cells to postpone the decision of having kids, during the checks I have discovered that this was not very possible due to my body deciding to grow a toxic, useless mass instead of a new life. My womb produces a soulless structure, that has no use and needs to be removed - kind of the same as useless AI generated images in the feed, that can leave no legacy.',
+      ],
+      credits: [
+        'Image generation: @midjourney',
+        'Upscale, inpaint: @higgsfield.ai @artlist.io',
+        'Color grading: @affinity',
+      ],
+    },
   },
 
   // ── Perception research (interactive web experiences) ──────

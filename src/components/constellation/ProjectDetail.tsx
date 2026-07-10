@@ -31,6 +31,7 @@ function projectLinks(project: Project) {
 function Readout({ project }: { project: Project }) {
   const links = projectLinks(project);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [essayOpen, setEssayOpen] = useState(false);
   return (
     <>
       {project.video ? (
@@ -90,7 +91,7 @@ function Readout({ project }: { project: Project }) {
           </div>
         )}
 
-        {(links.length > 0 || CASE_PAGES[project.id]) && (
+        {(links.length > 0 || CASE_PAGES[project.id] || project.essay) && (
           <div className="mt-3 flex flex-wrap gap-4">
             {CASE_PAGES[project.id] && (
               <Link
@@ -99,6 +100,15 @@ function Readout({ project }: { project: Project }) {
               >
                 View full case study →
               </Link>
+            )}
+            {project.essay && (
+              <button
+                type="button"
+                onClick={() => setEssayOpen(true)}
+                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+              >
+                Read the full text →
+              </button>
             )}
             {links.map((l) => (
               <a
@@ -114,6 +124,60 @@ function Readout({ project }: { project: Project }) {
           </div>
         )}
       </div>
+
+      {project.essay && essayOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4"
+          onClick={() => setEssayOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-xl"
+            style={{ background: 'hsl(var(--background))', border: '1px solid #CC1414', boxShadow: '0 0 40px rgba(204,20,20,0.22)' }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${project.title} — full text`}
+          >
+            <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+                FULL TEXT
+              </span>
+              <button
+                type="button"
+                onClick={() => setEssayOpen(false)}
+                style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+              >
+                [ CLOSE ]
+              </button>
+            </div>
+            <div className="max-h-[75vh] overflow-y-auto p-5 md:p-6">
+              {project.essay.contentWarning && (
+                <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-primary">
+                  {project.essay.contentWarning}
+                </p>
+              )}
+              {project.essay.paragraphs.map((p, i) => (
+                <p key={i} className="mb-4 font-mono text-[14px] leading-relaxed text-foreground/85 last:mb-0">
+                  {p}
+                </p>
+              ))}
+              {project.essay.credits && project.essay.credits.length > 0 && (
+                <>
+                  <div className="my-5 border-t border-border/60" />
+                  <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-primary">
+                    Credits
+                  </span>
+                  {project.essay.credits.map((c, i) => (
+                    <p key={i} className="font-mono text-[12px] leading-relaxed text-foreground/60">
+                      {c}
+                    </p>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
