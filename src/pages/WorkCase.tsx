@@ -4,6 +4,7 @@ import { projectById } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
 import DisplacementImage from '@/components/DisplacementImage';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
+import SignalChain from '@/components/SignalChain';
 import NotFound from '@/pages/NotFound';
 
 const SITE_NAME = 'sin.ai.da';
@@ -30,26 +31,6 @@ function usePageMeta(title: string, description: string) {
       if (meta && prevContent !== null) meta.setAttribute('content', prevContent);
     };
   }, [title, description]);
-}
-
-// ── Compact labeled card for the process strip. Placeholder content —
-// Sinaida can swap these for real photos/screenshots later. Clearly marked
-// as method/process, not a fabricated screenshot.
-function ProcessCard({ label, detail }: { label: string; detail: string }) {
-  return (
-    <div
-      className="flex-1 min-w-[140px]"
-      style={{ border: '1px solid #1a1a1a', background: '#0a0a0a', padding: '16px' }}
-    >
-      <div
-        className="font-mono uppercase"
-        style={{ fontSize: '10px', letterSpacing: '0.15em', color: '#CC1414' }}
-      >
-        {label}
-      </div>
-      <p className="mt-2 font-mono text-[12px] leading-relaxed text-foreground/55">{detail}</p>
-    </div>
-  );
 }
 
 export default function WorkCase() {
@@ -170,27 +151,10 @@ export default function WorkCase() {
           </div>
         )}
 
-        {/* ── Process strip — labeled placeholders, not fabricated screenshots ── */}
+        {/* ── Method — animated signal-chain diagram (CSS-only) ── */}
         <div className="mt-10">
           <div className="clinical-label mb-3 text-foreground/45">Method</div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <ProcessCard
-              label="Signal chain"
-              detail="Live audio in → TouchDesigner CHOP analysis → per-song visual patch."
-            />
-            <ProcessCard
-              label="TouchDesigner network"
-              detail="Node graph placeholder — real screenshot to be swapped in."
-            />
-            <ProcessCard
-              label="Rehearsal"
-              detail="On-site tech + band rehearsal photo — to be swapped in."
-            />
-            <ProcessCard
-              label="Live show"
-              detail="Sklad №3, Moscow, 26 March 2026 — full-set run."
-            />
-          </div>
+          <SignalChain />
         </div>
 
         {/* ── Links ── */}
