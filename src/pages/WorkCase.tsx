@@ -143,6 +143,16 @@ export default function WorkCase() {
           </div>
         )}
 
+        {/* ── The nine rendered visuals — muted, rights on the songs sit with the label ── */}
+        <div className="mt-10">
+          <div className="clinical-label mb-3 text-foreground/45">All nine, rendered</div>
+          <VideoEmbed id="13gl94oG4WU" title={`${project.title} — full set, rendered`} />
+          <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
+            No audio: the songs are the label&rsquo;s masters, rights unclear for redistribution.
+            This is the visual system running clean, not the room mix.
+          </p>
+        </div>
+
         {/* ── Lazy video ── */}
         {project.video && (
           <div className="mt-10">
@@ -156,9 +166,9 @@ export default function WorkCase() {
           <div className="clinical-label mb-3 text-foreground/45">Nine logos, one code</div>
           <VideoEmbed id="qpXGjDI2N64" title={`${project.title} — logo idents`} />
           <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
-            Nine audio-reactive idents, one per track — real-time TouchDesigner treatments of
-            the band&rsquo;s logo and its variations, all driven by one signal: the band name —
-            Redkie Ptitsy, &ldquo;rare birds&rdquo; — encoded in morse.
+            Between songs, not during them — each song had its own artwork. Here it&rsquo;s the
+            same logo run through nine different real-time TouchDesigner treatments, all driven
+            by one signal: the band name — Redkie Ptitsy, &ldquo;rare birds&rdquo; — encoded in morse.
           </p>
         </div>
 
@@ -168,38 +178,16 @@ export default function WorkCase() {
           <SignalChain />
         </div>
 
-        {/* ── Links ── */}
-        {project.links && project.links.length > 0 && (
-          <div className="mt-8 flex flex-wrap gap-4">
-            {project.links.map((l) => (
-              <a
-                key={l.url}
-                href={l.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
-              >
-                {l.label} ↗
-              </a>
-            ))}
-          </div>
-        )}
-
         {/* ── What a festival can order ── */}
         <div className="mt-14" style={{ borderTop: '1px solid #1a1a1a', paddingTop: '32px' }}>
           <h2 className="font-display text-2xl font-light text-foreground">
             What a festival can order
           </h2>
           <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-foreground/80">
-            This is the service behind the show: a real-time TouchDesigner system built to listen
-            to your live mix and respond per song, delivered as a turnkey visual set or operated
-            live on the night. Same signal chain, built for your stage, your setlist, your rider.{' '}
+            Book the same signal chain for your stage: live audio in, real-time TouchDesigner
+            per song, projected on the night. Built to your setlist, your rider, your room.{' '}
             <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
-              See services
-            </a>{' '}
-            or{' '}
-            <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
-              get in touch
+              Get in touch
             </a>{' '}
             to brief a show.
           </p>
