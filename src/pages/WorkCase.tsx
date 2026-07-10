@@ -166,9 +166,9 @@ export default function WorkCase() {
           <div className="clinical-label mb-3 text-foreground/45">Nine logos, one code</div>
           <VideoEmbed id="qpXGjDI2N64" title={`${project.title} — logo idents`} />
           <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
-            Between songs, not during them — each song had its own artwork. Here it&rsquo;s the
-            same logo run through nine different real-time TouchDesigner treatments, all driven
-            by one signal: the band name — Redkie Ptitsy, &ldquo;rare birds&rdquo; — encoded in morse.
+            The logo animations were performed in between the songs. Those are logo variations
+            that run through nine different TouchDesigner treatments, all driven by one signal:
+            the band name, Redkie Ptitsy (meaning, &ldquo;rare birds&rdquo;) encoded in Morse code.
           </p>
         </div>
 
@@ -185,7 +185,7 @@ export default function WorkCase() {
           </h2>
           <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-foreground/80">
             Book the same signal chain for your stage: live audio in, real-time TouchDesigner
-            per song, projected on the night. Built to your setlist, your rider, your room.{' '}
+            per song, projected on the night, built for your show.{' '}
             <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
               Get in touch
             </a>{' '}
