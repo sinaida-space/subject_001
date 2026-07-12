@@ -263,7 +263,7 @@ export const PROJECTS: Project[] = [
     tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
     skills: ['body-tracking', 'creative-web', 'audio-reactive', 'algorithmic-systems', 'experience-design', 'perception-media'],
     url: 'https://aether-currents.sinaida.eu/',
-    video: '99Q0kNBh7Oo',
+    video: 'fxrrSxvKp9Q',
     image: workAetherCurrents,
     links: [
       { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
@@ -300,7 +300,7 @@ export const PROJECTS: Project[] = [
       media: [
         {
           label: 'The instrument, played',
-          video: '99Q0kNBh7Oo',
+          video: 'fxrrSxvKp9Q',
           caption: 'Bare hands over a webcam: granular sound and light answering in real time, entirely on-device.',
         },
       ],
