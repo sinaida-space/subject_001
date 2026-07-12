@@ -169,18 +169,22 @@ export default function Collaborate() {
             {stills.map((project) => (
               <div key={project.id}>
                 {project.image && (
-                  <a href={project.image} download aria-label={`Download still: ${project.title}`}>
+                  <Link to={`/work/${project.id}`} aria-label={`View case study: ${project.title}`}>
                     <img
                       src={project.image}
                       alt={project.title}
                       loading="lazy"
                       className="w-full aspect-square object-cover border border-primary/30"
                     />
-                  </a>
+                  </Link>
                 )}
-                <div className="font-mono mt-2 text-foreground/60" style={{ fontSize: 12 }}>
+                <Link
+                  to={`/work/${project.id}`}
+                  className="block font-mono mt-2 text-foreground/60 hover:text-accent transition-colors"
+                  style={{ fontSize: 12 }}
+                >
                   {project.title.split('—')[0].trim()}
-                </div>
+                </Link>
                 <div className="font-mono mt-1 text-foreground/40" style={{ fontSize: 11 }}>
                   {project.tagline}
                 </div>
@@ -188,7 +192,7 @@ export default function Collaborate() {
             ))}
           </div>
           <p className="font-mono text-[12px] mb-8 text-foreground/40">
-            Click a still to download. Higher resolutions on request.
+            Click a still for the case study.
           </p>
 
           <ul className="font-mono text-[13px] space-y-2 text-foreground/75">
