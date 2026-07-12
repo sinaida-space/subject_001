@@ -4,6 +4,7 @@
 
 import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
 import workEyesChico from '@/assets/work-eyes-chico.jpg';
+import workSubmerged from '@/assets/work-submerged.jpg';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
@@ -230,6 +231,23 @@ export const PROJECTS: Project[] = [
     },
   },
 
+  {
+    id: 'submerged',
+    title: 'Submerged Realities',
+    kind: 'installation',
+    tagline: 'Projection-mapping study on fluid surfaces',
+    blurb:
+      'AI-generated aesthetics mapped onto moving water — digital textures interacting with the physics of fluid and red-light environments. A study in how generative imagery behaves once it leaves the screen and lands on a living surface.',
+    tools: ['TouchDesigner', 'AI visuals', 'DaVinci Resolve'],
+    skills: ['projection-mapping', 'generative-ai', 'touchdesigner', 'davinci', 'concept-design', 'interactive-installations'],
+    image: workSubmerged,
+    video: '7qgDlifWno0',
+    links: [
+      { label: 'Instagram', url: 'https://www.instagram.com/p/DVVB4K9gh9x/' },
+    ],
+    weight: 0.7,
+  },
+
   // ── Perception research (interactive web experiences) ──────
   {
     id: 'aether-currents',
@@ -321,6 +339,34 @@ export const PROJECTS: Project[] = [
     url: 'https://sinaida-space.github.io/ethereal-path/',
     badges: ['camera'],
     weight: 1.1,
+  },
+
+  {
+    id: 'stereolove',
+    title: 'Stereolove',
+    kind: 'game',
+    tagline: 'Head-coupled op-art — the screen becomes an unstable optical volume',
+    blurb:
+      "The browser estimates the viewer's head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass — op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
+    tools: ['Web', 'MediaPipe face & hand tracking'],
+    skills: ['creative-web', 'body-tracking', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
+    url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
+    badges: ['camera'],
+    weight: 0.7,
+  },
+
+  // ── Tools ──────────────────────────────────────────────────
+  {
+    id: 'mahler',
+    title: 'Mahler — The Orchestrator',
+    kind: 'tool',
+    tagline: 'Orchestrator for Claude',
+    blurb: 'A multi-model orchestrator for Claude, designed to maximize ROI on tokens.',
+    tools: ['Claude', 'GitHub'],
+    skills: ['tech-strategy', 'system-architecture', 'ai-orchestration', 'algorithmic-systems'],
+    url: 'https://github.com/sinaida-space/mahler-the-orchestrator',
+    links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/mahler-the-orchestrator' }],
+    weight: 0.7,
   },
 ];
 
