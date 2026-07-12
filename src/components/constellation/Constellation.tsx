@@ -82,7 +82,7 @@ export default function Constellation() {
                it's the whole section — a fully semantic, keyboard-navigable
                list with no canvas/WebGL dependency. */}
             <div className={mode === 'full' ? 'mt-16' : undefined}>
-              <PlainSignalIndex />
+              <PlainSignalIndex includeBackground={mode !== 'full'} />
             </div>
           </div>
         </div>

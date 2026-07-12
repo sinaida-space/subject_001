@@ -46,11 +46,11 @@ function Row({ project }: { project: Project }) {
   );
 }
 
-export default function PlainSignalIndex() {
+export default function PlainSignalIndex({ includeBackground = false }: { includeBackground?: boolean }) {
   return (
     <div className="w-full" style={{ minHeight: 'clamp(420px, 60vh, 720px)' }}>
       {KIND_ORDER.map((kind) => {
-        const items = PROJECTS.filter((p) => p.kind === kind);
+        const items = PROJECTS.filter((p) => p.kind === kind && (includeBackground || !p.background));
         if (items.length === 0) return null;
         return (
           <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
