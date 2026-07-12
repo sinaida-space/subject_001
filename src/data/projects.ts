@@ -3,9 +3,6 @@
 // and (via the SEO script / llms.txt) the static content layer.
 
 import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
-import workSubmerged from '@/assets/work-submerged.jpg';
-import workLegacy from '@/assets/work-legacy.jpg';
-import workSynesthetic from '@/assets/work-synesthetic.jpg';
 import workEyesChico from '@/assets/work-eyes-chico.jpg';
 
 export type ProjectKind =
@@ -165,43 +162,10 @@ export const PROJECTS: Project[] = [
 
   // ── Installations ──────────────────────────────────────────
   {
-    id: 'submerged',
-    title: 'Submerged Realities',
-    kind: 'installation',
-    tagline: 'Projection-mapping study on fluid surfaces',
-    blurb:
-      'AI-generated aesthetics mapped onto moving water — digital textures interacting with the physics of fluid and red-light environments. A study in how generative imagery behaves once it leaves the screen and lands on a living surface.',
-    tools: ['TouchDesigner', 'AI visuals', 'DaVinci Resolve'],
-    skills: ['projection-mapping', 'generative-ai', 'touchdesigner', 'davinci', 'concept-design', 'interactive-installations'],
-    image: workSubmerged,
-    video: '7qgDlifWno0',
-    links: [
-      { label: 'Instagram', url: 'https://www.instagram.com/p/DVVB4K9gh9x/' },
-    ],
-    featured: true,
-    weight: 1.3,
-  },
-  {
-    id: 'synesthetic',
-    title: 'Synesthetic Bloom',
-    kind: 'installation',
-    tagline: 'Audio-responsive digital organism with a heartbeat',
-    blurb:
-      'Sound transformed into pulsating architecture — a digital structure whose heartbeat is synchronised to its auditory environment. Proof of the real-time sound-to-visual craft that drives the stage work.',
-    tools: ['TouchDesigner', 'Suno'],
-    skills: ['touchdesigner', 'audio-reactive', 'algorithmic-systems', 'generative-ai', 'interactive-installations'],
-    image: workSynesthetic,
-    video: 'TP9bAl6Juk8',
-    links: [{ label: 'YouTube', url: 'https://youtu.be/TP9bAl6Juk8' }],
-    featured: true,
-    weight: 1.3,
-  },
-
-  {
     id: 'the-eyes-chico',
     title: 'The Eyes Chico',
     kind: 'installation',
-    tagline: 'Acrylic painting turned immersive installation & web experience · with Alisa Feer',
+    tagline: 'Acrylic painting turned playable web experience & projection installation · with Alisa Feer',
     blurb:
       'A collaboration with artist Alisa Feer: her acrylic painting is the origin of the piece, translated into a living digital scene that exists as an immersive projection installation and as a web experience controlled by bare hands, with on-device camera tracking. Pigment holds still; code refuses to. The experience is designed for solo viewers to engage in self-discovery.',
     tools: ['Web', 'MediaPipe hand tracking', 'Acrylic on canvas'],
@@ -215,6 +179,7 @@ export const PROJECTS: Project[] = [
     ],
     badges: ['camera'],
     featured: true,
+    hero: true,
     weight: 1.3,
     image: workEyesChico,
     caseStudy: {
@@ -265,52 +230,7 @@ export const PROJECTS: Project[] = [
     },
   },
 
-  // ── Conceptual ─────────────────────────────────────────────
-  {
-    id: 'legacy',
-    title: 'Legacy in the Age of Stochastic Output',
-    kind: 'conceptual',
-    tagline: 'Image series on biology, finality & AI',
-    blurb:
-      'A conceptual image series exploring infertility, biological finality, and artificial intelligence. If a silicon brain produces a "stochastic legacy", where does the soul reside? The narrative depth behind the visual practice.',
-    tools: ['Generative AI', 'Higgsfield.ai', 'Affinity'],
-    skills: ['generative-ai', 'visual-narrative', 'concept-design', 'computational-aesthetics', 'human-ai'],
-    image: workLegacy,
-    links: [
-      { label: 'Instagram', url: 'https://www.instagram.com/p/DTsKFpxAloa/' },
-    ],
-    weight: 1,
-    essay: {
-      contentWarning: 'CW: health.',
-      paragraphs: [
-        'How much can or should we outsource to the silicon brains?',
-        'The vast majority of the species on our planet leave their legacy by reproducing. First humans made a cognitive leap with tools. Then we decided that the mechanical utility is not enough for many of us to feel this world - we want to surround ourselves with aesthetics, seeking a legacy beyond biology.',
-        'AI is a yet another tool, but with the tectonic shift it brings, how can we now tell where the human idea ends and what we see is just a lucky result of a stochastic output? Should we now say that only organic brain processes deserve to be noticed?',
-        'I am 36. I do not have kids. Instead, I have an abnormal growth in my uterus, that has been giving me pain with each move for the recent year. I have never liked kids. Partially due to a psychological fear to bring a new life into a world, where I grew up always feeling I am not good enough because my father has never been around and only briefly appeared when I was a teen and never bothered since. With each single day my fear of not having kids and not leaving someone after me is growing exponentially. Last year, when I wanted to freeze my egg cells to postpone the decision of having kids, during the checks I have discovered that this was not very possible due to my body deciding to grow a toxic, useless mass instead of a new life. My womb produces a soulless structure, that has no use and needs to be removed - kind of the same as useless AI generated images in the feed, that can leave no legacy.',
-      ],
-      credits: [
-        'Image generation: @midjourney',
-        'Upscale, inpaint: @higgsfield.ai @artlist.io',
-        'Color grading: @affinity',
-      ],
-    },
-  },
-
   // ── Perception research (interactive web experiences) ──────
-  {
-    id: 'stereolove',
-    title: 'Stereolove',
-    kind: 'game',
-    tagline: 'Head-coupled op-art — the screen becomes an unstable optical volume',
-    blurb:
-      "The browser estimates the viewer's head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass — op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
-    tools: ['Web', 'MediaPipe face & hand tracking'],
-    skills: ['creative-web', 'body-tracking', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
-    url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
-    badges: ['camera'],
-    hero: true,
-    weight: 1,
-  },
   {
     id: 'ethereal-path',
     title: 'Ethereal Path',
@@ -323,19 +243,6 @@ export const PROJECTS: Project[] = [
     url: 'https://sinaida-space.github.io/ethereal-path/',
     badges: ['camera'],
     weight: 1.1,
-  },
-  // ── Tools & guides ─────────────────────────────────────────
-  {
-    id: 'mahler',
-    title: 'Mahler — The Orchestrator',
-    kind: 'tool',
-    tagline: 'Orchestrator for Claude',
-    blurb: 'A multi-model orchestrator for Claude, designed to maximize ROI on tokens.',
-    tools: ['Claude', 'GitHub'],
-    skills: ['tech-strategy', 'system-architecture', 'ai-orchestration', 'algorithmic-systems'],
-    url: 'https://github.com/sinaida-space/mahler-the-orchestrator',
-    links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/mahler-the-orchestrator' }],
-    weight: 0.9,
   },
 ];
 

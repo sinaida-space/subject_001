@@ -39,7 +39,7 @@ export default function Constellation() {
             </div>
 
             <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-foreground/70">
-              Selected projects and skills that happen to resonate.
+              Selected works and the skills behind them.
             </p>
           </div>
 
