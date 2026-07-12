@@ -18,6 +18,7 @@ const KIND_LABEL: Record<ProjectKind, string> = {
 const CASE_PAGES: Record<string, string> = {
   'redkie-ptitsy': '/work/redkie-ptitsy',
   'the-eyes-chico': '/work/the-eyes-chico',
+  'aether-currents': '/work/aether-currents',
 };
 
 function projectLinks(project: Project) {
@@ -102,7 +103,7 @@ function Readout({ project }: { project: Project }) {
                 View full case study →
               </Link>
             )}
-            {project.essay && (
+            {project.essay && !CASE_PAGES[project.id] && (
               <button
                 type="button"
                 onClick={() => setEssayOpen(true)}
