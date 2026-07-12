@@ -105,7 +105,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   const labelBoxesRef = useRef<Map<string, { x1: number; y1: number; x2: number; y2: number }>>(new Map());
   const pointerRef = useRef({ x: -9999, y: -9999, inside: false });
   // Hero baseline opacity, eased rather than snapped: 1 = full "just opened"
-  // highlight on Redkie Ptitsy/Stereolove's edges, fading toward 0 the moment
+  // highlight on Redkie Ptitsy/The Eyes Chico's edges, fading toward 0 the moment
   // the pointer engages the canvas at all (not just when hovering a specific
   // star) — "the first thing you see, then it recedes once you start looking
   // around." Springs back to 1 once the pointer leaves and settles again.

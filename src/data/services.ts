@@ -30,7 +30,7 @@ export const SERVICES: Service[] = [
     code: 'venues',
     title: 'For venues, brands & institutions',
     description:
-      'Immersive installations and generative visual identities — the same real-time systems behind independent works like Submerged Realities and Synesthetic Bloom, adapted for a space and designed to run unattended.',
+      'Immersive installations and generative visual identities — the same real-time, body-tracked systems behind The Eyes Chico, adapted for a space and designed to run unattended.',
     leadTime: 'Lead time depends on the space and scope — confirmed once the brief is in.',
     brief: 'Brief to show: send the space (photos/plans) and the occasion.',
   },
