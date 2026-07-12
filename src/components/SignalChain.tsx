@@ -22,14 +22,8 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
     <div>
       <style>{`
         @keyframes sc-node-glow {
-          0%, 8% { border-color: #22d3ee; box-shadow: 0 0 14px rgba(34,211,238,0.35), inset 0 0 10px rgba(34,211,238,0.08); }
-          22%, 100% { border-color: #1a1a1a; box-shadow: none; }
-        }
-        @keyframes sc-dot-h {
-          0% { left: 0%; opacity: 0; }
-          8% { opacity: 1; }
-          22% { left: 100%; opacity: 1; }
-          26%, 100% { left: 100%; opacity: 0; }
+          0%, 8% { background: #22d3ee; box-shadow: 0 0 14px rgba(34,211,238,0.7); }
+          22%, 100% { background: #1a1a1a; box-shadow: none; }
         }
         @keyframes sc-dot-v {
           0% { top: 0%; opacity: 0; }
@@ -37,18 +31,12 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
           22% { top: 100%; opacity: 1; }
           26%, 100% { top: 100%; opacity: 0; }
         }
-        .sc-node { border: 1px solid #1a1a1a; animation: sc-node-glow ${CYCLE}s linear infinite; }
-        .sc-connector { position: relative; }
+        .sc-node { border-radius: 50%; animation: sc-node-glow ${CYCLE}s linear infinite; }
+        .sc-connector { position: relative; width: 1px; flex: 1 1 auto; min-height: 24px; background: #1a1a1a; }
         .sc-dot {
-          position: absolute; width: 5px; height: 5px; border-radius: 50%;
+          position: absolute; left: -2px; width: 5px; height: 5px; border-radius: 50%;
           background: #22d3ee; box-shadow: 0 0 8px rgba(34,211,238,0.8);
-        }
-        /* mobile: vertical chain */
-        .sc-connector { width: 1px; height: 28px; margin-left: 24px; background: #1a1a1a; }
-        .sc-dot { left: -2px; animation: sc-dot-v ${CYCLE}s linear infinite; }
-        @media (min-width: 640px) {
-          .sc-connector { width: auto; height: 1px; flex: 0 0 24px; margin-left: 0; align-self: center; }
-          .sc-dot { left: 0; top: -2px; animation: sc-dot-h ${CYCLE}s linear infinite; }
+          animation: sc-dot-v ${CYCLE}s linear infinite;
         }
         @media (prefers-reduced-motion: reduce) {
           .sc-node, .sc-dot { animation: none; }
@@ -57,24 +45,27 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
       `}</style>
 
       <div
-        className="mb-3 font-mono text-[11px] tracking-[0.12em]"
+        className="mb-4 font-mono text-[11px] tracking-[0.12em]"
         style={{ color: '#22d3ee' }}
       >
         {trace}
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-stretch">
+      <div className="flex flex-col">
         {stages.map((stage, i) => (
-          <div key={stage.label} className="contents">
-            {i > 0 && (
-              <div className="sc-connector" aria-hidden="true">
-                <div className="sc-dot" style={{ animationDelay: `${i * nodeStep - nodeStep * 0.75}s` }} />
-              </div>
-            )}
-            <div
-              className="sc-node flex-1 sm:min-w-0"
-              style={{ background: '#0a0a0a', padding: '16px', animationDelay: `${i * nodeStep}s` }}
-            >
+          <div key={stage.label} className="flex gap-4">
+            <div className="flex flex-col items-center pt-1">
+              <div
+                className="sc-node w-2.5 h-2.5 shrink-0"
+                style={{ animationDelay: `${i * nodeStep}s` }}
+              />
+              {i < stages.length - 1 && (
+                <div className="sc-connector" aria-hidden="true">
+                  <div className="sc-dot" style={{ animationDelay: `${i * nodeStep - nodeStep * 0.75}s` }} />
+                </div>
+              )}
+            </div>
+            <div className={i < stages.length - 1 ? 'pb-6 min-w-0' : 'min-w-0'}>
               <div
                 className="font-mono uppercase"
                 style={{ fontSize: '10px', letterSpacing: '0.15em', color: '#CC1414' }}
@@ -89,7 +80,7 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
         ))}
       </div>
 
-      <div className="mt-3 font-mono text-[11px] tracking-[0.12em] text-foreground/45">
+      <div className="mt-5 font-mono text-[11px] tracking-[0.12em] text-foreground/45">
         {footer}
       </div>
     </div>
