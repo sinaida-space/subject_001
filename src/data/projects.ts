@@ -232,6 +232,84 @@ export const PROJECTS: Project[] = [
 
   // ── Perception research (interactive web experiences) ──────
   {
+    id: 'aether-currents',
+    title: 'Aether Currents',
+    kind: 'game',
+    tagline: 'Browser instrument played with bare hands · with Telefm',
+    blurb:
+      'A granular synthesizer wearing a computer vision system: the camera reads bare-hand gesture on-device and turns it straight into sound and light, in a browser tab, with nothing between the player and the instrument — no keyboard, no MIDI rig, no cloud. Built with musician Kamil Yegelev (Telefm, Belgrade) on a shared conviction that AI-era tools do not have to flatten performance into a prompt.',
+    tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
+    skills: ['body-tracking', 'creative-web', 'audio-reactive', 'algorithmic-systems', 'experience-design', 'perception-media'],
+    url: 'https://aether-currents.sinaida.eu/',
+    video: '99Q0kNBh7Oo',
+    links: [
+      { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
+      { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
+    ],
+    badges: ['camera', 'sound'],
+    featured: true,
+    weight: 1.2,
+    essay: {
+      paragraphs: [
+        'Aether Currents is a way to feel music on your fingertips. Open it, show it your camera, and your hands become the interface. The right hand moves through position and pitch. A pinch shapes grain size. The left hand’s height sets density. Pull your hands apart and the filter opens, the space widens. Close into a fist and the sound freezes, held mid-air like a breath. There is no keyboard, no mouse, no MIDI controller between you and the sound. It is pure proprioception, translated.',
+        'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of "move only your upper body." A body trained inside constraints does not lose freedom; it finds a different one. Aether Currents offers six gestures and a granular synthesis engine underneath, and inside that small vocabulary the range is enormous. The instrument does not know what you will play. Neither does its maker, most nights.',
+        'Sinaida built it with Kamil Yegelev, known as Telefm, a musician in Belgrade, over a shared conviction that AI-era tools do not have to flatten performance into a prompt. Somewhere between a biomedical engineer’s instinct for signal and a dancer’s instinct for gesture there is an instrument that responds in real time, on-device, with no server watching, no cloud in between. Sub-hundred-millisecond latency was never a vanity metric. It is the difference between playing an instrument and issuing a command to one. The visuals on screen are the same signal, seen: what your hands do to the audio, the light does back to you, and the loop closes somewhere between the camera and your own sense of where your hands are in space.',
+        'What is it, finally? A granular synthesizer wearing a computer vision system. A dance studio carried in a browser tab. Either way, the stage did not disappear when Sinaida stopped dancing. It moved into the space between a hand and a webcam, and it is asking to be played.',
+      ],
+      credits: [
+        'Instrument & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Music & collaboration: Kamil Yegelev (Telefm) · telefm.bandcamp.com',
+      ],
+    },
+    caseStudy: {
+      kindLabel: 'Instrument',
+      intro: [
+        'Every instrument worth playing can be practiced. That is the conviction Aether Currents is built on: not a demo you try once, but an instrument you return to the way a dancer returns to the barre — until the interface disappears and only the playing remains. Two things usually kill that in browser instruments, and both were design targets from day one: latency and musicality. When a hand moves and the sound answers 300 milliseconds later, nobody is playing an instrument; they are issuing requests to one.',
+        'Sinaida engineered it as a single signal path. On-device hand tracking reads gesture at up to 40Hz and drives a granular synthesis engine directly: right-hand position sets playhead and pitch, a pinch shapes grain size, the left hand’s height sets density, the distance between hands opens the filter and the space, a fist freezes the cloud mid-air. Pitch is scale-quantized from the first note — an A minor pentatonic across six bands — so gesture noise can never produce a wrong note, only an expressive one. The visuals are not an illustration of the sound; they are the same signal, seen. And nothing leaves the device: no camera frame, no audio, no account.',
+        'The result is an instrument that lives in a browser tab, grown in collaboration with musician Kamil Yegelev (Telefm, Belgrade) and versioned like any serious system: each release shaped by watching real people play and fail in specific ways. The current cycle, PRD "PLAYABLE," targets a measured motion-to-sound gap under 100 milliseconds — the difference between playing an instrument and issuing a command to one.',
+      ],
+      heroCta: { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
+      stat: {
+        value: '0',
+        heading: 'Bytes that leave the device',
+        body: 'No camera frame, no audio, no account. The privacy model was a design constraint from day one, not a policy added at the end.',
+      },
+      media: [
+        {
+          label: 'The instrument, played',
+          video: '99Q0kNBh7Oo',
+          caption: 'Bare hands over a webcam: granular sound and light answering in real time, entirely on-device.',
+        },
+      ],
+      method: {
+        trace: '> idea_pipeline.trace() // gesture → grain',
+        stages: [
+          { label: 'The conviction', detail: 'An instrument to practice, not software to operate — born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
+          { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. A vocabulary that already lives in the body.' },
+          { label: 'Signal engineering', detail: 'Camera → on-device tracking at 40Hz → granular engine → WebGL. One signal drives both the sound and the light.' },
+          { label: 'Musicality guardrails', detail: 'Scale-quantized pitch: no wrong notes possible, only expressive ones. Constraint as the source of range, not its limit.' },
+          { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture — each fix traced to a specific stumble.' },
+          { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
+        ],
+        footer: '> instrument & code: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
+      },
+      credits: [
+        'Instrument & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Music & collaboration: Kamil Yegelev (Telefm) · telefm.bandcamp.com',
+      ],
+      links: [
+        { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
+      ],
+      order: {
+        heading: 'What a stage can book',
+        body:
+          'The instrument travels in a laptop and a webcam: no rig, no install, no server. It can be staged as a live gesture performance with Telefm, opened to an audience as a playable installation, or adapted for a space. The whole tech rider is a table, a camera and a projector.',
+        suffix: 'to put it in front of an audience.',
+      },
+    },
+  },
+
+  {
     id: 'ethereal-path',
     title: 'Ethereal Path',
     kind: 'game',
