@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { SERVICES, type Service } from '@/data/services';
 
 const SEPARATOR = '────────────────────────────────────────────';
@@ -14,7 +15,15 @@ function ServiceBlock({ service }: { service: Service }) {
         {service.description}
       </p>
       <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
-        {service.leadTime}
+        {service.record.map((part, i) =>
+          part.href ? (
+            <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
+              {part.text}
+            </Link>
+          ) : (
+            <span key={i}>{part.text}</span>
+          )
+        )}
       </p>
       <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.brief}

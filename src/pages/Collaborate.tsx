@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 import { SERVICES } from '@/data/services';
 import { FEATURED_WORKS } from '@/data/projects';
@@ -29,7 +30,15 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
         {service.description}
       </p>
       <p className="font-mono text-[13px] leading-relaxed mt-2 text-foreground/60">
-        {service.leadTime}
+        {service.record.map((part, i) =>
+          part.href ? (
+            <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
+              {part.text}
+            </Link>
+          ) : (
+            <span key={i}>{part.text}</span>
+          )
+        )}
       </p>
       <p className="font-mono text-[13px] leading-relaxed text-foreground/60">
         {service.brief}
@@ -140,7 +149,7 @@ export default function Collaborate() {
             </p>
             <p>
               <span className="text-foreground">Lead time — </span>
-              Varies by scope — see the lead time under each service above. Earlier is always better.
+              Depends on set length and scope — confirmed once the brief is in. Earlier is always better.
             </p>
           </div>
         </section>

@@ -5,6 +5,7 @@
 import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
 import workEyesChico from '@/assets/work-eyes-chico.jpg';
 import workSubmerged from '@/assets/work-submerged.jpg';
+import workAetherCurrents from '@/assets/work-aether-currents.jpg';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
@@ -263,6 +264,7 @@ export const PROJECTS: Project[] = [
     skills: ['body-tracking', 'creative-web', 'audio-reactive', 'algorithmic-systems', 'experience-design', 'perception-media'],
     url: 'https://aether-currents.sinaida.eu/',
     video: '99Q0kNBh7Oo',
+    image: workAetherCurrents,
     links: [
       { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
       { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
