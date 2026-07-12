@@ -42,19 +42,85 @@ export function computeLayout(
   const rand = rng(seed);
   const cx = width / 2;
   const cy = height / 2;
-
-  // Seed positions: projects on an inner ring, skills scattered wider — gives
-  // the settled graph a pleasant "bright cores, connective haze" structure.
-  const pos = nodes.map((n) => {
-    const a = rand() * Math.PI * 2;
-    const r =
-      n.kind === 'project'
-        ? Math.min(width, height) * (0.12 + rand() * 0.14)
-        : Math.min(width, height) * (0.24 + rand() * 0.26);
-    return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r, vx: 0, vy: 0 };
-  });
+  const minDim = Math.min(width, height);
 
   const index = new Map(nodes.map((n, i) => [n.id, i]));
+
+  // Role classification — mains hold the visible center, background works sit
+  // small at the periphery, skills cluster near the projects they connect to.
+  const isBgProject = (n: GraphNode) => n.kind === 'project' && !!n.project?.background;
+  const isMain = (n: GraphNode) => n.kind === 'project' && !n.project?.background;
+
+  const mains = nodes.filter(isMain).sort((a, b) => b.weight - a.weight);
+  const bgProjects = nodes.filter(isBgProject);
+
+  const mainAngle = new Map<string, number>();
+  mains.forEach((n, i) => {
+    mainAngle.set(n.id, -Math.PI / 2 + i * ((Math.PI * 2) / mains.length));
+  });
+  const bgAngle = new Map<string, number>();
+  bgProjects.forEach((n, i) => {
+    const step = (Math.PI * 2) / Math.max(bgProjects.length, 1);
+    bgAngle.set(n.id, -Math.PI / 2 + step / 2 + i * step);
+  });
+
+  // Adjacency (by id) for centroid-seeding skills near their connected projects.
+  const neighborsOf = new Map<string, string[]>();
+  for (const e of edges) {
+    if (!neighborsOf.has(e.a)) neighborsOf.set(e.a, []);
+    if (!neighborsOf.has(e.b)) neighborsOf.set(e.b, []);
+    neighborsOf.get(e.a)!.push(e.b);
+    neighborsOf.get(e.b)!.push(e.a);
+  }
+
+  // Seed positions. Rings are seeded elliptically (radius fraction applied to
+  // width and height independently, not the isotropic min(width,height)) so
+  // that the later per-axis normalization — which stretches x and y
+  // independently to fill the box — doesn't reorder distances-from-center on
+  // extreme aspect ratios (e.g. a tall narrow mobile canvas). A circle seeded
+  // with min(width,height) gets warped unevenly by anisotropic stretching;
+  // an ellipse pre-shaped to the box's own aspect survives it.
+  const seedPos = new Map<string, { x: number; y: number }>();
+  for (const n of nodes) {
+    if (isMain(n)) {
+      const a = mainAngle.get(n.id)!;
+      seedPos.set(n.id, {
+        x: cx + Math.cos(a) * width * 0.17,
+        y: cy + Math.sin(a) * height * 0.17,
+      });
+    } else if (isBgProject(n)) {
+      const a = bgAngle.get(n.id)!;
+      seedPos.set(n.id, {
+        x: cx + Math.cos(a) * width * 0.46,
+        y: cy + Math.sin(a) * height * 0.46,
+      });
+    }
+  }
+  // Skills: centroid of connected projects' seed positions (fallback: old random ring).
+  for (const n of nodes) {
+    if (n.kind !== 'skill') continue;
+    const neighborIds = neighborsOf.get(n.id) ?? [];
+    const projectSeeds = neighborIds
+      .map((id) => seedPos.get(id))
+      .filter((p): p is { x: number; y: number } => !!p);
+    if (projectSeeds.length > 0) {
+      const sx = projectSeeds.reduce((s, p) => s + p.x, 0) / projectSeeds.length;
+      const sy = projectSeeds.reduce((s, p) => s + p.y, 0) / projectSeeds.length;
+      seedPos.set(n.id, {
+        x: sx + (rand() - 0.5) * 2 * width * 0.05,
+        y: sy + (rand() - 0.5) * 2 * height * 0.05,
+      });
+    } else {
+      const a = rand() * Math.PI * 2;
+      const r = minDim * (0.24 + rand() * 0.26);
+      seedPos.set(n.id, { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r });
+    }
+  }
+
+  const pos = nodes.map((n) => {
+    const p = seedPos.get(n.id)!;
+    return { x: p.x, y: p.y, vx: 0, vy: 0 };
+  });
 
   // Force parameters, tuned for this scale.
   // Ideal edge length from Fruchterman-Reingold: proportional to
@@ -67,7 +133,12 @@ export function computeLayout(
   // labeled, more breathing room between nodes matters more than a tight
   // "constellation" shape ("the graph should have enough air inside it").
   const repulse = k * k * 1.3;
-  const centerPull = 0.012;
+  const centerPullFor = (n: GraphNode) =>
+    isMain(n) ? 0.05 : isBgProject(n) ? 0.006 : 0.012;
+  // Elliptical rim (matches the elliptical seeding above, for the same
+  // anisotropic-normalization reason): semi-axes scale with width/height.
+  const rimRx = width * 0.46;
+  const rimRy = height * 0.46;
 
   for (let it = 0; it < iterations; it++) {
     const cooling = 1 - it / iterations; // simulated-annealing damping
@@ -110,8 +181,23 @@ export function computeLayout(
       pos[ib].vy += fy;
     }
 
-    // Gentle pull to centre keeps the whole graph on-screen.
+    // Rim spring for background projects — keeps them out at the periphery,
+    // on an ellipse shaped to the canvas aspect (see seeding comment above).
+    for (const n of bgProjects) {
+      const i = index.get(n.id)!;
+      const dx = pos[i].x - cx;
+      const dy = pos[i].y - cy;
+      const nx = dx / rimRx;
+      const ny = dy / rimRy;
+      const ndist = Math.sqrt(nx * nx + ny * ny) || 0.0001;
+      const f = (1 - ndist) * 0.1;
+      pos[i].vx += (nx / ndist) * f * rimRx;
+      pos[i].vy += (ny / ndist) * f * rimRy;
+    }
+
+    // Gentle pull to centre keeps the whole graph on-screen (role-aware).
     for (let i = 0; i < nodes.length; i++) {
+      const centerPull = centerPullFor(nodes[i]);
       pos[i].vx += (cx - pos[i].x) * centerPull;
       pos[i].vy += (cy - pos[i].y) * centerPull;
       // integrate with damping

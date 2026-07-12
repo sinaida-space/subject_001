@@ -191,7 +191,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
     const prev = new Map(nodesRef.current.map((n) => [n.id, n]));
     nodesRef.current = nodes.map((n) => {
       const old = prev.get(n.id);
-      const r = n.kind === 'project' ? 2.6 + n.weight * 3.4 : 2.1;
+      const r =
+        n.kind === 'project'
+          ? n.project?.background
+            ? 2.2 + n.weight * 2.0
+            : 2.6 + n.weight * 3.4
+          : 2.1;
       return {
         id: n.id,
         label: n.label,
@@ -439,7 +444,12 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       if (active && !isActive && !isNeighbor) intensity = n.accent ? 0.55 : 0.28;
       const hover = isActive ? 1.7 : isNeighbor ? 1.25 : n.accent ? 1.15 : 1;
       const spr = glowSprite(n.color);
-      const base = n.kind === 'project' ? 12 + n.weight * 12 : 9;
+      const base =
+        n.kind === 'project'
+          ? n.project?.background
+            ? 8 + n.weight * 8
+            : 12 + n.weight * 12
+          : 9;
       const s = base * hover;
       ctx.globalAlpha = (n.kind === 'project' ? 0.75 : 0.4) * intensity;
       ctx.drawImage(spr, n.x - s / 2, n.y - s / 2, s, s);
