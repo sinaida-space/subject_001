@@ -67,7 +67,12 @@ export default function ConstellationLite({ onActiveProject }: Props) {
           const isNeighbor = neighbors?.has(n.id);
           let opacity = 1;
           if (active && !isActive && !isNeighbor) opacity = 0.3;
-          const r = n.kind === 'project' ? 3 + n.weight * 3 : 2.4;
+          const r =
+            n.kind === 'project'
+              ? n.project?.background
+                ? 2.6 + n.weight * 1.8
+                : 3 + n.weight * 3
+              : 2.4;
           // Skill-first: skills carry labels by default; project names only
           // surface once the visitor traces into that star — except the two
           // hero works and the accent skills, which stay named at all times.
