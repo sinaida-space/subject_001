@@ -237,7 +237,7 @@ export const PROJECTS: Project[] = [
     kind: 'game',
     tagline: 'Browser instrument played with bare hands · with Telefm',
     blurb:
-      'A granular synthesizer wearing a computer vision system: the camera reads bare-hand gesture on-device and turns it straight into sound and light, in a browser tab, with nothing between the player and the instrument — no keyboard, no MIDI rig, no cloud. Built with musician Kamil Yegelev (Telefm, Belgrade) on a shared conviction that AI-era tools do not have to flatten performance into a prompt.',
+      'Sinaida built AETHER CURRENTS with Kamil Yegelev, known as Telefm, a musician in Belgrade, over a shared conviction that AI-era tools do not have to flatten performance into a prompt. AETHER CURRENTS is a live medium that turns algorithmic tools into a dynamic extension of the physical body, translating movement into sonic and visual currents.',
     tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
     skills: ['body-tracking', 'creative-web', 'audio-reactive', 'algorithmic-systems', 'experience-design', 'perception-media'],
     url: 'https://aether-currents.sinaida.eu/',
