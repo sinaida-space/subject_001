@@ -83,6 +83,8 @@ export interface Project {
   hero?: boolean;
   /** relative visual weight of the star in the constellation (1 = default) */
   weight?: number;
+  /** dim background star: shown in the constellation but omitted from the visible plain list in full mode */
+  background?: boolean;
   /** full written piece behind the project — opens as a text popup */
   essay?: {
     contentWarning?: string;
@@ -246,6 +248,7 @@ export const PROJECTS: Project[] = [
       { label: 'Instagram', url: 'https://www.instagram.com/p/DVVB4K9gh9x/' },
     ],
     weight: 0.7,
+    background: true,
   },
 
   // ── Perception research (interactive web experiences) ──────
@@ -353,6 +356,7 @@ export const PROJECTS: Project[] = [
     url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
     badges: ['camera'],
     weight: 0.7,
+    background: true,
   },
 
   // ── Tools ──────────────────────────────────────────────────
@@ -367,6 +371,7 @@ export const PROJECTS: Project[] = [
     url: 'https://github.com/sinaida-space/mahler-the-orchestrator',
     links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/mahler-the-orchestrator' }],
     weight: 0.7,
+    background: true,
   },
 ];
 
