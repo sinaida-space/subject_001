@@ -1,7 +1,10 @@
-// ── Deterministic force-directed layout ──
-// Runs once, synchronously (~29 nodes → sub-millisecond). Both the canvas
-// (full) and SVG (lite) constellation read the same coordinates so the two
-// modes are visually identical. Seeded RNG → identical layout every load.
+// ── Deterministic composed layout ──
+// Not a free force simulation: the main projects are anchored at designed
+// positions, each skill sits with the project(s) it belongs to, background
+// works go to the rim. A short collision pass only untangles overlaps — the
+// composition itself is authored, so the hierarchy (flagships first) is
+// stable on every load and every viewport. Both the canvas (full) and SVG
+// (lite) constellation read the same coordinates.
 
 import type { GraphNode, GraphEdge } from '@/data/graph';
 
@@ -16,7 +19,7 @@ export interface Layout {
   height: number;
 }
 
-// Mulberry32 — tiny deterministic PRNG.
+// Mulberry32 — tiny deterministic PRNG (jitter + tie-breaks only).
 function rng(seed: number) {
   return function () {
     seed |= 0;
@@ -34,204 +37,296 @@ interface Options {
   iterations?: number;
 }
 
+// Fixed reading order for the main hubs — top to bottom, left column, each
+// its own "chapter" the eye descends through. Not weight order: the
+// composition is authored so the flagship (Redkie Ptitsy) opens top-left and
+// the rest cascade down, with the right side left open for background
+// projects and shared-skill stars to breathe into.
+const MAIN_ORDER = ['redkie-ptitsy', 'aether-currents', 'ethereal-path', 'the-eyes-chico'];
+
+// Anchor slots for the main (non-background) projects, in padded-box
+// fractions, applied in MAIN_ORDER (falling back to weight order for any
+// project not named above, appended after).
+const MAIN_SLOTS: Record<number, [number, number][]> = {
+  1: [[0.5, 0.45]],
+  2: [
+    [0.18, 0.28],
+    [0.32, 0.68],
+  ],
+  3: [
+    [0.18, 0.24],
+    [0.32, 0.46],
+    [0.26, 0.76],
+  ],
+  4: [
+    [0.18, 0.24],
+    [0.32, 0.43],
+    [0.33, 0.63],
+    [0.21, 0.77],
+  ],
+  5: [
+    [0.16, 0.2],
+    [0.3, 0.38],
+    [0.32, 0.56],
+    [0.24, 0.72],
+    [0.14, 0.88],
+  ],
+};
+
+// Background projects cascade down the right column, mirroring the mains'
+// left column — the two sides read as a single composition with open air
+// down the middle for shared-skill stars. Order top to bottom; falls back to
+// declaration order for any project not named here.
+const BG_ORDER = ['mahler', 'stereolove', 'submerged'];
+
+const BG_SLOTS: Record<number, [number, number][]> = {
+  1: [[0.68, 0.45]],
+  2: [
+    [0.68, 0.24],
+    [0.66, 0.72],
+  ],
+  3: [
+    [0.66, 0.2],
+    [0.68, 0.72],
+    [0.64, 0.86],
+  ],
+  4: [
+    [0.66, 0.16],
+    [0.7, 0.42],
+    [0.68, 0.68],
+    [0.64, 0.88],
+  ],
+};
+
 export function computeLayout(
   nodes: GraphNode[],
   edges: GraphEdge[],
-  { width, height, seed = 20260703, iterations = 320 }: Options,
+  { width, height, seed = 20260703 }: Options,
 ): Layout {
   const rand = rng(seed);
-  const cx = width / 2;
-  const cy = height / 2;
+  // The 110px label margin only makes sense when there's width to spare — on a
+  // phone-width canvas it would swallow most of the box, so fall back to a
+  // proportional pad there (labels self-clamp to the canvas when drawn).
+  const padX = width < 640 ? Math.max(width * 0.12, 40) : Math.max(width * 0.1, 110);
+  const padY = Math.max(height * 0.08, 56);
+  const boxW = width - padX * 2;
+  const boxH = height - padY * 2;
+  const cx = padX + boxW / 2;
+  const cy = padY + boxH / 2;
   const minDim = Math.min(width, height);
 
-  const index = new Map(nodes.map((n, i) => [n.id, i]));
-
-  // Role classification — mains hold the visible center, background works sit
-  // small at the periphery, skills cluster near the projects they connect to.
   const isBgProject = (n: GraphNode) => n.kind === 'project' && !!n.project?.background;
   const isMain = (n: GraphNode) => n.kind === 'project' && !n.project?.background;
 
-  const mains = nodes.filter(isMain).sort((a, b) => b.weight - a.weight);
+  const weightOrder = nodes.filter(isMain).sort((a, b) => b.weight - a.weight);
+  const orderRank = new Map(MAIN_ORDER.map((id, i) => [id, i]));
+  const mains = [...weightOrder].sort((a, b) => {
+    const ra = orderRank.get(a.id);
+    const rb = orderRank.get(b.id);
+    if (ra !== undefined && rb !== undefined) return ra - rb;
+    if (ra !== undefined) return -1;
+    if (rb !== undefined) return 1;
+    return 0; // both unranked — keep weight order
+  });
   const bgProjects = nodes.filter(isBgProject);
+  const skills = nodes.filter((n) => n.kind === 'skill');
 
-  const mainAngle = new Map<string, number>();
+  const pos = new Map<string, { x: number; y: number }>();
+  const at = (fx: number, fy: number) => ({ x: padX + fx * boxW, y: padY + fy * boxH });
+
+  // ── 1. Main projects → designed anchor slots ──
+  // The slots read top-to-bottom in a left-hand column on every viewport —
+  // no separate "tall" re-spread needed, since the composition is already
+  // vertical and survives both a wide desktop box and a narrow mobile one.
+  const slots = MAIN_SLOTS[Math.min(mains.length, 5)] ?? MAIN_SLOTS[5];
   mains.forEach((n, i) => {
-    mainAngle.set(n.id, -Math.PI / 2 + i * ((Math.PI * 2) / mains.length));
-  });
-  const bgAngle = new Map<string, number>();
-  bgProjects.forEach((n, i) => {
-    const step = (Math.PI * 2) / Math.max(bgProjects.length, 1);
-    bgAngle.set(n.id, -Math.PI / 2 + step / 2 + i * step);
-  });
-
-  // Adjacency (by id) for centroid-seeding skills near their connected projects.
-  const neighborsOf = new Map<string, string[]>();
-  for (const e of edges) {
-    if (!neighborsOf.has(e.a)) neighborsOf.set(e.a, []);
-    if (!neighborsOf.has(e.b)) neighborsOf.set(e.b, []);
-    neighborsOf.get(e.a)!.push(e.b);
-    neighborsOf.get(e.b)!.push(e.a);
-  }
-
-  // Seed positions. Rings are seeded elliptically (radius fraction applied to
-  // width and height independently, not the isotropic min(width,height)) so
-  // that the later per-axis normalization — which stretches x and y
-  // independently to fill the box — doesn't reorder distances-from-center on
-  // extreme aspect ratios (e.g. a tall narrow mobile canvas). A circle seeded
-  // with min(width,height) gets warped unevenly by anisotropic stretching;
-  // an ellipse pre-shaped to the box's own aspect survives it.
-  const seedPos = new Map<string, { x: number; y: number }>();
-  for (const n of nodes) {
-    if (isMain(n)) {
-      const a = mainAngle.get(n.id)!;
-      seedPos.set(n.id, {
-        x: cx + Math.cos(a) * width * 0.17,
-        y: cy + Math.sin(a) * height * 0.17,
-      });
-    } else if (isBgProject(n)) {
-      const a = bgAngle.get(n.id)!;
-      seedPos.set(n.id, {
-        x: cx + Math.cos(a) * width * 0.46,
-        y: cy + Math.sin(a) * height * 0.46,
-      });
-    }
-  }
-  // Skills: centroid of connected projects' seed positions (fallback: old random ring).
-  for (const n of nodes) {
-    if (n.kind !== 'skill') continue;
-    const neighborIds = neighborsOf.get(n.id) ?? [];
-    const projectSeeds = neighborIds
-      .map((id) => seedPos.get(id))
-      .filter((p): p is { x: number; y: number } => !!p);
-    if (projectSeeds.length > 0) {
-      const sx = projectSeeds.reduce((s, p) => s + p.x, 0) / projectSeeds.length;
-      const sy = projectSeeds.reduce((s, p) => s + p.y, 0) / projectSeeds.length;
-      seedPos.set(n.id, {
-        x: sx + (rand() - 0.5) * 2 * width * 0.05,
-        y: sy + (rand() - 0.5) * 2 * height * 0.05,
-      });
+    if (i < slots.length) {
+      const [fx, fy] = slots[i];
+      pos.set(n.id, at(fx, fy));
     } else {
-      const a = rand() * Math.PI * 2;
-      const r = minDim * (0.24 + rand() * 0.26);
-      seedPos.set(n.id, { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r });
+      // overflow mains (data grew): outer ring, evenly spread
+      const a = -Math.PI / 2 + ((i - slots.length) / Math.max(mains.length - slots.length, 1)) * Math.PI * 2;
+      pos.set(n.id, { x: cx + Math.cos(a) * boxW * 0.42, y: cy + Math.sin(a) * boxH * 0.42 });
     }
-  }
-
-  const pos = nodes.map((n) => {
-    const p = seedPos.get(n.id)!;
-    return { x: p.x, y: p.y, vx: 0, vy: 0 };
   });
 
-  // Force parameters, tuned for this scale.
-  // Ideal edge length from Fruchterman-Reingold: proportional to
-  // sqrt(area / nodeCount). Unlike min(width,height), this adapts to the real
-  // box aspect — on a tall narrow (mobile) canvas it keeps connected nodes a
-  // sensible distance apart so the sim fills the height naturally instead of
-  // huddling into a width-locked blob that then has to be stretched.
-  const k = Math.sqrt((width * height) / Math.max(nodes.length, 1)) * 0.82; // ideal edge length
-  // Stronger repulsion relative to attraction — with every node now always
-  // labeled, more breathing room between nodes matters more than a tight
-  // "constellation" shape ("the graph should have enough air inside it").
-  const repulse = k * k * 1.3;
-  const centerPullFor = (n: GraphNode) =>
-    isMain(n) ? 0.05 : isBgProject(n) ? 0.006 : 0.012;
-  // Elliptical rim (matches the elliptical seeding above, for the same
-  // anisotropic-normalization reason): semi-axes scale with width/height.
-  const rimRx = width * 0.46;
-  const rimRy = height * 0.46;
-
-  for (let it = 0; it < iterations; it++) {
-    const cooling = 1 - it / iterations; // simulated-annealing damping
-
-    // Repulsion (all pairs — cheap at this node count)
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        let dx = pos[i].x - pos[j].x;
-        let dy = pos[i].y - pos[j].y;
-        let d2 = dx * dx + dy * dy;
-        if (d2 < 0.01) {
-          dx = (rand() - 0.5) * 0.1;
-          dy = (rand() - 0.5) * 0.1;
-          d2 = dx * dx + dy * dy;
+  // ── 2. Background projects → right column, cascading opposite the mains ──
+  const skillOwners = new Map<string, string[]>(); // skill id → project ids
+  for (const e of edges) {
+    // buildGraph always emits project→skill as a→b
+    if (!skillOwners.has(e.b)) skillOwners.set(e.b, []);
+    skillOwners.get(e.b)!.push(e.a);
+  }
+  const bgOrderRank = new Map(BG_ORDER.map((id, i) => [id, i]));
+  const orderedBg = [...bgProjects].sort((a, b) => {
+    const ra = bgOrderRank.get(a.id);
+    const rb = bgOrderRank.get(b.id);
+    if (ra !== undefined && rb !== undefined) return ra - rb;
+    if (ra !== undefined) return -1;
+    if (rb !== undefined) return 1;
+    return 0;
+  });
+  const bgSlots = BG_SLOTS[Math.min(orderedBg.length, 4)] ?? BG_SLOTS[4];
+  const placedAngles: number[] = [];
+  orderedBg.forEach((n, i) => {
+    if (i < bgSlots.length) {
+      const [fx, fy] = bgSlots[i];
+      pos.set(n.id, at(fx, fy));
+      return;
+    }
+    // overflow bg projects (data grew): centroid of mains reachable through
+    // shared skills → rim angle, same fallback the composition used to use
+    // for every background star before the fixed right column was authored.
+    let sx = 0;
+    let sy = 0;
+    let c = 0;
+    for (const p of n.project?.skills ?? []) {
+      for (const owner of skillOwners.get(p) ?? []) {
+        const mp = pos.get(owner);
+        if (mp && owner !== n.id) {
+          sx += mp.x;
+          sy += mp.y;
+          c++;
         }
-        const d = Math.sqrt(d2);
-        const f = repulse / d2;
-        const fx = (dx / d) * f;
-        const fy = (dy / d) * f;
-        pos[i].vx += fx;
-        pos[i].vy += fy;
-        pos[j].vx -= fx;
-        pos[j].vy -= fy;
       }
     }
-
-    // Attraction along edges (spring toward ideal length)
-    for (const e of edges) {
-      const ia = index.get(e.a)!;
-      const ib = index.get(e.b)!;
-      const dx = pos[ia].x - pos[ib].x;
-      const dy = pos[ia].y - pos[ib].y;
-      const d = Math.sqrt(dx * dx + dy * dy) || 0.01;
-      const f = (d - k) * 0.06;
-      const fx = (dx / d) * f;
-      const fy = (dy / d) * f;
-      pos[ia].vx -= fx;
-      pos[ia].vy -= fy;
-      pos[ib].vx += fx;
-      pos[ib].vy += fy;
+    let angle = c ? Math.atan2(sy / c - cy, sx / c - cx) : rand() * Math.PI * 2;
+    const MIN_SEP = (Math.PI / 180) * 55;
+    for (let guard = 0; guard < 12; guard++) {
+      const clash = placedAngles.find((a) => {
+        const d = Math.abs(Math.atan2(Math.sin(angle - a), Math.cos(angle - a)));
+        return d < MIN_SEP;
+      });
+      if (clash === undefined) break;
+      angle += MIN_SEP;
     }
+    placedAngles.push(angle);
+    pos.set(n.id, {
+      x: cx + Math.cos(angle) * boxW * 0.46,
+      y: cy + Math.sin(angle) * boxH * 0.46,
+    });
+  });
 
-    // Rim spring for background projects — keeps them out at the periphery,
-    // on an ellipse shaped to the canvas aspect (see seeding comment above).
-    for (const n of bgProjects) {
-      const i = index.get(n.id)!;
-      const dx = pos[i].x - cx;
-      const dy = pos[i].y - cy;
-      const nx = dx / rimRx;
-      const ny = dy / rimRy;
-      const ndist = Math.sqrt(nx * nx + ny * ny) || 0.0001;
-      const f = (1 - ndist) * 0.1;
-      pos[i].vx += (nx / ndist) * f * rimRx;
-      pos[i].vy += (ny / ndist) * f * rimRy;
-    }
-
-    // Gentle pull to centre keeps the whole graph on-screen (role-aware).
-    for (let i = 0; i < nodes.length; i++) {
-      const centerPull = centerPullFor(nodes[i]);
-      pos[i].vx += (cx - pos[i].x) * centerPull;
-      pos[i].vy += (cy - pos[i].y) * centerPull;
-      // integrate with damping
-      pos[i].x += pos[i].vx * 0.5 * cooling;
-      pos[i].y += pos[i].vy * 0.5 * cooling;
-      pos[i].vx *= 0.85;
-      pos[i].vy *= 0.85;
+  // ── 3. Skills → orbit their sole project, or sit between shared projects ──
+  const projWeight = new Map(nodes.filter((n) => n.kind === 'project').map((n) => [n.id, n.weight]));
+  // group single-project skills per hub so they fan cleanly around it
+  const soloByProject = new Map<string, GraphNode[]>();
+  const shared: GraphNode[] = [];
+  for (const s of skills) {
+    const owners = skillOwners.get(s.id) ?? [];
+    if (owners.length === 1) {
+      if (!soloByProject.has(owners[0])) soloByProject.set(owners[0], []);
+      soloByProject.get(owners[0])!.push(s);
+    } else {
+      shared.push(s);
     }
   }
 
-  // Normalise into the viewport. Each axis is scaled independently so the
-  // graph always fills the padded box in BOTH dimensions — on a wide canvas
-  // the field stretches horizontally instead of huddling in an aspect-locked
-  // blob. Padding is a guaranteed ≥10% clear margin on every side (with a
-  // floor in px so labels drawn beside edge nodes still have room).
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  for (const p of pos) {
-    minX = Math.min(minX, p.x);
-    minY = Math.min(minY, p.y);
-    maxX = Math.max(maxX, p.x);
-    maxY = Math.max(maxY, p.y);
+  const orbitR = Math.max(96, Math.min(minDim * 0.15, 165));
+  for (const [pid, list] of soloByProject) {
+    const hub = pos.get(pid);
+    if (!hub) continue;
+    // fan outward: away from canvas centre, so exclusive skills always face
+    // the open edge instead of colliding with the middle of the composition
+    const outward =
+      Math.hypot(hub.x - cx, hub.y - cy) < 4 ? -Math.PI / 2 : Math.atan2(hub.y - cy, hub.x - cx);
+    const step = Math.min(0.85, (Math.PI * 1.15) / Math.max(list.length, 1));
+    // background hubs keep their satellites close — a dim rim star shouldn't
+    // fling quiet skills across the composition
+    const hubIsBg = bgProjects.some((b) => b.id === pid);
+    const baseR = hubIsBg ? orbitR * 0.6 : orbitR;
+    list.forEach((s, i) => {
+      const a = outward + (i - (list.length - 1) / 2) * step;
+      const r = baseR * (1 + (i % 2) * 0.22);
+      pos.set(s.id, { x: hub.x + Math.cos(a) * r, y: hub.y + Math.sin(a) * r });
+    });
   }
-  const padX = Math.max(width * 0.1, 110);
-  const padY = Math.max(height * 0.1, 56);
-  const spanX = maxX - minX || 1;
-  const spanY = maxY - minY || 1;
-  const scaleX = Math.max((width - padX * 2) / spanX, 0.01);
-  const scaleY = Math.max((height - padY * 2) / spanY, 0.01);
+  for (const s of shared) {
+    const owners = skillOwners.get(s.id) ?? [];
+    let sx = 0;
+    let sy = 0;
+    let wsum = 0;
+    for (const o of owners) {
+      const p = pos.get(o);
+      if (!p) continue;
+      const w = projWeight.get(o) ?? 1;
+      sx += p.x * w;
+      sy += p.y * w;
+      wsum += w;
+    }
+    if (!wsum) {
+      pos.set(s.id, { x: cx, y: cy });
+      continue;
+    }
+    // centroid, nudged slightly outward from the composition centre so shared
+    // skills don't all pile into the middle
+    const mx = sx / wsum;
+    const my = sy / wsum;
+    pos.set(s.id, {
+      x: cx + (mx - cx) * 1.22 + (rand() - 0.5) * 24,
+      y: cy + (my - cy) * 1.22 + (rand() - 0.5) * 24,
+    });
+  }
 
-  const laidOut: LaidOutNode[] = nodes.map((n, i) => ({
-    ...n,
-    x: (pos[i].x - minX) * scaleX + padX,
-    y: (pos[i].y - minY) * scaleY + padY,
-  }));
+  // ── 4. Collision pass: skills untangle (projects stay anchored) ──
+  // Labels are wide and short, so "personal space" is an ellipse: generous
+  // horizontally, tighter vertically. Accent skills are heavier — they hold
+  // their spot and push plain skills out of the way, not vice versa.
+  const sepX = Math.min(150, boxW * 0.16);
+  const sepY = 46;
+  const projSepX = 120;
+  const projSepY = 64;
+  const skillPos = skills.map((s) => ({ n: s, p: pos.get(s.id)! }));
+  const projPos = nodes.filter((n) => n.kind === 'project').map((n) => ({ n, p: pos.get(n.id)! }));
+  for (let it = 0; it < 90; it++) {
+    for (let i = 0; i < skillPos.length; i++) {
+      for (let j = i + 1; j < skillPos.length; j++) {
+        const A = skillPos[i];
+        const B = skillPos[j];
+        let dx = A.p.x - B.p.x;
+        let dy = A.p.y - B.p.y;
+        if (dx === 0 && dy === 0) {
+          dx = (rand() - 0.5) * 2;
+          dy = (rand() - 0.5) * 2;
+        }
+        const nd = Math.hypot(dx / sepX, dy / sepY);
+        if (nd < 1) {
+          const push = (1 - nd) * 0.5;
+          const d = Math.hypot(dx, dy) || 1;
+          const ux = (dx / d) * push;
+          const uy = (dy / d) * push;
+          // heavier node (accent) moves less
+          const wa = A.n.accent ? 0.35 : 1;
+          const wb = B.n.accent ? 0.35 : 1;
+          A.p.x += ux * 16 * wa;
+          A.p.y += uy * 16 * wa;
+          B.p.x -= ux * 16 * wb;
+          B.p.y -= uy * 16 * wb;
+        }
+      }
+      // keep clear of project stars (their labels sit beside them)
+      const S = skillPos[i];
+      for (const P of projPos) {
+        const dx = S.p.x - P.p.x;
+        const dy = S.p.y - P.p.y;
+        const nd = Math.hypot(dx / projSepX, dy / projSepY);
+        if (nd < 1 && nd > 0.0001) {
+          const push = (1 - nd) * 0.6;
+          const d = Math.hypot(dx, dy) || 1;
+          S.p.x += (dx / d) * push * 18;
+          S.p.y += (dy / d) * push * 18;
+        }
+      }
+      // stay inside the padded box
+      S.p.x = Math.min(padX + boxW, Math.max(padX, S.p.x));
+      S.p.y = Math.min(padY + boxH, Math.max(padY, S.p.y));
+    }
+  }
+
+  const laidOut: LaidOutNode[] = nodes.map((n) => {
+    const p = pos.get(n.id)!;
+    return { ...n, x: p.x, y: p.y };
+  });
 
   return { nodes: laidOut, width, height };
 }
