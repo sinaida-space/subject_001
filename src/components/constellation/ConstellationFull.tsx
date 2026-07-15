@@ -50,7 +50,8 @@ GEDGES.forEach((e, i) => {
 
 // Neutral warm-gray for skill labels at rest — kills the "rainbow dashboard" look.
 // The category color returns only as a hover/active response (see label drawing).
-const SKILL_LABEL_REST = 'rgba(240,239,233,0.5)';
+// Hex (not rgba) so per-tier alpha can be applied via hexA at draw time.
+const SKILL_LABEL_REST = '#f0efe9';
 
 // ── Pre-baked radial glow sprite, one per colour (additive bloom, no shader) ──
 const glowCache = new Map<string, HTMLCanvasElement>();
@@ -504,22 +505,28 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       const fontWeight = n.kind === 'skill' ? 500 : 400;
 
       if (n.kind === 'project') {
-        fs = isActive ? 12 : isNeighbor ? 11 : 9;
+        // Projects are the product — flagships read first, background works
+        // stay legible but clearly recede.
+        const bg = !!n.project?.background;
+        fs = isActive ? 14 : isNeighbor ? 12 : n.accent ? 13 : bg ? 9 : 11;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.85 : n.accent ? 0.3 : 0.16;
+          alpha = isActive ? 1 : isNeighbor ? 0.85 : n.accent ? 0.35 : 0.16;
         } else {
           // Hero labels recede toward the regular baseline as heroFadeRef fades,
           // so the whole "first highlight" (edges + label brightness) recedes
           // together rather than just the connecting lines dimming alone.
-          alpha = n.accent ? 0.4 + 0.15 * heroFadeRef.current : 0.4;
+          alpha = n.accent ? 0.72 + 0.18 * heroFadeRef.current : bg ? 0.3 : 0.55;
         }
       } else {
-        fs = isActive ? 13 : isNeighbor ? 12 : 11; // uniform at rest regardless of accent
+        // Skills tier below projects: accent skills (the signals a producer
+        // scans for) hold a bright baseline; the rest are quiet texture until
+        // hover pulls their cluster forward.
+        fs = isActive ? 13 : isNeighbor ? 12 : n.accent ? 11.5 : 10;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.35 : 0.15;
+          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.35 : 0.12;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
-          alpha = 0.75; // brighter, uniform baseline — no accent/non-accent split
+          alpha = n.accent ? 0.8 : 0.38;
           useCategoryColor = false; // neutral warm-gray at rest
         }
       }
@@ -575,7 +582,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       let color: string;
       if (n.kind === 'project') color = hexA('#f2efe9', alpha);
       else if (useCategoryColor) color = hexA(n.color, alpha);
-      else color = SKILL_LABEL_REST;
+      else color = hexA(SKILL_LABEL_REST, alpha);
       ctx.fillStyle = color;
       if (isActive) {
         ctx.shadowColor = n.color;
