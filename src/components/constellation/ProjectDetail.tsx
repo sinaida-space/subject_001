@@ -24,7 +24,8 @@ const CASE_PAGES: Record<string, string> = {
 function projectLinks(project: Project) {
   const links = [...(project.links ?? [])];
   if (project.url && !links.some((l) => l.url === project.url)) {
-    links.push({ label: 'Open case', url: project.url });
+    const label = project.kind === 'game' ? 'Go to the experience' : 'Open case';
+    links.push({ label, url: project.url });
   }
   return links;
 }
