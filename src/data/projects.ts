@@ -180,6 +180,7 @@ export const PROJECTS: Project[] = [
       { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
       { label: 'Alisa Feer', url: 'https://uvaliss.ru/' },
       { label: 'Project sheet (PDF)', url: '/files/the-eyes-chico-project-sheet.pdf' },
+      { label: 'GitHub', url: 'https://github.com/sinaida-space/the-eyes-chico' },
     ],
     badges: ['camera'],
     featured: true,
@@ -224,6 +225,7 @@ export const PROJECTS: Project[] = [
       links: [
         { label: 'Alisa Feer', url: 'https://uvaliss.ru/' },
         { label: 'Project sheet (PDF)', url: '/files/the-eyes-chico-project-sheet.pdf' },
+        { label: 'GitHub', url: 'https://github.com/sinaida-space/the-eyes-chico' },
       ],
       order: {
         heading: 'What a space can commission',
@@ -323,6 +325,7 @@ export const PROJECTS: Project[] = [
       ],
       links: [
         { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
+        { label: 'GitHub', url: 'https://github.com/sinaida-space/aether-currents' },
       ],
       order: {
         heading: 'What a stage can book',
