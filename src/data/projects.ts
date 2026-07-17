@@ -268,6 +268,7 @@ export const PROJECTS: Project[] = [
     links: [
       { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
       { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
+      { label: 'GitHub', url: 'https://github.com/sinaida-space/aether-currents' },
     ],
     badges: ['camera', 'sound'],
     featured: true,
@@ -343,6 +344,9 @@ export const PROJECTS: Project[] = [
     skills: ['creative-web', 'body-tracking', 'algorithmic-systems', 'perception-media', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/ethereal-path/',
     video: '15wl2Sko5GA',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/sinaida-space/ethereal-path' },
+    ],
     badges: ['camera'],
     weight: 1.1,
   },
@@ -358,6 +362,9 @@ export const PROJECTS: Project[] = [
     skills: ['creative-web', 'body-tracking', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
     video: 'jQy4Kk70hxM',
+    links: [
+      { label: 'GitHub', url: 'https://github.com/sinaida-space/stereolove' },
+    ],
     badges: ['camera'],
     weight: 0.7,
     background: true,
