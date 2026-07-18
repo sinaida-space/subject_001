@@ -115,8 +115,8 @@ function BioSignalLock() {
           }}
         />
       )}
-      <div className="font-mono mb-5" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
-        {locked ? '> BIO_SIGNAL.lock() // SUBJECT: SINAIDA // STATUS: ACTIVE' : `> ${noise}`}
+      <div className="font-data mb-5" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
+        {locked ? 'SUBJECT: SINAIDA · STATUS: ACTIVE' : noise}
       </div>
       <div className="space-y-3">
         {rows.map(([key, val], index) => {
@@ -124,7 +124,7 @@ function BioSignalLock() {
           return (
             <div
               key={key}
-              className="font-mono"
+              className="font-data"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '140px 20px 1fr',
@@ -233,13 +233,13 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <span className="block font-mono mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
-        SUBJECT_001
+      <span className="block font-data mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
+        SUBJECT 001
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
+      <span className="block font-data mt-1" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
+      <span className="block font-data mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
         NEW MEDIA ARTIST
       </span>
     </div>
@@ -249,7 +249,7 @@ function PhotoBlock() {
 // ── Main ─────────────────────────────────────────────────────
 export default function AboutSection() {
   return (
-    <section id="about" className="relative z-10 py-24">
+    <section id="about" className="draft-section relative z-10 py-24">
       <div className="container mx-auto px-6 max-w-7xl">
         <Suspense fallback={<div className="section-divider mb-16" />}>
           <DustReveal>
@@ -259,19 +259,19 @@ export default function AboutSection() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+              <div className="font-data uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
                 About
               </div>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-                [ BIO ]
+              <div className="font-data mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
+                Bio
               </div>
             </Reveal>
           </div>
           <div className="flex-1">
             <Reveal delay={50}>
-              <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-10">
+              <h2 className="font-dot uppercase text-2xl md:text-4xl font-black leading-tight mb-10 text-foreground">
                 Art, technology, and
-                <span className="text-primary font-bold"> human expression</span>
+                <span className="bloom-red" style={{ color: '#ff3333' }}> human expression</span>
               </h2>
             </Reveal>
             <div className="flex flex-col md:flex-row items-start gap-12">
