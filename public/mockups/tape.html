@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAPE — Mockup B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Tiny5&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./fx.css" />
+<style>
+  :root {
+    --bg: hsl(280 33% 3%);
+    --red: #CC1414;
+    --red-glow: #ff3333;
+    --white: #f5f5f2;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; min-height: 100%; background: var(--bg); color: var(--white);
+    font-family: 'Space Grotesk', sans-serif; overflow-x: hidden;
+  }
+  #fxCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+  .css-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: linear-gradient(to bottom, hsl(280 33% 4%), hsl(280 33% 2%) 60%, hsl(280 33% 3%));
+  }
+
+  header.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 32px;
+  }
+  .wordmark {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 16px;
+    letter-spacing: 0.14em; text-transform: lowercase; color: var(--white);
+  }
+  .wordmark .dot { color: var(--red-glow); }
+  nav.links { display: flex; align-items: center; gap: 28px; }
+  nav.links a {
+    font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--white);
+    text-decoration: none; display: inline-block;
+  }
+  nav.links a.contact {
+    color: var(--red-glow); border: 1px solid var(--red-glow); padding: 8px 14px;
+    background: rgba(255,51,51,0.06);
+  }
+  @keyframes trackglitch {
+    0%   { transform: translateX(0); clip-path: inset(0 0 0 0); }
+    15%  { transform: translateX(-3px); clip-path: inset(10% 0 40% 0); }
+    30%  { transform: translateX(2px); clip-path: inset(50% 0 5% 0); }
+    45%  { transform: translateX(-2px); clip-path: inset(20% 0 30% 0); }
+    60%  { transform: translateX(1px); clip-path: inset(0 0 0 0); }
+    100% { transform: translateX(0); clip-path: inset(0 0 0 0); }
+  }
+  nav.links a:not(.contact):hover { animation: trackglitch 250ms steps(2); }
+  nav.links a.contact:hover { background: var(--red-glow); color: #000; }
+
+  .timecode {
+    position: fixed; top: 66px; right: 32px; z-index: 10;
+    font-family: 'Tiny5', monospace; font-size: 13px; letter-spacing: 0.1em; color: var(--red-glow);
+    text-align: right;
+  }
+  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  .rec-dot { animation: blink 1s steps(1) infinite; }
+
+  main.hero {
+    position: relative; z-index: 1;
+    min-height: 100vh; display: grid; grid-template-columns: 58% 1fr;
+    gap: 40px; align-items: center; padding: 140px 32px 80px;
+  }
+  .hero-col { max-width: 40em; }
+  .eyebrow {
+    font-family: 'Tiny5', monospace; font-size: 12px; letter-spacing: 0.2em; margin-bottom: 20px;
+  }
+  h1.chroma {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: clamp(2.6rem, 6vw, 4.6rem); line-height: 1.05; margin: 0 0 22px;
+    text-transform: uppercase; color: #f6f6f6;
+    text-shadow:
+      0 0 2px  rgba(255, 255, 255, 0.95),
+      0 0 8px  rgba(255, 255, 255, 0.55),
+      0 0 20px rgba(220, 235, 255, 0.35),
+      2px 0 0 rgba(255, 0, 0, 0.35),
+      -2px 0 0 rgba(0, 255, 255, 0.35);
+  }
+  h1.chroma span { display: block; }
+  .sub {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 300; font-size: 16px;
+    line-height: 1.6; color: rgba(245,245,242,0.82); margin: 0 0 32px; max-width: 34em;
+  }
+  .cta {
+    font-family: 'Tiny5', monospace; font-size: 13px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--red-glow); text-decoration: none;
+    border: 1px solid var(--red-glow); padding: 14px 30px; display: inline-block;
+    box-shadow: 0 0 12px rgba(255,51,51,0.45), inset 0 0 8px rgba(255,51,51,0.08);
+    transition: box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+  .cta:hover {
+    background: rgba(255,51,51,0.12); color: #fff;
+    box-shadow: 0 0 26px rgba(255,51,51,0.8), inset 0 0 14px rgba(255,51,51,0.2);
+  }
+
+  .monitors { display: flex; flex-direction: column; gap: 18px; }
+  .tile {
+    position: relative; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden;
+    background: #050505; border: 1px solid rgba(245,245,242,0.12);
+    box-shadow: inset 0 0 22px rgba(0,0,0,0.85), inset 0 0 3px rgba(255,51,51,0.25);
+  }
+  .tile img, .tile canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile-label {
+    position: absolute; left: 8px; bottom: 6px; z-index: 3;
+    font-family: 'Tiny5', monospace; font-size: 10px; letter-spacing: 0.1em;
+    color: var(--red-glow); text-shadow: 0 0 4px rgba(0,0,0,0.9);
+  }
+  .cam1 img { display: none; }
+  body.tier-light .cam1 canvas { display: none; }
+  body.tier-light .cam1 img { display: block; filter: contrast(1.2) grayscale(0.3); }
+  .cam3 .bars {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right,
+      #f5f5f2 0 12.5%, #c8c800 12.5% 25%, #00b8c8 25% 37.5%, #00a83c 37.5% 50%,
+      #b800b8 50% 62.5%, #b81414 62.5% 75%, #1414b8 75% 87.5%, #1a1a1a 87.5% 100%);
+    filter: brightness(0.4);
+  }
+
+  footer.strip {
+    position: fixed; bottom: 6px; left: 0; right: 0; z-index: 5; text-align: center;
+    font-family: 'Tiny5', monospace; font-size: 10px; letter-spacing: 0.15em;
+    color: var(--red-glow); opacity: 0.4; pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    nav.links a:hover { animation: none; }
+    .rec-dot { animation: none; }
+  }
+  @media (max-width: 900px) {
+    main.hero { grid-template-columns: 1fr; padding-top: 150px; }
+    .monitors { flex-direction: row; }
+    .tile { flex: 1; }
+  }
+  @media (max-width: 640px) {
+    .monitors { flex-direction: column; }
+    .tile.cam3 { display: none; }
+    nav.links a:not(.contact) { display: none; }
+    .timecode { top: 62px; right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="css-bg" id="cssBg" style="display:none;"></div>
+  <canvas id="fxCanvas"></canvas>
+
+  <header class="nav">
+    <div class="wordmark">sin<span class="dot">.</span>ai<span class="dot">.</span>da</div>
+    <nav class="links">
+      <a href="#">WORK</a>
+      <a href="#">ABOUT</a>
+      <a href="#">SERVICES</a>
+      <a href="#" class="contact">CONTACT</a>
+    </nav>
+  </header>
+
+  <div class="timecode"><span id="tc">00:00:00:00</span> &nbsp; REC <span class="rec-dot">&#9679;</span></div>
+
+  <main class="hero">
+    <div class="hero-col">
+      <div class="eyebrow fx-bloom-red">SINAIDA KRIVCHENKO — NEW MEDIA ARTIST &middot; PRAGUE</div>
+      <h1 class="chroma"><span>VISUAL WORLDS</span><span>FOR PHYSICAL SPACES</span></h1>
+      <p class="sub">Projections, stage visuals, generative art — designed to be experienced in the room, not on the feed.</p>
+      <a href="#" class="cta">SEE THE WORK</a>
+    </div>
+
+    <div class="monitors">
+      <div class="tile cam1">
+        <img id="cam1Img" src="/sinaida-photo.jpg" alt="" crossorigin="anonymous" />
+        <canvas id="cam1Canvas"></canvas>
+        <div class="tile-label">CAM 01 — STAGE</div>
+      </div>
+      <div class="tile cam2">
+        <canvas id="cam2Canvas"></canvas>
+        <div class="tile-label">CAM 02 — FOH</div>
+      </div>
+      <div class="tile cam3">
+        <div class="bars"></div>
+        <div class="tile-label">CAM 03 — BACKSTAGE</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="strip">MOCKUP B — TAPE &middot; aesthetic-v2</footer>
+
+<script type="module">
+import { createFX, supportsFull, renderStill } from './fx.js';
+
+const params = new URLSearchParams(location.search);
+const forceLight = params.get('tier') === 'light';
+const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const full = !forceLight && supportsFull();
+document.body.classList.add(full ? 'tier-full' : 'tier-light');
+
+// ---- SMPTE timecode from performance.now(), 25fps ----
+const tcEl = document.getElementById('tc');
+function updateTc() {
+  const total = performance.now() / 1000;
+  const wrapped = total % 86400;
+  const hh = Math.floor(wrapped / 3600);
+  const mm = Math.floor((wrapped % 3600) / 60);
+  const ss = Math.floor(wrapped % 60);
+  const ff = Math.floor((wrapped % 1) * 25);
+  const p2 = (n) => String(n).padStart(2, '0');
+  tcEl.textContent = `${p2(hh)}:${p2(mm)}:${p2(ss)}:${p2(ff)}`;
+}
+updateTc();
+if (!reduced) setInterval(updateTc, 40);
+
+// ---- CAM 01: dithered still via renderStill (full tier only) ----
+const cam1Img = document.getElementById('cam1Img');
+const cam1Canvas = document.getElementById('cam1Canvas');
+if (full) {
+  const runDither = () => renderStill(cam1Img, cam1Canvas, ['dither'], { dither: { levels: 3, scale: 2 } });
+  if (cam1Img.complete) runDither();
+  else cam1Img.addEventListener('load', runDither);
+} else {
+  cam1Canvas.style.display = 'none';
+}
+
+// ---- CAM 02: animated static noise, ~12fps (static single frame in light tier / reduced motion) ----
+const cam2 = document.getElementById('cam2Canvas');
+const cam2ctx = cam2.getContext('2d');
+function sizeCam2() {
+  cam2.width = cam2.clientWidth || 280;
+  cam2.height = cam2.clientHeight || 210;
+}
+function drawNoise() {
+  const w = cam2.width, h = cam2.height;
+  const img = cam2ctx.createImageData(w, h);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = Math.random() * 255;
+    img.data[i] = v; img.data[i + 1] = v; img.data[i + 2] = v; img.data[i + 3] = 255;
+  }
+  cam2ctx.putImageData(img, 0, 0);
+}
+window.addEventListener('resize', sizeCam2);
+sizeCam2();
+drawNoise();
+if (full && !reduced) setInterval(() => { sizeCam2(); drawNoise(); }, Math.round(1000 / 12));
+
+// ---- Background FX canvas (full tier) ----
+if (full) {
+  const canvas = document.getElementById('fxCanvas');
+  const fx = createFX(canvas, {
+    passes: ['dither', 'vhs', 'bloom', 'scanlines'],
+    params: {
+      dither: { levels: 5, scale: 2 },
+      vhs: { tracking: 0.4, chroma: 1.5, noise: 0.12 },
+      bloom: { threshold: 0.6, strength: 0.9, radius: 8 },
+      scanlines: { opacity: 0.15, period: 3 },
+    },
+  });
+
+  fx.start((ctx, t) => {
+    const w = ctx.canvas.width, h = ctx.canvas.height;
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, 'hsl(280 33% 5%)');
+    g.addColorStop(0.5 + 0.06 * Math.sin(t * 0.1), 'hsl(280 33% 2%)');
+    g.addColorStop(1, 'hsl(280 33% 3%)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // occasional drifting horizontal luma band
+    const bandPhase = (t * 0.06) % 1.4;
+    if (bandPhase < 1) {
+      const y = bandPhase * h;
+      const bandH = h * 0.05;
+      const grad = ctx.createLinearGradient(0, y - bandH, 0, y + bandH);
+      grad.addColorStop(0, 'rgba(245,245,242,0)');
+      grad.addColorStop(0.5, 'rgba(245,245,242,0.06)');
+      grad.addColorStop(1, 'rgba(245,245,242,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, y - bandH, w, bandH * 2);
+    }
+  });
+} else {
+  document.getElementById('fxCanvas').style.display = 'none';
+  const bg = document.getElementById('cssBg');
+  bg.style.display = 'block';
+  bg.classList.add('fx-scanlines-css', 'fx-noise-css');
+}
+</script>
+</body>
+</html>
