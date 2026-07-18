@@ -51,7 +51,16 @@
        once the webfont swaps in. */
     --font-display: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
-    --font-clinical: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+    /* Body/paragraph reading face — was IBM Plex Mono. Retired: a mono face
+       for running text reads as terminal chrome and hurts legibility at
+       small sizes. Space Grotesk at regular weight is the readable body face;
+       --font-mono remains for deliberate technical accents only (ECG/data
+       readouts, short labels) — never for paragraphs. */
+    --font-clinical: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* aesthetic-v2 draft pass (#14): Doto for Hero/About display headings,
+       Tiny5 for clinical labels/readouts in those two sections only. */
+    --font-dot: 'Doto', 'Space Grotesk', sans-serif;
+    --font-data: 'Tiny5', monospace;
 
     --scanline-opacity: 0.04;
     --glitch-intensity: 0;
@@ -110,6 +119,43 @@
 }
 
 @layer base {
+  /* aesthetic-v2 draft pass (#14): Hero + About switchable skin.
+     `.draft-section` is applied only to the Hero and About <section>
+     wrapper elements. Draft S (STAGE) is the default and matches the
+     site's existing background/foreground tokens almost exactly — it
+     mainly adds typography + bloom. Draft R (RED ROOM) redefines
+     --foreground / --accent / --primary-legible *scoped to this subtree
+     only* so every existing `hsl(var(--foreground))` / `hsl(var(--accent))`
+     usage already in HeroSection/AboutSection collapses onto the red ramp
+     automatically, without per-element color branching in JS. Nothing
+     outside `.draft-section` is affected — global tokens are untouched. */
+  .draft-section {
+    background-color: var(--section-bg);
+  }
+
+  :root[data-draft="stage"] .draft-section,
+  :root:not([data-draft]) .draft-section {
+    --section-bg: hsl(280 33% 3%);
+  }
+
+  :root[data-draft="red"] .draft-section {
+    --section-bg: #050203;
+    --foreground: 0 45% 78%; /* legibility floor for body copy */
+    --accent: 0 70% 28%; /* dim ramp, replaces the cyan accent in this subtree */
+    --primary-legible: 0 100% 60%; /* bright ramp for small emphasized labels */
+  }
+
+  /* Lite mode wins over the draft skin: flatten back to the lite palette
+     so contrast stays correct if red-draft + lite-mode are both active. */
+  html[data-mode="lite"] .draft-section {
+    --section-bg: hsl(var(--background));
+    --foreground: 0 0% 8%;
+    --accent: 0 0% 8%;
+    --primary-legible: 352 87% 38%;
+  }
+}
+
+@layer base {
   * {
     @apply border-border;
   }
@@ -121,7 +167,10 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-mono);
+    /* Reading face is Space Grotesk, not the mono face — mono reads as
+       terminal chrome when it's the *default* for running text. font-mono
+       stays available as an explicit accent (labels, readouts). */
+    font-family: var(--font-display);
     overflow-x: hidden;
     background: radial-gradient(circle at center, hsl(var(--background)), hsl(var(--background) / 0.85));
   }
@@ -391,6 +440,61 @@
       animation: hover-glitch 0.15s steps(2) 1, hover-bloom 1s ease-out 1;
     }
   }
+
+  /* Hero fog — two drifting red-tinted radial gradients, behind content,
+     above the galaxy backdrop (ParticleField). Both drafts. */
+  .hero-fog {
+    position: absolute;
+    z-index: 0;
+    width: 120vw;
+    height: 120vw;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(204, 20, 20, 0.06), transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .hero-fog-a {
+    top: -35%;
+    left: -35%;
+    animation: hero-fog-drift-a 75s ease-in-out infinite;
+  }
+
+  .hero-fog-b {
+    bottom: -35%;
+    right: -35%;
+    animation: hero-fog-drift-b 110s ease-in-out infinite;
+  }
+
+  html[data-mode="lite"] .hero-fog {
+    display: none;
+  }
+
+  /* Bloom-as-box-shadow, for borders/dots rather than text. Red Room only —
+     a no-op in Draft S. */
+  :root[data-draft="red"] .bloom-border {
+    box-shadow:
+      0 0 2px rgba(255, 51, 51, 0.9),
+      0 0 8px rgba(255, 51, 51, 0.5),
+      0 0 24px rgba(255, 51, 51, 0.25);
+  }
+
+  html[data-mode="lite"] .bloom-border {
+    box-shadow: none !important;
+  }
+}
+
+@keyframes hero-fog-drift-a {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(8vw, 6vh, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes hero-fog-drift-b {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-8vw, -6vh, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
 
 @layer utilities {
@@ -404,6 +508,25 @@
 
   .font-clinical {
     font-family: var(--font-clinical);
+  }
+
+  .font-dot {
+    font-family: var(--font-dot);
+  }
+
+  .font-data {
+    font-family: var(--font-data);
+  }
+
+  .bloom-red {
+    text-shadow:
+      0 0 2px rgba(255, 51, 51, 0.9),
+      0 0 8px rgba(255, 51, 51, 0.5),
+      0 0 24px rgba(255, 51, 51, 0.25);
+  }
+
+  html[data-mode="lite"] .bloom-red {
+    text-shadow: 0 0 2px rgba(255, 51, 51, 0.9) !important;
   }
 }
 
