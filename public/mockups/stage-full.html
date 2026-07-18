@@ -6,7 +6,7 @@
 <title>STAGE · FULL Mockup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;900&family=Tiny5&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./fx.css" />
 <style>
   :root {
@@ -24,6 +24,17 @@
     font-family: 'Space Grotesk', sans-serif; font-weight: 300; overflow-x: hidden;
   }
   header, main, section, footer { position: relative; z-index: 1; }
+
+  /* ── Soft header bloom (page-local; headers only: hero h1, section h2,
+       project card titles, "Let's talk" poster element) ─────────────── */
+  .soft-bloom-white {
+    color: var(--white);
+    text-shadow: 0 0 1px rgba(245,245,242,0.9), 0 0 6px rgba(245,245,242,0.5), 0 0 18px rgba(245,245,242,0.25);
+  }
+  .soft-bloom-red {
+    color: var(--red-glow);
+    text-shadow: 0 0 1px rgba(255,51,51,0.9), 0 0 6px rgba(255,51,51,0.5), 0 0 18px rgba(255,51,51,0.25);
+  }
 
   /* ── Swiss grid shell ─────────────────────────────────────── */
   .shell {
@@ -43,7 +54,8 @@
 
   /* ── Meta row (per-section Swiss header) ─────────────────── */
   .meta-row { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
-  .meta-num { font-family: 'Tiny5', monospace; font-size: 14px; color: var(--red-glow); letter-spacing: 0.1em; }
+  .meta-num { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 13px; color: var(--red-glow);
+    letter-spacing: 0.16em; text-transform: uppercase; }
   .meta-name { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 13px;
     letter-spacing: 0.28em; text-transform: uppercase; color: rgba(245,245,242,0.75); }
   .hairline { grid-column: 1 / -1; height: 1px; background: rgba(245,245,242,0.15); margin-bottom: 56px; }
@@ -79,14 +91,15 @@
   /* ── Hero ─────────────────────────────────────────────────── */
   .hero-shell { padding-top: 96px; min-height: 90vh; grid-template-rows: auto auto; }
   .hero-copy { grid-column: 1 / 8; grid-row: 1; align-self: center; padding: 64px 0 40px; }
-  .eyebrow { font-family: 'Tiny5', monospace; font-size: 12px; letter-spacing: 0.2em; margin-bottom: 24px; }
+  .eyebrow { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 12px;
+    letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 24px; color: var(--red-glow); }
   h1.hero-h1 { font-family: 'Doto', sans-serif; font-weight: 900;
     font-size: clamp(4rem, 11vw, 10rem); line-height: 0.95; margin: 0 0 32px; text-transform: uppercase; }
   h1.hero-h1 span { display: block; }
   .hero-sub { font-family: 'Space Grotesk', sans-serif; font-weight: 300; font-size: 17px;
     line-height: 1.6; max-width: 30em; color: rgba(245,245,242,0.82); margin: 0 0 40px; }
-  .cta { display: inline-block; font-family: 'Tiny5', monospace; font-size: 13px; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--red-glow); text-decoration: none;
+  .cta { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 13px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--red-glow); text-decoration: none;
     border: 1px solid var(--red-glow); padding: 14px 30px;
     box-shadow: 0 0 12px rgba(255,51,51,0.45), inset 0 0 8px rgba(255,51,51,0.08);
     transition: box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease; }
@@ -100,25 +113,31 @@
       radial-gradient(circle, rgba(245,245,242,0.10) 1px, transparent 1.4px);
     background-size: 10px 10px, 26px 26px; background-position: 0 0, 5px 5px; }
   .hero-meta { grid-column: 1 / 8; grid-row: 2; align-self: end; padding-bottom: 48px;
-    font-family: 'Tiny5', monospace; font-size: 11px; letter-spacing: 0.1em; color: var(--red-glow);
-    opacity: 0.65; display: flex; flex-wrap: wrap; gap: 18px; }
+    font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--red-glow); opacity: 0.65; display: flex; flex-wrap: wrap; gap: 18px; }
   @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
   .live-dot { animation: blink 1s steps(1) infinite; }
   @media (prefers-reduced-motion: reduce) { .live-dot, nav.links a:hover { animation: none; } }
+
+  /* ── ECG strip (bridges hero → 01 WORK) ──────────────────────── */
+  .ecg-strip { position: relative; width: 100%; height: 120px; overflow: hidden;
+    border-top: 1px solid rgba(245,245,242,0.08); border-bottom: 1px solid rgba(245,245,242,0.08);
+    background: rgba(0,0,0,0.15); }
+  .ecg-strip canvas { display: block; width: 100%; height: 100%; }
 
   /* ── Work cards (01) ─────────────────────────────────────── */
   .work-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, 1fr);
     column-gap: var(--gutter); row-gap: 64px; }
   .work-card { grid-column: span 6; position: relative; padding: 24px 24px 20px;
     border: 1px solid rgba(245,245,242,0.15); overflow: hidden; }
-  .work-index { font-family: 'Tiny5', monospace; font-size: 12px; color: var(--red-glow);
-    letter-spacing: 0.1em; display: block; margin-bottom: 16px; }
+  .work-index { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 12px; color: var(--red-glow);
+    letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-bottom: 16px; }
   .work-title { font-family: 'Doto', sans-serif; font-weight: 900; font-size: clamp(1.6rem, 3vw, 3rem);
     line-height: 1.05; text-transform: uppercase; margin: 0 0 20px; }
-  .work-meta { font-family: 'Tiny5', monospace; font-size: 11px; letter-spacing: 0.08em;
-    color: rgba(245,245,242,0.6); display: block; margin-bottom: 4px; }
-  .work-tools { font-family: 'Tiny5', monospace; font-size: 11px; letter-spacing: 0.06em;
-    color: rgba(255,51,51,0.7); }
+  .work-meta { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(245,245,242,0.6); display: block; margin-bottom: 4px; }
+  .work-tools { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(255,51,51,0.7); }
   .work-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
     background-image: radial-gradient(circle, rgba(255,51,51,0.9) 1px, transparent 1.4px);
     background-size: 8px 8px; background-position: 0 0; opacity: 0; transition: opacity 0.3s ease; }
@@ -126,59 +145,89 @@
   @keyframes ledstrip { from { background-position: 0 0; } to { background-position: 32px 0; } }
   @media (prefers-reduced-motion: reduce) { .work-card:hover::after { animation: none; opacity: 0.6; } }
 
-  /* ── About (02) ──────────────────────────────────────────── */
+  /* ── VHS glitch accents (hover-triggered only, ~250ms one-shot) ──── */
+  @keyframes vhsGlitch {
+    0%   { transform: translate(0,0); clip-path: inset(0 0 0 0); }
+    20%  { transform: translate(-2px, 1px); clip-path: inset(8% 0 46% 0); }
+    50%  { transform: translate(2px, -1px); clip-path: inset(48% 0 6% 0); }
+    75%  { transform: translate(-1px, 0); clip-path: inset(16% 0 28% 0); }
+    100% { transform: translate(0,0); clip-path: inset(0 0 0 0); }
+  }
+  @keyframes chromaFlicker {
+    0%, 100% { text-shadow: none; }
+    35% { text-shadow: 2px 0 rgba(255,32,32,0.65), -2px 0 rgba(0,229,255,0.55); }
+    65% { text-shadow: -1px 0 rgba(255,32,32,0.5), 1px 0 rgba(0,229,255,0.45); }
+  }
+  .work-card:hover { animation: vhsGlitch 250ms steps(3); }
+  .work-card:hover .work-title { animation: chromaFlicker 250ms steps(3); }
+  .about-portrait { position: relative; }
+  .about-portrait:hover canvas, .about-portrait:hover img { animation: vhsGlitch 250ms steps(3); }
+  .about-portrait:hover .about-tag { animation: chromaFlicker 250ms steps(3); }
+  @media (prefers-reduced-motion: reduce) {
+    .work-card:hover, .work-card:hover .work-title,
+    .about-portrait:hover canvas, .about-portrait:hover img, .about-portrait:hover .about-tag { animation: none; }
+  }
+
+  /* ── Constellation (02) ──────────────────────────────────── */
+  .constellation-module { grid-column: 1 / -1; position: relative; height: 70vh; min-height: 420px;
+    border: 1px solid rgba(245,245,242,0.1); overflow: hidden; background: rgba(0,0,0,0.2); }
+  .constellation-module canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+    image-rendering: pixelated; image-rendering: crisp-edges; }
+
+  /* ── About (03) ──────────────────────────────────────────── */
   .about-portrait { grid-column: 1 / 5; }
   .about-portrait canvas, .about-portrait img { width: 100%; height: auto; aspect-ratio: 1 / 1;
     object-fit: cover; display: block; border: 1px solid rgba(255,51,51,0.4); }
   .about-portrait img { opacity: 0; }
-  .about-tag { font-family: 'Tiny5', monospace; font-size: 11px; color: var(--red-glow); opacity: 0.7;
-    letter-spacing: 0.2em; display: block; margin-top: 12px; }
+  .about-tag { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px; color: var(--red-glow);
+    opacity: 0.7; letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-top: 12px; }
   .about-copy { grid-column: 5 / 13; }
-  .bio-signal { font-family: 'Tiny5', monospace; font-size: 11px; color: rgba(245,245,242,0.55);
-    letter-spacing: 0.06em; display: grid; grid-template-columns: 160px 1fr; gap: 8px 12px; margin-bottom: 40px; }
+  .bio-signal { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px; color: rgba(245,245,242,0.55);
+    letter-spacing: 0.12em; text-transform: uppercase; display: grid; grid-template-columns: 160px 1fr; gap: 8px 12px; margin-bottom: 40px; }
   .bio-signal dt { color: var(--red-glow); opacity: 0.85; }
   .bio-signal dd { margin: 0; }
   .about-copy p { font-family: 'Space Grotesk', sans-serif; font-weight: 300; font-size: 16px;
     line-height: 1.85; color: rgba(245,245,242,0.85); max-width: 42em; margin: 0 0 28px; }
   .about-copy .binary { font-weight: 500; }
   .about-copy .binary span:last-child { display: block; padding-left: 24px; color: rgba(245,245,242,0.6); }
-  .about-locate { font-family: 'Tiny5', monospace; font-size: 12px; letter-spacing: 0.1em;
-    color: rgba(245,245,242,0.55); }
+  .about-locate { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(245,245,242,0.55); }
   .about-locate b { color: var(--red-glow); font-weight: 400; }
 
-  /* ── Services (03) ───────────────────────────────────────── */
+  /* ── Services (04) ───────────────────────────────────────── */
   .services-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, 1fr);
     column-gap: var(--gutter); row-gap: var(--gutter); }
   .service-panel { grid-column: span 4; border: 1px solid rgba(255,51,51,0.25); padding: 24px; }
-  .service-code { font-family: 'Tiny5', monospace; font-size: 11px; color: var(--red-glow);
-    letter-spacing: 0.2em; display: block; margin-bottom: 16px; }
+  .service-code { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px; color: var(--red-glow);
+    letter-spacing: 0.18em; text-transform: uppercase; display: block; margin-bottom: 16px; }
   .service-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px;
     margin: 0 0 14px; }
   .service-desc { font-family: 'Space Grotesk', sans-serif; font-weight: 300; font-size: 14px;
     line-height: 1.65; color: rgba(245,245,242,0.82); margin: 0 0 16px; }
-  .service-record, .service-brief { font-family: 'Tiny5', monospace; font-size: 11px; line-height: 1.7;
-    color: rgba(245,245,242,0.5); letter-spacing: 0.03em; margin: 0 0 8px; }
+  .service-record, .service-brief { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px;
+    line-height: 1.7; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,245,242,0.5); margin: 0 0 8px; }
   .service-brief { color: rgba(255,51,51,0.6); }
 
-  /* ── Contact (04) ────────────────────────────────────────── */
+  /* ── Contact (05) ────────────────────────────────────────── */
   .contact-copy { grid-column: 1 / 8; }
   .contact-copy p { font-family: 'Space Grotesk', sans-serif; font-weight: 300; font-size: 15px;
     line-height: 1.75; color: rgba(245,245,242,0.8); max-width: 40em; margin: 0 0 24px; }
   .contact-email { grid-column: 1 / -1; margin: 48px 0 40px; }
   .contact-email a { font-family: 'Doto', sans-serif; font-weight: 900; font-size: clamp(1.6rem, 4.5vw, 3.5rem);
-    color: var(--white); text-decoration: none; word-break: break-all; }
-  .contact-email a:hover { color: var(--red-glow); }
+    text-decoration: none; word-break: break-all; }
+  .contact-email a:hover { color: var(--red-glow);
+    text-shadow: 0 0 1px rgba(255,51,51,0.9), 0 0 6px rgba(255,51,51,0.5), 0 0 18px rgba(255,51,51,0.25); }
   .contact-links { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 96px; }
-  .contact-links a { font-family: 'Tiny5', monospace; font-size: 12px; letter-spacing: 0.15em;
+  .contact-links a { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.16em;
     text-transform: uppercase; color: var(--white); text-decoration: none;
     border: 1px solid rgba(245,245,242,0.3); padding: 12px 20px; transition: all 0.25s ease; }
   .contact-links a:hover { background: var(--white); color: #000; border-color: var(--white); }
-  .footer-meta { grid-column: 1 / -1; font-family: 'Tiny5', monospace; font-size: 11px;
-    letter-spacing: 0.08em; color: rgba(245,245,242,0.4); display: flex; flex-wrap: wrap;
+  .footer-meta { grid-column: 1 / -1; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,245,242,0.4); display: flex; flex-wrap: wrap;
     justify-content: space-between; gap: 12px; padding-top: 32px; border-top: 1px solid rgba(245,245,242,0.1); }
   .footer-meta .socials { display: flex; flex-wrap: wrap; gap: 14px; }
-  .mockup-tag { grid-column: 1 / -1; text-align: center; font-family: 'Tiny5', monospace; font-size: 10px;
-    letter-spacing: 0.15em; color: rgba(255,51,51,0.4); padding: 40px 0 24px; }
+  .mockup-tag { grid-column: 1 / -1; text-align: left; font-family: 'Space Grotesk', sans-serif; font-weight: 500;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,51,51,0.4); padding: 40px 0 24px; }
 
   /* ── Responsive: 12 → 6 → 2 ──────────────────────────────── */
   @media (max-width: 1024px) {
@@ -196,6 +245,8 @@
     nav.links a:not(.contact) { display: none; }
     section.pane { padding: 96px 0; }
     .hero-shell { padding-top: 72px; }
+    .ecg-strip { height: 80px; }
+    .constellation-module { height: 50vh; min-height: 280px; }
   }
 </style>
 </head>
@@ -220,10 +271,10 @@
 
   <main class="hero-shell shell">
     <div class="hero-copy">
-      <div class="eyebrow fx-bloom-red" data-copy="hero.eyebrow"></div>
+      <div class="eyebrow" data-copy="hero.eyebrow"></div>
       <h1 class="hero-h1">
-        <span class="fx-bloom-white" data-copy="hero.h1a"></span>
-        <span class="fx-bloom-red" data-copy="hero.h1b"></span>
+        <span class="soft-bloom-white" data-copy="hero.h1a"></span>
+        <span class="soft-bloom-red" data-copy="hero.h1b"></span>
       </h1>
       <p class="hero-sub" data-copy="hero.sub"></p>
       <a href="#contact" class="cta" data-copy="hero.cta"></a>
@@ -239,20 +290,34 @@
     </div>
   </main>
 
+  <div class="ecg-strip"><canvas id="ecgCanvas"></canvas></div>
+
   <section class="pane" id="work">
     <div class="shell">
       <div class="meta-row"><span class="meta-num">01</span><span class="meta-name">Work</span></div>
       <div class="hairline"></div>
-      <h2 class="section-header heavy">Work</h2>
+      <h2 class="section-header heavy soft-bloom-white">Work</h2>
       <div class="work-grid" id="workGrid"></div>
+    </div>
+  </section>
+
+  <section class="pane" id="constellation">
+    <div class="shell">
+      <div class="meta-row"><span class="meta-num">02</span><span class="meta-name">Constellation</span></div>
+      <div class="hairline"></div>
+      <!-- SkillsSection.tsx:78 (clinical-label) · verbatim -->
+      <h2 class="section-header heavy soft-bloom-white">Capabilities</h2>
+      <div class="constellation-module">
+        <canvas id="constellationCanvas"></canvas>
+      </div>
     </div>
   </section>
 
   <section class="pane" id="about">
     <div class="shell">
-      <div class="meta-row"><span class="meta-num">02</span><span class="meta-name">About</span></div>
+      <div class="meta-row"><span class="meta-num">03</span><span class="meta-name">About</span></div>
       <div class="hairline"></div>
-      <h2 class="section-header sentence">Art, technology, and <span class="accent">human expression</span></h2>
+      <h2 class="section-header sentence soft-bloom-white">Art, technology, and <span class="accent soft-bloom-red">human expression</span></h2>
       <div class="about-portrait">
         <canvas id="portraitCanvas"></canvas>
         <img id="portraitImg" src="/sinaida-photo.jpg" alt="Sinaida" />
@@ -270,25 +335,25 @@
 
   <section class="pane" id="services">
     <div class="shell">
-      <div class="meta-row"><span class="meta-num">03</span><span class="meta-name">Services</span></div>
+      <div class="meta-row"><span class="meta-num">04</span><span class="meta-name">Services</span></div>
       <div class="hairline"></div>
-      <h2 class="section-header heavy">Services</h2>
+      <h2 class="section-header heavy soft-bloom-white">Services</h2>
       <div class="services-grid" id="servicesGrid"></div>
     </div>
   </section>
 
   <section class="pane" id="contact">
     <div class="shell">
-      <div class="meta-row"><span class="meta-num">04</span><span class="meta-name">Contact</span></div>
+      <div class="meta-row"><span class="meta-num">05</span><span class="meta-name">Contact</span></div>
       <div class="hairline"></div>
-      <h2 class="section-header sentence" data-copy="contact.h2"></h2>
+      <h2 class="section-header sentence soft-bloom-white"><span data-copy="contact.h2a"></span><br /><span class="accent soft-bloom-red" data-copy="contact.h2b"></span></h2>
       <div class="contact-copy">
         <p data-copy="contact.p1"></p>
         <p data-copy="contact.p2a"></p>
         <p data-copy="contact.p2b"></p>
       </div>
       <div class="contact-email">
-        <a id="contactEmail" href="#"></a>
+        <a id="contactEmail" class="soft-bloom-white" href="#"></a>
       </div>
       <div class="contact-links">
         <a data-copy="contact.email" href="#" id="contactEmailBtn"></a>
@@ -349,7 +414,7 @@ const COPY = {
   // AboutSection.tsx:237 (photo tag)
   'about.tag': 'SUBJECT_001',
 
-  // ContactSection.tsx:32-34 (h2)
+  // ContactSection.tsx:32-34 (h2, two lines: "Open for" / "Collaboration" accent)
   'contact.h2a': 'Open for',
   'contact.h2b': 'Collaboration',
   // ContactSection.tsx:37, em-dash→· before "let's talk."
@@ -422,6 +487,37 @@ const SERVICES = [
     brief: 'Brief to show: send the space (photos/plans) and the occasion.' },
 ];
 
+// src/data/graph.ts SKILLS (verbatim id/label/category) + CATEGORY_COLORS
+// (verbatim hex). All 21 skills are used (within the issue's 15-25 node
+// allowance) so nothing is cherry-picked; nothing here is invented.
+const CATEGORY_COLORS = {
+  tech: '#00e5ff', direction: '#ff3b52', strategy: '#ff9933', research: '#cc66ff', analytical: '#00ff88',
+};
+const SKILLS = [
+  { id: 'touchdesigner', label: 'TouchDesigner', category: 'tech' },
+  { id: 'audio-reactive', label: 'Real-time audio-reactive', category: 'tech' },
+  { id: 'projection-mapping', label: 'Projection mapping', category: 'tech' },
+  { id: 'generative-ai', label: 'Generative AI systems', category: 'tech' },
+  { id: 'davinci', label: 'Editing and color grading', category: 'tech' },
+  { id: 'creative-web', label: 'Creative web technology', category: 'tech' },
+  { id: 'interactive-installations', label: 'Interactive installations', category: 'tech' },
+  { id: 'body-tracking', label: 'Body & gesture tracking', category: 'tech' },
+  { id: 'creative-direction', label: 'Creative direction', category: 'direction' },
+  { id: 'visual-narrative', label: 'Visual narrative', category: 'direction' },
+  { id: 'concept-design', label: 'Concept design', category: 'direction' },
+  { id: 'event-design', label: 'Event experience design', category: 'direction' },
+  { id: 'tech-strategy', label: 'Creative technology strategy', category: 'strategy' },
+  { id: 'interdisciplinary', label: 'Interdisciplinary leadership', category: 'strategy' },
+  { id: 'experience-design', label: 'Digital experience design', category: 'strategy' },
+  { id: 'computational-aesthetics', label: 'Computational aesthetics', category: 'research' },
+  { id: 'human-ai', label: 'Human–AI collaboration', category: 'research' },
+  { id: 'perception-media', label: 'Perception & generative media', category: 'research' },
+  { id: 'algorithmic-systems', label: 'Algorithmic visual systems', category: 'analytical' },
+  { id: 'system-architecture', label: 'System architecture', category: 'analytical' },
+  { id: 'data-workflows', label: 'Data-driven workflows', category: 'analytical' },
+  { id: 'ai-orchestration', label: 'AI orchestration', category: 'analytical' },
+];
+
 /* ── Fill static text nodes from COPY ─────────────────────────── */
 document.querySelectorAll('[data-copy]').forEach((el) => {
   const key = el.dataset.copy;
@@ -464,7 +560,7 @@ WORK.forEach((w, i) => {
   card.className = 'work-card';
   const idx = document.createElement('span'); idx.className = 'work-index';
   idx.textContent = String(i + 1).padStart(3, '0');
-  const title = document.createElement('h3'); title.className = 'work-title'; title.textContent = w.title;
+  const title = document.createElement('h3'); title.className = 'work-title soft-bloom-white'; title.textContent = w.title;
   const meta = document.createElement('span'); meta.className = 'work-meta';
   meta.textContent = w.year ? `${w.year} · ${w.medium}` : w.medium;
   const tools = document.createElement('span'); tools.className = 'work-tools';
@@ -486,11 +582,16 @@ SERVICES.forEach((s) => {
   servicesGrid.appendChild(panel);
 });
 
-/* ── Tier + FX (hero canvas is the only animated element) ─────── */
+/* ── Tier probe ─────────────────────────────────────────────── */
 const params = new URLSearchParams(location.search);
 const forceLight = params.get('tier') === 'light';
-const fullTier = !forceLight && supportsFull();
+const reducedMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fullTier = !forceLight && supportsFull(); // supportsFull() already excludes reduced-motion
 
+/* ── Hero canvas: input-decay pattern copied from Logo.tsx:90-137 ──
+ * scroll/mouse input adds intensity to a decay ref, ×0.95/frame; the
+ * loop self-terminates (fx.stop()) once decayed, and only fx.start()
+ * (from an input handler) resumes it. At rest the frame is static. ── */
 if (fullTier) {
   const canvas = document.getElementById('fxCanvas');
   const fx = createFX(canvas, {
@@ -508,29 +609,313 @@ if (fullTier) {
     { hue: [245, 245, 242], ox: 0.82, oy: 0.24, sx: 0.14, sy: 0.18, sp: 0.44 },
   ];
 
-  fx.start((ctx, t) => {
+  let heroDecay = 0;
+  let heroPhase = 0;
+  let lastScrollY = window.scrollY;
+  let heroVhsBurst = false;
+
+  function drawHero(ctx, /* t unused: motion is decay/phase-driven, not wall-clock */ _t) {
+    const scrollDelta = Math.abs(window.scrollY - lastScrollY);
+    lastScrollY = window.scrollY;
+
+    if (scrollDelta > 0.5) {
+      heroDecay = Math.min(heroDecay + scrollDelta * 0.02, 1);
+      heroPhase += scrollDelta * 0.003;
+    } else if (heroMouseActive) {
+      heroDecay = Math.min(heroDecay + 0.05, 1);
+      heroPhase += 0.01;
+      heroMouseActive = false;
+    } else {
+      heroDecay *= 0.95;
+    }
+
+    // Strong-burst VHS sweep: one-shot, rising-edge triggered only.
+    if (heroDecay > 0.6 && !heroVhsBurst) {
+      heroVhsBurst = true;
+      fx.setPasses(['ledMosaic', 'vhs', 'bloom']);
+      fx.setParams({ vhs: { tracking: 0.6 } });
+      setTimeout(() => { fx.setPasses(['ledMosaic', 'bloom']); heroVhsBurst = false; }, 400);
+    }
+
     const w = ctx.canvas.width, h = ctx.canvas.height;
+    const intensity = Math.max(0.25, heroDecay);
     ctx.fillStyle = 'hsl(280 33% 3%)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'lighter';
     for (const b of blobs) {
-      const cx = (b.ox + b.sx * Math.cos(t * b.sp)) * w;
-      const cy = (b.oy + b.sy * Math.sin(t * b.sp * 1.2)) * h;
+      const cx = (b.ox + b.sx * Math.cos(heroPhase * b.sp)) * w;
+      const cy = (b.oy + b.sy * Math.sin(heroPhase * b.sp * 1.2)) * h;
       const r = Math.min(w, h) * 0.32;
-      const pulse = 0.85 + 0.15 * Math.max(0, Math.sin(t * (2 * Math.PI / 0.469)));
+      const pulse = 0.85 + 0.15 * intensity * Math.max(0, Math.sin(heroPhase * (2 * Math.PI / 0.469)));
       const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * pulse);
       const [rr, gg, bb] = b.hue;
-      g.addColorStop(0, `rgba(${rr},${gg},${bb},0.55)`);
+      g.addColorStop(0, `rgba(${rr},${gg},${bb},${0.35 + 0.2 * intensity})`);
       g.addColorStop(1, `rgba(${rr},${gg},${bb},0)`);
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(cx, cy, r * pulse, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalCompositeOperation = 'source-over';
-  });
+
+    // Self-terminate once fully decayed: draw one settled frame, then stop
+    // the loop. Resumes only from a scroll/mousemove handler (below).
+    if (heroDecay <= 0.01) fx.stop();
+  }
+
+  let heroMouseActive = false;
+  function ensureHeroRunning() { fx.start(drawHero); }
+  window.addEventListener('scroll', ensureHeroRunning, { passive: true });
+  window.addEventListener('mousemove', () => { heroMouseActive = true; ensureHeroRunning(); }, { passive: true });
+  // Same one-shot repaint-after-resize rationale as the constellation canvas.
+  window.addEventListener('resize', ensureHeroRunning);
+
+  // Initial settled static frame (decay starts at 0, so drawHero parks the loop immediately).
+  ensureHeroRunning();
 } else {
   document.getElementById('fxCanvas').style.display = 'none';
   document.getElementById('cssBg').style.display = 'block';
 }
+
+/* ── ECG strip: same input-decay pattern as Logo.tsx (drawECG shape
+ * math reused/scaled), styled to STAGE (brand red, LED-crisp, soft glow
+ * via shadowBlur). Runs in both tiers (plain 2D canvas, no WebGL needed);
+ * only the input-driven decay/animation is gated behind reduced-motion. */
+(function initEcg() {
+  const canvas = document.getElementById('ecgCanvas');
+  const ctx = canvas.getContext('2d');
+  let phase = 0, decay = 0; // hoisted so a resize can redraw the last-settled frame
+
+  function size() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(1, Math.round(rect.width * dpr));
+    canvas.height = Math.max(1, Math.round(rect.height * dpr));
+  }
+
+  function drawECG(w, h, phase, intensity) {
+    ctx.clearRect(0, 0, w, h);
+    const mid = h / 2;
+    const segments = 240;
+    ctx.beginPath();
+    ctx.strokeStyle = '#ff3333';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#ff3333';
+    ctx.shadowBlur = intensity > 0.1 ? 10 + intensity * 16 : 5;
+    for (let i = 0; i <= segments; i++) {
+      const x = (i / segments) * w;
+      const t = (i / segments) * Math.PI * 8 + phase;
+      const pos = ((t % (Math.PI * 2)) / (Math.PI * 2));
+      let y = mid;
+      if (pos > 0.35 && pos < 0.40) {
+        y = mid - (h * 0.05) * intensity * Math.sin((pos - 0.35) / 0.05 * Math.PI); // P
+      } else if (pos > 0.42 && pos < 0.44) {
+        y = mid + (h * 0.06) * intensity; // Q
+      } else if (pos > 0.44 && pos < 0.48) {
+        const rPos = (pos - 0.44) / 0.04;
+        y = mid - (h * (0.3 + 0.12 * intensity)) * Math.sin(rPos * Math.PI); // R
+      } else if (pos > 0.48 && pos < 0.50) {
+        y = mid + (h * 0.08) * intensity; // S
+      } else if (pos > 0.55 && pos < 0.65) {
+        y = mid - (h * 0.08) * intensity * Math.sin((pos - 0.55) / 0.10 * Math.PI); // T
+      } else {
+        y = mid + (intensity > 0.1 ? (Math.random() - 0.5) * intensity * 2 : 0);
+      }
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(255,51,51,${0.12 + intensity * 0.18})`;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 0;
+    ctx.moveTo(0, mid); ctx.lineTo(w, mid);
+    ctx.stroke();
+  }
+
+  function redraw() { drawECG(canvas.width, canvas.height, phase, Math.max(0.3, decay)); }
+  // Keep the frame correct across any layout/viewport change (window resize,
+  // orientation change): resizing a canvas clears its bitmap, so without an
+  // explicit repaint here the strip would go blank until the next input.
+  // This is a one-shot repaint of the current (possibly static) state, not
+  // a new animation source.
+  function onResize() { size(); redraw(); }
+  size();
+  window.addEventListener('resize', onResize);
+
+  if (!fullTier || reducedMotion) {
+    // Light tier / reduced motion: unchanged static fallback, no listeners.
+    redraw();
+    return;
+  }
+
+  let lastScrollY = window.scrollY, mouseActive = false, rafId = null;
+
+  function animate() {
+    const scrollDelta = Math.abs(window.scrollY - lastScrollY);
+    lastScrollY = window.scrollY;
+
+    if (scrollDelta > 0.5) {
+      decay = Math.min(decay + scrollDelta * 0.02, 1);
+      phase += scrollDelta * 0.01;
+    } else if (mouseActive) {
+      decay = Math.min(decay + 0.04, 1);
+      phase += 0.012;
+      mouseActive = false;
+    } else {
+      decay *= 0.95;
+    }
+
+    redraw();
+
+    if (decay <= 0.01) { rafId = null; return; } // self-terminate: no more frames scheduled
+    rafId = requestAnimationFrame(animate);
+  }
+  function ensureRunning() { if (rafId == null) rafId = requestAnimationFrame(animate); }
+
+  window.addEventListener('scroll', ensureRunning, { passive: true });
+  window.addEventListener('mousemove', () => { mouseActive = true; ensureRunning(); }, { passive: true });
+
+  redraw(); // initial settled static frame; loop stays parked
+})();
+
+/* ── Constellation: skills graph, canvas-drawn, 8-bit neon-bloom style.
+ * Full tier: routed through createFX(['bloom']) soft bloom + input-decay
+ * parallax/pulse (same pattern as above). Light tier: static 2D fallback,
+ * no bloom, no listeners, per issue's "unchanged static fallbacks". ── */
+(function initConstellation() {
+  const canvas = document.getElementById('constellationCanvas');
+
+  // Deterministic layout: 5 category bands (rows), nodes spread across
+  // each row with a small per-node hash-based jitter (no Math.random at
+  // draw time, so the frame is reproducible/static at rest).
+  const CATEGORY_ORDER = ['tech', 'direction', 'strategy', 'research', 'analytical'];
+  function hash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+    return (h % 1000) / 1000;
+  }
+  const byCategory = {};
+  CATEGORY_ORDER.forEach((c) => { byCategory[c] = SKILLS.filter((s) => s.category === c); });
+
+  const nodes = [];
+  CATEGORY_ORDER.forEach((cat, ci) => {
+    const list = byCategory[cat];
+    const rowY = (ci + 0.5) / CATEGORY_ORDER.length;
+    list.forEach((s, i) => {
+      const baseX = (i + 1) / (list.length + 1);
+      const jitter = (hash(s.id) - 0.5) * 0.06;
+      nodes.push({
+        id: s.id, label: s.label, category: s.category, color: CATEGORY_COLORS[s.category],
+        x: Math.min(0.97, Math.max(0.03, baseX + jitter)),
+        y: Math.min(0.93, Math.max(0.07, rowY + (hash(s.id + 'y') - 0.5) * 0.08)),
+      });
+    });
+  });
+  window.__constellationNodeCount = nodes.length; // verification hook only, not visual
+
+  // Edges: chain within each category (preserves the real category
+  // groupings). Dim brand red, ~25% opacity, per the issue spec.
+  const edges = [];
+  CATEGORY_ORDER.forEach((cat) => {
+    const idxs = nodes.map((n, i) => (n.category === cat ? i : -1)).filter((i) => i >= 0);
+    for (let i = 0; i < idxs.length - 1; i++) edges.push({ a: idxs[i], b: idxs[i + 1] });
+  });
+
+  function drawConstellation(ctx, w, h, driftX, driftY, nearestIdx, pulse) {
+    ctx.fillStyle = 'rgba(0,0,0,0)';
+    ctx.clearRect(0, 0, w, h);
+
+    // edges
+    ctx.lineWidth = 1;
+    edges.forEach((e) => {
+      const a = nodes[e.a], b = nodes[e.b];
+      const ax = Math.round(a.x * w + driftX), ay = Math.round(a.y * h + driftY);
+      const bx = Math.round(b.x * w + driftX), by = Math.round(b.y * h + driftY);
+      ctx.strokeStyle = `rgba(204,20,20,${0.25 + pulse * 0.35})`;
+      ctx.beginPath(); ctx.moveTo(ax + 0.5, ay + 0.5); ctx.lineTo(bx + 0.5, by + 0.5); ctx.stroke();
+    });
+
+    // nodes: chunky integer-position pixel squares
+    nodes.forEach((n, i) => {
+      const nx = Math.round(n.x * w + driftX);
+      const ny = Math.round(n.y * h + driftY);
+      const isNear = i === nearestIdx;
+      const size = isNear ? 5 : 3;
+      ctx.fillStyle = n.color;
+      ctx.globalAlpha = isNear ? 1 : 0.85;
+      ctx.fillRect(nx - Math.floor(size / 2), ny - Math.floor(size / 2), size, size);
+      ctx.globalAlpha = 1;
+      ctx.font = '11px "Space Grotesk", sans-serif';
+      ctx.fillStyle = isNear ? '#ffffff' : 'rgba(245,245,242,0.65)';
+      ctx.fillText(n.label, nx + 8, ny + 4);
+    });
+  }
+
+  if (!fullTier) {
+    // Static 2D fallback, no bloom pipeline, no listeners (beyond keeping
+    // the static frame correct across a resize/orientation change).
+    const ctx = canvas.getContext('2d');
+    function sizeLite() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.round(rect.width));
+      canvas.height = Math.max(1, Math.round(rect.height));
+      drawConstellation(ctx, canvas.width, canvas.height, 0, 0, -1, 0);
+    }
+    sizeLite();
+    window.addEventListener('resize', sizeLite);
+    return;
+  }
+
+  const fx = createFX(canvas, {
+    passes: ['bloom'],
+    params: { bloom: { threshold: 0.55, strength: 1.0, radius: 8 } },
+  });
+
+  let driftTargetX = 0, driftTargetY = 0, driftX = 0, driftY = 0;
+  let nearestIdx = -1, pulse = 0, lastScrollY = window.scrollY;
+
+  function onMouseMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    driftTargetX = (nx - 0.5) * 18; // gentle parallax amplitude, px
+    driftTargetY = (ny - 0.5) * 12;
+
+    if (nx >= 0 && nx <= 1 && ny >= 0 && ny <= 1) {
+      let best = -1, bestD = Infinity;
+      nodes.forEach((n, i) => {
+        const dx = n.x - nx, dy = n.y - ny;
+        const d = dx * dx + dy * dy;
+        if (d < bestD) { bestD = d; best = i; }
+      });
+      nearestIdx = best;
+    }
+    ensureRunning();
+  }
+  window.addEventListener('mousemove', onMouseMove, { passive: true });
+  window.addEventListener('scroll', () => { ensureRunning(); }, { passive: true });
+
+  function draw(ctx, _t) {
+    const scrollDelta = Math.abs(window.scrollY - lastScrollY);
+    lastScrollY = window.scrollY;
+    if (scrollDelta > 0.5) pulse = Math.min(pulse + scrollDelta * 0.03, 1);
+    else pulse *= 0.95;
+
+    driftX += (driftTargetX - driftX) * 0.08;
+    driftY += (driftTargetY - driftY) * 0.08;
+
+    const w = ctx.canvas.width, h = ctx.canvas.height;
+    drawConstellation(ctx, w, h, driftX, driftY, nearestIdx, pulse);
+
+    const settled = Math.abs(driftTargetX - driftX) < 0.05 && Math.abs(driftTargetY - driftY) < 0.05 && pulse <= 0.01;
+    if (settled) fx.stop(); // self-terminate: static frame at rest
+  }
+  function ensureRunning() { fx.start(draw); }
+  // A resize (createFX's internal ResizeObserver already resized the GL
+  // surface) needs one repaint or the frame stays blank until next input;
+  // draw() re-settles and self-terminates immediately since nothing moved.
+  window.addEventListener('resize', ensureRunning);
+  ensureRunning(); // initial settled frame; parks immediately since nothing moved yet
+})();
 
 /* ── Portrait: one-shot renderStill (full tier) or raw image (light tier) ── */
 const portraitImg = document.getElementById('portraitImg');
