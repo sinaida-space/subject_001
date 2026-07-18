@@ -363,7 +363,7 @@ const COPY = {
   'contact.linkedin': 'CONNECT ON LINKEDIN ↗',
   // ContactSection.tsx:50, address reconstructed from the source's own
   // ['gallant','_mod5v','@','icloud','.com'].join('') expression
-  'contact.address': 'gallant_mod5v@icloud.com',
+  'contact.addressParts': ['gallant', '_mod5v', '@', 'icloud', '.com'],
 
   // Footer.tsx:92 (copyright, year hardcoded to match current source-computed year)
   'footer.copyright': '© 2026 Sinaida Krivchenko · Prague, CZ',
@@ -439,10 +439,15 @@ const bioSignal = document.getElementById('bioSignal');
 document.getElementById('aboutLocate').textContent =
   `${COPY['about.locate.location']} · ${COPY['about.locate.reach']} · ${COPY['about.locate.available']}`;
 
+// Address assembled only at click time, mirroring ObfuscatedMailto.tsx: the plain string must stay out of the DOM.
 const emailLink = document.getElementById('contactEmail');
-emailLink.textContent = COPY['contact.address'];
-emailLink.href = 'mailto:' + COPY['contact.address'];
-document.getElementById('contactEmailBtn').href = 'mailto:' + COPY['contact.address'];
+emailLink.textContent = "Let's talk";
+const openMailto = (e) => {
+  e.preventDefault();
+  window.location.href = 'mailto:' + COPY['contact.addressParts'].join('');
+};
+emailLink.addEventListener('click', openMailto);
+document.getElementById('contactEmailBtn').addEventListener('click', openMailto);
 
 const footerSocials = document.getElementById('footerSocials');
 FOOTER_SOCIALS.forEach((s) => {
