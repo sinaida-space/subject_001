@@ -165,9 +165,9 @@ export default function NotFound() {
   const [snakeOpen, setSnakeOpen] = useState(false);
   const glitched404 = useGlitch('404', glitchActive);
 
-  const line1 = useTyper('> ERROR_CODE: 404', 6, 300);
-  const line2 = useTyper('> SIGNAL_LOST — navigating the void', 6, 300 + 18 * 6 + 120);
-  const line3 = useTyper('> awaiting_redirect.exe', 8, 300 + 18 * 6 + 120 + 37 * 6 + 200);
+  const line1 = useTyper('ERROR_CODE: 404', 6, 300);
+  const line2 = useTyper('SIGNAL_LOST — navigating the void', 6, 300 + 15 * 6 + 120);
+  const line3 = useTyper('awaiting redirect', 8, 300 + 15 * 6 + 120 + 35 * 6 + 200);
 
   useEffect(() => {
     console.error('404:', location.pathname);
@@ -196,10 +196,10 @@ export default function NotFound() {
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-2xl">
 
         <div
-          className="font-mono uppercase mb-6 tracking-widest text-xs"
+          className="uppercase mb-6 tracking-widest text-xs"
           style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em' }}
         >
-          SINAIDA_OS v2.4.1 — NAVIGATION ERROR
+          Page not found
         </div>
 
         <h1

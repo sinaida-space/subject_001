@@ -274,8 +274,8 @@ export default function ContactChannel() {
             >
               Contact
             </div>
-            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-              [ COMM.SYS // OPEN ]
+            <div className="mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
+              Open for messages
             </div>
 
             <SignalBars />
@@ -320,9 +320,8 @@ export default function ContactChannel() {
 
           {/* Terminal text */}
           <div className="max-w-2xl">
-            {/* Sys line */}
-            <div className="font-mono text-[12px] mb-6" style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}>
-              {'> COMM.SYS ONLINE // CHANNEL OPEN'}
+            <div className="text-[12px] mb-6" style={{ color: 'hsl(var(--accent))', opacity: 0.6, letterSpacing: '0.08em' }}>
+              Channel open
             </div>
 
             {/* Heading */}

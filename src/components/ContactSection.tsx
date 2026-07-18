@@ -22,7 +22,7 @@ export default function ContactSection() {
           <div className="col-span-12 md:col-span-3">
             <span className="clinical-label text-primary">Contact</span>
             <div className="mt-2 text-xs font-clinical text-muted-foreground">
-              [ COMM.SYS // OPEN ]
+              Open for messages
             </div>
           </div>
 

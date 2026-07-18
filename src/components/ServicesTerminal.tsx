@@ -2,19 +2,27 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { SERVICES, type Service } from '@/data/services';
 
-const SEPARATOR = '────────────────────────────────────────────';
-
-function ServiceBlock({ service }: { service: Service }) {
+function ServiceBlock({ service, index }: { service: Service; index: number }) {
   return (
-    <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <div style={{ color: 'hsl(var(--accent))' }}>{`$ load_module --id=${service.code}`}</div>
-      <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: 'hsl(var(--accent))' }}>
-        {service.title}
-      </h3>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
+    <div
+      className="pb-8 pt-6 border-t"
+      style={{ borderColor: 'hsl(var(--border))' }}
+    >
+      <div className="flex items-baseline gap-4 mb-3">
+        <span
+          className="font-mono text-primary-legible shrink-0"
+          style={{ fontSize: 12, letterSpacing: '0.1em' }}
+        >
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <h3 className="text-lg md:text-xl font-medium" style={{ color: 'hsl(var(--accent))' }}>
+          {service.title}
+        </h3>
+      </div>
+      <p className="text-[15px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
         {service.description}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
+      <p className="text-sm leading-relaxed mt-3" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.record.map((part, i) =>
           part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
@@ -25,7 +33,7 @@ function ServiceBlock({ service }: { service: Service }) {
           )
         )}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
+      <p className="text-sm leading-relaxed mt-1" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.brief}
       </p>
     </div>
@@ -50,35 +58,13 @@ export default function ServicesTerminal() {
             >
               Services
             </div>
-            <div
-              className="font-mono mt-2"
-              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}
-            >
-              [ VALUE // ACTIVE ]
-            </div>
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="flex-1 font-mono">
-          {/* Terminal frame: static chrome, no reveal delay on content below */}
-          <div style={{ opacity: 0.35 }} className="text-sm mb-8 leading-relaxed">
-            <div>{`SINAIDA_OS v2.4.1 // CREATIVE SYSTEMS TERMINAL`}</div>
-            <div>{`Service modules loaded [████████████] 100%`}</div>
-          </div>
-
-          {/* Service blocks — full content renders immediately, no typing/reveal */}
-          <div className="space-y-2">
+          <div className="flex-1">
             {SERVICES.map((service, i) => (
-              <div key={service.code}>
-                <ServiceBlock service={service} />
-                {i < SERVICES.length - 1 && (
-                  <div className="my-4 font-mono text-sm" style={{ opacity: 0.12 }}>
-                    {SEPARATOR}
-                  </div>
-                )}
-              </div>
+              <ServiceBlock key={service.code} service={service} index={i} />
             ))}
-          </div>
           </div>
         </div>
       </div>

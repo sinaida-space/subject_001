@@ -19,17 +19,21 @@ const TECH_BASICS = ['TouchDesigner', 'GLSL / real-time shaders', 'Audio-reactiv
 // beyond the two real credits.
 const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, working globally. Trained as a biomedical engineer and shaped by years of creative direction in the cultural sector, she builds living visual systems for stages, concerts, and performance spaces — real-time TouchDesigner and GLSL work that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (commissioned live concert visuals, Moscow, 2026) and The Eyes Chico (interactive installation and web experience, with Alisa Feer).`;
 
-function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
+function ServiceRow({ service, index }: { service: (typeof SERVICES)[number]; index: number }) {
   return (
-    <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <div className="text-foreground/50">{`$ load_module --id=${service.code}`}</div>
-      <h3 className="font-mono text-base font-medium mt-2 mb-2 text-foreground">
-        {service.title}
-      </h3>
-      <p className="font-mono text-[13px] leading-relaxed text-foreground/[0.87]">
+    <div className="pb-8 pt-6 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
+      <div className="flex items-baseline gap-4 mb-3">
+        <span className="font-mono text-primary-legible shrink-0" style={{ fontSize: 12, letterSpacing: '0.1em' }}>
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <h3 className="text-lg font-medium text-foreground">
+          {service.title}
+        </h3>
+      </div>
+      <p className="text-[15px] leading-relaxed text-foreground/[0.87]">
         {service.description}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2 text-foreground/60">
+      <p className="text-sm leading-relaxed mt-3 text-foreground/60">
         {service.record.map((part, i) =>
           part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
@@ -40,14 +44,12 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
           )
         )}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed text-foreground/60">
+      <p className="text-sm leading-relaxed mt-1 text-foreground/60">
         {service.brief}
       </p>
     </div>
   );
 }
-
-const SEPARATOR = '────────────────────────────────────────────';
 
 export default function Collaborate() {
   useEffect(() => {
@@ -80,27 +82,20 @@ export default function Collaborate() {
         <h1 className="font-display text-4xl md:text-5xl font-light mb-4">
           Work with <span className="text-primary font-bold">me</span>
         </h1>
-        <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
+        <p className="text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
           Human first. Digital second. I build living visual systems for stages, concerts, and
           performance spaces — this page is what actually happens if we work together on one.
         </p>
-        <p className="font-mono text-[14px] leading-relaxed mb-16 text-foreground/60">
+        <p className="text-[14px] leading-relaxed mb-16 text-foreground/60">
           Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
         </p>
 
         {/* Services */}
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-6">Services</div>
-          <div className="space-y-2">
+          <div>
             {SERVICES.map((service, i) => (
-              <div key={service.code}>
-                <ServiceRow service={service} />
-                {i < SERVICES.length - 1 && (
-                  <div className="my-4 font-mono text-sm" style={{ opacity: 0.12 }}>
-                    {SEPARATOR}
-                  </div>
-                )}
-              </div>
+              <ServiceRow key={service.code} service={service} index={i} />
             ))}
           </div>
         </section>

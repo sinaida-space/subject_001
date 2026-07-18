@@ -151,8 +151,8 @@ export default function Header() {
           paddingLeft: 40,
         }}
       >
-        <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#ff3333', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.6 }}>
-          [ NAV.SYS // OPEN ]
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, color: '#ff3333', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.7, textTransform: 'uppercase' }}>
+          Menu
         </div>
 
         {NAV_ITEMS.filter((item) => item.label !== 'Contact').map((item, i) => (
