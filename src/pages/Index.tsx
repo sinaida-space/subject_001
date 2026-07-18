@@ -8,6 +8,7 @@ import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import SectionBreak from '@/components/SectionBreak';
 import CookieBanner from '@/components/CookieBanner';
+import DraftSwitcher from '@/components/DraftSwitcher';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
@@ -59,6 +60,7 @@ const Index = () => {
 
       <Footer />
       <CookieBanner />
+      <DraftSwitcher />
     </div>
   );
 };
