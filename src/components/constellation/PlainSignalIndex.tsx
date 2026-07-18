@@ -34,7 +34,7 @@ function Row({ project }: { project: Project }) {
           {project.badges.map((b) => (
             <span
               key={b}
-              className="border border-foreground/15 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-foreground/45"
+              className="border border-foreground/15 px-1.5 py-0.5 font-display text-[11px] text-foreground/45"
             >
               {BADGE_LABEL[b]}
             </span>
@@ -56,7 +56,7 @@ export default function PlainSignalIndex({ includeBackground = false }: { includ
           <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
             <h3
               id={`plain-signal-${kind}`}
-              className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/35"
+              className="mb-3 font-display text-[13px] font-medium text-foreground/35"
             >
               {KIND_LABEL[kind]}
             </h3>

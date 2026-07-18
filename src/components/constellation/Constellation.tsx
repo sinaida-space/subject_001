@@ -31,14 +31,13 @@ export default function Constellation() {
   return (
     <section ref={sectionRef} id="work" className="relative z-10 py-24">
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="flex flex-col gap-8 md:flex-row md:gap-12">
-          {/* LEFT COLUMN — label + legend */}
-          <div className="shrink-0 md:sticky md:top-[15vh] md:w-[220px] md:self-start">
-            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
-              Body of Work
-            </div>
-
-            <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-foreground/70">
+        <h2 className="font-display text-[clamp(2.25rem,6vw,4.5rem)] font-extrabold tracking-[-0.02em] leading-[0.95] mb-12">
+          Body of work
+        </h2>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-12">
+          {/* LEFT COLUMN — legend */}
+          <div className="md:col-span-2 md:sticky md:top-[15vh] md:self-start">
+            <p className="max-w-[230px] font-mono text-[14px] leading-relaxed text-foreground/70">
               Selected works and the skills that happen to resonate.
             </p>
           </div>
@@ -49,7 +48,7 @@ export default function Constellation() {
               loaded ConstellationFull never shifts anything below this section.
               Purely a height-reservation wrapper — no motion/physics touched. */}
           <div
-            className="relative flex-1"
+            className="relative md:col-span-10 min-w-0"
             style={
               mode === 'full'
                 ? { minHeight: IS_COARSE ? `${MOBILE_RESERVED_HEIGHT}px` : 'clamp(560px, 90vh, 1000px)' }

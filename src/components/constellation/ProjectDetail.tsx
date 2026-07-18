@@ -59,16 +59,15 @@ function Readout({ project }: { project: Project }) {
             style={{
               border: '1px solid #CC1414',
               padding: '3px 8px',
-              fontFamily: 'monospace',
-              fontSize: '10px',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
+              fontFamily: 'var(--font-display)',
+              fontSize: '12px',
+              fontWeight: 500,
               color: '#CC1414',
             }}
           >
             {KIND_LABEL[project.kind]}
           </span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
+          <span className="font-display text-[13px] text-foreground/55">
             {project.tagline}
           </span>
         </div>
@@ -86,7 +85,7 @@ function Readout({ project }: { project: Project }) {
             {project.tools.map((t) => (
               <span
                 key={t}
-                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
+                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'var(--font-display)', fontSize: '11px', color: 'hsl(var(--foreground) / 0.4)' }}
               >
                 {t}
               </span>
@@ -99,7 +98,7 @@ function Readout({ project }: { project: Project }) {
             {CASE_PAGES[project.id] && (
               <Link
                 to={CASE_PAGES[project.id]}
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="font-display text-[13px] font-medium text-accent transition-opacity hover:opacity-70"
               >
                 View full case study →
               </Link>
@@ -108,7 +107,7 @@ function Readout({ project }: { project: Project }) {
               <button
                 type="button"
                 onClick={() => setEssayOpen(true)}
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="font-display text-[13px] font-medium text-accent transition-opacity hover:opacity-70"
               >
                 Read the full text →
               </button>
@@ -119,7 +118,7 @@ function Readout({ project }: { project: Project }) {
                 href={l.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="font-display text-[13px] font-medium text-accent transition-opacity hover:opacity-70"
               >
                 {l.label} ↗
               </a>
@@ -142,20 +141,20 @@ function Readout({ project }: { project: Project }) {
             aria-label={`${project.title} — full text`}
           >
             <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
-                FULL TEXT
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '12px', fontWeight: 500, color: '#CC1414' }}>
+                Full text
               </span>
               <button
                 type="button"
                 onClick={() => setEssayOpen(false)}
-                style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+                style={{ fontFamily: 'var(--font-display)', fontSize: '12px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer' }}
               >
-                [ CLOSE ]
+                [ Close ]
               </button>
             </div>
             <div className="max-h-[75vh] overflow-y-auto p-5 md:p-6">
               {project.essay.contentWarning && (
-                <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-primary">
+                <p className="mb-4 font-display text-[13px] font-medium text-primary">
                   {project.essay.contentWarning}
                 </p>
               )}
@@ -167,7 +166,7 @@ function Readout({ project }: { project: Project }) {
               {project.essay.credits && project.essay.credits.length > 0 && (
                 <>
                   <div className="my-5 border-t border-border/60" />
-                  <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-primary">
+                  <span className="mb-2 block font-display text-[13px] font-medium text-primary">
                     Credits
                   </span>
                   {project.essay.credits.map((c, i) => (
@@ -208,7 +207,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
     };
   }, [onClose]);
 
-  const headerLabel = project.title.split(' — ')[0].toUpperCase();
+  const headerLabel = project.title.split(' — ')[0];
 
   return (
     <div
@@ -231,15 +230,15 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-label={`${project.title} — project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '13px', fontWeight: 500, color: '#CC1414' }}>
             {headerLabel}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: '12px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer' }}
           >
-            [ CLOSE ]
+            [ Close ]
           </button>
         </div>
         <div className="max-h-[88vh] overflow-y-auto">

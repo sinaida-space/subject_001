@@ -25,8 +25,8 @@ export default function HeroSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
             }>
             
-            <p className="clinical-label mb-6 text-primary-legible break-words">
-              SINAIDA KRIVCHENKO | NEW MEDIA ARTIST
+            <p className="font-display text-[14px] font-medium text-primary-legible break-words mb-6" style={{ letterSpacing: 0 }}>
+              Sinaida Krivchenko, new media artist
             </p>
             <h1
               className="font-display text-[clamp(3rem,10vw,9rem)] leading-[0.95] tracking-[-0.02em] text-foreground glitch-text mt-6 mb-8 my-[100px] font-black"

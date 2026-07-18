@@ -31,7 +31,7 @@ function Slider({
 }) {
   return (
     <label className="flex items-center gap-2">
-      <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-foreground/50">{label}</span>
+      <span className="font-display text-[11px] text-foreground/50">{label}</span>
       <input
         type="range"
         min={min}
@@ -71,11 +71,11 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
           aria-label="Audio unlocked"
         >
           <div className="flex items-center justify-between border-b border-primary/40 px-3 py-1.5">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-primary">SIGNAL // AUDIO — UNLOCKED</span>
+            <span className="text-[11px] text-primary">SIGNAL // AUDIO — UNLOCKED</span>
             <button
               type="button"
               onClick={onDismissCard}
-              className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 hover:text-primary"
+              className="text-[11px] text-foreground/50 hover:text-primary"
               aria-label="Close"
             >
               [ x ]
@@ -92,7 +92,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
             <button
               type="button"
               onClick={onDismissCard}
-              className="w-full border border-primary/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-primary transition-colors hover:bg-primary/10"
+              className="w-full border border-primary/60 px-3 py-1.5 text-[11px] text-primary transition-colors hover:bg-primary/10"
             >
               OK — compose
             </button>
@@ -115,7 +115,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
             synth.primeFromGesture();
             synth.toggle();
           }}
-          className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-primary transition-colors hover:bg-primary/10"
+          className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-display text-[11px] text-primary transition-colors hover:bg-primary/10"
           aria-pressed={state.playing}
         >
           <span className="text-[11px] leading-none">{state.playing ? '❚❚' : '▶'}</span>
@@ -153,7 +153,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
         <button
           type="button"
           onClick={onReset}
-          className="border border-foreground/25 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
+          className="border border-foreground/25 px-2.5 py-1 font-display text-[11px] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
           aria-label="Send stars home"
           title="Send stars home"
         >

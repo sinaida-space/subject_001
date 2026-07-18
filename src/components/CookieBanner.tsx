@@ -51,7 +51,7 @@ const CookieBanner = () => {
               onClick={handleAccept}
               variant="outline"
               size="sm"
-              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
+              className="font-clinical text-xs border-border text-foreground hover:bg-accent/10 hover:text-foreground"
             >
               Accept All
             </Button>
@@ -59,7 +59,7 @@ const CookieBanner = () => {
               onClick={handleEssential}
               variant="outline"
               size="sm"
-              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
+              className="font-clinical text-xs border-border text-foreground hover:bg-accent/10 hover:text-foreground"
             >
               Essential Only
             </Button>
@@ -67,7 +67,7 @@ const CookieBanner = () => {
               onClick={handleDecline}
               variant="outline"
               size="sm"
-              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
+              className="font-clinical text-xs border-border text-foreground hover:bg-accent/10 hover:text-foreground"
             >
               Decline All
             </Button>

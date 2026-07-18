@@ -233,14 +233,14 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <span className="block font-mono mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
+      <span className="block font-display mt-2" style={{ fontSize: 13, fontWeight: 500, color: '#ff3333', opacity: 0.6, letterSpacing: 0 }}>
         SUBJECT_001
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
-        SINAIDA
+      <span className="block font-display mt-1" style={{ fontSize: 13, fontWeight: 500, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: 0 }}>
+        Sinaida
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
-        NEW MEDIA ARTIST
+      <span className="block font-display mt-1" style={{ fontSize: 13, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: 0 }}>
+        New media artist
       </span>
     </div>
   );
