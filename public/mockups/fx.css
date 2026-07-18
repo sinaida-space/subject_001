@@ -1,0 +1,55 @@
+/* fx.css — light-tier CSS effects + typography helpers.
+   These are the CSS fallback / accents; the WebGL2 tier lives in fx.js. */
+
+/* Layered neon text-shadow bloom (red + white variants). Apply to text elements. */
+.fx-bloom-red {
+  color: #ff2b2b;
+  text-shadow:
+    0 0 2px  rgba(255, 43, 43, 0.9),
+    0 0 8px  rgba(255, 43, 43, 0.7),
+    0 0 18px rgba(255, 43, 43, 0.5),
+    0 0 36px rgba(255, 0, 0, 0.35);
+}
+
+.fx-bloom-white {
+  color: #f6f6f6;
+  text-shadow:
+    0 0 2px  rgba(255, 255, 255, 0.95),
+    0 0 8px  rgba(255, 255, 255, 0.7),
+    0 0 20px rgba(220, 235, 255, 0.5),
+    0 0 40px rgba(180, 210, 255, 0.3);
+}
+
+/* Repeating-linear-gradient scanline overlay. Put on a positioned container. */
+.fx-scanlines-css {
+  position: relative;
+}
+.fx-scanlines-css::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0)    0px,
+    rgba(0, 0, 0, 0)    2px,
+    rgba(0, 0, 0, 0.18) 3px
+  );
+  mix-blend-mode: multiply;
+  z-index: 2;
+}
+
+/* Data-URI noise overlay (single tiled fractal-noise tile, subtle). */
+.fx-noise-css {
+  position: relative;
+}
+.fx-noise-css::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  z-index: 2;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 120px 120px;
+}
