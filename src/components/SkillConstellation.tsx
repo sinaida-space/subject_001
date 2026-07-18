@@ -406,7 +406,7 @@ export default function SkillConstellation() {
                       textAnchor={isSkill ? getLabelAnchor(node) : 'middle'}
                       fill={node.color}
                       fontSize={isHovered ? labelSize + 1 : labelSize}
-                      fontFamily="'Space Mono', monospace"
+                      fontFamily="'Archivo', sans-serif"
                       fontWeight={labelWeight}
                       opacity={(dim ? 0.1 : isHovered ? 1 : 0.9) * skillOpacity}
                       style={{

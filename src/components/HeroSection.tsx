@@ -29,7 +29,7 @@ export default function HeroSection() {
               SINAIDA KRIVCHENKO | NEW MEDIA ARTIST
             </p>
             <h1
-              className="font-display text-4xl md:text-6xl leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8 my-[100px] lg:text-8xl font-bold"
+              className="font-display text-[clamp(3rem,10vw,9rem)] leading-[0.95] tracking-[-0.02em] text-foreground glitch-text mt-6 mb-8 my-[100px] font-black"
               data-text="Where Engineering Meets Imagination">
               
               Where
@@ -45,7 +45,7 @@ export default function HeroSection() {
 
         {/* Side info */}
         <div
-          className={`lg:col-span-4 transition-all duration-1000 delay-300 ${
+          className={`lg:col-start-10 lg:col-span-3 transition-all duration-1000 delay-300 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
           }>
           
@@ -68,7 +68,7 @@ export default function HeroSection() {
             <button
               type="button"
               onClick={scrollToContact}
-              className="font-mono text-[12px] uppercase tracking-[0.15em] px-5 py-3 border border-primary text-primary-legible bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none"
+              className="font-display text-[13px] font-medium px-5 py-3 border border-primary text-primary-legible bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none"
             >
               Contact me
             </button>

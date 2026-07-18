@@ -2,32 +2,36 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { SERVICES, type Service } from '@/data/services';
 
-const SEPARATOR = '────────────────────────────────────────────';
-
-function ServiceBlock({ service }: { service: Service }) {
+// Ruled Swiss-table row: service name in bold Archivo on the left, the
+// description/record/brief copy on the right, separated by a hairline.
+function ServiceRow({ service, isFirst }: { service: Service; isFirst: boolean }) {
   return (
-    <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <div style={{ color: 'hsl(var(--accent))' }}>{`$ load_module --id=${service.code}`}</div>
-      <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: 'hsl(var(--accent))' }}>
+    <div
+      className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-8 py-8"
+      style={{ borderTop: isFirst ? undefined : '1px solid hsl(var(--border))' }}
+    >
+      <h3 className="md:col-span-4 font-display font-bold text-lg md:text-xl leading-snug" style={{ color: 'hsl(var(--accent))' }}>
         {service.title}
       </h3>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
-        {service.description}
-      </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
-        {service.record.map((part, i) =>
-          part.href ? (
-            <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
-              {part.text}
-            </Link>
-          ) : (
-            <span key={i}>{part.text}</span>
-          )
-        )}
-      </p>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
-        {service.brief}
-      </p>
+      <div className="md:col-span-8">
+        <p className="text-[15px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
+          {service.description}
+        </p>
+        <p className="text-[14px] leading-relaxed mt-3" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
+          {service.record.map((part, i) =>
+            part.href ? (
+              <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
+                {part.text}
+              </Link>
+            ) : (
+              <span key={i}>{part.text}</span>
+            )
+          )}
+        </p>
+        <p className="text-[14px] leading-relaxed mt-1" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
+          {service.brief}
+        </p>
+      </div>
     </div>
   );
 }
@@ -41,44 +45,22 @@ export default function ServicesTerminal() {
       id="services" className="relative z-10 py-24"
     >
       <div className="container mx-auto px-6 max-w-7xl">
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
           {/* LEFT COLUMN */}
-          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
-            <div
-              className="font-mono uppercase text-primary-legible"
-              style={{ letterSpacing: '0.2em', fontSize: 12 }}
-            >
+          <div className="md:col-span-2 md:sticky md:top-[15vh] md:self-start">
+            <div className="font-display font-medium text-primary-legible" style={{ letterSpacing: 0, fontSize: 13 }}>
               Services
             </div>
-            <div
-              className="font-mono mt-2"
-              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}
-            >
+            <div className="font-display mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 13 }}>
               [ VALUE // ACTIVE ]
             </div>
           </div>
 
-          {/* RIGHT COLUMN */}
-          <div className="flex-1 font-mono">
-          {/* Terminal frame: static chrome, no reveal delay on content below */}
-          <div style={{ opacity: 0.35 }} className="text-sm mb-8 leading-relaxed">
-            <div>{`SINAIDA_OS v2.4.1 // CREATIVE SYSTEMS TERMINAL`}</div>
-            <div>{`Service modules loaded [████████████] 100%`}</div>
-          </div>
-
-          {/* Service blocks — full content renders immediately, no typing/reveal */}
-          <div className="space-y-2">
+          {/* RIGHT COLUMN — ruled table, one hairline-separated row per service */}
+          <div className="md:col-span-10">
             {SERVICES.map((service, i) => (
-              <div key={service.code}>
-                <ServiceBlock service={service} />
-                {i < SERVICES.length - 1 && (
-                  <div className="my-4 font-mono text-sm" style={{ opacity: 0.12 }}>
-                    {SEPARATOR}
-                  </div>
-                )}
-              </div>
+              <ServiceRow key={service.code} service={service} isFirst={i === 0} />
             ))}
-          </div>
           </div>
         </div>
       </div>

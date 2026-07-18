@@ -256,22 +256,22 @@ export default function AboutSection() {
             <div className="section-divider mb-16" />
           </DustReveal>
         </Suspense>
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+          <div className="md:col-span-2 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+              <div className="font-display font-medium text-primary-legible" style={{ letterSpacing: 0, fontSize: 13 }}>
                 About
               </div>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
+              <div className="font-display mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 13 }}>
                 [ BIO ]
               </div>
             </Reveal>
           </div>
-          <div className="flex-1">
+          <div className="md:col-span-10 min-w-0">
             <Reveal delay={50}>
-              <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-10">
+              <h2 className="font-display text-[clamp(2.25rem,6vw,4.5rem)] font-extrabold tracking-[-0.02em] leading-[0.95] mb-10">
                 Art, technology, and
-                <span className="text-primary font-bold"> human expression</span>
+                <span className="text-primary"> human expression</span>
               </h2>
             </Reveal>
             <div className="flex flex-col md:flex-row items-start gap-12">

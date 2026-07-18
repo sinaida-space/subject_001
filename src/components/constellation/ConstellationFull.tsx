@@ -531,7 +531,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         }
       }
       if (alpha <= 0.02) continue;
-      ctx.font = `${fontWeight} ${fs}px 'Space Mono', monospace`;
+      ctx.font = `${fontWeight} ${fs}px 'Archivo', sans-serif`;
       const tw = ctx.measureText(n.label).width;
 
       // Candidate placements, tried in order: right, left, below, above, then

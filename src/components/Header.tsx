@@ -105,7 +105,7 @@ export default function Header() {
             </button>
             <a
               href="#contact"
-              className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 flex items-center h-9 transition-all duration-300 cursor-none"
+              className="font-display text-[13px] font-medium px-4 flex items-center h-9 transition-all duration-300 cursor-none"
               style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
               onMouseEnter={contactEnter}
               onMouseLeave={contactLeave}
@@ -151,7 +151,7 @@ export default function Header() {
           paddingLeft: 40,
         }}
       >
-        <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#ff3333', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.6 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 500, color: '#ff3333', letterSpacing: 0, marginBottom: 48, opacity: 0.6 }}>
           [ NAV.SYS // OPEN ]
         </div>
 
@@ -162,11 +162,11 @@ export default function Header() {
             onClick={(e) => handleNavClick(e, item.href)}
             style={{
               display: 'block',
-              fontFamily: 'monospace',
-              fontSize: 28,
-              fontWeight: 300,
+              fontFamily: 'var(--font-display)',
+              fontSize: 32,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
               color: mode === 'lite' ? '#0a0a0a' : '#ffffff',
-              letterSpacing: '0.1em',
               marginBottom: 20,
               textDecoration: 'none',
               opacity: menuOpen ? 1 : 0,
@@ -174,7 +174,7 @@ export default function Header() {
               transition: mode === 'lite' ? 'none' : `opacity 0.35s ease ${i * 70}ms, transform 0.35s ease ${i * 70}ms`,
             }}
           >
-            <span style={{ color: '#ff3333', marginRight: 14, fontSize: 11, letterSpacing: '0.2em' }}>
+            <span style={{ color: '#ff3333', marginRight: 14, fontSize: 11, letterSpacing: 0 }}>
               {String(i + 1).padStart(2, '0')}
             </span>
             {item.label}
@@ -186,9 +186,10 @@ export default function Header() {
           onClick={(e) => handleNavClick(e, '#contact')}
           style={{
             marginTop: 40,
-            fontFamily: 'monospace',
-            fontSize: 12,
-            letterSpacing: '0.2em',
+            fontFamily: 'var(--font-display)',
+            fontSize: 13,
+            fontWeight: 500,
+            letterSpacing: 0,
             padding: '12px 28px',
             border: '1px solid #ff3333',
             color: '#ff3333',
@@ -207,9 +208,9 @@ export default function Header() {
           onClick={() => toggle()}
           style={{
             marginTop: 32,
-            fontFamily: 'monospace',
-            fontSize: 12,
-            letterSpacing: '0.15em',
+            fontFamily: 'var(--font-display)',
+            fontSize: 13,
+            letterSpacing: 0,
             background: 'none',
             border: 'none',
             padding: 0,
@@ -223,7 +224,7 @@ export default function Header() {
           View: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
         </button>
 
-        <div style={{ marginTop: 16, fontFamily: 'monospace', fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 16, fontFamily: 'var(--font-display)', fontSize: 12, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: 0 }}>
           sin.ai.da · Prague
         </div>
       </div>

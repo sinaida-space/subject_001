@@ -265,21 +265,18 @@ export default function ContactChannel() {
       <FreqDisplay />
 
       <div className="container mx-auto px-6 max-w-7xl">
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
           {/* LEFT COLUMN */}
-          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
-            <div
-              className="font-mono uppercase text-primary-legible"
-              style={{ letterSpacing: '0.2em', fontSize: 12 }}
-            >
+          <div className="md:col-span-2 md:sticky md:top-[15vh] md:self-start">
+            <div className="font-display font-medium text-primary-legible" style={{ letterSpacing: 0, fontSize: 13 }}>
               Contact
             </div>
-            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
+            <div className="font-display mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 13 }}>
               [ COMM.SYS // OPEN ]
             </div>
 
             <SignalBars />
-            <div className="font-mono mt-2 select-none" style={{ color: 'hsl(var(--accent))', opacity: 0.4, fontSize: 12 }}>
+            <div className="font-display mt-2 select-none" style={{ color: 'hsl(var(--accent))', opacity: 0.4, fontSize: 13 }}>
               SIGNAL: STRONG
             </div>
 
@@ -287,14 +284,14 @@ export default function ContactChannel() {
           <div className="mt-10 space-y-3">
             <ObfuscatedMailto
               label="→ EMAIL"
-              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-display text-[13px] transition-opacity hover:opacity-100"
               style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
             />
             <a
               href="https://www.instagram.com/sin.ai.da/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-display text-[13px] transition-opacity hover:opacity-100"
               style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
             >
               → INSTAGRAM
@@ -303,7 +300,7 @@ export default function ContactChannel() {
               href="https://www.linkedin.com/in/sinaida"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
+              className="block font-display text-[13px] transition-opacity hover:opacity-100"
               style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
             >
               → LINKEDIN
@@ -312,7 +309,7 @@ export default function ContactChannel() {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="flex-1">
+          <div className="md:col-span-10 min-w-0">
           {/* Waveform */}
           <div className="mb-10">
             <WaveformCanvas interactionRef={interactionRef} />
@@ -326,11 +323,11 @@ export default function ContactChannel() {
             </div>
 
             {/* Heading */}
-            <h2 className="mb-8">
-              <span className="block text-foreground font-light" style={{ fontSize: 'clamp(32px, 4vw, 52px)' }}>
+            <h2 className="font-display mb-8 leading-[0.95] tracking-[-0.02em]" style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              <span className="block text-foreground font-extrabold">
                 Open for
               </span>
-              <span className="block font-bold" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#ff3333' }}>
+              <span className="block font-extrabold" style={{ color: '#ff3333' }}>
                 Collaboration
               </span>
             </h2>
@@ -371,7 +368,7 @@ export default function ContactChannel() {
             <div className="flex flex-wrap gap-4 mt-10 mb-12">
               <ObfuscatedMailto
                 label="EMAIL ME ↗"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-display text-[13px] font-medium px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid #ff3333',
                   color: '#ff3333',
@@ -390,7 +387,7 @@ export default function ContactChannel() {
                 href="https://www.instagram.com/sin.ai.da/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-display text-[13px] font-medium px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid hsl(var(--accent) / 0.4)',
                   color: 'hsl(var(--accent))',
@@ -410,7 +407,7 @@ export default function ContactChannel() {
                 href="https://www.linkedin.com/in/sinaida"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-display text-[13px] font-medium px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid hsl(var(--accent) / 0.4)',
                   color: 'hsl(var(--accent))',
