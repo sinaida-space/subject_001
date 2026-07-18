@@ -159,7 +159,6 @@ import { createFX, supportsFull } from './fx.js';
 
 const params = new URLSearchParams(location.search);
 const forceLight = params.get('tier') === 'light';
-const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 if (!forceLight && supportsFull()) {
   const canvas = document.getElementById('fxCanvas');

@@ -509,4 +509,6 @@ export function renderStill(source, target, passesArr, paramsIn){
   engine.present(finalTex, w, h);
   ctx.drawImage(scratch, 0, 0);
   engine.destroy();
+  const ext = gl.getExtension('WEBGL_lose_context'); if (ext) ext.loseContext();
+  scratch.width = 0; scratch.height = 0;
 }

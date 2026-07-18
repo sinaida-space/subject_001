@@ -271,7 +271,7 @@ if (full) {
   const lapDuration = 3.2; // seconds per full left->right sweep
 
   function drawEcg(ctx, w, h, t) {
-    const baseY = h * 0.82, amp = h * 0.11;
+    const baseY = h * 0.82 + 50, amp = h * 0.11;
     const lapStart = Math.floor(t / lapDuration) * lapDuration;
     const cursorX = ((t - lapStart) / lapDuration) * w;
     const step = Math.max(2, Math.floor(w / 400));

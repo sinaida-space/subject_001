@@ -67,10 +67,10 @@
 
   main.hero {
     position: relative; z-index: 1;
-    min-height: 100vh; display: grid; grid-template-columns: 58% 1fr;
-    gap: 40px; align-items: center; padding: 140px 32px 80px;
+    height: 100vh; display: flex; align-items: center; justify-content: space-between;
+    gap: 40px; padding: 140px 32px 80px;
   }
-  .hero-col { max-width: 40em; }
+  .hero-col { max-width: 40em; flex: 0 0 58%; }
   .eyebrow {
     font-family: 'Tiny5', monospace; font-size: 12px; letter-spacing: 0.2em; margin-bottom: 20px;
   }
@@ -102,7 +102,7 @@
     box-shadow: 0 0 26px rgba(255,51,51,0.8), inset 0 0 14px rgba(255,51,51,0.2);
   }
 
-  .monitors { display: flex; flex-direction: column; gap: 18px; }
+  .monitors { display: flex; flex-direction: column; gap: 18px; flex: 1; min-width: 0; align-self: flex-start; }
   .tile {
     position: relative; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden;
     background: #050505; border: 1px solid rgba(245,245,242,0.12);
@@ -124,6 +124,7 @@
       #b800b8 50% 62.5%, #b81414 62.5% 75%, #1414b8 75% 87.5%, #1a1a1a 87.5% 100%);
     filter: brightness(0.4);
   }
+  .cam2 canvas { opacity: 0.55; }
 
   footer.strip {
     position: fixed; bottom: 6px; left: 0; right: 0; z-index: 5; text-align: center;
@@ -136,8 +137,9 @@
     .rec-dot { animation: none; }
   }
   @media (max-width: 900px) {
-    main.hero { grid-template-columns: 1fr; padding-top: 150px; }
-    .monitors { flex-direction: row; }
+    main.hero { flex-direction: column; height: auto; min-height: 100vh; padding-top: 150px; }
+    .hero-col { flex: none; }
+    .monitors { flex-direction: row; flex: none; width: 100%; }
     .tile { flex: 1; }
   }
   @media (max-width: 640px) {
@@ -231,8 +233,10 @@ if (full) {
 const cam2 = document.getElementById('cam2Canvas');
 const cam2ctx = cam2.getContext('2d');
 function sizeCam2() {
-  cam2.width = cam2.clientWidth || 280;
-  cam2.height = cam2.clientHeight || 210;
+  const w = cam2.clientWidth || 280;
+  const h = cam2.clientHeight || 210;
+  if (cam2.width !== w) cam2.width = w;
+  if (cam2.height !== h) cam2.height = h;
 }
 function drawNoise() {
   const w = cam2.width, h = cam2.height;
