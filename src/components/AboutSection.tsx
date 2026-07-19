@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, lazy, Suspense } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
+import { nbsp } from '@/lib/typo';
 
 const DustReveal = lazy(() => import('@/components/DustReveal'));
 
@@ -259,7 +260,7 @@ export default function AboutSection() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+              <div className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
                 About
               </div>
               <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
@@ -269,7 +270,7 @@ export default function AboutSection() {
           </div>
           <div className="flex-1">
             <Reveal delay={50}>
-              <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-10">
+              <h2 className="font-display text-2xl md:text-4xl font-semibold leading-tight mb-10">
                 Art, technology, and
                 <span className="text-primary font-bold"> human expression</span>
               </h2>
@@ -283,34 +284,34 @@ export default function AboutSection() {
                 <Reveal delay={600}>
                   <div className="font-mono mb-7" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
-                      I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
+                      {nbsp('I believe that technology is only meaningful when it helps people feel seen, heard, and connected.')}
                     </p>
                   </div>
                 </Reveal>
                 <Reveal delay={700}>
                   <div className="mb-7" style={{ lineHeight: 2.2 }}>
                     <div className="font-mono" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.9)' }}>
-                      Human first.
+                      {nbsp('Human first.')}
                     </div>
                     <div className="font-mono" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
-                      Digital second.
+                      {nbsp('Digital second.')}
                     </div>
                   </div>
                 </Reveal>
                 <Reveal delay={800}>
                   <div className="font-mono mb-7" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
-                      I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.
+                      {nbsp('I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.')}
                     </p>
                   </div>
                 </Reveal>
                 <Reveal delay={900}>
                   <div className="font-mono" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
-                    {'LOCATION: Prague'}
+                    {nbsp('LOCATION: Prague')}
                     <span style={{ color: '#ff3333' }}> · </span>
-                    {'REACH: Global'}
+                    {nbsp('REACH: Global')}
                     <span style={{ color: '#ff3333' }}> · </span>
-                    {'AVAILABLE: Projects between engineering and emotion'}
+                    {nbsp('AVAILABLE: Projects between engineering and emotion')}
                   </div>
                 </Reveal>
               </div>

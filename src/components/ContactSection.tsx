@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { nbsp } from '@/lib/typo';
 
 export default function ContactSection() {
   const [inView, setInView] = useState(false);
@@ -20,7 +21,7 @@ export default function ContactSection() {
 
         <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
           <div className="col-span-12 md:col-span-3">
-            <span className="clinical-label text-primary">Contact</span>
+            <span className="text-2xl md:text-3xl font-semibold tracking-tight text-primary">Contact</span>
             <div className="mt-2 text-xs font-clinical text-muted-foreground">
               Open channel
             </div>
@@ -29,17 +30,17 @@ export default function ContactSection() {
           <div className={`col-span-12 md:col-span-9 transition-all duration-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {/* Collaboration callout — moved up */}
             <div className="mb-12">
-              <h2 className="font-display text-2xl md:text-4xl font-light mb-8">
+              <h2 className="font-display text-2xl md:text-4xl font-semibold mb-8">
                 Open for<br />
                 <span className="text-primary">Collaboration</span>
               </h2>
               <p className="font-clinical text-sm md:text-base text-muted-foreground max-w-2xl leading-relaxed my-4 pt-[42px]">
-                Particularly interested in working with musicians, touring productions, cultural institutions, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.
+                {nbsp("Particularly interested in working with musicians, touring productions, cultural institutions, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion — let's talk.")}
               </p>
             </div>
 
             <div className="font-clinical text-sm md:text-base text-muted-foreground max-w-xl mb-12 leading-relaxed space-y-6">
-              <p className="my-3 py-[21px] pt-[21px] pb-0">Available for immersive installations, stage visuals, creative direction, release assets, experience design, and generative art commissions.<br /> Based in Prague, working globally.
+              <p className="my-3 py-[21px] pt-[21px] pb-0">{nbsp('Available for immersive installations, stage visuals, creative direction, release assets, experience design, and generative art commissions.')}<br /> {nbsp('Based in Prague, working globally.')}
               </p>
               <p className="my-3 py-[21px] pb-0 pt-[21px]">
 </p>

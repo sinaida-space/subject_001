@@ -3,6 +3,7 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 import type { GraphNode } from '@/data/graph';
 import { projectById, PROJECTS } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
+import { nbsp } from '@/lib/typo';
 import ConstellationLite from './ConstellationLite';
 import PlainSignalIndex from './PlainSignalIndex';
 import ProjectDetail from './ProjectDetail';
@@ -33,13 +34,13 @@ export default function Constellation() {
       <div className="container mx-auto max-w-7xl px-6">
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* LEFT COLUMN — label + legend */}
-          <div className="shrink-0 md:sticky md:top-[15vh] md:w-[220px] md:self-start">
-            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+          <div className="shrink-0 md:sticky md:top-[15vh] md:w-[240px] md:self-start">
+            <div className="text-2xl md:text-3xl font-semibold tracking-tight text-primary">
               Body of Work
             </div>
 
             <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-foreground/70">
-              Selected works and the skills that happen to resonate.
+              {nbsp('Selected works and the skills that happen to resonate.')}
             </p>
           </div>
 
