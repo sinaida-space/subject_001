@@ -6,6 +6,7 @@ import DisplacementImage from '@/components/DisplacementImage';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import SignalChain from '@/components/SignalChain';
 import NotFound from '@/pages/NotFound';
+import { nbsp } from '@/lib/typo';
 
 const SITE_NAME = 'sin.ai.da';
 
@@ -57,7 +58,7 @@ export default function WorkCase() {
       <div className="container mx-auto max-w-3xl px-6">
         <Link
           to="/"
-          className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
+          className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-primary-legible/70"
         >
           ← Back
         </Link>
@@ -92,7 +93,7 @@ export default function WorkCase() {
             key={p.slice(0, 32)}
             className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/80"
           >
-            {p}
+            {nbsp(p)}
           </p>
         ))}
 
@@ -116,7 +117,7 @@ export default function WorkCase() {
             href={cs.heroCta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-block font-mono text-[13px] uppercase tracking-[0.15em] text-foreground transition-colors hover:text-accent"
+            className="mt-6 inline-block font-mono text-[13px] uppercase tracking-[0.15em] text-foreground transition-colors hover:text-primary-legible"
             style={{ border: '1px solid #CC1414', padding: '12px 24px' }}
           >
             {cs.heroCta.label} ↗
@@ -135,7 +136,7 @@ export default function WorkCase() {
                 {cs.stat.heading}
               </div>
               <p className="mt-2 max-w-[55ch] font-mono text-[13px] leading-relaxed text-foreground/55">
-                {cs.stat.body}
+                {nbsp(cs.stat.body)}
               </p>
             </div>
           </div>
@@ -172,7 +173,7 @@ export default function WorkCase() {
             <VideoEmbed id={m.video} title={`${project.title} — ${m.label}`} />
             {m.caption && (
               <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
-                {m.caption}
+                {nbsp(m.caption)}
               </p>
             )}
           </div>
@@ -192,7 +193,7 @@ export default function WorkCase() {
             <div className="clinical-label mb-3 text-foreground/45">Credits</div>
             {cs.credits.map((c) => (
               <p key={c} className="font-mono text-[12px] leading-relaxed text-foreground/60">
-                {c}
+                {nbsp(c)}
               </p>
             ))}
           </div>
@@ -221,11 +222,11 @@ export default function WorkCase() {
             {cs.order.heading}
           </h2>
           <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-foreground/80">
-            {cs.order.body}{' '}
+            {nbsp(cs.order.body)}{' '}
             <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
               Get in touch
             </a>{' '}
-            {cs.order.suffix}
+            {nbsp(cs.order.suffix)}
           </p>
         </div>
       </div>
