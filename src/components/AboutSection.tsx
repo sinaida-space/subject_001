@@ -35,21 +35,9 @@ function Reveal({ delay = 0, children }: { delay?: number; children: React.React
   );
 }
 
-function scrambleText(text: string, amount: number) {
-  const chars = '░▒▓█/\\_';
-  return text
-    .split('')
-    .map((char) => {
-      if (char === ' ' || char === '.' || char === ',') return char;
-      return Math.random() < amount ? chars[Math.floor(Math.random() * chars.length)] : char;
-    })
-    .join('');
-}
-
 function BioSignalLock() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-  const [locked, setLocked] = useState(false);
 
   const rows = [
     ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
@@ -70,75 +58,33 @@ function BioSignalLock() {
     return () => obs.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!visible) return;
-    let frame = 0;
-    const interval = setInterval(() => {
-      frame += 1;
-      if (frame > 12) {
-        clearInterval(interval);
-        setLocked(true);
-      }
-    }, 55);
-    return () => clearInterval(interval);
-  }, [visible]);
-
   return (
     <div
       ref={ref}
-      className="relative overflow-hidden mb-8"
+      className="mb-8"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(16px)',
         transition: 'opacity 0.4s ease, transform 0.4s ease',
       }}
     >
-      <style>{`
-        @keyframes bio-scan {
-          0% { transform: translateY(-100%); opacity: 0; }
-          18% { opacity: 0.8; }
-          100% { transform: translateY(360%); opacity: 0; }
-        }
-        @keyframes bio-lock-pulse {
-          0%, 100% { opacity: 0.28; }
-          50% { opacity: 0.75; }
-        }
-      `}</style>
-      {!locked && (
-        <div
-          className="absolute left-0 right-0 h-10 pointer-events-none"
-          style={{
-            top: 0,
-            background: 'linear-gradient(to bottom, transparent, hsl(var(--accent) / 0.22), transparent)',
-            animation: 'bio-scan 0.8s linear infinite',
-          }}
-        />
-      )}
-      <div className="space-y-3">
-        {rows.map(([key, val], index) => {
-          const amount = locked ? 0 : Math.max(0.08, 0.38 - index * 0.08);
-          return (
-            <div
-              key={key}
-              className="font-mono"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '140px 20px 1fr',
-                gap: '0 4px',
-                fontSize: 12,
-                color: 'hsl(var(--foreground) / 0.5)',
-                letterSpacing: '0.08em',
-                transition: 'color 0.35s ease',
-              }}
-            >
-              <span style={{ color: locked ? 'hsl(var(--foreground) / 0.75)' : '#ff3333', animation: locked ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
-                {locked ? key : scrambleText(key, amount)}
-              </span>
-              <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
-              <span>{locked ? val : scrambleText(val, amount)}</span>
-            </div>
-          );
-        })}
+      <div className="space-y-4">
+        {rows.map(([key, val]) => (
+          <div
+            key={key}
+            className="font-mono"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '150px 1fr',
+              gap: '0 16px',
+              fontSize: 13.5,
+              letterSpacing: '0.06em',
+            }}
+          >
+            <span style={{ color: 'hsl(var(--foreground) / 0.8)' }}>{key}</span>
+            <span style={{ color: 'hsl(var(--foreground) / 0.7)', lineHeight: 1.6 }}>{nbsp(val)}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -229,13 +175,10 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <span className="block font-mono mt-2" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
-        SINAIDA
+      <span className="block font-mono mt-3" style={{ fontSize: 13, color: 'hsl(var(--foreground) / 0.7)', letterSpacing: '0.06em' }}>
+        Sinaida Krivchenko
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
-        NEW MEDIA ARTIST
-      </span>
-      <span className="block font-mono mt-2" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.3)' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.06em' }}>
         Photo: Roland Gaedtgens
       </span>
     </div>
@@ -274,10 +217,10 @@ export default function AboutSection() {
               <Reveal delay={150}>
                 <PhotoBlock />
               </Reveal>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 max-w-[62ch]">
                 <BioSignalLock />
                 <Reveal delay={600}>
-                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 19, color: 'hsl(var(--foreground) / 0.92)', lineHeight: 1.7 }}>
                     <p>
                       {nbsp('I believe that technology is only meaningful when it helps people feel seen, heard, and connected.')}
                     </p>
@@ -298,11 +241,6 @@ export default function AboutSection() {
                     <p>
                       {nbsp('I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.')}
                     </p>
-                  </div>
-                </Reveal>
-                <Reveal delay={900}>
-                  <div className="font-mono text-foreground/70" style={{ fontSize: 15 }}>
-                    {nbsp('Currently based in Prague · Available worldwide')}
                   </div>
                 </Reveal>
               </div>
