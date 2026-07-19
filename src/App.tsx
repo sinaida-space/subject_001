@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
+import VHSStaticLayer from "@/components/VHSStaticLayer";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -34,6 +35,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter basename="/">
           <SiteCursor />
+          <VHSStaticLayer />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />

@@ -204,6 +204,62 @@
     filter: contrast(1) grayscale(0) brightness(1);
   }
 
+  /* VHS ambient static layer — dark mode only, mounted once at the app root.
+     Three CSS-only sublayers (scanlines, grain, rare tracking jitter); see
+     VHSStaticLayer.tsx. Total opacity capped on the container so no
+     combination of sublayers can push the effect above "barely there". */
+  .vhs-static-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    opacity: 0.06;
+  }
+
+  .vhs-static-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(0 0% 100% / 0.5) 2px,
+      hsl(0 0% 100% / 0.5) 3px
+    );
+  }
+
+  .vhs-static-grain {
+    position: absolute;
+    inset: -10%;
+    width: 120%;
+    height: 120%;
+    background-repeat: repeat;
+    background-size: 180px 180px;
+    mix-blend-mode: overlay;
+  }
+
+  /* Thin horizontal displacement band for the rare tracking-error sweep.
+     Hidden at rest; the animation (gated to no-preference below) is what
+     ever makes it visible, and only for 1-2 keyframe steps per cycle. */
+  .vhs-static-jitter {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: hsl(0 0% 100% / 0.5);
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .vhs-static-grain {
+      animation: vhs-static-grain-shift 1s steps(6) infinite;
+    }
+
+    .vhs-static-jitter {
+      animation: vhs-static-jitter-sweep 13s steps(1) infinite;
+    }
+  }
+
   /* VHS noise bars on project images */
   .vhs-noise-bars {
     background: repeating-linear-gradient(
@@ -240,11 +296,33 @@
       opacity: 0.35;
       animation: none !important;
     }
+
+    /* Static texture (scanlines) stays; grain shift and the jitter sweep are
+       both defined only inside the no-preference query above, so they never
+       apply here — nothing moves. */
+    .vhs-static-jitter {
+      opacity: 0 !important;
+    }
   }
 
   @keyframes vhs-drift {
     0% { transform: translateY(0); }
     100% { transform: translateY(-20px); }
+  }
+
+  @keyframes vhs-static-grain-shift {
+    0% { background-position: 0 0; }
+    100% { background-position: 180px 180px; }
+  }
+
+  /* Runs on a fixed period, but VHSStaticLayer randomizes each mount's
+     animation-delay (negative, once) so the visible sweep isn't in lockstep
+     across tabs/reloads — no per-frame JS involved. */
+  @keyframes vhs-static-jitter-sweep {
+    0%, 96%, 100% { opacity: 0; transform: translateX(0); }
+    97% { opacity: 0.5; transform: translateX(-6px); }
+    98% { opacity: 0.3; transform: translateX(4px); }
+    99% { opacity: 0; transform: translateX(0); }
   }
 
   /* Grid lines */
