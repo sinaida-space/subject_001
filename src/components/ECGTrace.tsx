@@ -40,7 +40,13 @@ export default function ECGTrace({ variant, className }: ECGTraceProps) {
       <svg
         className="ecg-trace__svg"
         viewBox="0 0 1600 400"
-        preserveAspectRatio="none"
+        // Hero needs the waveform's actual proportions preserved at any
+        // width (a stretched-to-fit spike on mobile turns near-vertical
+        // and cuts through the headline it sits behind) — "meet" fits the
+        // whole shape inside the band, letterboxed. Ambient is a thin
+        // full-bleed sitewide texture band, not a legible waveform, so it
+        // keeps filling edge-to-edge via "none" as before.
+        preserveAspectRatio={variant === 'hero' ? 'xMidYMid meet' : 'none'}
         focusable="false"
       >
         <defs>

@@ -393,16 +393,22 @@
     }
   }
 
-  /* Hero centerpiece: full-width, ~40vh, sits behind the hero copy. */
+  /* Hero centerpiece: bottom-anchored band in the lower third of the hero,
+     not centered on the headline (issue #24 follow-up — a vertically
+     centered trace put the R-spike and sweep dot through the H1 text
+     ~80% of every cycle, and stretched into a near-vertical cut on
+     mobile). The spike may reach up toward the headline; its baseline
+     sits below the last headline line at rest, at every breakpoint.
+     Opacity capped to keep any transient draw-in overlap legible against
+     the text stacked above it in z-order. */
   .ecg-trace--hero {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 40vh;
-    margin: auto 0;
-    top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
-    opacity: 0.9;
+    width: 100%;
+    height: 20vh;
+    opacity: 0.5;
     z-index: 0;
   }
 
