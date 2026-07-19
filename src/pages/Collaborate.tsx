@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 import { SERVICES } from '@/data/services';
 import { FEATURED_WORKS } from '@/data/projects';
+import { nbsp } from '@/lib/typo';
 
 const PROCESS_STEPS = [
   { code: '01', label: 'Brief', detail: 'You send the occasion, space, and constraints.' },
@@ -26,12 +27,12 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
         {service.title}
       </h3>
       <p className="font-mono text-[13px] leading-relaxed text-foreground/[0.87]">
-        {service.description}
+        {nbsp(service.description)}
       </p>
       <p className="font-mono text-[13px] leading-relaxed mt-2 text-foreground/60">
         {service.record.map((part, i) =>
           part.href ? (
-            <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
+            <Link key={i} to={part.href} className="underline hover:text-primary-legible transition-colors">
               {part.text}
             </Link>
           ) : (
@@ -40,7 +41,7 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
         )}
       </p>
       <p className="font-mono text-[13px] leading-relaxed text-foreground/60">
-        {service.brief}
+        {nbsp(service.brief)}
       </p>
     </div>
   );
@@ -69,7 +70,7 @@ export default function Collaborate() {
   return (
     <div className="min-h-screen bg-background py-24">
       <div className="container mx-auto px-6 max-w-4xl">
-        <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
+        <a href="/" className="clinical-label text-primary-legible hover:text-primary-legible/70 transition-colors mb-8 inline-block">
           ← Back
         </a>
 
@@ -80,11 +81,10 @@ export default function Collaborate() {
           Work with <span className="text-primary font-bold">me</span>
         </h1>
         <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
-          Human first. Digital second. I build living visual systems for stages, concerts, and
-          performance spaces — this page is what actually happens if we work together on one.
+          {nbsp('Human first. Digital second. I build living visual systems for stages, concerts, and performance spaces — this page is what actually happens if we work together on one.')}
         </p>
         <p className="font-mono text-[14px] leading-relaxed mb-16 text-foreground/60">
-          Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
+          {nbsp('Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.')}
         </p>
 
         {/* Services */}
@@ -108,8 +108,7 @@ export default function Collaborate() {
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-3">Process</div>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            Structured the way I ran technical projects for years before this — brief, concept,
-            build, rehearsal, show. Nothing invented for the website.
+            {nbsp('Structured the way I ran technical projects for years before this — brief, concept, build, rehearsal, show. Nothing invented for the website.')}
           </p>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (
@@ -119,7 +118,7 @@ export default function Collaborate() {
                   {step.label}
                 </div>
                 <p className="text-[13px] leading-relaxed text-foreground/60">
-                  {step.detail}
+                  {nbsp(step.detail)}
                 </p>
                 {i < PROCESS_STEPS.length - 1 && (
                   <div className="hidden md:block mt-4 text-foreground/20">
@@ -137,18 +136,15 @@ export default function Collaborate() {
           <div className="font-mono text-[13px] leading-relaxed space-y-4 text-foreground/75">
             <p>
               <span className="text-foreground">Travel — </span>
-              Based in Prague, working globally. Touring and international bookings are welcome;
-              travel and accommodation are arranged case by case.
+              {nbsp('Based in Prague, working globally. Touring and international bookings are welcome; travel and accommodation are arranged case by case.')}
             </p>
             <p>
               <span className="text-foreground">Tech rider — </span>
-              Typical requirements are a projector or LED surface, a dedicated playback/render machine,
-              and a feed from the live audio mix where the work is audio-reactive. Exact specs are
-              confirmed once the venue and format are known.
+              {nbsp('Typical requirements are a projector or LED surface, a dedicated playback/render machine, and a feed from the live audio mix where the work is audio-reactive. Exact specs are confirmed once the venue and format are known.')}
             </p>
             <p>
               <span className="text-foreground">Lead time — </span>
-              Depends on set length and scope — confirmed once the brief is in. Earlier is always better.
+              {nbsp('Depends on set length and scope — confirmed once the brief is in. Earlier is always better.')}
             </p>
           </div>
         </section>
@@ -161,7 +157,7 @@ export default function Collaborate() {
           </p>
 
           <div className="font-mono text-[14px] leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
-            {BOILERPLATE}
+            {nbsp(BOILERPLATE)}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -179,7 +175,7 @@ export default function Collaborate() {
                 )}
                 <Link
                   to={`/work/${project.id}`}
-                  className="block font-mono mt-2 text-foreground/60 hover:text-accent transition-colors"
+                  className="block font-mono mt-2 text-foreground/60 hover:text-primary-legible transition-colors"
                   style={{ fontSize: 12 }}
                 >
                   {project.title.split('—')[0].trim()}
@@ -191,14 +187,14 @@ export default function Collaborate() {
             ))}
           </div>
           <p className="font-mono text-[12px] mb-8 text-foreground/40">
-            Click a still for the case study.
+            {nbsp('Click a still for the case study.')}
           </p>
 
           <ul className="font-mono text-[13px] space-y-2 text-foreground/75">
             {TECH_BASICS.map((item) => (
               <li key={item}>
                 <span className="text-primary-legible">{'— '}</span>
-                {item}
+                {nbsp(item)}
               </li>
             ))}
           </ul>
@@ -208,7 +204,7 @@ export default function Collaborate() {
         <section>
           <div className="clinical-label text-primary-legible mb-6">Contact</div>
           <p className="font-mono text-[13px] leading-relaxed mb-4 text-foreground/75">
-            Send the occasion, space, and timeline — a reply follows with next steps.
+            {nbsp('Send the occasion, space, and timeline — a reply follows with next steps.')}
           </p>
           <ObfuscatedMailto
             label="EMAIL ME ↗"
