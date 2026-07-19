@@ -43,10 +43,7 @@ export default function ServicesTerminal() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* LEFT COLUMN */}
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
-            <div
-              className="font-mono uppercase text-primary-legible"
-              style={{ letterSpacing: '0.2em', fontSize: 12 }}
-            >
+            <div className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Services
             </div>
           </div>
