@@ -50,10 +50,15 @@
        once the webfont swaps in. */
     --font-display: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
     /* FontLab (issue #21) — dev-only heading font switcher, see
-       html[data-fontlab] below and FontLab.tsx. Defaults to the committed
-       Geist stack, so it's a no-op until the lab is active and a visitor
-       picks something else. */
-    --font-display-candidate: var(--font-display);
+       html[data-fontlab] below and FontLab.tsx. Defaults to the same
+       literal Geist stack as --font-display above (NOT `var(--font-display)`
+       — that would create a cyclic reference once html[data-fontlab] below
+       redefines --font-display in terms of this property, and cyclic
+       custom-property references resolve to the guaranteed-invalid value,
+       silently breaking every heading's font-family). Kept as an
+       independent literal so it's a no-op until the lab is active and a
+       visitor picks something else. */
+    --font-display-candidate: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
     /* Terminal/monospace fonts (IBM Plex Mono, Space Mono, etc.) are banned
        sitewide — see CLAUDE.md typography rule. Body copy and labels use
        Geist Light instead. */

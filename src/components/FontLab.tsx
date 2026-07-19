@@ -73,6 +73,10 @@ export default function FontLab() {
       setLoading(candidate.id);
       try {
         await candidate.load();
+      } catch {
+        // A failed dynamic import shouldn't strand the switcher — the
+        // variable still flips below; worst case the browser falls
+        // through to the stack's system fallback font.
       } finally {
         setLoading(null);
       }
@@ -83,10 +87,15 @@ export default function FontLab() {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-[9998] w-56 border border-primary/30 bg-black/90 p-3 font-mono text-[11px] text-foreground/80 backdrop-blur-sm"
+      // Fixed dark chrome regardless of site theme — this is a dev-only
+      // overlay, not themed UI, so its own colors are literal (white-ish
+      // on black) rather than `text-foreground`/`border-foreground`, which
+      // resolve to near-black in lite mode and were unreadable against the
+      // always-black panel background.
+      className="fixed bottom-4 right-4 z-[9998] w-56 border border-primary/30 bg-black/90 p-3 font-mono text-[11px] text-white/80 backdrop-blur-sm"
       style={{ fontFamily: GEIST_STACK }}
     >
-      <div className="mb-2 uppercase tracking-[0.15em] text-foreground/40">Font lab — headings</div>
+      <div className="mb-2 uppercase tracking-[0.15em] text-white/40">Font lab — headings</div>
       <div className="flex flex-col gap-1">
         {CANDIDATES.map((c) => (
           <button
@@ -95,8 +104,8 @@ export default function FontLab() {
             onClick={() => select(c)}
             className={`border px-2 py-1 text-left transition-colors ${
               current === c.id
-                ? 'border-primary bg-primary/10 text-foreground'
-                : 'border-foreground/15 text-foreground/60 hover:border-foreground/40'
+                ? 'border-primary bg-primary/10 text-white'
+                : 'border-white/15 text-white/60 hover:border-white/40'
             }`}
           >
             {c.label}
