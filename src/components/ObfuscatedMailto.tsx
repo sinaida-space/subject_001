@@ -21,7 +21,7 @@ export default function ObfuscatedMailto({
 }: ObfuscatedMailtoProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    // Assemble address only on click, mirroring ContactSection.tsx pattern
+    // Assemble address only on click
     const address = ['gallant', '_mod5v', '@', 'icloud', '.com'].join('');
     window.location.href = `mailto:${address}`;
   };
