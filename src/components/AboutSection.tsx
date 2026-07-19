@@ -49,7 +49,6 @@ function BioSignalLock() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [noise, setNoise] = useState('acquiring signal');
 
   const rows = [
     ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
@@ -75,11 +74,9 @@ function BioSignalLock() {
     let frame = 0;
     const interval = setInterval(() => {
       frame += 1;
-      setNoise(`x:${(50.08 + Math.random() * 0.08).toFixed(4)} y:${(14.39 + Math.random() * 0.08).toFixed(4)} freq:${(84 + Math.random() * 32).toFixed(1)}`);
       if (frame > 12) {
         clearInterval(interval);
         setLocked(true);
-        setNoise('signal locked');
       }
     }, 55);
     return () => clearInterval(interval);
@@ -116,9 +113,6 @@ function BioSignalLock() {
           }}
         />
       )}
-      <div className="font-mono mb-5" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
-        {locked ? 'SIGNAL LOCKED — SUBJECT: SINAIDA' : noise}
-      </div>
       <div className="space-y-3">
         {rows.map(([key, val], index) => {
           const amount = locked ? 0 : Math.max(0.08, 0.38 - index * 0.08);
@@ -234,10 +228,7 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <span className="block font-mono mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
-        SUBJECT_001
-      </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
+      <span className="block font-mono mt-2" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
       </span>
       <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
@@ -306,12 +297,8 @@ export default function AboutSection() {
                   </div>
                 </Reveal>
                 <Reveal delay={900}>
-                  <div className="font-mono" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
-                    {nbsp('LOCATION: Prague')}
-                    <span style={{ color: '#ff3333' }}> · </span>
-                    {nbsp('REACH: Global')}
-                    <span style={{ color: '#ff3333' }}> · </span>
-                    {nbsp('AVAILABLE: Projects between engineering and emotion')}
+                  <div className="font-mono text-foreground/70" style={{ fontSize: 15 }}>
+                    {nbsp('Prague · Global · Projects between engineering and emotion')}
                   </div>
                 </Reveal>
               </div>

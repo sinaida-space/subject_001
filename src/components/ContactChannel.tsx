@@ -267,14 +267,8 @@ export default function ContactChannel() {
             <div className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Contact
             </div>
-            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-              Channel open
-            </div>
 
             <SignalBars />
-            <div className="font-mono mt-2 select-none" style={{ color: 'hsl(var(--accent))', opacity: 0.4, fontSize: 12 }}>
-              SIGNAL: STRONG
-            </div>
 
           {/* Social links */}
           <div className="mt-10 space-y-3">
@@ -407,12 +401,6 @@ export default function ContactChannel() {
               >
                 CONNECT ON LINKEDIN ↗
               </a>
-            </div>
-
-            {/* Final line — decorative-only, so the low opacity here is fine
-                (informational text above uses .75/.87, never this low). */}
-            <div className="font-mono text-[12px]" style={{ color: 'hsl(var(--accent))', opacity: 0.3 }}>
-              Channel open for new signals
             </div>
           </div>
           </div>

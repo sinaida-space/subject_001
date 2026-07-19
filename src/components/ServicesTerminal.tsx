@@ -49,12 +49,6 @@ export default function ServicesTerminal() {
             >
               Services
             </div>
-            <div
-              className="font-mono mt-2"
-              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}
-            >
-              Value / active
-            </div>
           </div>
 
           {/* RIGHT COLUMN */}
