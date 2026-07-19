@@ -19,19 +19,21 @@ export default {
   				'sans-serif'
   			],
   			mono: [
-  				'Space Mono',
-  				'ui-monospace',
-  				'SFMono-Regular',
-  				'Menlo',
-  				'Monaco',
-  				'Consolas',
-  				'Liberation Mono',
-  				'Courier New',
-  				'monospace'
+  				'Geist',
+  				'system-ui',
+  				'-apple-system',
+  				'sans-serif'
   			],
   			clinical: [
-  				'IBM Plex Mono',
-  				'monospace'
+  				'Geist',
+  				'system-ui',
+  				'-apple-system',
+  				'sans-serif'
+  			],
+  			led: [
+  				'Doto',
+  				'Space Grotesk',
+  				'sans-serif'
   			],
   			sans: [
   				'ui-sans-serif',

@@ -7,10 +7,10 @@ export interface SignalChainStage {
 }
 
 export interface SignalChainProps {
-  /** terminal-style caption above the chain, e.g. "> signal_path.trace() // 9 patches loaded" */
+  /** caption above the chain, e.g. "Signal path — 9 patches loaded" */
   trace: string;
   stages: SignalChainStage[];
-  /** terminal-style caption below the chain */
+  /** caption below the chain */
   footer: string;
 }
 

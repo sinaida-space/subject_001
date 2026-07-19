@@ -258,17 +258,17 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
-            SNAKE.EXE // SCORE: {score}
+          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+            SCORE: {score}
           </span>
           <button
             onClick={onClose}
             style={{
-              fontFamily: 'monospace', fontSize: '10px', color: '#555',
+              fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#555',
               background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px'
             }}
           >
-            [ ESC ]
+            CLOSE
           </button>
         </div>
 

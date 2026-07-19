@@ -256,10 +256,6 @@ export default function ContactChannel() {
           0% { transform: translate(0, 0); opacity: 1; }
           100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
         }
-        @keyframes blink-cursor {
-          0%, 50% { opacity: 1; }
-          51%, 100% { opacity: 0; }
-        }
       `}</style>
 
       <FreqDisplay />
@@ -275,7 +271,7 @@ export default function ContactChannel() {
               Contact
             </div>
             <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-              [ COMM.SYS // OPEN ]
+              Channel open
             </div>
 
             <SignalBars />
@@ -318,13 +314,7 @@ export default function ContactChannel() {
             <WaveformCanvas interactionRef={interactionRef} />
           </div>
 
-          {/* Terminal text */}
           <div className="max-w-2xl">
-            {/* Sys line */}
-            <div className="font-mono text-[12px] mb-6" style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}>
-              {'> COMM.SYS ONLINE // CHANNEL OPEN'}
-            </div>
-
             {/* Heading */}
             <h2 className="mb-8">
               <span className="block text-foreground font-light" style={{ fontSize: 'clamp(32px, 4vw, 52px)' }}>
@@ -334,11 +324,6 @@ export default function ContactChannel() {
                 Collaboration
               </span>
             </h2>
-
-            {/* Transmission */}
-            <div className="font-mono text-[12px] mb-3" style={{ color: 'hsl(var(--accent))', opacity: 0.45 }}>
-              {'> incoming_transmission.decode() //'}
-            </div>
 
             <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
               {(() => {
@@ -353,9 +338,8 @@ export default function ContactChannel() {
               })()}
             </p>
 
-            {/* Available for */}
-            <div className="font-mono text-[12px] mb-3" style={{ color: 'hsl(var(--accent))', opacity: 0.45 }}>
-              {'> available_for.list() //'}
+            <div className="font-mono text-[12px] uppercase mb-3" style={{ color: 'hsl(var(--accent))', opacity: 0.45, letterSpacing: '0.1em' }}>
+              Available for
             </div>
 
             <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
@@ -431,8 +415,7 @@ export default function ContactChannel() {
             {/* Final line — decorative-only, so the low opacity here is fine
                 (informational text above uses .75/.87, never this low). */}
             <div className="font-mono text-[12px]" style={{ color: 'hsl(var(--accent))', opacity: 0.3 }}>
-              {'> channel open for new signals'}
-              <span style={{ animation: 'blink-cursor 1s step-end infinite' }}>_</span>
+              Channel open for new signals
             </div>
           </div>
           </div>

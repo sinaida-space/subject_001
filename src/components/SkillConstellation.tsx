@@ -265,7 +265,7 @@ export default function SkillConstellation() {
               className="font-mono mt-2"
               style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}
             >
-              [ SKILLS ]
+              Skills
             </div>
 
           <div className="mt-8 space-y-3">
@@ -406,7 +406,7 @@ export default function SkillConstellation() {
                       textAnchor={isSkill ? getLabelAnchor(node) : 'middle'}
                       fill={node.color}
                       fontSize={isHovered ? labelSize + 1 : labelSize}
-                      fontFamily="'Space Mono', monospace"
+                      fontFamily="'Geist', sans-serif"
                       fontWeight={labelWeight}
                       opacity={(dim ? 0.1 : isHovered ? 1 : 0.9) * skillOpacity}
                       style={{

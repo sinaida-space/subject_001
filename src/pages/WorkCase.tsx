@@ -68,7 +68,7 @@ export default function WorkCase() {
             style={{
               border: '1px solid #CC1414',
               padding: '3px 8px',
-              fontFamily: 'monospace',
+              fontFamily: "'Geist', sans-serif",
               fontSize: '10px',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
@@ -152,7 +152,7 @@ export default function WorkCase() {
                   style={{
                     border: '1px solid #1a1a1a',
                     padding: '4px 8px',
-                    fontFamily: 'monospace',
+                    fontFamily: "'Geist', sans-serif",
                     fontSize: '10px',
                     letterSpacing: '0.15em',
                     color: 'hsl(var(--foreground) / 0.55)',

@@ -76,7 +76,7 @@ export default function SkillsSection() {
         <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
           <div className="col-span-12 md:col-span-3">
             <span className="clinical-label text-primary">Capabilities</span>
-            <div className="mt-2 text-xs font-clinical text-muted-foreground">[ SKILLS ]</div>
+            <div className="mt-2 text-xs font-clinical text-muted-foreground">Skills</div>
           </div>
           <div className="col-span-12 md:col-span-9">
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 transition-all duration-700 delay-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>

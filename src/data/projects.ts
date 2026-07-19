@@ -146,14 +146,14 @@ export const PROJECTS: Project[] = [
         },
       ],
       method: {
-        trace: '> signal_path.trace() // 9 patches loaded',
+        trace: 'Signal path — 9 patches loaded',
         stages: [
           { label: 'Live audio in', detail: 'Feed from the desk — the live mix enters as raw signal.' },
           { label: 'CHOP analysis', detail: 'Bands, beats and envelopes extracted in real time.' },
           { label: 'Per-song patch ×9', detail: 'One visual system per song — no two share a look.' },
           { label: 'Projection', detail: 'Light in the room, responding all night.' },
         ],
-        footer: '> full-set run · Sklad №3, Moscow · 26 March 2026',
+        footer: 'Full-set run · Sklad №3, Moscow · 26 March 2026',
       },
       order: {
         heading: 'What a festival can order',
@@ -209,14 +209,14 @@ export const PROJECTS: Project[] = [
         },
       ],
       method: {
-        trace: '> translation_path.trace() // pigment → light',
+        trace: 'Translation path — pigment → light',
         stages: [
           { label: 'Acrylic on canvas', detail: 'Alisa Feer’s original: acrylic and photo paper, A4, unique piece, July 2026.' },
           { label: 'Digital field', detail: 'The painting rebuilt as a navigable scene: soul-figure, poppies, a horizon of eyes.' },
           { label: 'Web experience', detail: 'Live in any browser; optional hand tracking runs on-device, palm to steer, fist to dive, pinch to pick.' },
           { label: 'Installation', detail: 'A room lit red, one laptop, one projector: the same field at the scale of a wall.' },
         ],
-        footer: '> concept & painting: Alisa Feer · interactive design & code: Sinaida Krivchenko',
+        footer: 'Concept & painting: Alisa Feer · interactive design & code: Sinaida Krivchenko',
       },
       credits: [
         'Concept & painting: Alisa Feer (Uvaliss) · uvaliss.ru · @uvaliss',
@@ -308,7 +308,7 @@ export const PROJECTS: Project[] = [
         },
       ],
       method: {
-        trace: '> idea_pipeline.trace() // gesture → grain',
+        trace: 'Idea pipeline — gesture → grain',
         stages: [
           { label: 'The conviction', detail: 'An instrument to practice, not software to operate — born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
           { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. A vocabulary that already lives in the body.' },
@@ -317,7 +317,7 @@ export const PROJECTS: Project[] = [
           { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture — each fix traced to a specific stumble.' },
           { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
         ],
-        footer: '> instrument & code: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
+        footer: 'Instrument & code: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
       },
       credits: [
         'Instrument & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',

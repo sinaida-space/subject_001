@@ -116,7 +116,7 @@ function BioSignalLock() {
         />
       )}
       <div className="font-mono mb-5" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
-        {locked ? '> BIO_SIGNAL.lock() // SUBJECT: SINAIDA // STATUS: ACTIVE' : `> ${noise}`}
+        {locked ? 'SIGNAL LOCKED — SUBJECT: SINAIDA' : noise}
       </div>
       <div className="space-y-3">
         {rows.map(([key, val], index) => {
@@ -263,7 +263,7 @@ export default function AboutSection() {
                 About
               </div>
               <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-                [ BIO ]
+                BIO
               </div>
             </Reveal>
           </div>

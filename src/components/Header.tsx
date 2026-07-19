@@ -151,8 +151,8 @@ export default function Header() {
           paddingLeft: 40,
         }}
       >
-        <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#ff3333', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.6 }}>
-          [ NAV.SYS // OPEN ]
+        <div style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: 10, color: '#ff3333', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.6 }}>
+          Menu
         </div>
 
         {NAV_ITEMS.filter((item) => item.label !== 'Contact').map((item, i) => (
@@ -162,7 +162,7 @@ export default function Header() {
             onClick={(e) => handleNavClick(e, item.href)}
             style={{
               display: 'block',
-              fontFamily: 'monospace',
+              fontFamily: "'Geist', sans-serif",
               fontSize: 28,
               fontWeight: 300,
               color: mode === 'lite' ? '#0a0a0a' : '#ffffff',
@@ -186,7 +186,7 @@ export default function Header() {
           onClick={(e) => handleNavClick(e, '#contact')}
           style={{
             marginTop: 40,
-            fontFamily: 'monospace',
+            fontFamily: "'Geist', sans-serif",
             fontSize: 12,
             letterSpacing: '0.2em',
             padding: '12px 28px',
@@ -207,7 +207,7 @@ export default function Header() {
           onClick={() => toggle()}
           style={{
             marginTop: 32,
-            fontFamily: 'monospace',
+            fontFamily: "'Geist', sans-serif",
             fontSize: 12,
             letterSpacing: '0.15em',
             background: 'none',
@@ -223,7 +223,7 @@ export default function Header() {
           View: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
         </button>
 
-        <div style={{ marginTop: 16, fontFamily: 'monospace', fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 16, fontFamily: "'Geist', sans-serif", fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>

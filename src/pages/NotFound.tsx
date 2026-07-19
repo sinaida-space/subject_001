@@ -34,27 +34,6 @@ function useGlitch(text: string, active: boolean) {
   return display;
 }
 
-function useTyper(text: string, speed: number, delay: number) {
-  const [displayed, setDisplayed] = useState('');
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    let i = 0;
-    const start = setTimeout(() => {
-      const tick = () => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) { setDone(true); return; }
-        setTimeout(tick, speed * (0.6 + Math.random() * 0.8));
-      };
-      setTimeout(tick, 0);
-    }, delay);
-    return () => clearTimeout(start);
-  }, [text, speed, delay]);
-
-  return { displayed, done };
-}
-
 function PulsingECG({ onClick }: { onClick: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const phaseRef = useRef(0);
@@ -138,7 +117,7 @@ function PulsingECG({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      title="[ ??? ]"
+      title="???"
       style={{
         cursor: 'pointer',
         background: 'none',
@@ -164,10 +143,6 @@ export default function NotFound() {
   const [glitchActive, setGlitchActive] = useState(false);
   const [snakeOpen, setSnakeOpen] = useState(false);
   const glitched404 = useGlitch('404', glitchActive);
-
-  const line1 = useTyper('> ERROR_CODE: 404', 6, 300);
-  const line2 = useTyper('> SIGNAL_LOST — navigating the void', 6, 300 + 18 * 6 + 120);
-  const line3 = useTyper('> awaiting_redirect.exe', 8, 300 + 18 * 6 + 120 + 37 * 6 + 200);
 
   useEffect(() => {
     console.error('404:', location.pathname);
@@ -199,7 +174,7 @@ export default function NotFound() {
           className="font-mono uppercase mb-6 tracking-widest text-xs"
           style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em' }}
         >
-          SINAIDA_OS v2.4.1 — NAVIGATION ERROR
+          Page not found
         </div>
 
         <h1
@@ -223,15 +198,6 @@ export default function NotFound() {
           <span className="font-mono" style={{ fontSize: '1.1rem', letterSpacing: '0.12em' }}>
             — lost in the void.
           </span>
-        </div>
-
-        <div
-          className="font-mono text-left w-full mb-10 space-y-1"
-          style={{ color: 'rgba(0,229,255,0.55)', fontSize: '0.75rem' }}
-        >
-          <div>{line1.displayed}{!line1.done && <span className="animate-terminal-cursor">█</span>}</div>
-          {line1.done && <div>{line2.displayed}{!line2.done && <span className="animate-terminal-cursor">█</span>}</div>}
-          {line2.done && <div>{line3.displayed}{!line3.done && <span className="animate-terminal-cursor">█</span>}</div>}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full">

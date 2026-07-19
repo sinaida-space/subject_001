@@ -22,7 +22,6 @@ const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, w
 function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
   return (
     <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <div className="text-foreground/50">{`$ load_module --id=${service.code}`}</div>
       <h3 className="font-mono text-base font-medium mt-2 mb-2 text-foreground">
         {service.title}
       </h3>
@@ -198,7 +197,7 @@ export default function Collaborate() {
           <ul className="font-mono text-[13px] space-y-2 text-foreground/75">
             {TECH_BASICS.map((item) => (
               <li key={item}>
-                <span className="text-primary-legible">{'> '}</span>
+                <span className="text-primary-legible">{'— '}</span>
                 {item}
               </li>
             ))}

@@ -57,7 +57,7 @@ function ProjectOverlay({ project, onClose }: { project: Project | null; onClose
           onClick={(e) => e.stopPropagation()}
         >
           <button onClick={onClose} className="absolute top-4 right-4 text-primary hover:text-foreground font-clinical text-sm tracking-widest cursor-none">
-            [CLOSE]
+            Close
           </button>
           <VHSImage src={project.image} alt={project.title} className="mb-6" aspectRatio="16/10" />
           <span className="clinical-label text-accent">{project.subtitle}</span>
@@ -332,7 +332,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
                 Selected Projects
               </div>
               <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-                [ RECENT WORK ]
+                Recent work
               </div>
             </div>
             <div className="flex-1 min-w-0">
@@ -364,7 +364,7 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
               Selected Projects
             </div>
             <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-              [ RECENT WORK ]
+              Recent work
             </div>
           </div>
         </div>

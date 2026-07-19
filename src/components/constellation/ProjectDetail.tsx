@@ -59,7 +59,8 @@ function Readout({ project }: { project: Project }) {
             style={{
               border: '1px solid #CC1414',
               padding: '3px 8px',
-              fontFamily: 'monospace',
+              fontFamily: "'Geist', sans-serif",
+              fontWeight: 300,
               fontSize: '10px',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
@@ -86,7 +87,7 @@ function Readout({ project }: { project: Project }) {
             {project.tools.map((t) => (
               <span
                 key={t}
-                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
+                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
               >
                 {t}
               </span>
@@ -142,15 +143,15 @@ function Readout({ project }: { project: Project }) {
             aria-label={`${project.title} — full text`}
           >
             <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+              <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
                 FULL TEXT
               </span>
               <button
                 type="button"
                 onClick={() => setEssayOpen(false)}
-                style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+                style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
               >
-                [ CLOSE ]
+                Close
               </button>
             </div>
             <div className="max-h-[75vh] overflow-y-auto p-5 md:p-6">
@@ -231,15 +232,15 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-label={`${project.title} — project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+            style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
           >
-            [ CLOSE ]
+            Close
           </button>
         </div>
         <div className="max-h-[88vh] overflow-y-auto">

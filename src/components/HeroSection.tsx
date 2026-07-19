@@ -29,16 +29,14 @@ export default function HeroSection() {
               SINAIDA KRIVCHENKO | NEW MEDIA ARTIST
             </p>
             <h1
-              className="font-display text-4xl md:text-6xl leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8 my-[100px] lg:text-8xl font-bold"
-              data-text="Where Engineering Meets Imagination">
-              
-              Where
+              className="font-led text-4xl md:text-6xl leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8 my-[100px] lg:text-8xl font-bold"
+              data-text="Visual worlds for physical spaces">
+
+              Visual worlds
               <br />
-              <span className="text-primary font-medium">Engineering</span>
+              <span className="text-primary font-medium">for</span>
               <br />
-              Meets
-              <br />
-              <span className="neon-glow-accent text-accent">Imagination</span>
+              <span className="neon-glow-accent text-accent">physical spaces</span>
             </h1>
           </div>
         </div>
@@ -48,23 +46,11 @@ export default function HeroSection() {
           className={`lg:col-span-4 transition-all duration-1000 delay-300 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
           }>
-          
+
           <div className="border-l border-primary/30 pl-8 space-y-5">
             <p className="font-mono text-[15px] leading-relaxed my-4" style={{ color: 'hsl(var(--foreground) / 0.82)' }}>
-              Transforming complex ideas into visual systems for stages, concerts, performances,
-              and spaces where sound becomes light.
+              Building interactive digital frameworks for complex human narratives.
             </p>
-            <div className="flex flex-col gap-2 font-mono text-[13px]" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
-              {['experience_design', 'stage_visuals', 'new_media_art'].map((t, i, arr) => (
-                <span key={t} className="flex items-center gap-2">
-                  <span className="text-primary/70">$</span>
-                  {t}
-                  {i === arr.length - 1 && (
-                    <span className="inline-block h-[1em] w-[7px] bg-accent/80 animate-terminal-cursor" />
-                  )}
-                </span>
-              ))}
-            </div>
             <button
               type="button"
               onClick={scrollToContact}
