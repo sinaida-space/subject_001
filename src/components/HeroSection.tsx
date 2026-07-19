@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { nbsp } from '@/lib/typo';
+import ECGTrace from '@/components/ECGTrace';
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,8 +18,11 @@ export default function HeroSection() {
     <section
       ref={sectionRef}
       className="relative min-h-screen flex flex-col items-center justify-center z-10 pt-40 md:pt-32 lg:pt-36 pb-16 md:pb-20">
-      
-      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl flex flex-col gap-10 md:gap-8 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-end">
+
+      {/* Centerpiece — the site's heartbeat, drawn behind the hero copy. */}
+      <ECGTrace variant="hero" />
+
+      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl flex flex-col gap-10 md:gap-8 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-end relative z-10">
         {/* Main title area */}
         <div className="lg:col-span-8 py-10 md:py-12 lg:py-16 min-w-0">
           <div

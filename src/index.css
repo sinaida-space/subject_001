@@ -102,7 +102,8 @@
 
   html[data-mode="lite"] .crt-scanlines,
   html[data-mode="lite"] .vhs-noise-bars,
-  html[data-mode="lite"] .crt-screen {
+  html[data-mode="lite"] .crt-screen,
+  html[data-mode="lite"] .ecg-trace {
     display: none;
   }
 }
@@ -322,6 +323,173 @@
 
     .vhs-static-jitter {
       animation: vhs-static-jitter-sweep 13s steps(1) infinite;
+    }
+  }
+
+  /* ECG live trace (issue #24) — hand-authored heartbeat path reused as a
+     hero centerpiece and a faint ambient sitewide band. No feGaussianBlur
+     (would re-rasterize every animated frame): the glow is three stacked
+     stroke copies of the same path. Dash math uses a fixed pathLength="1000"
+     on the source <path>, so drawing the trace is pure CSS, no JS
+     getTotalLength()/rAF. Default (no motion / unsupported) state is a
+     fully-drawn, static trace. */
+  .ecg-trace {
+    pointer-events: none;
+  }
+
+  .ecg-trace__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .ecg-trace__glow {
+    fill: none;
+    stroke: #fa0000;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0; /* static, fully drawn by default */
+  }
+
+  .ecg-trace__glow--wide {
+    stroke-width: 6px;
+    opacity: 0.12;
+  }
+
+  .ecg-trace__glow--mid {
+    stroke-width: 3px;
+    opacity: 0.35;
+  }
+
+  .ecg-trace__glow--core {
+    stroke-width: 1.5px;
+    opacity: 1;
+  }
+
+  /* Sweep head — hidden unless the browser supports offset-path AND motion
+     is allowed; a static trace has nothing riding it. Two circles: a dim,
+     wide glow and a small white-hot core, both riding the same offset-path
+     — the glow substitutes for a blur filter, same reasoning as the trace
+     strokes above. */
+  .ecg-trace__dot {
+    display: none;
+  }
+
+  .ecg-trace__dot--glow {
+    fill: #fa0000;
+    opacity: 0.4;
+  }
+
+  .ecg-trace__dot--core {
+    fill: #fff8f0;
+  }
+
+  @supports (offset-path: path("M0 0")) {
+    @media (prefers-reduced-motion: no-preference) {
+      .ecg-trace__dot {
+        display: block;
+      }
+    }
+  }
+
+  /* Hero centerpiece: full-width, ~40vh, sits behind the hero copy. */
+  .ecg-trace--hero {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 40vh;
+    margin: auto 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0.9;
+    z-index: 0;
+  }
+
+  /* Ambient sitewide band — under .vhs-static-layer (z-30) and .crt-screen
+     (z-40) on purpose, so the grain/scanline texture sits on top of it and
+     it reads as inside the tube rather than pasted over it. */
+  .ecg-trace--ambient {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 120px;
+    transform: translateY(-50%);
+    z-index: 20;
+    opacity: 0.1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ecg-trace--hero .ecg-trace__glow {
+      animation: ecg-trace-draw 6.2s linear infinite;
+    }
+
+    .ecg-trace--hero .ecg-trace__retrace {
+      animation: ecg-trace-retrace 6.2s linear infinite;
+    }
+
+    .ecg-trace--hero .ecg-trace__dot {
+      animation: ecg-trace-sweep 6.2s linear infinite;
+    }
+
+    .ecg-trace--ambient .ecg-trace__glow {
+      animation: ecg-trace-draw 9s linear infinite;
+    }
+
+    .ecg-trace--ambient .ecg-trace__retrace {
+      animation: ecg-trace-retrace 9s linear infinite;
+    }
+
+    .ecg-trace--ambient .ecg-trace__dot {
+      animation: ecg-trace-sweep 9s linear infinite;
+    }
+  }
+
+  @keyframes ecg-trace-draw {
+    0% {
+      stroke-dashoffset: 1000;
+    }
+    80% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Monitor retrace: the trace dips (never fully blanks) during the hold
+     after it finishes drawing, then recovers right as the next sweep
+     restarts — a nested opacity on the <g>, multiplying against each
+     stroke's own fixed opacity rather than overwriting it. */
+  @keyframes ecg-trace-retrace {
+    0%,
+    78% {
+      opacity: 1;
+    }
+    86% {
+      opacity: 0.3;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes ecg-trace-sweep {
+    0% {
+      offset-distance: 0%;
+      opacity: 1;
+    }
+    80% {
+      offset-distance: 100%;
+      opacity: 1;
+    }
+    86% {
+      opacity: 0;
+    }
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
     }
   }
 
