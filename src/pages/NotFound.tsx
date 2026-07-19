@@ -226,19 +226,17 @@ export default function NotFound() {
             rel="noopener noreferrer"
             className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 flex items-center justify-center transition-all duration-200"
             style={{
-              border: '1px solid rgba(0,229,255,0.4)',
-              color: 'rgba(0,229,255,0.7)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'rgba(255,255,255,0.7)',
               letterSpacing: '0.2em',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = '#00e5ff';
-              (e.currentTarget as HTMLAnchorElement).style.color = '#00e5ff';
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 20px rgba(0,229,255,0.15)';
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = '#ff3333';
+              (e.currentTarget as HTMLAnchorElement).style.color = '#ff3333';
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,229,255,0.4)';
-              (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(0,229,255,0.7)';
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none';
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(255,255,255,0.3)';
+              (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.7)';
             }}
           >
             ♪ drift into space ↗

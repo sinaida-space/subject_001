@@ -82,7 +82,7 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
       const drawWave = (tOffset: number, opacity: number) => {
         const grad = ctx.createLinearGradient(0, 0, w, 0);
         grad.addColorStop(0, `rgba(255,34,0,${opacity})`);
-        grad.addColorStop(1, `rgba(0,229,255,${opacity})`);
+        grad.addColorStop(1, `rgba(255,255,255,${opacity})`);
         ctx.strokeStyle = grad;
         ctx.lineWidth = opacity > 0.5 ? 1.5 : 1;
         ctx.beginPath();
