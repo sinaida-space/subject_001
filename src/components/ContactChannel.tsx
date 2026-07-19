@@ -82,10 +82,12 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
 
       const drawWave = (tOffset: number, opacity: number) => {
         const grad = ctx.createLinearGradient(0, 0, w, 0);
-        grad.addColorStop(0, `rgba(255,34,0,${opacity})`);
-        grad.addColorStop(1, `rgba(255,255,255,${opacity})`);
+        grad.addColorStop(0, `rgba(250,0,0,${opacity})`);
+        grad.addColorStop(1, `rgba(250,0,0,${opacity * 0.35})`);
         ctx.strokeStyle = grad;
         ctx.lineWidth = opacity > 0.5 ? 1.5 : 1;
+        ctx.shadowColor = `rgba(250,0,0,${opacity * 0.8})`;
+        ctx.shadowBlur = opacity > 0.5 ? 8 : 4;
         ctx.beginPath();
         const tt = t + tOffset;
         for (let x = 0; x < w; x += 2) {
@@ -99,6 +101,7 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
           else ctx.lineTo(x, y);
         }
         ctx.stroke();
+        ctx.shadowBlur = 0;
       };
 
       // Ghost
@@ -171,32 +174,6 @@ function SignalBars() {
   );
 }
 
-// ── Frequency HUD ───────────────────────────────────────────
-function FreqDisplay() {
-  const [freq, setFreq] = useState(440.0);
-  const [glitch, setGlitch] = useState(false);
-
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setGlitch(true);
-      setTimeout(() => {
-        setFreq(+(380 + Math.random() * 140).toFixed(1));
-        setGlitch(false);
-      }, 60);
-    }, 1200);
-    return () => clearInterval(iv);
-  }, []);
-
-  return (
-    <div
-      className="absolute top-[6%] right-[4%] font-mono text-[12px] z-10 select-none"
-      style={{ color: glitch ? '#ff3333' : 'hsl(var(--foreground))', opacity: 0.35, transition: 'color 0.05s' }}
-    >
-      FREQ: {freq} Hz
-    </div>
-  );
-}
-
 // ── Main Component ──────────────────────────────────────────
 // Static copy — renders instantly, no typing/reveal gating (same rule applied
 // to ServicesTerminal/HeroSection in Task 4): this section's content must not
@@ -259,8 +236,6 @@ export default function ContactChannel() {
         }
       `}</style>
 
-      <FreqDisplay />
-
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Waveform — full row above both columns so their first lines align */}
         <div className="mb-12">
@@ -312,7 +287,7 @@ export default function ContactChannel() {
               <span className="block text-foreground font-light" style={{ fontSize: 'clamp(32px, 4vw, 52px)' }}>
                 Open for
               </span>
-              <span className="block font-bold" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#ff3333' }}>
+              <span className="block font-bold" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#fa0000' }}>
                 Collaboration
               </span>
             </h2>
@@ -324,7 +299,7 @@ export default function ContactChannel() {
                 return (
                   <>
                     {PARA_1.slice(0, idx)}
-                    <span style={{ color: '#ff3333', fontWeight: 700 }}>{PARA_1.slice(idx)}</span>
+                    <span style={{ color: '#fa0000', fontWeight: 700 }}>{PARA_1.slice(idx)}</span>
                   </>
                 );
               })()}
@@ -338,7 +313,7 @@ export default function ContactChannel() {
               {PARA_2.split('·').map((seg, i, arr) => (
                 <span key={i}>
                   {seg}
-                  {i < arr.length - 1 && <span style={{ color: '#ff3333' }}>·</span>}
+                  {i < arr.length - 1 && <span style={{ color: '#fa0000' }}>·</span>}
                 </span>
               ))}
             </div>
@@ -349,17 +324,17 @@ export default function ContactChannel() {
                 label="EMAIL ME ↗"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
-                  border: '1px solid #ff3333',
-                  color: '#ff3333',
-                  background: 'rgba(255,51,51,0.06)',
+                  border: '1px solid #fa0000',
+                  color: '#fa0000',
+                  background: 'rgba(250,0,0,0.06)',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = '#ff3333';
+                  e.currentTarget.style.background = '#fa0000';
                   e.currentTarget.style.color = '#000';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
-                  e.currentTarget.style.color = '#ff3333';
+                  e.currentTarget.style.background = 'rgba(250,0,0,0.06)';
+                  e.currentTarget.style.color = '#fa0000';
                 }}
               />
               <a

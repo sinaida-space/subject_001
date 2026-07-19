@@ -57,14 +57,14 @@ function Readout({ project }: { project: Project }) {
         <div className="flex flex-wrap items-center gap-3">
           <span
             style={{
-              border: '1px solid #CC1414',
+              border: '1px solid #fa0000',
               padding: '3px 8px',
               fontFamily: "'Geist', sans-serif",
               fontWeight: 300,
               fontSize: '10px',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
-              color: '#CC1414',
+              color: '#fa0000',
             }}
           >
             {KIND_LABEL[project.kind]}
@@ -136,14 +136,14 @@ function Readout({ project }: { project: Project }) {
         >
           <div
             className="relative w-full max-w-xl"
-            style={{ background: 'hsl(var(--background))', border: '1px solid #CC1414', boxShadow: '0 0 40px rgba(204,20,20,0.22)' }}
+            style={{ background: 'hsl(var(--background))', border: '1px solid #fa0000', boxShadow: '0 0 40px rgba(250,0,0,0.22)' }}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-label={`${project.title} — full text`}
           >
             <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+              <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
                 FULL TEXT
               </span>
               <button
@@ -221,8 +221,8 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out"
         style={{
           background: 'hsl(var(--background))',
-          border: '1px solid #CC1414',
-          boxShadow: '0 0 40px rgba(204,20,20,0.22)',
+          border: '1px solid #fa0000',
+          boxShadow: '0 0 40px rgba(250,0,0,0.22)',
           opacity: mounted ? 1 : 0,
           transform: mounted ? 'scale(1)' : 'scale(0.97)',
         }}
@@ -232,7 +232,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-label={`${project.title} — project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
           <button

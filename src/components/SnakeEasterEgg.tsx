@@ -58,7 +58,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 
     if (!s.started && !s.dead) {
       // Start screen
-      ctx.fillStyle = '#CC1414';
+      ctx.fillStyle = '#fa0000';
       ctx.font = 'bold 13px monospace';
       ctx.textAlign = 'center';
       ctx.fillText('PRESS ANY KEY', SIZE / 2, SIZE / 2 - 10);
@@ -70,9 +70,9 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 
     // Food — red pulsing dot
     const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 200);
-    ctx.shadowColor = '#CC1414';
+    ctx.shadowColor = '#fa0000';
     ctx.shadowBlur = 8 * pulse;
-    ctx.fillStyle = `rgba(204, 20, 20, ${pulse})`;
+    ctx.fillStyle = `rgba(250,0,0, ${pulse})`;
     ctx.fillRect(s.food.x * CELL + 3, s.food.y * CELL + 3, CELL - 6, CELL - 6);
     ctx.shadowBlur = 0;
 
@@ -80,8 +80,8 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     s.snake.forEach((seg, i) => {
       const isHead = i === 0;
       const alpha = isHead ? 1 : 0.5 + 0.5 * ((s.snake.length - i) / s.snake.length);
-      ctx.fillStyle = isHead ? '#CC1414' : `rgba(204, 20, 20, ${alpha * 0.6})`;
-      ctx.shadowColor = isHead ? '#CC1414' : 'transparent';
+      ctx.fillStyle = isHead ? '#fa0000' : `rgba(250,0,0, ${alpha * 0.6})`;
+      ctx.shadowColor = isHead ? '#fa0000' : 'transparent';
       ctx.shadowBlur = isHead ? 6 : 0;
       ctx.fillRect(seg.x * CELL + 1, seg.y * CELL + 1, CELL - 2, CELL - 2);
     });
@@ -89,7 +89,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 
     // ECG line overlay on snake head
     const head = s.snake[0];
-    ctx.strokeStyle = '#FF3333';
+    ctx.strokeStyle = '#fa0000';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(head.x * CELL, head.y * CELL + CELL / 2);
@@ -104,7 +104,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     if (s.dead) {
       ctx.fillStyle = 'rgba(0,0,0,0.7)';
       ctx.fillRect(0, 0, SIZE, SIZE);
-      ctx.fillStyle = '#CC1414';
+      ctx.fillStyle = '#fa0000';
       ctx.font = 'bold 14px monospace';
       ctx.textAlign = 'center';
       ctx.fillText('FLATLINE', SIZE / 2, SIZE / 2 - 20);
@@ -245,8 +245,8 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
-        border: '1px solid #CC1414',
-        boxShadow: '0 0 40px rgba(204,20,20,0.3)',
+        border: '1px solid #fa0000',
+        boxShadow: '0 0 40px rgba(250,0,0,0.3)',
         background: '#060606',
         padding: '0',
       }}>
@@ -258,7 +258,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
             SCORE: {score}
           </span>
           <button
@@ -312,7 +312,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 const btnStyle: React.CSSProperties = {
   fontFamily: 'monospace',
   fontSize: '14px',
-  color: '#CC1414',
+  color: '#fa0000',
   background: '#0a0a0a',
   border: '1px solid #1a1a1a',
   padding: '8px',

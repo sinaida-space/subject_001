@@ -117,7 +117,7 @@ function PhotoBlock() {
         className="photo-frame-wrapper"
         style={{
           position: 'relative',
-          border: '1px solid rgba(255,51,51,0.4)',
+          border: '1px solid rgba(250,0,0,0.4)',
           boxShadow: '0 0 0 1px hsl(var(--accent) / 0.15), inset 0 0 30px rgba(0,0,0,0.5)',
         }}
       >
@@ -137,8 +137,8 @@ function PhotoBlock() {
             position: absolute;
             bottom: -1px; left: -1px;
             width: 18px; height: 18px;
-            border-bottom: 2px solid #ff3333;
-            border-left: 2px solid #ff3333;
+            border-bottom: 2px solid #fa0000;
+            border-left: 2px solid #fa0000;
             pointer-events: none;
             z-index: 2;
           }

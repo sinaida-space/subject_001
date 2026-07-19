@@ -67,13 +67,13 @@ export default function Header() {
   };
 
   const contactEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.currentTarget.style.background = '#ff3333';
+    e.currentTarget.style.background = '#fa0000';
     e.currentTarget.style.color = '#000';
   };
 
   const contactLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
-    e.currentTarget.style.color = '#ff3333';
+    e.currentTarget.style.background = 'rgba(250,0,0,0.06)';
+    e.currentTarget.style.color = '#fa0000';
   };
 
   return (
@@ -106,7 +106,7 @@ export default function Header() {
             <a
               href="#contact"
               className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 flex items-center h-9 transition-all duration-300 cursor-none"
-              style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
+              style={{ border: '1px solid #fa0000', color: '#fa0000', background: 'rgba(250,0,0,0.06)' }}
               onMouseEnter={contactEnter}
               onMouseLeave={contactLeave}
             >
@@ -128,12 +128,12 @@ export default function Header() {
             <button
               className="flex flex-col justify-center items-center w-9 h-9 gap-[5px]"
               onClick={() => setMenuOpen(!menuOpen)}
-              style={{ background: 'none', border: '1px solid #ff3333', cursor: 'pointer', padding: 0, zIndex: 60 }}
+              style={{ background: 'none', border: '1px solid #fa0000', cursor: 'pointer', padding: 0, zIndex: 60 }}
               aria-label="Menu"
             >
-              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none') }} />
-              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', opacity: mode === 'lite' ? 1 : (menuOpen ? 0 : 1) }} />
-              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none') }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: '#fa0000', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none') }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: '#fa0000', transition: mode === 'lite' ? 'none' : 'all 0.3s', opacity: mode === 'lite' ? 1 : (menuOpen ? 0 : 1) }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: '#fa0000', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none') }} />
             </button>
           </div>
 
@@ -151,7 +151,7 @@ export default function Header() {
           paddingLeft: 40,
         }}
       >
-        <div style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: 10, color: '#ff3333', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.6 }}>
+        <div style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: 10, color: '#fa0000', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.6 }}>
           Menu
         </div>
 
@@ -174,7 +174,7 @@ export default function Header() {
               transition: mode === 'lite' ? 'none' : `opacity 0.35s ease ${i * 70}ms, transform 0.35s ease ${i * 70}ms`,
             }}
           >
-            <span style={{ color: '#ff3333', marginRight: 14, fontSize: 11, letterSpacing: '0.2em' }}>
+            <span style={{ color: '#fa0000', marginRight: 14, fontSize: 11, letterSpacing: '0.2em' }}>
               {String(i + 1).padStart(2, '0')}
             </span>
             {item.label}
@@ -190,9 +190,9 @@ export default function Header() {
             fontSize: 12,
             letterSpacing: '0.2em',
             padding: '12px 28px',
-            border: '1px solid #ff3333',
-            color: '#ff3333',
-            background: 'rgba(255,51,51,0.06)',
+            border: '1px solid #fa0000',
+            color: '#fa0000',
+            background: 'rgba(250,0,0,0.06)',
             textDecoration: 'none',
             opacity: menuOpen ? 1 : 0,
             transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateX(0)' : 'translateX(-16px)'),
@@ -220,7 +220,7 @@ export default function Header() {
           }}
           aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
         >
-          View: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
+          View: <span style={{ color: '#fa0000' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
         </button>
 
         <div style={{ marginTop: 16, fontFamily: "'Geist', sans-serif", fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>

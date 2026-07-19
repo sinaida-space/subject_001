@@ -183,11 +183,11 @@ export default function NotFound() {
             fontSize: 'clamp(8rem, 22vw, 18rem)',
             lineHeight: 1,
             color: 'transparent',
-            WebkitTextStroke: '1.5px #ff3333',
+            WebkitTextStroke: '1.5px #fa0000',
             letterSpacing: '-0.04em',
             textShadow: glitchActive
-              ? '3px 0 #ff3333, -3px 0 #00e5ff'
-              : '0 0 60px rgba(255,51,51,0.15)',
+              ? '3px 0 #fa0000, -3px 0 #00e5ff'
+              : '0 0 60px rgba(250,0,0,0.15)',
             transition: glitchActive ? 'none' : 'text-shadow 0.3s ease',
           }}
         >
@@ -205,17 +205,17 @@ export default function NotFound() {
             href="/"
             className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 flex items-center justify-center transition-all duration-200"
             style={{
-              border: '1px solid #ff3333',
-              color: '#ff3333',
+              border: '1px solid #fa0000',
+              color: '#fa0000',
               letterSpacing: '0.2em',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.background = '#ff3333';
+              (e.currentTarget as HTMLAnchorElement).style.background = '#fa0000';
               (e.currentTarget as HTMLAnchorElement).style.color = '#000';
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-              (e.currentTarget as HTMLAnchorElement).style.color = '#ff3333';
+              (e.currentTarget as HTMLAnchorElement).style.color = '#fa0000';
             }}
           >
             → Return to Home
@@ -231,8 +231,8 @@ export default function NotFound() {
               letterSpacing: '0.2em',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = '#ff3333';
-              (e.currentTarget as HTMLAnchorElement).style.color = '#ff3333';
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = '#fa0000';
+              (e.currentTarget as HTMLAnchorElement).style.color = '#fa0000';
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(255,255,255,0.3)';

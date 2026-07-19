@@ -14,13 +14,14 @@
     --popover: 240 8% 6%;
     --popover-foreground: 0 0% 88%;
 
-    --primary: 352 87% 40%;
+    --primary: 0 100% 49%;
     --primary-foreground: 0 0% 100%;
-    /* Same hue/saturation as --primary, lightness raised to clear WCAG AA
-       4.5:1 against --background for SMALL informational text only (labels,
-       eyebrows, ~12px). Large text/headings, buttons, and decorative accents
-       must keep using --primary — do not replace those. See AA contrast fix. */
-    --primary-legible: 352 87% 52%;
+    /* Same hue/saturation as --primary (fire engine red, #fa0000), lightness
+       raised to clear WCAG AA 4.5:1 against --background for SMALL
+       informational text only (labels, eyebrows, ~12px). Large text/headings,
+       buttons, and decorative accents must keep using --primary — do not
+       replace those. See AA contrast fix. */
+    --primary-legible: 0 100% 61%;
 
     --secondary: 240 6% 10%;
     --secondary-foreground: 0 0% 75%;
@@ -28,7 +29,7 @@
     --muted: 240 5% 12%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 352 87% 40%;
+    --accent: 0 100% 49%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -36,11 +37,11 @@
 
     --border: 240 6% 15%;
     --input: 240 6% 15%;
-    --ring: 352 87% 40%;
+    --ring: 0 100% 49%;
 
     --radius: 0px;
 
-    --neon-magenta: 320 100% 55%;
+    --neon-magenta: 320 100% 49%;
     --clinical: 180 15% 70%;
     --particle-white: 40 67% 96%;
 
@@ -61,12 +62,12 @@
 
     --sidebar-background: 240 8% 5%;
     --sidebar-foreground: 0 0% 88%;
-    --sidebar-primary: 0 100% 55%;
+    --sidebar-primary: 0 100% 49%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 5% 12%;
     --sidebar-accent-foreground: 0 0% 88%;
     --sidebar-border: 240 6% 15%;
-    --sidebar-ring: 0 100% 55%;
+    --sidebar-ring: 0 100% 49%;
   }
 }
 
@@ -81,14 +82,14 @@
     --card-foreground: 0 0% 8%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 8%;
-    --primary: 352 87% 42%;
+    --primary: 0 100% 49%;
     --primary-foreground: 0 0% 100%;
-    --primary-legible: 352 87% 38%;
+    --primary-legible: 0 100% 45%;
     --secondary: 0 0% 95%;
     --secondary-foreground: 0 0% 8%;
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 15%;
-    --accent: 352 87% 42%;
+    --accent: 0 100% 49%;
     --accent-foreground: 0 0% 100%;
     --border: 0 0% 85%;
     --input: 0 0% 85%;

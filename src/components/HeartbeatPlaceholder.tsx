@@ -59,8 +59,8 @@ export default function HeartbeatPlaceholder({
         aspectRatio,
         position: 'relative',
         overflow: 'hidden',
-        background: 'rgba(255,51,51,0.03)',
-        border: '1px solid rgba(255,51,51,0.12)',
+        background: 'rgba(250,0,0,0.03)',
+        border: '1px solid rgba(250,0,0,0.12)',
         opacity: loaded ? 0 : 1,
         transition: 'opacity 0.35s ease 0.55s',
         pointerEvents: 'none',
@@ -80,7 +80,7 @@ export default function HeartbeatPlaceholder({
         {/* Dim resting flatline */}
         <line
           x1="0" y1="50" x2="400" y2="50"
-          stroke="rgba(255,51,51,0.15)"
+          stroke="rgba(250,0,0,0.15)"
           strokeWidth="1.5"
         />
         {/* One heartbeat spike, drawn once on load, never looping */}
@@ -88,7 +88,7 @@ export default function HeartbeatPlaceholder({
           <path
             d="M0,50 L160,50 L172,20 L184,80 L196,50 L400,50"
             fill="none"
-            stroke="#ff3333"
+            stroke="#fa0000"
             strokeWidth="2"
             strokeLinejoin="round"
             strokeLinecap="round"

@@ -8,7 +8,7 @@ export type Category = 'tech' | 'direction' | 'strategy' | 'research' | 'analyti
 
 export const CATEGORY_COLORS: Record<Category, string> = {
   tech: '#00e5ff', // creative technology — cyan
-  direction: '#ff3b52', // creative direction — ECG red
+  direction: '#fa0000', // creative direction — ECG red
   strategy: '#ff9933', // strategy & systems — amber
   research: '#cc66ff', // research interests — violet
   analytical: '#00ff88', // technical & analytical — green

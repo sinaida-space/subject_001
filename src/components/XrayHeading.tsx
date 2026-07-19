@@ -13,7 +13,7 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 // doesn't seam obviously when repeated.
 const TEXTURE_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
-  <g id="xr-lines" fill="none" color="hsl(352 87% 60%)" stroke-linecap="round">
+  <g id="xr-lines" fill="none" color="hsl(0 100% 60%)" stroke-linecap="round">
     <path stroke="currentColor" stroke-width="1.4" d="M26 18 C 40 10, 46 34, 62 36 C 74 38, 70 54, 86 58" />
     <path stroke="currentColor" stroke-width="1" d="M86 58 L 86 84 L 122 84 L 122 60 L 150 60" />
     <path stroke="currentColor" stroke-width="1.4" d="M4 130 C 20 122, 28 146, 46 148 C 60 150, 58 168, 76 168" />
@@ -29,14 +29,14 @@ const TEXTURE_SVG = `
     <path stroke="currentColor" stroke-width="1" d="M122 232 L 122 210 L 158 210" />
   </g>
   <use href="#xr-lines" transform="translate(1 1)" color="#ffffff" opacity="0.08" />
-  <g fill="hsl(352 90% 72%)">
+  <g fill="hsl(0 100% 72%)">
     <circle cx="86" cy="84" r="2.2" /><circle cx="122" cy="84" r="2.2" /><circle cx="150" cy="60" r="2" />
     <circle cx="76" cy="196" r="2.2" /><circle cx="112" cy="196" r="2" />
     <circle cx="198" cy="100" r="2.2" /><circle cx="168" cy="100" r="2" />
     <circle cx="54" cy="158" r="2" /><circle cx="92" cy="176" r="2.2" /><circle cx="174" cy="142" r="2" />
     <circle cx="122" cy="232" r="2.2" /><circle cx="158" cy="210" r="2" />
   </g>
-  <g fill="none" stroke="hsl(352 90% 72%)" stroke-width="1">
+  <g fill="none" stroke="hsl(0 100% 72%)" stroke-width="1">
     <circle cx="122" cy="60" r="4" /><circle cx="168" cy="124" r="4" />
   </g>
 </svg>
