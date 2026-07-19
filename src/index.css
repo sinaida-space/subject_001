@@ -52,7 +52,7 @@
     /* Legacy alias — kept so existing class names don't need renaming. */
     --font-led: 'Jersey 20', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-    --scanline-opacity: 0.04;
+    --scanline-opacity: 0.14;
     --glitch-intensity: 0;
 
     --sidebar-background: 240 8% 5%;
@@ -101,7 +101,8 @@
   }
 
   html[data-mode="lite"] .crt-scanlines,
-  html[data-mode="lite"] .vhs-noise-bars {
+  html[data-mode="lite"] .vhs-noise-bars,
+  html[data-mode="lite"] .crt-screen {
     display: none;
   }
 }
@@ -165,6 +166,75 @@
     );
   }
 
+  /* Full-viewport CRT screen system (issue #23) — vignette + fake curvature,
+     phosphor stripe texture, static chroma fringe, rare breathing flicker.
+     Mounted once at the app root via CRTScreen.tsx, dark mode only. Sits
+     above .vhs-static-layer (z-30) and below .crt-scanlines (z-9999). No
+     SVG displacement filter (would repaint every frame) and no image
+     assets — vignette/phosphor/fringe are static CSS gradients, only
+     .crt-flicker animates. */
+  .crt-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+  }
+
+  .crt-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 120% 100% at center,
+      transparent 55%,
+      hsl(0 0% 0% / 0.28) 82%,
+      hsl(0 0% 0% / 0.62) 100%
+    );
+  }
+
+  .crt-phosphor {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      hsl(0 100% 50% / 0.05) 0 1px,
+      hsl(120 100% 50% / 0.04) 1px 2px,
+      hsl(240 100% 50% / 0.05) 2px 3px
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.55;
+  }
+
+  .crt-fringe {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: screen;
+  }
+
+  .crt-fringe--left {
+    background: linear-gradient(90deg, hsl(0 100% 50% / 0.10), transparent 12%);
+  }
+
+  .crt-fringe--right {
+    background: linear-gradient(270deg, hsl(185 100% 50% / 0.08), transparent 12%);
+  }
+
+  .crt-flicker {
+    position: absolute;
+    inset: 0;
+    background: hsl(0 0% 100% / 0.02);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .crt-flicker {
+      animation: crt-flicker-breathe 4s steps(24) infinite alternate;
+    }
+  }
+
+  @keyframes crt-flicker-breathe {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
+
   /* VHS Glitch effect */
   .vhs-glitch {
     animation: vhs-distort 0.15s steps(2) infinite;
@@ -208,7 +278,7 @@
     inset: 0;
     z-index: 30;
     pointer-events: none;
-    opacity: 0.06;
+    opacity: 0.20;
   }
 
   .vhs-static-scanlines {
@@ -240,7 +310,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    height: 6px;
+    height: 10px;
     background: hsl(0 0% 100% / 0.5);
     opacity: 0;
   }
@@ -435,8 +505,8 @@
      across tabs/reloads — no per-frame JS involved. */
   @keyframes vhs-static-jitter-sweep {
     0%, 96%, 100% { opacity: 0; transform: translateX(0); }
-    97% { opacity: 0.5; transform: translateX(-6px); }
-    98% { opacity: 0.3; transform: translateX(4px); }
+    97% { opacity: 0.8; transform: translateX(-6px); }
+    98% { opacity: 0.5; transform: translateX(4px); }
     99% { opacity: 0; transform: translateX(0); }
   }
 

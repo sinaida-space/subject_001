@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import VHSStaticLayer from "@/components/VHSStaticLayer";
+import CRTScreen from "@/components/CRTScreen";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -36,6 +37,7 @@ const App = () => (
         <BrowserRouter basename="/">
           <SiteCursor />
           <VHSStaticLayer />
+          <CRTScreen />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
