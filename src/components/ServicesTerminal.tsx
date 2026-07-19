@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import XrayHeading from '@/components/XrayHeading';
 import { SERVICES, type Service } from '@/data/services';
+import { nbsp } from '@/lib/typo';
 
 const SEPARATOR = '────────────────────────────────────────────';
 
@@ -47,6 +48,9 @@ export default function ServicesTerminal() {
             <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Services
             </XrayHeading>
+            <p className="font-mono mt-3 text-[15px] text-foreground/60">
+              {nbsp('Digital tools for human connection.')}
+            </p>
           </div>
 
           {/* RIGHT COLUMN */}

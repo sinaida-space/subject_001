@@ -162,7 +162,7 @@ function SignalBars() {
             width: 4,
             height: heights[i],
             borderRadius: 1,
-            background: b <= active ? 'hsl(var(--accent))' : 'hsl(var(--accent))',
+            background: 'hsl(var(--primary-legible))',
             opacity: b <= active ? 1 : 0.15,
           }}
         />
@@ -190,7 +190,7 @@ function FreqDisplay() {
   return (
     <div
       className="absolute top-[6%] right-[4%] font-mono text-[12px] z-10 select-none"
-      style={{ color: glitch ? '#ff3333' : 'hsl(var(--accent))', opacity: 0.4, transition: 'color 0.05s' }}
+      style={{ color: glitch ? '#ff3333' : 'hsl(var(--foreground))', opacity: 0.35, transition: 'color 0.05s' }}
     >
       FREQ: {freq} Hz
     </div>
@@ -262,50 +262,50 @@ export default function ContactChannel() {
       <FreqDisplay />
 
       <div className="container mx-auto px-6 max-w-7xl">
+        {/* Waveform — full row above both columns so their first lines align */}
+        <div className="mb-12">
+          <WaveformCanvas interactionRef={interactionRef} />
+        </div>
+
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* LEFT COLUMN */}
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Contact
             </XrayHeading>
-
-            <SignalBars />
+            <p className="font-mono mt-3 text-[15px] text-foreground/60">
+              Get in touch.
+            </p>
 
           {/* Social links */}
-          <div className="mt-10 space-y-3">
+          <div className="mt-8 space-y-3.5">
             <ObfuscatedMailto
-              label="→ EMAIL"
-              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
-              style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
+              label="Email ↗"
+              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
             />
             <a
               href="https://www.instagram.com/sin.ai.da/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
-              style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
+              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
             >
-              → INSTAGRAM
+              Instagram ↗
             </a>
             <a
               href="https://www.linkedin.com/in/sinaida"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[12px] tracking-wider transition-opacity hover:opacity-100"
-              style={{ color: 'hsl(var(--accent))', opacity: 0.5 }}
+              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
             >
-              → LINKEDIN
+              LinkedIn ↗
             </a>
           </div>
+
+            <SignalBars />
           </div>
 
           {/* RIGHT COLUMN */}
           <div className="flex-1">
-          {/* Waveform */}
-          <div className="mb-10">
-            <WaveformCanvas interactionRef={interactionRef} />
-          </div>
-
           <div className="max-w-2xl">
             {/* Heading */}
             <h2 className="mb-8">
@@ -330,7 +330,7 @@ export default function ContactChannel() {
               })()}
             </p>
 
-            <div className="font-mono text-[12px] uppercase mb-3" style={{ color: 'hsl(var(--accent))', opacity: 0.45, letterSpacing: '0.1em' }}>
+            <div className="font-mono text-[12px] uppercase mb-3" style={{ color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.1em' }}>
               Available for
             </div>
 

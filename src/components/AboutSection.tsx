@@ -235,6 +235,9 @@ function PhotoBlock() {
       <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
         NEW MEDIA ARTIST
       </span>
+      <span className="block font-mono mt-2" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.3)' }}>
+        Photo: Roland Gaedtgens
+      </span>
     </div>
   );
 }
@@ -255,9 +258,9 @@ export default function AboutSection() {
               <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
                 About
               </XrayHeading>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
-                BIO
-              </div>
+              <p className="font-mono mt-3 text-[15px] text-foreground/60">
+                {nbsp('The story so far.')}
+              </p>
             </Reveal>
           </div>
           <div className="flex-1">
@@ -299,7 +302,7 @@ export default function AboutSection() {
                 </Reveal>
                 <Reveal delay={900}>
                   <div className="font-mono text-foreground/70" style={{ fontSize: 15 }}>
-                    {nbsp('Prague · Global · Projects between engineering and emotion')}
+                    {nbsp('Currently based in Prague · Available worldwide')}
                   </div>
                 </Reveal>
               </div>
