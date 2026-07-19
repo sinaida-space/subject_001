@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Doto:wght@400..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,8 +28,8 @@
     --muted: 240 5% 12%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 180 100% 45%;
-    --accent-foreground: 240 10% 3%;
+    --accent: 352 87% 40%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
@@ -41,22 +41,20 @@
     --radius: 0px;
 
     --neon-magenta: 320 100% 55%;
-    --neon-glow: 352 87% 40%;
     --clinical: 180 15% 70%;
     --particle-white: 40 67% 96%;
-    --bloom-cyan: 180 100% 45%;
 
     /* Metrically-close system fallbacks so `font-display: swap` (set on the
        Google Fonts link in index.html) doesn't cause a visible text reflow
        once the webfont swaps in. */
-    --font-display: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-display: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
     /* Terminal/monospace fonts (IBM Plex Mono, Space Mono, etc.) are banned
        sitewide — see CLAUDE.md typography rule. Body copy and labels use
        Geist Light instead. */
     --font-mono: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --font-clinical: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    /* LED / dot-matrix display face, reserved for true H1/H2 headline moments only. */
-    --font-led: 'Doto', 'Space Grotesk', system-ui, sans-serif;
+    /* Legacy alias — was the LED/dot-matrix display face, now just Geist. */
+    --font-led: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
     --scanline-opacity: 0.04;
     --glitch-intensity: 0;
@@ -90,7 +88,7 @@
     --secondary-foreground: 0 0% 8%;
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 15%;
-    --accent: 0 0% 8%;
+    --accent: 352 87% 42%;
     --accent-foreground: 0 0% 100%;
     --border: 0 0% 85%;
     --input: 0 0% 85%;
@@ -107,9 +105,7 @@
   }
 
   html[data-mode="lite"] .crt-scanlines,
-  html[data-mode="lite"] .vhs-noise-bars,
-  html[data-mode="lite"] .glitch-text::before,
-  html[data-mode="lite"] .glitch-text::after {
+  html[data-mode="lite"] .vhs-noise-bars {
     display: none;
   }
 }
@@ -178,40 +174,6 @@
     animation: vhs-distort 0.15s steps(2) infinite;
   }
 
-  .glitch-text {
-    position: relative;
-  }
-
-  .glitch-text::before,
-  .glitch-text::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .glitch-text::before {
-    color: hsl(var(--accent));
-    clip-path: inset(0 0 60% 0);
-    transform: translateX(-2px);
-    opacity: 0;
-  }
-
-  .glitch-text::after {
-    color: hsl(var(--primary));
-    clip-path: inset(40% 0 0 0);
-    transform: translateX(2px);
-    opacity: 0;
-  }
-
-  .glitch-text:hover::before,
-  .glitch-text:hover::after {
-    opacity: 0.8;
-    animation: glitch-shift 0.3s steps(3) infinite;
-  }
-
   /* ECG lock pulse — traces a hovered target's outline once, never loops */
   .cursor-lock-pulse {
     stroke-dasharray: 1;
@@ -277,31 +239,11 @@
       opacity: 0.35;
       animation: none !important;
     }
-
-    .glitch-text::before,
-    .glitch-text::after {
-      display: none;
-    }
   }
 
   @keyframes vhs-drift {
     0% { transform: translateY(0); }
     100% { transform: translateY(-20px); }
-  }
-
-  /* Neon glow */
-  .neon-glow {
-    text-shadow:
-      0 0 7px hsl(var(--primary) / 0.6),
-      0 0 20px hsl(var(--primary) / 0.4),
-      0 0 42px hsl(var(--primary) / 0.2);
-  }
-
-  .neon-glow-accent {
-    text-shadow:
-      0 0 10px hsl(var(--accent) / 0.7),
-      0 0 20px hsl(var(--accent) / 0.3),
-      0 0 35px hsl(var(--accent) / 0.15);
   }
 
   /* Grid lines */
@@ -415,7 +357,6 @@
 
   .font-led {
     font-family: var(--font-led);
-    font-variation-settings: 'ROND' 0;
   }
 }
 

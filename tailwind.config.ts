@@ -15,7 +15,9 @@ export default {
   	extend: {
   		fontFamily: {
   			display: [
-  				'Space Grotesk',
+  				'Geist',
+  				'system-ui',
+  				'-apple-system',
   				'sans-serif'
   			],
   			mono: [
@@ -31,8 +33,9 @@ export default {
   				'sans-serif'
   			],
   			led: [
-  				'Doto',
-  				'Space Grotesk',
+  				'Geist',
+  				'system-ui',
+  				'-apple-system',
   				'sans-serif'
   			],
   			sans: [
