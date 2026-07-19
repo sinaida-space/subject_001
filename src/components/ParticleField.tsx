@@ -1,10 +1,37 @@
 import { useRef, useMemo, useCallback, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
 const PARTICLE_COUNT = 800;
 const TRAIL_COUNT = 400;
+
+// Converts an "H S% L%" CSS custom property (the format every color token in
+// index.css uses) into normalized [r, g, b] for use as a Three.js vertex
+// color. Read once per mount so particle color stays tied to the active
+// theme (--foreground flips from near-white in dark mode to near-black in
+// lite mode) without per-frame style reads.
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hp = h / 60;
+  const x = c * (1 - Math.abs((hp % 2) - 1));
+  let r = 0, g = 0, b = 0;
+  if (hp < 1) [r, g, b] = [c, x, 0];
+  else if (hp < 2) [r, g, b] = [x, c, 0];
+  else if (hp < 3) [r, g, b] = [0, c, x];
+  else if (hp < 4) [r, g, b] = [0, x, c];
+  else if (hp < 5) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  const m = l - c / 2;
+  return [r + m, g + m, b + m];
+}
+
+function readParticleColor(): [number, number, number] {
+  if (typeof window === 'undefined') return [0.95, 0.95, 0.95];
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--foreground').trim();
+  const [h, s, l] = raw.split(/\s+/).map(parseFloat);
+  if (Number.isNaN(h) || Number.isNaN(s) || Number.isNaN(l)) return [0.95, 0.95, 0.95];
+  return hslToRgb(h, s / 100, l / 100);
+}
 
 // Custom shader for trail particles that expand over their lifetime
 const trailVertexShader = `
@@ -47,6 +74,9 @@ const trailFragmentShader = `
 function Particles() {
   const meshRef = useRef<THREE.Points>(null);
   const trailRef = useRef<THREE.Points>(null);
+  // Read once per mount — ties trail spawn color to the active theme
+  // without a per-frame style read.
+  const particleColorRef = useRef<[number, number, number]>(readParticleColor());
   const mouseRef = useRef({ x: 0, y: 0, active: false, prevX: 0, prevY: 0, speed: 0 });
   const activityRef = useRef(0);
   const scrollRef = useRef(0);
@@ -57,12 +87,13 @@ function Particles() {
   const timeRef = useRef(0);
   const { viewport } = useThree();
 
-  // Base particles
+  // Base particles — monochrome, tied to the active theme's --foreground.
   const [positions, basePositions, colors, sizes] = useMemo(() => {
     const pos = new Float32Array(PARTICLE_COUNT * 3);
     const base = new Float32Array(PARTICLE_COUNT * 3);
     const col = new Float32Array(PARTICLE_COUNT * 3);
     const siz = new Float32Array(PARTICLE_COUNT);
+    const [pr, pg, pb] = particleColorRef.current;
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const x = (Math.random() - 0.5) * 20;
@@ -75,32 +106,27 @@ function Particles() {
       base[i * 3 + 1] = y;
       base[i * 3 + 2] = z;
 
-      const type = Math.random();
-      if (type < 0.4) {
-        col[i * 3] = 0.95; col[i * 3 + 1] = 0.93; col[i * 3 + 2] = 0.9;
-      } else if (type < 0.7) {
-        col[i * 3] = 0.784; col[i * 3 + 1] = 0.063; col[i * 3 + 2] = 0.180;
-      } else {
-        col[i * 3] = 0.5; col[i * 3 + 1] = 0.03; col[i * 3 + 2] = 0.09;
-      }
+      col[i * 3] = pr; col[i * 3 + 1] = pg; col[i * 3 + 2] = pb;
 
       siz[i] = Math.random() * 0.8 + 0.2;
     }
     return [pos, base, col, siz];
   }, []);
 
-  // Trail particles with custom attributes for expanding steam effect
+  // Trail particles with custom attributes for expanding steam effect —
+  // same monochrome theme color as the base particles.
   const [trailPositions, trailColors, trailSizes, trailAges] = useMemo(() => {
     const pos = new Float32Array(TRAIL_COUNT * 3);
     const col = new Float32Array(TRAIL_COUNT * 3);
     const siz = new Float32Array(TRAIL_COUNT);
     const ages = new Float32Array(TRAIL_COUNT);
+    const [pr, pg, pb] = particleColorRef.current;
 
     for (let i = 0; i < TRAIL_COUNT; i++) {
       pos[i * 3] = 0;
       pos[i * 3 + 1] = 0;
       pos[i * 3 + 2] = -100;
-      col[i * 3] = 0.95; col[i * 3 + 1] = 0.93; col[i * 3 + 2] = 0.9;
+      col[i * 3] = pr; col[i * 3 + 1] = pg; col[i * 3 + 2] = pb;
       siz[i] = 1.0;
       ages[i] = 999;
     }
@@ -197,15 +223,9 @@ function Particles() {
           vels[idx * 3 + 1] = Math.sin(angle) * driftSpeed + 0.15; // slight upward bias
           vels[idx * 3 + 2] = (Math.random() - 0.5) * 0.1;
 
-          // Colors matching site: warm white + crimson
-          const r = Math.random();
-          if (r < 0.45) {
-            trailColArray[idx * 3] = 0.95; trailColArray[idx * 3 + 1] = 0.93; trailColArray[idx * 3 + 2] = 0.9;
-          } else if (r < 0.8) {
-            trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
-          } else {
-            trailColArray[idx * 3] = 0.5; trailColArray[idx * 3 + 1] = 0.03; trailColArray[idx * 3 + 2] = 0.09;
-          }
+          // Monochrome, tied to the active theme's --foreground
+          const [pr, pg, pb] = particleColorRef.current;
+          trailColArray[idx * 3] = pr; trailColArray[idx * 3 + 1] = pg; trailColArray[idx * 3 + 2] = pb;
 
           trailSizeArray[idx] = 0.3 + Math.random() * 0.4;
           ages[idx] = 0;
@@ -230,12 +250,8 @@ function Particles() {
           vels[idx * 3 + 1] = scrollDirRef.current * (0.3 + Math.random() * 0.5);
           vels[idx * 3 + 2] = (Math.random() - 0.5) * 0.1;
 
-          const r = Math.random();
-          if (r < 0.5) {
-            trailColArray[idx * 3] = 0.95; trailColArray[idx * 3 + 1] = 0.93; trailColArray[idx * 3 + 2] = 0.9;
-          } else {
-            trailColArray[idx * 3] = 0.784; trailColArray[idx * 3 + 1] = 0.063; trailColArray[idx * 3 + 2] = 0.180;
-          }
+          const [pr, pg, pb] = particleColorRef.current;
+          trailColArray[idx * 3] = pr; trailColArray[idx * 3 + 1] = pg; trailColArray[idx * 3 + 2] = pb;
 
           trailSizeArray[idx] = 0.2 + Math.random() * 0.3;
           ages[idx] = 0;
@@ -358,14 +374,6 @@ export default function ParticleField() {
         dpr={[1, 1.5]}
       >
         <Particles />
-        <EffectComposer>
-          <Bloom
-            intensity={1.25}
-            luminanceThreshold={0.05}
-            luminanceSmoothing={0.95}
-            mipmapBlur
-          />
-        </EffectComposer>
       </Canvas>
     </div>
   );
