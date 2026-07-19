@@ -96,7 +96,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => toggle()}
-              className="cursor-none flex items-center justify-center w-9 h-9 transition-colors text-primary-legible/70 hover:text-accent"
+              className="cursor-none flex items-center justify-center w-9 h-9 transition-colors text-primary-legible/70 hover:text-primary-legible"
               style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
