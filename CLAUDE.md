@@ -4,10 +4,10 @@
 
 **No IBM Plex (any variant) or similar terminal/coder monospace fonts** (Space Mono, JetBrains Mono, Fira Code, Courier, etc.) anywhere on this site. These read as generic AI-generated developer-portfolio boilerplate, not this practice.
 
-Current type system:
-- Body copy, labels, UI chrome → **Geist**, weight 300 (`font-mono` / `font-clinical` utility classes — both map to Geist Light despite the legacy names).
-- Headings (h3/h4, card titles, secondary chrome) → **Space Grotesk** (`font-display`).
-- True `<h1>`/`<h2>` headline moments only → **Doto**, styled as an LED/dot-matrix retro hardware display (`font-led`). Do not apply this to dense body text, legal copy, or small repeated section labels — it's illegible below display size.
+Current type system — single family, Geist:
+- Body copy, labels, UI chrome → **Geist**, weight 300 (`font-mono` / `font-clinical` utility classes).
+- Headings and display moments (h1/h2 headline moments, h3/h4, card titles, secondary chrome) → **Geist**, weight 600-800 (`font-display`).
+- `font-led` is a legacy alias kept only so existing class names don't need renaming — it also maps to Geist. Doto and Space Grotesk have been removed from the site; do not reintroduce them.
 
 Before adding any new font or reintroducing a monospace typeface, check this rule first.
 
