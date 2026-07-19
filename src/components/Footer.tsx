@@ -16,6 +16,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-4">
             <Logo
+              size="large"
               onEcgClick={() => setSnakeOpen(true)}
               onNameClick={(e) => {
                 if (window.location.pathname === '/') {
@@ -25,7 +26,7 @@ export default function Footer() {
                 // Off the home page the <a href="/"> navigates to the hero naturally.
               }}
             />
-            <p className="mt-5 max-w-xs font-mono text-[13px] leading-relaxed text-foreground/55">
+            <p className="mt-6 max-w-xs font-mono text-lg md:text-xl leading-relaxed text-foreground/80">
               {nbsp('Sinaida Krivchenko')}<br />{nbsp('New media artist')}
             </p>
           </div>

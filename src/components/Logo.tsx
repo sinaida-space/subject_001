@@ -3,13 +3,16 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 
 export default function Logo({
   className = '',
+  size = 'default',
   onEcgClick,
   onNameClick,
 }: {
   className?: string;
+  size?: 'default' | 'large';
   onEcgClick?: () => void;
   onNameClick?: (e: React.MouseEvent) => void;
 }) {
+  const large = size === 'large';
   const { mode } = useRenderMode();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollRef = useRef(0);
@@ -139,21 +142,21 @@ export default function Logo({
   const ecg = (
     <canvas
       ref={canvasRef}
-      width={120}
-      height={32}
-      className="h-8"
+      width={large ? 180 : 120}
+      height={large ? 48 : 32}
+      className={large ? 'h-12' : 'h-8'}
       style={{ imageRendering: 'auto' }}
     />
   );
 
   const name = (
-    <span className="font-display text-lg font-light tracking-widest text-foreground uppercase">
+    <span className={`font-display font-light tracking-widest text-foreground uppercase ${large ? 'text-2xl lg:text-3xl' : 'text-lg'}`}>
       sin<span className="text-primary">.</span>ai<span className="text-primary">.</span>da
     </span>
   );
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex ${large ? 'flex-col items-start gap-3' : 'items-center gap-3'} ${className}`}>
       {onEcgClick ? (
         <button
           type="button"
