@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type ElementType, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ElementType, type ReactNode } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 // ── X-ray texture ────────────────────────────────────────────
@@ -81,6 +81,28 @@ export default function XrayHeading({ as: Tag = 'div', className, children }: Xr
 
   const enabled = mode !== 'lite' && pointerFine && !reducedMotion;
 
+  // Issue #19 — interaction glitch (blob reveal + chroma split). Dark mode
+  // and motion-allowed only, but unlike the lens above it isn't mouse-only:
+  // touch fires it once on touchstart. Desktop triggering is handled purely
+  // in CSS via :hover (see .xray-heading-fx in index.css); this class only
+  // gates whether that CSS applies at all, plus the touch one-shot below.
+  const darkGlitchEnabled = mode !== 'lite' && !reducedMotion;
+  const [touchActive, setTouchActive] = useState(false);
+  const touchTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (touchTimeoutRef.current != null) window.clearTimeout(touchTimeoutRef.current);
+    };
+  }, []);
+
+  const handleTouchStart = () => {
+    if (!darkGlitchEnabled) return;
+    setTouchActive(true);
+    if (touchTimeoutRef.current != null) window.clearTimeout(touchTimeoutRef.current);
+    touchTimeoutRef.current = window.setTimeout(() => setTouchActive(false), 420);
+  };
+
   const refreshRect = () => {
     const el = wrapperRef.current;
     if (!el) return;
@@ -131,12 +153,38 @@ export default function XrayHeading({ as: Tag = 'div', className, children }: Xr
   return (
     <div
       ref={wrapperRef}
-      className="relative"
+      className={`relative ${darkGlitchEnabled ? 'xray-heading-fx' : ''} ${touchActive ? 'xray-heading-touch-active' : ''}`}
       onPointerMove={handlePointerMove}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
+      onTouchStart={handleTouchStart}
     >
+      {darkGlitchEnabled && (
+        <div
+          className="xray-blob-reveal"
+          aria-hidden="true"
+          style={{ backgroundImage: TEXTURE_URL }}
+        />
+      )}
       <Tag className={className}>{children}</Tag>
+      {darkGlitchEnabled && (
+        <>
+          <div
+            className={`${className ?? ''} xray-chroma-copy xray-chroma-copy--red`}
+            aria-hidden="true"
+            style={{ margin: 0 }}
+          >
+            {children}
+          </div>
+          <div
+            className={`${className ?? ''} xray-chroma-copy xray-chroma-copy--cyan`}
+            aria-hidden="true"
+            style={{ margin: 0 }}
+          >
+            {children}
+          </div>
+        </>
+      )}
       {enabled && (
         <div
           ref={overlayRef}

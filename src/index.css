@@ -260,6 +260,126 @@
     }
   }
 
+  /* XrayHeading interaction glitch (issue #19) — extends the existing hover
+     lens, dark mode + no-preference only. Blob is an oversized organic
+     reveal sitting behind the text; the chroma copies are real duplicate
+     text nodes offset red/cyan, one-shot per hover entry. */
+  .xray-blob-reveal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* height, not width, is scaled off the wrapper's box — the wrapper
+       spans the full heading row, so a percentage width would stretch the
+       blob into an oval on wide headings. aspect-ratio keeps it organic
+       regardless of container width. */
+    width: auto;
+    height: 260%;
+    aspect-ratio: 1 / 1;
+    transform: translate(-50%, -50%) scale(0.55);
+    border-radius: 42% 58% 65% 35% / 45% 40% 60% 55%;
+    background-size: 240px 240px;
+    background-position: center;
+    background-repeat: repeat;
+    filter: blur(1.5px) saturate(1.3);
+    opacity: 0;
+    pointer-events: none;
+    /* No z-index: painted first in DOM order (before the heading text),
+       which is enough to sit behind it without risking a negative z-index
+       dropping the blob below unrelated page content in the same
+       stacking context. */
+    transition: opacity 420ms ease, transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .xray-chroma-copy {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    pointer-events: none;
+    opacity: 0;
+    mix-blend-mode: screen;
+  }
+
+  .xray-chroma-copy--red {
+    color: hsl(0 100% 55%);
+  }
+
+  .xray-chroma-copy--cyan {
+    color: hsl(185 100% 55%);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .xray-heading-fx:hover .xray-blob-reveal {
+      opacity: 0.5;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .xray-heading-fx:hover .xray-chroma-copy--red {
+      animation: xray-chroma-split-red 320ms steps(4) 1;
+    }
+
+    .xray-heading-fx:hover .xray-chroma-copy--cyan {
+      animation: xray-chroma-split-cyan 320ms steps(4) 1;
+    }
+  }
+
+  .xray-heading-fx.xray-heading-touch-active .xray-blob-reveal {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .xray-heading-fx.xray-heading-touch-active .xray-chroma-copy--red {
+    animation: xray-chroma-split-red 320ms steps(4) 1;
+  }
+
+  .xray-heading-fx.xray-heading-touch-active .xray-chroma-copy--cyan {
+    animation: xray-chroma-split-cyan 320ms steps(4) 1;
+  }
+
+  /* VHSImage interaction glitch (issue #19) — dark mode + no-preference
+     only. Four clipped slice duplicates displace a few px on hover/touch;
+     two chroma layers fake an RGB channel split via filter + screen blend. */
+  .vhs-glitch-slice,
+  .vhs-chroma-red,
+  .vhs-chroma-cyan {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .vhs-glitch-slice:nth-of-type(1) { clip-path: inset(8% 0 74% 0); }
+  .vhs-glitch-slice:nth-of-type(2) { clip-path: inset(38% 0 40% 0); }
+  .vhs-glitch-slice:nth-of-type(3) { clip-path: inset(62% 0 18% 0); }
+  .vhs-glitch-slice:nth-of-type(4) { clip-path: inset(80% 0 4% 0); }
+
+  .vhs-chroma-red {
+    mix-blend-mode: screen;
+    filter: brightness(0.8) sepia(1) hue-rotate(-50deg) saturate(6);
+  }
+
+  .vhs-chroma-cyan {
+    mix-blend-mode: screen;
+    filter: brightness(0.8) sepia(1) hue-rotate(140deg) saturate(6);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .vhs-image-fx:hover .vhs-glitch-slice:nth-of-type(1) { animation: vhs-slice-1 380ms steps(3) 1; }
+    .vhs-image-fx:hover .vhs-glitch-slice:nth-of-type(2) { animation: vhs-slice-2 380ms steps(3) 1; }
+    .vhs-image-fx:hover .vhs-glitch-slice:nth-of-type(3) { animation: vhs-slice-3 380ms steps(3) 1; }
+    .vhs-image-fx:hover .vhs-glitch-slice:nth-of-type(4) { animation: vhs-slice-4 380ms steps(3) 1; }
+    .vhs-image-fx:hover .vhs-chroma-red { animation: vhs-chroma-red 380ms steps(3) 1; }
+    .vhs-image-fx:hover .vhs-chroma-cyan { animation: vhs-chroma-cyan 380ms steps(3) 1; }
+  }
+
+  .vhs-image-fx.vhs-image-touch-active .vhs-glitch-slice:nth-of-type(1) { animation: vhs-slice-1 380ms steps(3) 1; }
+  .vhs-image-fx.vhs-image-touch-active .vhs-glitch-slice:nth-of-type(2) { animation: vhs-slice-2 380ms steps(3) 1; }
+  .vhs-image-fx.vhs-image-touch-active .vhs-glitch-slice:nth-of-type(3) { animation: vhs-slice-3 380ms steps(3) 1; }
+  .vhs-image-fx.vhs-image-touch-active .vhs-glitch-slice:nth-of-type(4) { animation: vhs-slice-4 380ms steps(3) 1; }
+  .vhs-image-fx.vhs-image-touch-active .vhs-chroma-red { animation: vhs-chroma-red 380ms steps(3) 1; }
+  .vhs-image-fx.vhs-image-touch-active .vhs-chroma-cyan { animation: vhs-chroma-cyan 380ms steps(3) 1; }
+
   /* VHS noise bars on project images */
   .vhs-noise-bars {
     background: repeating-linear-gradient(
@@ -492,6 +612,64 @@
     filter: brightness(1) blur(0px);
     text-shadow: none;
   }
+}
+
+@keyframes xray-chroma-split-red {
+  0% { transform: translate(0, 0); opacity: 0; }
+  25% { transform: translate(-3px, 0); opacity: 0.7; }
+  50% { transform: translate(2px, 0); opacity: 0.5; }
+  75% { transform: translate(-1px, 0); opacity: 0.25; }
+  100% { transform: translate(0, 0); opacity: 0; }
+}
+
+@keyframes xray-chroma-split-cyan {
+  0% { transform: translate(0, 0); opacity: 0; }
+  25% { transform: translate(3px, 0); opacity: 0.7; }
+  50% { transform: translate(-2px, 0); opacity: 0.5; }
+  75% { transform: translate(1px, 0); opacity: 0.25; }
+  100% { transform: translate(0, 0); opacity: 0; }
+}
+
+@keyframes vhs-slice-1 {
+  0% { opacity: 0; transform: translateX(0); }
+  33% { opacity: 0.9; transform: translateX(-6px); }
+  66% { opacity: 0.6; transform: translateX(4px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes vhs-slice-2 {
+  0% { opacity: 0; transform: translateX(0); }
+  33% { opacity: 0.9; transform: translateX(5px); }
+  66% { opacity: 0.5; transform: translateX(-3px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes vhs-slice-3 {
+  0% { opacity: 0; transform: translateX(0); }
+  33% { opacity: 0.85; transform: translateX(-4px); }
+  66% { opacity: 0.5; transform: translateX(3px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes vhs-slice-4 {
+  0% { opacity: 0; transform: translateX(0); }
+  33% { opacity: 0.8; transform: translateX(6px); }
+  66% { opacity: 0.4; transform: translateX(-2px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes vhs-chroma-red {
+  0% { opacity: 0; transform: translateX(0); }
+  33% { opacity: 0.5; transform: translateX(-3px); }
+  66% { opacity: 0.25; transform: translateX(-1px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes vhs-chroma-cyan {
+  0% { opacity: 0; transform: translateX(0); }
+  33% { opacity: 0.5; transform: translateX(3px); }
+  66% { opacity: 0.25; transform: translateX(1px); }
+  100% { opacity: 0; transform: translateX(0); }
 }
 
 /* XrayHeading lens radius — registering this as an animatable <length> lets
