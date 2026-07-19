@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { nbsp } from '@/lib/typo';
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -28,15 +29,12 @@ export default function HeroSection() {
             <p className="clinical-label mb-6 text-primary-legible break-words">
               SINAIDA KRIVCHENKO | NEW MEDIA ARTIST
             </p>
-            <h1
-              className="font-led text-4xl md:text-6xl leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8 my-[100px] lg:text-8xl font-bold"
-              data-text="Visual worlds for physical spaces">
-
+            <h1 className="uppercase font-extrabold tracking-[-0.02em] text-5xl md:text-7xl lg:text-8xl leading-[0.95] text-foreground mt-6 mb-8">
               Visual worlds
               <br />
-              <span className="text-primary font-medium">for</span>
+              <span className="text-foreground/60 font-light">for</span>
               <br />
-              <span className="neon-glow-accent text-accent">physical spaces</span>
+              <span className="text-primary">physical spaces</span>
             </h1>
           </div>
         </div>
@@ -49,7 +47,7 @@ export default function HeroSection() {
 
           <div className="border-l border-primary/30 pl-8 space-y-5">
             <p className="font-mono text-[15px] leading-relaxed my-4" style={{ color: 'hsl(var(--foreground) / 0.82)' }}>
-              Building interactive digital frameworks for complex human narratives.
+              {nbsp('Building interactive digital frameworks for complex human narratives.')}
             </p>
             <button
               type="button"
