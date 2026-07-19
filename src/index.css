@@ -167,29 +167,17 @@
     );
   }
 
-  /* Full-viewport CRT screen system (issue #23) — vignette + fake curvature,
-     phosphor stripe texture, static chroma fringe, rare breathing flicker.
-     Mounted once at the app root via CRTScreen.tsx, dark mode only. Sits
-     above .vhs-static-layer (z-30) and below .crt-scanlines (z-9999). No
-     SVG displacement filter (would repaint every frame) and no image
-     assets — vignette/phosphor/fringe are static CSS gradients, only
-     .crt-flicker animates. */
+  /* Full-viewport CRT screen system (issue #23) — phosphor stripe texture,
+     rare breathing flicker. Mounted once at the app root via CRTScreen.tsx,
+     dark mode only. Sits above .vhs-static-layer (z-30) and below
+     .crt-scanlines (z-9999). No SVG displacement filter (would repaint
+     every frame) and no image assets — phosphor is a static CSS gradient,
+     only .crt-flicker animates. */
   .crt-screen {
     position: fixed;
     inset: 0;
     z-index: 40;
     pointer-events: none;
-  }
-
-  .crt-vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse 120% 100% at center,
-      transparent 55%,
-      hsl(0 0% 0% / 0.28) 82%,
-      hsl(0 0% 0% / 0.62) 100%
-    );
   }
 
   .crt-phosphor {
@@ -203,20 +191,6 @@
     );
     mix-blend-mode: overlay;
     opacity: 0.55;
-  }
-
-  .crt-fringe {
-    position: absolute;
-    inset: 0;
-    mix-blend-mode: screen;
-  }
-
-  .crt-fringe--left {
-    background: linear-gradient(90deg, hsl(0 100% 50% / 0.10), transparent 12%);
-  }
-
-  .crt-fringe--right {
-    background: linear-gradient(270deg, hsl(185 100% 50% / 0.08), transparent 12%);
   }
 
   .crt-flicker {
@@ -682,14 +656,6 @@
     97% { opacity: 0.8; transform: translateX(-6px); }
     98% { opacity: 0.5; transform: translateX(4px); }
     99% { opacity: 0; transform: translateX(0); }
-  }
-
-  /* Grid lines */
-  .grid-overlay {
-    background-image:
-      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
-    background-size: 60px 60px;
   }
 
   .clinical-label {

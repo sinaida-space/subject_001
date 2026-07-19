@@ -18,7 +18,7 @@ const Index = () => {
   const full = mode === 'full';
 
   return (
-    <div className="relative min-h-screen bg-background grid-overlay">
+    <div className="relative min-h-screen bg-background">
       {/* Cosmic starfield backdrop — full mode only; lite uses the CSS gradient.
           fallback={null} is intentional, not a CLS gap: ParticleField renders
           `fixed inset-0`, so it's a background layer with zero in-flow height —

@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import VHSStaticLayer from "@/components/VHSStaticLayer";
 import CRTScreen from "@/components/CRTScreen";
-import ECGTrace from "@/components/ECGTrace";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -37,7 +36,6 @@ const App = () => (
         <Sonner />
         <BrowserRouter basename="/">
           <SiteCursor />
-          <ECGTrace variant="ambient" />
           <VHSStaticLayer />
           <CRTScreen />
           <Suspense fallback={<RouteFallback />}>

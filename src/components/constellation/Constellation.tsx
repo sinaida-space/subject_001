@@ -1,8 +1,8 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import XrayHeading from '@/components/XrayHeading';
 import { useRenderMode } from '@/hooks/useRenderMode';
-import type { GraphNode } from '@/data/graph';
-import { projectById, PROJECTS } from '@/data/projects';
+import { buildGraph, type GraphNode } from '@/data/graph';
+import { projectById } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
 import { nbsp } from '@/lib/typo';
 import ConstellationLite from './ConstellationLite';
@@ -12,10 +12,16 @@ import ProjectDetail from './ProjectDetail';
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
 
 const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
-// Mirrors ConstellationFull's MOBILE_BAND_HEIGHT — kept as a rough CLS
-// estimate here since the exact content-driven height is computed inside
-// ConstellationFull itself once it mounts.
-const MOBILE_RESERVED_HEIGHT = Math.max(640, PROJECTS.length * 640);
+// Mirrors ConstellationFull's own mobile sizing (max(MOBILE_BAND_HEIGHT,
+// nodeCount * 58)) plus the plain-list section below it (mt-16 + its own
+// minHeight floor) — a rough CLS estimate for before ConstellationFull
+// mounts and measures its real height. Was previously keyed off
+// PROJECTS.length instead of total node count and didn't budget for the
+// list at all, over-reserving by roughly a screen's worth of empty space.
+const { nodes: GNODES } = buildGraph();
+const MOBILE_GRAPH_HEIGHT = Math.max(640, GNODES.length * 58);
+const MOBILE_LIST_HEIGHT = 64 /* mt-16 */ + 420 /* PlainSignalIndex's own minHeight floor */;
+const MOBILE_RESERVED_HEIGHT = MOBILE_GRAPH_HEIGHT + MOBILE_LIST_HEIGHT;
 
 export default function Constellation() {
   const { mode } = useRenderMode();

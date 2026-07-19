@@ -16,10 +16,7 @@ export default function CRTScreen() {
 
   return (
     <div className="crt-screen" aria-hidden="true">
-      <div className="crt-vignette" />
       <div className="crt-phosphor" />
-      <div className="crt-fringe crt-fringe--left" />
-      <div className="crt-fringe crt-fringe--right" />
       <div className="crt-flicker" />
     </div>
   );
