@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import XrayHeading from '@/components/XrayHeading';
 import { SERVICES, type Service } from '@/data/services';
 
 const SEPARATOR = '────────────────────────────────────────────';
@@ -43,9 +44,9 @@ export default function ServicesTerminal() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* LEFT COLUMN */}
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
-            <div className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
+            <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Services
-            </div>
+            </XrayHeading>
           </div>
 
           {/* RIGHT COLUMN */}

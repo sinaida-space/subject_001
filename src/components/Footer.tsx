@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
+import XrayHeading from '@/components/XrayHeading';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { nbsp } from '@/lib/typo';
 
@@ -31,7 +32,7 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-8 md:col-span-8 md:grid-cols-3">
             <div>
-              <div className="text-2xl md:text-3xl font-semibold tracking-tight mb-5 text-primary-legible">Navigate</div>
+              <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight mb-5 text-primary-legible">Navigate</XrayHeading>
               <div className="space-y-3.5">
                 {[
                   { label: 'Work', href: '#work' },
@@ -47,7 +48,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <div className="text-2xl md:text-3xl font-semibold tracking-tight mb-5 text-primary-legible">Connect</div>
+              <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight mb-5 text-primary-legible">Connect</XrayHeading>
               <div className="space-y-3.5">
                 {[
                   { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
@@ -65,7 +66,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <div className="text-2xl md:text-3xl font-semibold tracking-tight mb-5 text-primary-legible">More</div>
+              <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight mb-5 text-primary-legible">More</XrayHeading>
               <div className="space-y-3.5">
                 <a href="/collaborate" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none">
                   {nbsp('Work with me')}

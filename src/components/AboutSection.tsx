@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, lazy, Suspense } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
+import XrayHeading from '@/components/XrayHeading';
 import { nbsp } from '@/lib/typo';
 
 const DustReveal = lazy(() => import('@/components/DustReveal'));
@@ -251,9 +252,9 @@ export default function AboutSection() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <div className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
+              <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
                 About
-              </div>
+              </XrayHeading>
               <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
                 BIO
               </div>

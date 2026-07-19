@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, type MutableRefObject } from 'react';
+import XrayHeading from '@/components/XrayHeading';
 import ObfuscatedMailto from './ObfuscatedMailto';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
@@ -264,9 +265,9 @@ export default function ContactChannel() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* LEFT COLUMN */}
           <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
-            <div className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
+            <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Contact
-            </div>
+            </XrayHeading>
 
             <SignalBars />
 
