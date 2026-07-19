@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { nbsp } from '@/lib/typo';
 
 export default function Footer() {
   const [snakeOpen, setSnakeOpen] = useState(false);
@@ -24,7 +25,7 @@ export default function Footer() {
               }}
             />
             <p className="mt-5 max-w-xs font-mono text-[13px] leading-relaxed text-foreground/55">
-              Sinaida Krivchenko<br />New media artist
+              {nbsp('Sinaida Krivchenko')}<br />{nbsp('New media artist')}
             </p>
           </div>
 
@@ -38,7 +39,7 @@ export default function Footer() {
                   { label: 'Services', href: '#services' },
                   { label: 'Contact', href: '#contact' },
                 ].map((item) => (
-                  <a key={item.label} href={item.href} className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                  <a key={item.label} href={item.href} className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none">
                     {item.label}
                   </a>
                 ))}
@@ -56,7 +57,7 @@ export default function Footer() {
                   { label: 'Medium', url: 'https://medium.com/@idacooper' },
                   { label: 'Spotify', url: 'https://open.spotify.com/user/1u4ol8qogt04u4476e4xba8g8?si=9ed0a53d14934618' },
                 ].map((link) => (
-                  <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                  <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none">
                     {link.label} ↗
                   </a>
                 ))}
@@ -66,16 +67,16 @@ export default function Footer() {
             <div>
               <div className="clinical-label mb-5 text-primary-legible">More</div>
               <div className="space-y-3.5">
-                <a href="/collaborate" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
-                  Work with me
+                <a href="/collaborate" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none">
+                  {nbsp('Work with me')}
                 </a>
-                <a href="/privacy" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
-                  Privacy Policy
+                <a href="/privacy" className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none">
+                  {nbsp('Privacy Policy')}
                 </a>
                 <button
                   type="button"
                   onClick={() => toggle()}
-                  className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none"
+                  className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
                   aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
                 >
                   View: <span className="text-primary-legible">{mode === 'full' ? 'Full' : 'Light'}</span>
@@ -92,7 +93,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Sinaida Krivchenko · Prague, CZ
           </span>
           <span className="font-mono text-[12px] italic text-foreground/40">
-            Are we more than the data we leave behind?
+            {nbsp('Are we more than the data we leave behind?')}
           </span>
         </div>
       </div>
