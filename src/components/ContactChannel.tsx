@@ -7,6 +7,12 @@ type WaveformInteraction = {
   mouseY: number;
   sectionHeight: number;
   isActive: boolean;
+  // Current animated amplitude (0..1), written every drawn frame by
+  // WaveformCanvas so other components can read real waveform state.
+  amplitude: number;
+  // True while the rAF loop is scheduled; false once it has self-terminated
+  // at rest. Mirrors the "settled" check inside WaveformCanvas.
+  running: boolean;
   // Set by WaveformCanvas so the parent's pointer handler can restart the loop
   // after it self-terminates at rest (see motion-law rAF fix).
   ensureRunning?: () => void;
@@ -70,6 +76,10 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
         amplitudeRef.current = Math.max(AMP_FLOOR, amplitudeRef.current - 0.005);
       }
 
+      // Publish real amplitude state for anything reading the shared ref
+      // (e.g. the signal readout) — never invented, always what's on screen.
+      interactionRef.current.amplitude = amplitudeRef.current;
+
       // Settled = no active pointer input and amplitude has decayed to its floor.
       // In that state the wave has nothing left to animate, so freeze the phase
       // and let the loop self-terminate below (resumes on the next pointer move).
@@ -108,10 +118,12 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
 
       if (settled) {
         // Rest frame drawn; stop scheduling and hold this static image.
+        interactionRef.current.running = false;
         rafRef.current = null;
         return;
       }
 
+      interactionRef.current.running = true;
       tRef.current += 0.016;
       rafRef.current = requestAnimationFrame(draw);
     };
@@ -140,59 +152,47 @@ function WaveformCanvas({ interactionRef }: { interactionRef: MutableRefObject<W
   return <canvas ref={canvasRef} className="w-full" style={{ height: 120 }} />;
 }
 
-// ── Signal Bars ─────────────────────────────────────────────
-function SignalBars() {
-  const [active, setActive] = useState(5);
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setActive(Math.floor(Math.random() * 3) + 3); // 3-5
-    }, 800);
-    return () => clearInterval(iv);
-  }, []);
+// ── Signal Readout ──────────────────────────────────────────
+// A live readout of the waveform's actual amplitude state — no invented
+// values. Samples the shared interaction ref on a slow interval (not every
+// rAF frame) so it never drives an extra render at 60fps, and only calls
+// setState when the displayed string actually changes.
+function SignalReadout({ interactionRef }: { interactionRef: MutableRefObject<WaveformInteraction> }) {
+  const { mode } = useRenderMode();
+  const format = () => {
+    const { amplitude, running } = interactionRef.current;
+    const pct = Math.round(amplitude * 100).toString().padStart(3, '0');
+    const state = running ? 'live' : 'rest';
+    return `signal ${pct}% ${state}`;
+  };
 
-  const bars = [1, 2, 3, 4, 5];
-  const heights = [6, 10, 14, 18, 22];
-  return (
-    <div className="flex items-end gap-[3px] mt-6">
-      {bars.map((b, i) => (
-        <div
-          key={b}
-          className="transition-opacity duration-200"
-          style={{
-            width: 4,
-            height: heights[i],
-            borderRadius: 1,
-            background: 'hsl(var(--primary-legible))',
-            opacity: b <= active ? 1 : 0.15,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ── Frequency HUD ───────────────────────────────────────────
-function FreqDisplay() {
-  const [freq, setFreq] = useState(440.0);
-  const [glitch, setGlitch] = useState(false);
+  const [text, setText] = useState(mode === 'lite' ? 'signal rest' : format);
+  const lastRef = useRef(text);
 
   useEffect(() => {
-    const iv = setInterval(() => {
-      setGlitch(true);
-      setTimeout(() => {
-        setFreq(+(380 + Math.random() * 140).toFixed(1));
-        setGlitch(false);
-      }, 60);
-    }, 1200);
+    if (mode === 'lite') return;
+
+    const sample = () => {
+      const next = format();
+      if (next !== lastRef.current) {
+        lastRef.current = next;
+        setText(next);
+      }
+    };
+
+    sample();
+    const iv = setInterval(sample, 120);
     return () => clearInterval(iv);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [interactionRef, mode]);
 
   return (
     <div
       className="absolute top-[6%] right-[4%] font-mono text-[12px] z-10 select-none"
-      style={{ color: glitch ? '#ff3333' : 'hsl(var(--foreground))', opacity: 0.35, transition: 'color 0.05s' }}
+      style={{ color: 'hsl(var(--foreground))', opacity: 0.35 }}
+      aria-hidden="true"
     >
-      FREQ: {freq} Hz
+      {mode === 'lite' ? 'signal rest' : text}
     </div>
   );
 }
@@ -203,16 +203,24 @@ function FreqDisplay() {
 // be gated behind a character-by-character reveal.
 const PARA_1 =
   'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion, let\'s talk.';
-const PARA_2 =
-  'Immersive installations  ·  Creative direction\nStage visuals  ·  Exhibition design\nGenerative art commissions\n──────────────────────────\nBased in Prague. Working globally.';
+const SERVICES = [
+  'Immersive installations',
+  'Creative direction',
+  'Stage visuals',
+  'Exhibition design',
+  'Generative art commissions',
+];
 
 export default function ContactChannel() {
   const sectionRef = useRef<HTMLElement>(null);
   const mouseTimer = useRef<ReturnType<typeof setTimeout>>();
+  const scrollTimer = useRef<ReturnType<typeof setTimeout>>();
   const interactionRef = useRef<WaveformInteraction>({
     mouseY: 0,
     sectionHeight: 1,
     isActive: false,
+    amplitude: AMP_FLOOR,
+    running: false,
   });
 
   // Mouse tracking on section
@@ -239,6 +247,50 @@ export default function ContactChannel() {
 
   useEffect(() => () => clearTimeout(mouseTimer.current), []);
 
+  // Touch devices have no cursor, so the waveform would sit at its floor
+  // forever. While the section is in the viewport, scroll movement (and
+  // touchmove over the section) drives the same interaction ref that mouse
+  // movement does, so touch visitors still get a responsive readout.
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const inViewport = () => {
+      const rect = sectionRef.current?.getBoundingClientRect();
+      if (!rect) return false;
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    };
+
+    const trigger = () => {
+      interactionRef.current.isActive = true;
+      interactionRef.current.ensureRunning?.();
+      clearTimeout(scrollTimer.current);
+      scrollTimer.current = setTimeout(() => {
+        interactionRef.current.isActive = false;
+      }, 2000);
+    };
+
+    const handleScroll = () => {
+      const y = window.scrollY;
+      const delta = Math.abs(y - lastScrollY);
+      lastScrollY = y;
+      if (delta > 0 && inViewport()) trigger();
+    };
+
+    const handleTouchMove = () => {
+      if (inViewport()) trigger();
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    const section = sectionRef.current;
+    section?.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      section?.removeEventListener('touchmove', handleTouchMove);
+      clearTimeout(scrollTimer.current);
+    };
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -259,7 +311,7 @@ export default function ContactChannel() {
         }
       `}</style>
 
-      <FreqDisplay />
+      <SignalReadout interactionRef={interactionRef} />
 
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Waveform — full row above both columns so their first lines align */}
@@ -276,32 +328,6 @@ export default function ContactChannel() {
             <p className="font-mono mt-3 text-[15px] text-foreground/60">
               Get in touch.
             </p>
-
-          {/* Social links */}
-          <div className="mt-8 space-y-3.5">
-            <ObfuscatedMailto
-              label="Email ↗"
-              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
-            />
-            <a
-              href="https://www.instagram.com/sin.ai.da/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
-            >
-              Instagram ↗
-            </a>
-            <a
-              href="https://www.linkedin.com/in/sinaida"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
-            >
-              LinkedIn ↗
-            </a>
-          </div>
-
-            <SignalBars />
           </div>
 
           {/* RIGHT COLUMN */}
@@ -330,77 +356,57 @@ export default function ContactChannel() {
               })()}
             </p>
 
-            <div className="font-mono text-[12px] uppercase mb-3" style={{ color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.1em' }}>
+            <div className="font-mono text-[12px] uppercase mb-3" style={{ color: 'hsl(var(--foreground) / 0.65)', letterSpacing: '0.1em' }}>
               Available for
             </div>
 
-            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
-              {PARA_2.split('·').map((seg, i, arr) => (
-                <span key={i}>
-                  {seg}
-                  {i < arr.length - 1 && <span style={{ color: '#ff3333' }}>·</span>}
-                </span>
-              ))}
+            <div className="font-mono text-[13px] leading-relaxed mb-8">
+              <ul>
+                {SERVICES.map(service => (
+                  <li key={service} style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
+                    {service}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-6 pt-6" style={{ borderTop: '1px solid hsl(var(--foreground) / 0.15)' }}>
+                <p style={{ color: 'hsl(var(--foreground) / 0.87)' }}>Based in Prague. Working globally.</p>
+              </div>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4 mt-10 mb-12">
+            {/* CTA */}
+            <div className="flex flex-wrap items-center gap-6 mt-10 mb-3">
               <ObfuscatedMailto
                 label="EMAIL ME ↗"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid #ff3333',
-                  color: '#ff3333',
-                  background: 'rgba(255,51,51,0.06)',
+                  color: '#000',
+                  background: '#ff3333',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = '#ff3333';
-                  e.currentTarget.style.color = '#000';
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#ff3333';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
-                  e.currentTarget.style.color = '#ff3333';
+                  e.currentTarget.style.background = '#ff3333';
+                  e.currentTarget.style.color = '#000';
                 }}
               />
               <a
                 href="https://www.instagram.com/sin.ai.da/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
-                style={{
-                  border: '1px solid hsl(var(--accent) / 0.4)',
-                  color: 'hsl(var(--accent))',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'hsl(var(--accent) / 0.08)';
-                  e.currentTarget.style.borderColor = 'hsl(var(--accent))';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.borderColor = 'hsl(var(--accent) / 0.4)';
-                }}
+                className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
               >
-                FOLLOW ON INSTAGRAM ↗
+                Instagram ↗
               </a>
               <a
                 href="https://www.linkedin.com/in/sinaida"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
-                style={{
-                  border: '1px solid hsl(var(--accent) / 0.4)',
-                  color: 'hsl(var(--accent))',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'hsl(var(--accent) / 0.08)';
-                  e.currentTarget.style.borderColor = 'hsl(var(--accent))';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.borderColor = 'hsl(var(--accent) / 0.4)';
-                }}
+                className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
               >
-                CONNECT ON LINKEDIN ↗
+                LinkedIn ↗
               </a>
             </div>
           </div>
