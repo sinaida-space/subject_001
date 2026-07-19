@@ -13,27 +13,30 @@ export default {
   		}
   	},
   	extend: {
+  		fontSize: {
+  			'2xs': '0.625rem'
+  		},
   		fontFamily: {
   			display: [
-  				'Geist',
+  				'Jersey 20',
   				'system-ui',
   				'-apple-system',
   				'sans-serif'
   			],
   			mono: [
-  				'Geist',
+  				'Jersey 20',
   				'system-ui',
   				'-apple-system',
   				'sans-serif'
   			],
   			clinical: [
-  				'Geist',
+  				'Jersey 20',
   				'system-ui',
   				'-apple-system',
   				'sans-serif'
   			],
   			led: [
-  				'Geist',
+  				'Jersey 20',
   				'system-ui',
   				'-apple-system',
   				'sans-serif'

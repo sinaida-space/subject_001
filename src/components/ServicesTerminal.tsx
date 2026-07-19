@@ -12,10 +12,10 @@ function ServiceBlock({ service }: { service: Service }) {
       <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: 'hsl(var(--accent))' }}>
         {service.title}
       </h3>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
+      <p className="font-mono text-xs leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
         {service.description}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
+      <p className="font-mono text-xs leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.record.map((part, i) =>
           part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
@@ -26,7 +26,7 @@ function ServiceBlock({ service }: { service: Service }) {
           )
         )}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
+      <p className="font-mono text-xs leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.brief}
       </p>
     </div>
@@ -48,7 +48,7 @@ export default function ServicesTerminal() {
             <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Services
             </XrayHeading>
-            <p className="font-mono mt-3 text-[15px] text-foreground/60">
+            <p className="font-mono mt-3 text-sm text-foreground/60">
               {nbsp('Digital tools for human connection.')}
             </p>
           </div>

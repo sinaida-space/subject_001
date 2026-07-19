@@ -248,7 +248,7 @@ export default function ContactChannel() {
             <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
               Contact
             </XrayHeading>
-            <p className="font-mono mt-3 text-[15px] text-foreground/60">
+            <p className="font-mono mt-3 text-sm text-foreground/60">
               Get in touch.
             </p>
 
@@ -256,13 +256,13 @@ export default function ContactChannel() {
           <div className="mt-8 space-y-3.5">
             <ObfuscatedMailto
               label="Email ↗"
-              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
+              className="block font-mono text-sm text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
             />
             <a
               href="https://www.instagram.com/sin.ai.da/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
+              className="block font-mono text-sm text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
             >
               Instagram ↗
             </a>
@@ -270,7 +270,7 @@ export default function ContactChannel() {
               href="https://www.linkedin.com/in/sinaida"
               target="_blank"
               rel="noopener noreferrer"
-              className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
+              className="block font-mono text-sm text-foreground/60 transition-colors hover:text-primary-legible cursor-none"
             >
               LinkedIn ↗
             </a>
@@ -292,7 +292,7 @@ export default function ContactChannel() {
               </span>
             </h2>
 
-            <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
+            <p className="font-mono text-xs leading-relaxed mb-6" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
               {(() => {
                 const idx = PARA_1.indexOf("let's talk.");
                 if (idx === -1) return PARA_1;
@@ -305,11 +305,11 @@ export default function ContactChannel() {
               })()}
             </p>
 
-            <div className="font-mono text-[12px] uppercase mb-3" style={{ color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.1em' }}>
+            <div className="font-mono text-xs uppercase mb-3" style={{ color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.1em' }}>
               Available for
             </div>
 
-            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
+            <div className="font-mono text-xs leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
               {PARA_2.split('·').map((seg, i, arr) => (
                 <span key={i}>
                   {seg}
@@ -322,7 +322,7 @@ export default function ContactChannel() {
             <div className="flex flex-wrap gap-4 mt-10 mb-12">
               <ObfuscatedMailto
                 label="EMAIL ME ↗"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-xs uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid #fa0000',
                   color: '#fa0000',
@@ -341,7 +341,7 @@ export default function ContactChannel() {
                 href="https://www.instagram.com/sin.ai.da/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-xs uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid hsl(var(--accent) / 0.4)',
                   color: 'hsl(var(--accent))',
@@ -361,7 +361,7 @@ export default function ContactChannel() {
                 href="https://www.linkedin.com/in/sinaida"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                className="font-mono text-xs uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
                   border: '1px solid hsl(var(--accent) / 0.4)',
                   color: 'hsl(var(--accent))',

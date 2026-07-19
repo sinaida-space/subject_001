@@ -69,7 +69,7 @@ export default function WorkCase() {
             style={{
               border: '1px solid #fa0000',
               padding: '3px 8px',
-              fontFamily: "'Geist', sans-serif",
+              fontFamily: "'Jersey 20', sans-serif",
               fontSize: '10px',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
@@ -78,7 +78,7 @@ export default function WorkCase() {
           >
             {cs.kindLabel}
           </span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
+          <span className="font-mono text-xs uppercase tracking-[0.15em] text-foreground/55">
             {project.tagline}
           </span>
         </div>
@@ -91,7 +91,7 @@ export default function WorkCase() {
         {intro.map((p) => (
           <p
             key={p.slice(0, 32)}
-            className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/80"
+            className="mt-6 max-w-[70ch] font-mono text-base leading-relaxed text-foreground/80"
           >
             {nbsp(p)}
           </p>
@@ -117,7 +117,7 @@ export default function WorkCase() {
             href={cs.heroCta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-block font-mono text-[13px] uppercase tracking-[0.15em] text-foreground transition-colors hover:text-primary-legible"
+            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.15em] text-foreground transition-colors hover:text-primary-legible"
             style={{ border: '1px solid #fa0000', padding: '12px 24px' }}
           >
             {cs.heroCta.label} ↗
@@ -132,10 +132,10 @@ export default function WorkCase() {
           >
             <div className="font-display text-5xl leading-none text-primary">{cs.stat.value}</div>
             <div>
-              <div className="font-mono text-[13px] uppercase tracking-[0.12em] text-white">
+              <div className="font-mono text-xs uppercase tracking-[0.12em] text-white">
                 {cs.stat.heading}
               </div>
-              <p className="mt-2 max-w-[55ch] font-mono text-[13px] leading-relaxed text-foreground/55">
+              <p className="mt-2 max-w-[55ch] font-mono text-xs leading-relaxed text-foreground/55">
                 {nbsp(cs.stat.body)}
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function WorkCase() {
                   style={{
                     border: '1px solid #1a1a1a',
                     padding: '4px 8px',
-                    fontFamily: "'Geist', sans-serif",
+                    fontFamily: "'Jersey 20', sans-serif",
                     fontSize: '10px',
                     letterSpacing: '0.15em',
                     color: 'hsl(var(--foreground) / 0.55)',
@@ -172,7 +172,7 @@ export default function WorkCase() {
             <div className="clinical-label mb-3 text-foreground/45">{m.label}</div>
             <VideoEmbed id={m.video} title={`${project.title} — ${m.label}`} />
             {m.caption && (
-              <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
+              <p className="mt-2 max-w-[62ch] font-mono text-xs leading-relaxed text-foreground/55">
                 {nbsp(m.caption)}
               </p>
             )}
@@ -192,7 +192,7 @@ export default function WorkCase() {
           <div className="mt-10">
             <div className="clinical-label mb-3 text-foreground/45">Credits</div>
             {cs.credits.map((c) => (
-              <p key={c} className="font-mono text-[12px] leading-relaxed text-foreground/60">
+              <p key={c} className="font-mono text-xs leading-relaxed text-foreground/60">
                 {nbsp(c)}
               </p>
             ))}
@@ -208,7 +208,7 @@ export default function WorkCase() {
                 href={l.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="font-mono text-xs uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
               >
                 {l.label} ↗
               </a>
@@ -221,7 +221,7 @@ export default function WorkCase() {
           <h2 className="font-display text-2xl font-light text-foreground">
             {cs.order.heading}
           </h2>
-          <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-foreground/80">
+          <p className="mt-4 max-w-[70ch] font-mono text-sm leading-relaxed text-foreground/80">
             {nbsp(cs.order.body)}{' '}
             <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
               Get in touch

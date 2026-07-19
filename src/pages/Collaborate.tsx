@@ -26,10 +26,10 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
       <h3 className="font-mono text-base font-medium mt-2 mb-2 text-foreground">
         {service.title}
       </h3>
-      <p className="font-mono text-[13px] leading-relaxed text-foreground/[0.87]">
+      <p className="font-mono text-xs leading-relaxed text-foreground/[0.87]">
         {nbsp(service.description)}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2 text-foreground/60">
+      <p className="font-mono text-xs leading-relaxed mt-2 text-foreground/60">
         {service.record.map((part, i) =>
           part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-primary-legible transition-colors">
@@ -40,7 +40,7 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
           )
         )}
       </p>
-      <p className="font-mono text-[13px] leading-relaxed text-foreground/60">
+      <p className="font-mono text-xs leading-relaxed text-foreground/60">
         {nbsp(service.brief)}
       </p>
     </div>
@@ -80,10 +80,10 @@ export default function Collaborate() {
         <h1 className="font-display text-4xl md:text-5xl font-light mb-4">
           Work with <span className="text-primary font-bold">me</span>
         </h1>
-        <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
+        <p className="font-mono text-sm leading-relaxed mb-4 text-foreground/[0.82]">
           {nbsp('Human first. Digital second. I build living visual systems for stages, concerts, and performance spaces — this page is what actually happens if we work together on one.')}
         </p>
-        <p className="font-mono text-[14px] leading-relaxed mb-16 text-foreground/60">
+        <p className="font-mono text-sm leading-relaxed mb-16 text-foreground/60">
           {nbsp('Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.')}
         </p>
 
@@ -107,7 +107,7 @@ export default function Collaborate() {
         {/* Process */}
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-3">Process</div>
-          <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
+          <p className="font-mono text-xs leading-relaxed mb-6 text-foreground/55">
             {nbsp('Structured the way I ran technical projects for years before this — brief, concept, build, rehearsal, show. Nothing invented for the website.')}
           </p>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
@@ -117,7 +117,7 @@ export default function Collaborate() {
                 <div className="text-base font-medium mt-1 mb-1 text-foreground">
                   {step.label}
                 </div>
-                <p className="text-[13px] leading-relaxed text-foreground/60">
+                <p className="text-xs leading-relaxed text-foreground/60">
                   {nbsp(step.detail)}
                 </p>
                 {i < PROCESS_STEPS.length - 1 && (
@@ -133,7 +133,7 @@ export default function Collaborate() {
         {/* Practicalities */}
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-6">Practicalities</div>
-          <div className="font-mono text-[13px] leading-relaxed space-y-4 text-foreground/75">
+          <div className="font-mono text-xs leading-relaxed space-y-4 text-foreground/75">
             <p>
               <span className="text-foreground">Travel — </span>
               {nbsp('Based in Prague, working globally. Touring and international bookings are welcome; travel and accommodation are arranged case by case.')}
@@ -152,11 +152,11 @@ export default function Collaborate() {
         {/* Press kit */}
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-3">Press kit</div>
-          <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
+          <p className="font-mono text-xs leading-relaxed mb-6 text-foreground/55">
             For programmers, promoters, and journalists — boilerplate and stills, ready to paste.
           </p>
 
-          <div className="font-mono text-[14px] leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
+          <div className="font-mono text-sm leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
             {nbsp(BOILERPLATE)}
           </div>
 
@@ -180,17 +180,17 @@ export default function Collaborate() {
                 >
                   {project.title.split('—')[0].trim()}
                 </Link>
-                <div className="font-mono mt-1 text-foreground/40" style={{ fontSize: 11 }}>
+                <div className="font-mono mt-1 text-foreground/40" style={{ fontSize: 12 }}>
                   {project.tagline}
                 </div>
               </div>
             ))}
           </div>
-          <p className="font-mono text-[12px] mb-8 text-foreground/40">
+          <p className="font-mono text-xs mb-8 text-foreground/40">
             {nbsp('Click a still for the case study.')}
           </p>
 
-          <ul className="font-mono text-[13px] space-y-2 text-foreground/75">
+          <ul className="font-mono text-xs space-y-2 text-foreground/75">
             {TECH_BASICS.map((item) => (
               <li key={item}>
                 <span className="text-primary-legible">{'— '}</span>
@@ -203,12 +203,12 @@ export default function Collaborate() {
         {/* Contact */}
         <section>
           <div className="clinical-label text-primary-legible mb-6">Contact</div>
-          <p className="font-mono text-[13px] leading-relaxed mb-4 text-foreground/75">
+          <p className="font-mono text-xs leading-relaxed mb-4 text-foreground/75">
             {nbsp('Send the occasion, space, and timeline — a reply follows with next steps.')}
           </p>
           <ObfuscatedMailto
             label="EMAIL ME ↗"
-            className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
+            className="inline-block font-mono text-xs uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
           />
         </section>
       </div>

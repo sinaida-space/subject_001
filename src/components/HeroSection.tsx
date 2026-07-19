@@ -46,13 +46,13 @@ export default function HeroSection() {
           }>
 
           <div className="border-l border-primary/30 pl-8 space-y-5">
-            <p className="font-mono text-[15px] leading-relaxed my-4" style={{ color: 'hsl(var(--foreground) / 0.82)' }}>
+            <p className="font-mono text-sm leading-relaxed my-4" style={{ color: 'hsl(var(--foreground) / 0.82)' }}>
               {nbsp('Building interactive digital frameworks for complex human narratives.')}
             </p>
             <button
               type="button"
               onClick={scrollToContact}
-              className="font-mono text-[12px] uppercase tracking-[0.15em] px-5 py-3 border border-primary text-primary-legible bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none"
+              className="font-mono text-xs uppercase tracking-[0.15em] px-5 py-3 border border-primary text-primary-legible bg-primary/5 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 cursor-none"
             >
               Contact me
             </button>

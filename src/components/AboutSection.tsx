@@ -77,7 +77,7 @@ function BioSignalLock() {
               display: 'grid',
               gridTemplateColumns: '150px 1fr',
               gap: '0 16px',
-              fontSize: 13.5,
+              fontSize: 14,
               letterSpacing: '0.06em',
             }}
           >
@@ -175,10 +175,10 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <span className="block font-mono mt-3" style={{ fontSize: 13, color: 'hsl(var(--foreground) / 0.7)', letterSpacing: '0.06em' }}>
+      <span className="block font-mono mt-3" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.7)', letterSpacing: '0.06em' }}>
         Sinaida Krivchenko
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.06em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.06em' }}>
         Photo: Roland Gaedtgens
       </span>
     </div>
@@ -201,7 +201,7 @@ export default function AboutSection() {
               <XrayHeading as="div" className="text-2xl md:text-3xl font-semibold tracking-tight text-primary-legible">
                 About
               </XrayHeading>
-              <p className="font-mono mt-3 text-[15px] text-foreground/60">
+              <p className="font-mono mt-3 text-sm text-foreground/60">
                 {nbsp('The story so far.')}
               </p>
             </Reveal>
@@ -220,7 +220,7 @@ export default function AboutSection() {
               <div className="flex-1 min-w-0 max-w-[62ch]">
                 <BioSignalLock />
                 <Reveal delay={600}>
-                  <div className="font-mono mb-7" style={{ fontSize: 19, color: 'hsl(var(--foreground) / 0.92)', lineHeight: 1.7 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 18, color: 'hsl(var(--foreground) / 0.92)', lineHeight: 1.7 }}>
                     <p>
                       {nbsp('I believe that technology is only meaningful when it helps people feel seen, heard, and connected.')}
                     </p>
@@ -228,16 +228,16 @@ export default function AboutSection() {
                 </Reveal>
                 <Reveal delay={700}>
                   <div className="mb-7" style={{ lineHeight: 2.2 }}>
-                    <div className="font-mono" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.9)' }}>
+                    <div className="font-mono" style={{ fontSize: 14, color: 'hsl(var(--foreground) / 0.9)' }}>
                       {nbsp('Human first.')}
                     </div>
-                    <div className="font-mono" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
+                    <div className="font-mono" style={{ fontSize: 14, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
                       {nbsp('Digital second.')}
                     </div>
                   </div>
                 </Reveal>
                 <Reveal delay={800}>
-                  <div className="font-mono mb-7" style={{ fontSize: 15, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 14, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
                       {nbsp('I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.')}
                     </p>

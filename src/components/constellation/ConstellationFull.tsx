@@ -531,7 +531,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         }
       }
       if (alpha <= 0.02) continue;
-      ctx.font = `${fontWeight} ${fs}px 'Geist', sans-serif`;
+      ctx.font = `${fontWeight} ${fs}px 'Jersey 20', sans-serif`;
       const tw = ctx.measureText(n.label).width;
 
       // Candidate placements, tried in order: right, left, below, above, then
@@ -968,7 +968,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
           style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
         >
           <div className="border border-foreground/10 bg-black/80 px-3 py-2 backdrop-blur-sm">
-            <div className="text-[11px] leading-snug text-foreground/70">{tooltip.node.project.tagline}</div>
+            <div className="text-xs leading-snug text-foreground/70">{tooltip.node.project.tagline}</div>
           </div>
         </div>
       )}

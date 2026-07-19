@@ -62,26 +62,26 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
       onBlur={handleBlur}
       className="group flex w-full items-start gap-3 border-t border-l-2 border-l-transparent border-foreground/10 py-4 pl-3 -ml-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
     >
-      <span className="font-mono text-[14px] text-accent transition-transform group-hover:translate-x-1">→</span>
+      <span className="font-mono text-sm text-accent transition-transform group-hover:translate-x-1">→</span>
       <span className="flex-1">
         <span className="font-display text-lg text-foreground transition-colors group-hover:text-accent">
           {project.title}
         </span>
-        <span className="ml-3 font-mono text-[13px] text-foreground/60">{project.tagline}</span>
+        <span className="ml-3 font-mono text-xs text-foreground/60">{project.tagline}</span>
       </span>
       {project.badges && (
         <span className="hidden shrink-0 gap-1.5 md:flex">
           {project.badges.map((b) => (
             <span
               key={b}
-              className="border border-foreground/15 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-foreground/45"
+              className="border border-foreground/15 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-[0.15em] text-foreground/45"
             >
               {BADGE_LABEL[b]}
             </span>
           ))}
         </span>
       )}
-      <span className="shrink-0 font-mono text-[11px] text-foreground/30 transition-opacity group-hover:opacity-70">▸</span>
+      <span className="shrink-0 font-mono text-xs text-foreground/30 transition-opacity group-hover:opacity-70">▸</span>
     </button>
   );
 }
@@ -109,7 +109,7 @@ export default function PlainSignalIndex({ includeBackground = false }: { includ
           <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
             <h3
               id={`plain-signal-${kind}`}
-              className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/35"
+              className="mb-3 font-mono text-2xs uppercase tracking-[0.2em] text-foreground/35"
             >
               {KIND_LABEL[kind]}
             </h3>

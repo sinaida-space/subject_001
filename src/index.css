@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Jersey+20&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,27 +45,12 @@
     --clinical: 180 15% 70%;
     --particle-white: 40 67% 96%;
 
-    /* Metrically-close system fallbacks so `font-display: swap` (set on the
-       Google Fonts link in index.html) doesn't cause a visible text reflow
-       once the webfont swaps in. */
-    --font-display: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    /* FontLab (issue #21) — dev-only heading font switcher, see
-       html[data-fontlab] below and FontLab.tsx. Defaults to the same
-       literal Geist stack as --font-display above (NOT `var(--font-display)`
-       — that would create a cyclic reference once html[data-fontlab] below
-       redefines --font-display in terms of this property, and cyclic
-       custom-property references resolve to the guaranteed-invalid value,
-       silently breaking every heading's font-family). Kept as an
-       independent literal so it's a no-op until the lab is active and a
-       visitor picks something else. */
-    --font-display-candidate: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    /* Terminal/monospace fonts (IBM Plex Mono, Space Mono, etc.) are banned
-       sitewide — see CLAUDE.md typography rule. Body copy and labels use
-       Geist Light instead. */
-    --font-mono: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --font-clinical: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    /* Legacy alias — was the LED/dot-matrix display face, now just Geist. */
-    --font-led: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* Single type family sitewide — see CLAUDE.md typography rule. */
+    --font-display: 'Jersey 20', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'Jersey 20', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-clinical: 'Jersey 20', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* Legacy alias — kept so existing class names don't need renaming. */
+    --font-led: 'Jersey 20', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
     --scanline-opacity: 0.04;
     --glitch-intensity: 0;
@@ -118,18 +103,6 @@
   html[data-mode="lite"] .crt-scanlines,
   html[data-mode="lite"] .vhs-noise-bars {
     display: none;
-  }
-}
-
-@layer base {
-  /* FontLab (issue #21) — activated only via ?fontlab=1 (FontLab.tsx sets
-     this attribute). Every heading/display style already reads
-     var(--font-display), so redirecting that one variable to the
-     switcher's candidate is enough to A/B the whole site's display type
-     without touching body/UI copy. Without the attribute this rule never
-     matches — byte-identical to before this file existed. */
-  html[data-fontlab] {
-    --font-display: var(--font-display-candidate);
   }
 }
 

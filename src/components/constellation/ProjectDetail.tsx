@@ -59,7 +59,7 @@ function Readout({ project }: { project: Project }) {
             style={{
               border: '1px solid #fa0000',
               padding: '3px 8px',
-              fontFamily: "'Geist', sans-serif",
+              fontFamily: "'Jersey 20', sans-serif",
               fontWeight: 300,
               fontSize: '10px',
               letterSpacing: '0.15em',
@@ -69,7 +69,7 @@ function Readout({ project }: { project: Project }) {
           >
             {KIND_LABEL[project.kind]}
           </span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
+          <span className="font-mono text-xs uppercase tracking-[0.15em] text-foreground/55">
             {project.tagline}
           </span>
         </div>
@@ -77,7 +77,7 @@ function Readout({ project }: { project: Project }) {
         <h3 className="mt-2 font-display text-2xl text-foreground md:text-3xl">{project.title}</h3>
 
         {project.blurb && (
-          <p className="mt-3 max-w-[62ch] font-mono text-[14px] leading-snug text-foreground/80">
+          <p className="mt-3 max-w-[62ch] font-mono text-sm leading-snug text-foreground/80">
             {project.blurb}
           </p>
         )}
@@ -87,7 +87,7 @@ function Readout({ project }: { project: Project }) {
             {project.tools.map((t) => (
               <span
                 key={t}
-                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
+                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: "'Jersey 20', sans-serif", fontWeight: 300, fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
               >
                 {t}
               </span>
@@ -100,7 +100,7 @@ function Readout({ project }: { project: Project }) {
             {CASE_PAGES[project.id] && (
               <Link
                 to={CASE_PAGES[project.id]}
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="font-mono text-xs uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
               >
                 View full case study →
               </Link>
@@ -109,7 +109,7 @@ function Readout({ project }: { project: Project }) {
               <button
                 type="button"
                 onClick={() => setEssayOpen(true)}
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="font-mono text-xs uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
               >
                 Read the full text →
               </button>
@@ -120,7 +120,7 @@ function Readout({ project }: { project: Project }) {
                 href={l.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="font-mono text-xs uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
               >
                 {l.label} ↗
               </a>
@@ -143,36 +143,36 @@ function Readout({ project }: { project: Project }) {
             aria-label={`${project.title} — full text`}
           >
             <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
+              <span style={{ fontFamily: "'Jersey 20', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
                 FULL TEXT
               </span>
               <button
                 type="button"
                 onClick={() => setEssayOpen(false)}
-                style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+                style={{ fontFamily: "'Jersey 20', sans-serif", fontWeight: 300, fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
               >
                 Close
               </button>
             </div>
             <div className="max-h-[75vh] overflow-y-auto p-5 md:p-6">
               {project.essay.contentWarning && (
-                <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-primary">
+                <p className="mb-4 font-mono text-xs uppercase tracking-[0.15em] text-primary">
                   {project.essay.contentWarning}
                 </p>
               )}
               {project.essay.paragraphs.map((p, i) => (
-                <p key={i} className="mb-4 font-mono text-[14px] leading-relaxed text-foreground/85 last:mb-0">
+                <p key={i} className="mb-4 font-mono text-sm leading-relaxed text-foreground/85 last:mb-0">
                   {p}
                 </p>
               ))}
               {project.essay.credits && project.essay.credits.length > 0 && (
                 <>
                   <div className="my-5 border-t border-border/60" />
-                  <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-primary">
+                  <span className="mb-2 block font-mono text-2xs uppercase tracking-[0.15em] text-primary">
                     Credits
                   </span>
                   {project.essay.credits.map((c, i) => (
-                    <p key={i} className="font-mono text-[12px] leading-relaxed text-foreground/60">
+                    <p key={i} className="font-mono text-xs leading-relaxed text-foreground/60">
                       {c}
                     </p>
                   ))}
@@ -232,13 +232,13 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-label={`${project.title} — project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: "'Jersey 20', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+            style={{ fontFamily: "'Jersey 20', sans-serif", fontWeight: 300, fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
           >
             Close
           </button>

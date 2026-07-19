@@ -258,13 +258,13 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: "'Jersey 20', sans-serif", fontWeight: 300, fontSize: '10px', color: '#fa0000', letterSpacing: '2px' }}>
             SCORE: {score}
           </span>
           <button
             onClick={onClose}
             style={{
-              fontFamily: "'Geist', sans-serif", fontWeight: 300, fontSize: '10px', color: '#555',
+              fontFamily: "'Jersey 20', sans-serif", fontWeight: 300, fontSize: '10px', color: '#555',
               background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px'
             }}
           >
@@ -287,10 +287,10 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           display: 'flex',
           justifyContent: 'space-between',
         }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#333' }}>
+          <span style={{ fontFamily: "'Jersey 20', sans-serif", fontSize: '10px', color: '#333' }}>
             ↑ ↓ ← → or WASD
           </span>
-          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#333' }}>
+          <span style={{ fontFamily: "'Jersey 20', sans-serif", fontSize: '10px', color: '#333' }}>
             swipe on mobile
           </span>
         </div>
@@ -310,7 +310,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 }
 
 const btnStyle: React.CSSProperties = {
-  fontFamily: 'monospace',
+  fontFamily: "'Jersey 20', sans-serif",
   fontSize: '14px',
   color: '#fa0000',
   background: '#0a0a0a',

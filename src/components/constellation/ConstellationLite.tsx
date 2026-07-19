@@ -126,9 +126,9 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                 <text
                   x={n.x + r + 7}
                   y={n.y + 4}
-                  fontSize={n.kind === 'project' ? 13 : 11}
+                  fontSize={n.kind === 'project' ? 14 : 12}
                   fontWeight={n.kind === 'project' ? 500 : 400}
-                  fontFamily="'Geist', sans-serif"
+                  fontFamily="'Jersey 20', sans-serif"
                   fill={n.kind === 'project' ? '#f2efe9' : n.color}
                   opacity={labelAlpha}
                   style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}

@@ -45,7 +45,7 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
       `}</style>
 
       <div
-        className="mb-4 font-mono text-[11px] tracking-[0.12em]"
+        className="mb-4 font-mono text-xs tracking-[0.12em]"
         style={{ color: '#22d3ee' }}
       >
         {trace}
@@ -72,7 +72,7 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
               >
                 {String(i + 1).padStart(2, '0')} · {stage.label}
               </div>
-              <p className="mt-2 font-mono text-[12px] leading-relaxed text-foreground/55">
+              <p className="mt-2 font-mono text-xs leading-relaxed text-foreground/55">
                 {stage.detail}
               </p>
             </div>
@@ -80,7 +80,7 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
         ))}
       </div>
 
-      <div className="mt-5 font-mono text-[11px] tracking-[0.12em] text-foreground/45">
+      <div className="mt-5 font-mono text-xs tracking-[0.12em] text-foreground/45">
         {footer}
       </div>
     </div>

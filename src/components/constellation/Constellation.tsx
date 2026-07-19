@@ -40,7 +40,7 @@ export default function Constellation() {
               Body of Work
             </XrayHeading>
 
-            <p className="mt-6 max-w-[230px] font-mono text-[14px] leading-relaxed text-foreground/70">
+            <p className="mt-6 max-w-[230px] font-mono text-sm leading-relaxed text-foreground/70">
               {nbsp('Selected works and the skills that happen to resonate.')}
             </p>
           </div>

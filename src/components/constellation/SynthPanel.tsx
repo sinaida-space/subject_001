@@ -31,7 +31,7 @@ function Slider({
 }) {
   return (
     <label className="flex items-center gap-2">
-      <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-foreground/50">{label}</span>
+      <span className="font-mono text-2xs uppercase tracking-[0.15em] text-foreground/50">{label}</span>
       <input
         type="range"
         min={min}
@@ -45,7 +45,7 @@ function Slider({
         style={{ accentColor: 'hsl(var(--primary))', touchAction: 'pan-y' }}
         aria-label={label}
       />
-      <span className="w-7 text-right font-mono text-[9px] tabular-nums text-primary/80">{format(value)}</span>
+      <span className="w-7 text-right font-mono text-2xs tabular-nums text-primary/80">{format(value)}</span>
     </label>
   );
 }
@@ -71,28 +71,28 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
           aria-label="Audio unlocked"
         >
           <div className="flex items-center justify-between border-b border-primary/40 px-3 py-1.5">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-primary">SIGNAL // AUDIO — UNLOCKED</span>
+            <span className="text-2xs uppercase tracking-[0.18em] text-primary">SIGNAL // AUDIO — UNLOCKED</span>
             <button
               type="button"
               onClick={onDismissCard}
-              className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 hover:text-primary"
+              className="text-2xs uppercase tracking-[0.15em] text-foreground/50 hover:text-primary"
               aria-label="Close"
             >
               [ x ]
             </button>
           </div>
           <div className="space-y-3 px-4 py-3">
-            <p className="text-[12px] leading-relaxed text-foreground/75">
+            <p className="text-xs leading-relaxed text-foreground/75">
               You pulled a star out of place, and the map answered. This constellation is also an instrument.
             </p>
-            <p className="text-[12px] leading-relaxed text-foreground/60">
+            <p className="text-xs leading-relaxed text-foreground/60">
               Project stars are drums and bass — left/right sets when they fire, up/down sets their pitch. Skill stars
               never sound; they bend the signal by where you leave them. Drag, drop, listen. ■ sends the stars home.
             </p>
             <button
               type="button"
               onClick={onDismissCard}
-              className="w-full border border-primary/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-primary transition-colors hover:bg-primary/10"
+              className="w-full border border-primary/60 px-3 py-1.5 text-2xs uppercase tracking-[0.18em] text-primary transition-colors hover:bg-primary/10"
             >
               OK — compose
             </button>
@@ -115,10 +115,10 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
             synth.primeFromGesture();
             synth.toggle();
           }}
-          className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-primary transition-colors hover:bg-primary/10"
+          className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-mono text-2xs uppercase tracking-[0.15em] text-primary transition-colors hover:bg-primary/10"
           aria-pressed={state.playing}
         >
-          <span className="text-[11px] leading-none">{state.playing ? '❚❚' : '▶'}</span>
+          <span className="text-xs leading-none">{state.playing ? '❚❚' : '▶'}</span>
           {state.playing ? 'Playing' : 'Play'}
         </button>
 
@@ -153,7 +153,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
         <button
           type="button"
           onClick={onReset}
-          className="border border-foreground/25 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
+          className="border border-foreground/25 px-2.5 py-1 font-mono text-2xs uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
           aria-label="Send stars home"
           title="Send stars home"
         >
