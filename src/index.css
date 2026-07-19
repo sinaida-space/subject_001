@@ -414,3 +414,13 @@
     text-shadow: none;
   }
 }
+
+/* XrayHeading lens radius — registering this as an animatable <length> lets
+   the browser interpolate --xr-r smoothly frame-by-frame as the mask-image
+   gradient (which reads it live) is recomputed, without any JS per-frame
+   work. Unsupported browsers simply keep the un-animated initial value. */
+@property --xr-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
