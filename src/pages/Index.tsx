@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
+import HeroFull from '@/components/dreamcore/HeroFull';
 import AboutSection from '@/components/AboutSection';
 import Constellation from '@/components/constellation/Constellation';
 import ServicesTerminal from '@/components/ServicesTerminal';
@@ -47,7 +48,7 @@ const Index = () => {
 
       <main>
         {/* WHY — who she is, human first */}
-        <HeroSection />
+        {full ? <HeroFull /> : <HeroSection />}
         <AboutSection />
         <SectionBreak />
         {/* HOW + WHAT — skills and every project, one living Signal Map */}
