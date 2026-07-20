@@ -123,11 +123,11 @@ const MOBILE_MARGIN_PX = 24; // ~1.5rem
 const NAME_Y_FRAC = 0.18;
 const TAGLINE_Y_FRAC = 0.33;
 const SERVICES_Y_FRAC = 0.55;
-const SERVICES_LINE_PX = 32; // 2rem rhythm
+const SERVICES_LINE_PX = 44; // generous leading for the end grid
 const CTA_Y_FRAC = 0.8;
 
 const NAME_TARGET_SCALE = 1.15;
-const TAGLINE_TARGET_SCALE = 1.8;
+const TAGLINE_TARGET_SCALE = 2.5; // oversized display type in the end grid
 const SERVICE_TARGET_SCALE = 1;
 
 function easeInOutCubic(t: number): number {
@@ -198,16 +198,17 @@ function projectOffset(
   const cosY = Math.cos(rotY);
   const sinY = Math.sin(rotY);
 
-  // Flatten w toward 0 across the fold (wMul = cos(PI * p), see frame()):
-  // 1 at rest (full hypercube), 0 mid-runway (plain cube), -1 by p=1
-  // (object turned inside out).
-  const wBase = w * wMul;
-  const x1 = x * cosXW - wBase * sinXW;
-  const w1 = x * sinXW + wBase * cosXW;
+  // Rotate the full 4D point first, then flatten the ROTATED w in the
+  // perspective divide (wMul = cos(PI * p), see frame()): 1 at rest (full
+  // hypercube), 0 mid-runway (orthographic 3D shadow, volumetric), -1 by
+  // p=1 (inner/outer exchanged). Flattening before rotation instead would
+  // multiply the x axis by cos(angleXW) and crush the object mid-fold.
+  const x1 = x * cosXW - w * sinXW;
+  const w1 = x * sinXW + w * cosXW;
   const z1 = z * cosZW - w1 * sinZW;
   const w2 = z * sinZW + w1 * cosZW;
 
-  const s4 = D4 / (D4 - w2);
+  const s4 = D4 / (D4 - w2 * wMul);
   const X3 = x1 * s4;
   const Y3 = y * s4;
   const Z3 = z1 * s4;
@@ -289,6 +290,11 @@ export default function Tesseract({ className = '' }: Props) {
     // Label/Swiss-grid morph gets its own, later-starting easing window so
     // the object gets a beat of pure rotation before text starts migrating.
     const e = easeInOutCubic(clamp01((p - 0.15) / 0.85));
+    // Choreography: during the ride (p 0.3..0.8) the object owns the center.
+    // Name + CTA bow out early and re-enter with the end grid; the tagline
+    // exists only in the end grid.
+    const nameVis = Math.max(1 - smoothstep(0.15, 0.35, p), smoothstep(0.82, 0.95, p));
+    const taglineVis = smoothstep(0.82, 0.95, p);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, cw, ch);
@@ -387,24 +393,31 @@ export default function Tesseract({ className = '' }: Props) {
       const pr = proj[OUTER_INDICES[slot]];
 
       let slotY = nameY;
+      let targetX = marginX;
       let targetScale = NAME_TARGET_SCALE;
       if (meta.kind === 'tagline') {
         slotY = taglineY;
-        // Mobile: text-sm scaled 1.8x would overflow 375px; stay near 1.
+        // Mobile: text-sm at the full display scale would overflow 375px.
         targetScale = isMobile ? 1.15 : TAGLINE_TARGET_SCALE;
       } else if (meta.kind === 'service') {
-        slotY = servicesY0 + serviceIndex * SERVICES_LINE_PX;
+        // Desktop end grid: services in two columns of three/two so the
+        // right half of the frame is not dead space. Mobile: one column.
+        const secondCol = !isMobile && serviceIndex >= 3;
+        if (secondCol) targetX = cw * 0.5;
+        slotY = servicesY0 + (isMobile ? serviceIndex : serviceIndex % 3) * SERVICES_LINE_PX;
         targetScale = SERVICE_TARGET_SCALE;
         serviceIndex++;
       }
 
-      const finalX = pr.x + (marginX - pr.x) * e;
+      const finalX = pr.x + (targetX - pr.x) * e;
       const finalY = pr.y + (slotY - pr.y) * e;
 
       const depthScale = 0.85 + pr.depthNorm * 0.3; // 0.85..1.15
       const depthOpacity = 0.45 + pr.depthNorm * 0.55; // 0.45..1
       const finalScale = depthScale + (targetScale - depthScale) * e;
-      const finalOpacity = depthOpacity + (1 - depthOpacity) * e;
+      let finalOpacity = depthOpacity + (1 - depthOpacity) * e;
+      if (meta.kind === 'name') finalOpacity *= nameVis;
+      else if (meta.kind === 'tagline') finalOpacity *= taglineVis;
 
       // Anchor flips by canvas half so the label never clips off-screen; once
       // mostly morphed it settles to the left anchor the Swiss grid uses.
@@ -425,6 +438,9 @@ export default function Tesseract({ className = '' }: Props) {
       const finalY = cy + (ctaY - cy) * e;
       const anchorPct = -50 + 50 * e; // centered at e=0 -> left-anchored at e=1
       ctaEl.style.transform = `translate3d(${finalX}px, ${finalY}px, 0) translate(${anchorPct}%, -50%)`;
+      // CTA follows the name's visibility arc; unclickable while hidden.
+      ctaEl.style.opacity = String(nameVis);
+      ctaEl.style.pointerEvents = nameVis < 0.1 ? 'none' : 'auto';
     }
   }, []);
 
@@ -433,21 +449,25 @@ export default function Tesseract({ className = '' }: Props) {
     if (!root) return;
     layout();
 
-    const ro = new ResizeObserver(() => layout());
+    // Resizing the canvas backing store (canvas.width = ...) clears it, so
+    // every relayout must repaint in the same tick — the ResizeObserver
+    // fires once on observe, which otherwise wipes the initial frame and
+    // leaves the hero blank until the first scroll.
+    const relayout = () => {
+      layout();
+      frame(getScrubState());
+    };
+    const ro = new ResizeObserver(relayout);
     ro.observe(root);
-    window.addEventListener('resize', layout);
+    window.addEventListener('resize', relayout);
 
     const unsubscribe = subscribeScrub(frame);
-    // Paint an initial frame immediately: registerHeroSection's one-off
-    // dispatch (see useScrubBus.ts) may fire before or after this
-    // subscription depending on mount order, so pull current state directly
-    // rather than depend on that race.
     frame(getScrubState());
 
     return () => {
       unsubscribe();
       ro.disconnect();
-      window.removeEventListener('resize', layout);
+      window.removeEventListener('resize', relayout);
     };
   }, [frame, layout]);
 
