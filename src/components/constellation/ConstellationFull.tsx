@@ -408,14 +408,27 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       // Hero chains lit at rest, fading (heroFadeRef) once the pointer
       // engages the canvas at all; everything else a much quieter haze — a
       // lighter ambient web reads as spacious instead of a dense net of lines.
-      let op = HERO_EDGES.has(i) ? 0.22 * heroFadeRef.current : 0.05;
-      if (active) op = touchesActive ? 0.5 : 0.015;
+      let op = HERO_EDGES.has(i) ? 0.34 * heroFadeRef.current : 0.12;
+      if (active) op = touchesActive ? 0.8 : 0.03;
+      if (op >= 0.3) {
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = hexA(e.color, op * 0.35);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.lineWidth = 1;
+      }
       ctx.strokeStyle = hexA(e.color, op);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
       ctx.stroke();
     }
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.lineWidth = 1;
 
     // ── ECG pulses travelling along edges (spawned only from setActive) ──
     ctx.globalCompositeOperation = 'lighter';
