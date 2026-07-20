@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import Constellation from '@/components/constellation/Constellation';
+import BlobTracking from '@/components/BlobTracking';
 import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
@@ -52,6 +53,8 @@ const Index = () => {
         <SectionBreak />
         {/* HOW + WHAT — skills and every project, one living Signal Map */}
         <Constellation />
+        <SectionBreak />
+        <BlobTracking />
         <SectionBreak />
         <ServicesTerminal />
         <ContactChannel />
