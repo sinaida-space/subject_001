@@ -108,7 +108,7 @@ export default function PlainSignalIndex({ includeBackground = false }: { includ
           <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
             <h3
               id={`plain-signal-${kind}`}
-              className="mb-1 font-display text-3xl md:text-4xl leading-none text-foreground text-neon"
+              className="mb-1 font-display text-xl md:text-2xl leading-none text-primary-legible"
             >
               {KIND_LABEL[kind]}
             </h3>
