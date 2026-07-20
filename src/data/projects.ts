@@ -100,7 +100,7 @@ export const PROJECTS: Project[] = [
   // ── Flagship stage work ────────────────────────────────────
   {
     id: 'redkie-ptitsy',
-    title: 'Redkie Ptitsy — Live Concert Visuals',
+    title: 'Redkie Ptitsy · Live Concert Visuals',
     kind: 'stage',
     tagline: 'Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song',
     blurb:
@@ -376,7 +376,7 @@ export const PROJECTS: Project[] = [
   // ── Tools ──────────────────────────────────────────────────
   {
     id: 'mahler',
-    title: 'Mahler — The Orchestrator',
+    title: 'Mahler · The Orchestrator',
     kind: 'tool',
     tagline: 'Orchestrator for Claude',
     blurb: 'A multi-model orchestrator for Claude, designed to maximize ROI on tokens.',

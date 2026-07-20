@@ -18,11 +18,12 @@ const KIND_LABEL: Record<ProjectKind, string> = {
 
 interface RowProps {
   project: Project;
+  index: number;
   previewEnabled: boolean;
   onPreview: (src: string | null, x: number, y: number, instant: boolean) => void;
 }
 
-function Row({ project, previewEnabled, onPreview }: RowProps) {
+function Row({ project, index, previewEnabled, onPreview }: RowProps) {
   const rowRef = useRef<HTMLButtonElement>(null);
 
   const handleMouseEnter = (e: React.MouseEvent) => {
@@ -60,28 +61,26 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
       onMouseLeave={handleMouseLeave}
       onFocus={handleFocus}
       onBlur={handleBlur}
-      className="group flex w-full items-start gap-3 border-t border-l-2 border-l-transparent border-foreground/10 py-4 pl-3 -ml-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
+      className="group flex w-full items-baseline gap-4 border-t border-l-2 border-l-transparent border-foreground/10 py-5 pl-3 -ml-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
     >
-      <span className="font-mono text-sm text-accent transition-transform group-hover:translate-x-1">→</span>
-      <span className="flex-1">
-        <span className="font-display text-lg text-foreground transition-colors group-hover:text-accent">
+      <span className="shrink-0 font-mono text-sm text-primary-legible transition-transform group-hover:translate-x-1">
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block font-display text-2xl md:text-3xl leading-tight text-foreground transition-colors group-hover:text-accent group-hover:text-neon">
           {project.title}
         </span>
-        <span className="ml-3 font-mono text-xs text-foreground/60">{project.tagline}</span>
+        <span className="mt-1 block font-mono text-xs text-foreground/55">{project.tagline}</span>
       </span>
       {project.badges && (
-        <span className="hidden shrink-0 gap-1.5 md:flex">
+        <span className="hidden shrink-0 gap-3 md:flex">
           {project.badges.map((b) => (
-            <span
-              key={b}
-              className="border border-foreground/15 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-[0.15em] text-foreground/45"
-            >
+            <span key={b} className="font-mono text-2xs lowercase text-primary-legible/70">
               {BADGE_LABEL[b]}
             </span>
           ))}
         </span>
       )}
-      <span className="shrink-0 font-mono text-xs text-foreground/30 transition-opacity group-hover:opacity-70">▸</span>
     </button>
   );
 }
@@ -109,13 +108,17 @@ export default function PlainSignalIndex({ includeBackground = false }: { includ
           <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
             <h3
               id={`plain-signal-${kind}`}
-              className="mb-3 font-mono text-2xs uppercase tracking-[0.2em] text-foreground/35"
+              className="mb-1 font-display text-3xl md:text-4xl leading-none text-foreground text-neon"
             >
               {KIND_LABEL[kind]}
             </h3>
+            <div
+              aria-hidden="true"
+              className="mb-5 h-px w-24 bg-gradient-to-r from-primary/70 to-transparent"
+            />
             <div className="border-b border-foreground/10">
-              {items.map((p) => (
-                <Row key={p.id} project={p} previewEnabled={previewEnabled} onPreview={handlePreview} />
+              {items.map((p, i) => (
+                <Row key={p.id} project={p} index={i} previewEnabled={previewEnabled} onPreview={handlePreview} />
               ))}
             </div>
           </section>

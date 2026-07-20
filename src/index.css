@@ -762,6 +762,11 @@
   .font-led {
     font-family: var(--font-led);
   }
+
+  /* Static neon presence for display type (no animation; motion law). */
+  .text-neon {
+    text-shadow: 0 0 10px hsl(var(--primary) / 0.5), 0 0 28px hsl(var(--primary) / 0.22);
+  }
 }
 
 @keyframes vhs-distort {
