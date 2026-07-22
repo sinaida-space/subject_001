@@ -42,7 +42,7 @@ export default function WorkCase() {
   const cs = project?.caseStudy;
   const [heroLoaded, setHeroLoaded] = useState(false);
 
-  const title = project ? `${project.title} — Case Study | ${SITE_NAME}` : '';
+  const title = project ? `${project.title} · Case Study | ${SITE_NAME}` : '';
   const description = project
     ? `${project.tagline}. ${project.blurb ?? ''}`.slice(0, 300)
     : '';
@@ -170,7 +170,7 @@ export default function WorkCase() {
         {cs.media?.map((m) => (
           <div key={m.video} className="mt-10">
             <div className="clinical-label mb-3 text-foreground/45">{m.label}</div>
-            <VideoEmbed id={m.video} title={`${project.title} — ${m.label}`} />
+            <VideoEmbed id={m.video} title={`${project.title} · ${m.label}`} />
             {m.caption && (
               <p className="mt-2 max-w-[62ch] font-mono text-xs leading-relaxed text-foreground/55">
                 {nbsp(m.caption)}

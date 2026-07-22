@@ -196,7 +196,7 @@ export default function NotFound() {
 
         <div className="mt-2 mb-8" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
           <span className="font-mono" style={{ fontSize: '1.1rem', letterSpacing: '0.12em' }}>
-            — lost in the void.
+            lost in the void.
           </span>
         </div>
 

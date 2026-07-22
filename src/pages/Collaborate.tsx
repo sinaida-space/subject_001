@@ -18,7 +18,7 @@ const TECH_BASICS = ['TouchDesigner', 'GLSL / real-time shaders', 'Audio-reactiv
 // Third-person boilerplate — written to be copy-pasted verbatim into program
 // booklets and press. Facts only: no availability, timeline, or client claims
 // beyond the two real credits.
-const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, working globally. Trained as a biomedical engineer and shaped by years of creative direction in the cultural sector, she builds living visual systems for stages, concerts, and performance spaces — real-time TouchDesigner and GLSL work that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (commissioned live concert visuals, Moscow, 2026) and The Eyes Chico (interactive installation and web experience, with Alisa Feer).`;
+const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, working globally. Trained as a biomedical engineer and shaped by years of creative direction in the cultural sector, she builds living visual systems for stages, concerts, and performance spaces: real-time TouchDesigner and GLSL work that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (commissioned live concert visuals, Moscow, 2026) and The Eyes Chico (interactive installation and web experience, with Alisa Feer).`;
 
 function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
   return (
@@ -51,7 +51,7 @@ const SEPARATOR = '────────────────────�
 
 export default function Collaborate() {
   useEffect(() => {
-    document.title = 'Work with me — Sinaida Krivchenko';
+    document.title = 'Work with me · Sinaida Krivchenko';
     const meta = document.querySelector('meta[name="description"]');
     const content =
       'Work with Sinaida Krivchenko: live audio-reactive visuals for festivals and concerts, responsive scenography capability for theater and dance, immersive installations. Services, process, press kit, and contact.';
@@ -81,7 +81,7 @@ export default function Collaborate() {
           Work with <span className="text-primary font-bold">me</span>
         </h1>
         <p className="font-mono text-sm leading-relaxed mb-4 text-foreground/[0.82]">
-          {nbsp('Human first. Digital second. I build living visual systems for stages, concerts, and performance spaces — this page is what actually happens if we work together on one.')}
+          {nbsp('Human first. Digital second. I build living visual systems for stages, concerts, and performance spaces. This page is what actually happens if we work together on one.')}
         </p>
         <p className="font-mono text-sm leading-relaxed mb-16 text-foreground/60">
           {nbsp('Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.')}
@@ -108,7 +108,7 @@ export default function Collaborate() {
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-3">Process</div>
           <p className="font-mono text-xs leading-relaxed mb-6 text-foreground/55">
-            {nbsp('Structured the way I ran technical projects for years before this — brief, concept, build, rehearsal, show. Nothing invented for the website.')}
+            {nbsp('Structured the way I ran technical projects for years before this: brief, concept, build, rehearsal, show. Nothing invented for the website.')}
           </p>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (
@@ -135,16 +135,16 @@ export default function Collaborate() {
           <div className="clinical-label text-primary-legible mb-6">Practicalities</div>
           <div className="font-mono text-xs leading-relaxed space-y-4 text-foreground/75">
             <p>
-              <span className="text-foreground">Travel — </span>
+              <span className="text-foreground">Travel: </span>
               {nbsp('Based in Prague, working globally. Touring and international bookings are welcome; travel and accommodation are arranged case by case.')}
             </p>
             <p>
-              <span className="text-foreground">Tech rider — </span>
+              <span className="text-foreground">Tech rider: </span>
               {nbsp('Typical requirements are a projector or LED surface, a dedicated playback/render machine, and a feed from the live audio mix where the work is audio-reactive. Exact specs are confirmed once the venue and format are known.')}
             </p>
             <p>
-              <span className="text-foreground">Lead time — </span>
-              {nbsp('Depends on set length and scope — confirmed once the brief is in. Earlier is always better.')}
+              <span className="text-foreground">Lead time: </span>
+              {nbsp('Depends on set length and scope, confirmed once the brief is in. Earlier is always better.')}
             </p>
           </div>
         </section>
@@ -153,7 +153,7 @@ export default function Collaborate() {
         <section className="mb-20">
           <div className="clinical-label text-primary-legible mb-3">Press kit</div>
           <p className="font-mono text-xs leading-relaxed mb-6 text-foreground/55">
-            For programmers, promoters, and journalists — boilerplate and stills, ready to paste.
+            For programmers, promoters, and journalists: boilerplate and stills, ready to paste.
           </p>
 
           <div className="font-mono text-sm leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
@@ -178,7 +178,7 @@ export default function Collaborate() {
                   className="block font-mono mt-2 text-foreground/60 hover:text-primary-legible transition-colors"
                   style={{ fontSize: 12 }}
                 >
-                  {project.title.split('—')[0].trim()}
+                  {project.title.split('·')[0].trim()}
                 </Link>
                 <div className="font-mono mt-1 text-foreground/40" style={{ fontSize: 12 }}>
                   {project.tagline}
@@ -193,7 +193,7 @@ export default function Collaborate() {
           <ul className="font-mono text-xs space-y-2 text-foreground/75">
             {TECH_BASICS.map((item) => (
               <li key={item}>
-                <span className="text-primary-legible">{'— '}</span>
+                <span className="text-primary-legible">{'· '}</span>
                 {nbsp(item)}
               </li>
             ))}
@@ -204,7 +204,7 @@ export default function Collaborate() {
         <section>
           <div className="clinical-label text-primary-legible mb-6">Contact</div>
           <p className="font-mono text-xs leading-relaxed mb-4 text-foreground/75">
-            {nbsp('Send the occasion, space, and timeline — a reply follows with next steps.')}
+            {nbsp('Send the occasion, space, and timeline. A reply follows with next steps.')}
           </p>
           <ObfuscatedMailto
             label="EMAIL ME ↗"

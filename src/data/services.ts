@@ -32,9 +32,9 @@ export const SERVICES: Service[] = [
     code: 'theater',
     title: 'For theater & dance',
     description:
-      'Responsive scenography: real-time systems that follow the performers’ bodies and the sound — developed with the creative team from first concept onward.',
+      'Responsive scenography: real-time systems that follow the performers’ bodies and the sound, developed with the creative team from first concept onward.',
     record: [
-      { text: 'On-device body tracking driving image and sound in real time — ' },
+      { text: 'On-device body tracking driving image and sound in real time: ' },
       { text: 'Aether Currents', href: '/work/aether-currents' },
       { text: ' · ' },
       { text: 'The Eyes Chico', href: '/work/the-eyes-chico' },
@@ -48,7 +48,7 @@ export const SERVICES: Service[] = [
     description:
       'Immersive installations and generative visual identities, adapted to a space and designed to run unattended, day after day.',
     record: [
-      { text: 'Tech rider: one laptop · one projector · optional camera — ' },
+      { text: 'Tech rider: one laptop · one projector · optional camera · ' },
       { text: 'The Eyes Chico', href: '/work/the-eyes-chico' },
       { text: ', fully on-device.' },
     ],
