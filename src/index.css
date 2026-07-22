@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -49,9 +49,9 @@
     /* Metrically-close system fallbacks so `font-display: swap` (set on the
        Google Fonts link in index.html) doesn't cause a visible text reflow
        once the webfont swaps in. */
-    --font-display: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
-    --font-clinical: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+    --font-display: 'VT323', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'VT323', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+    --font-clinical: 'VT323', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
     --scanline-opacity: 0.04;
     --glitch-intensity: 0;
@@ -313,6 +313,12 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: hsl(var(--muted-foreground));
+  }
+
+  /* Body of Work / Constellation section (graph + plain list + project
+     detail modal, all rendered inside #work) — every text node in caps. */
+  #work {
+    text-transform: uppercase;
   }
 
   .no-scrollbar {

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 import { SERVICES } from '@/data/services';
 import { FEATURED_WORKS } from '@/data/projects';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const PROCESS_STEPS = [
   { code: '01', label: 'Brief', detail: 'You send the occasion, space, and constraints.' },
@@ -68,23 +70,24 @@ export default function Collaborate() {
   const stills = FEATURED_WORKS.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-background py-24">
-      <div className="container mx-auto px-6 max-w-4xl">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto px-6 max-w-4xl pt-40 pb-24 md:pt-32 lg:pt-36">
         <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
           ← Back
         </a>
 
-        <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+        <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 24 }}>
           Collaborate
         </div>
-        <h1 className="font-display text-4xl md:text-5xl font-light mb-4">
+        <h1 className="font-display text-7xl md:text-8xl font-light mb-4">
           Work with <span className="text-primary font-bold">me</span>
         </h1>
         <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
           Human first. Digital second. I build living visual systems for stages, concerts, and
           performance spaces — this page is what actually happens if we work together on one.
         </p>
-        <p className="font-mono text-[14px] leading-relaxed mb-16 text-foreground/60">
+        <p className="font-mono text-[28px] leading-relaxed mb-16 text-foreground/60">
           Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
         </p>
 
@@ -217,6 +220,7 @@ export default function Collaborate() {
           />
         </section>
       </div>
+      <Footer />
     </div>
   );
 }

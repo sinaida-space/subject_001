@@ -531,8 +531,9 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         }
       }
       if (alpha <= 0.02) continue;
-      ctx.font = `${fontWeight} ${fs}px 'Space Mono', monospace`;
-      const tw = ctx.measureText(n.label).width;
+      ctx.font = `${fontWeight} ${fs}px 'VT323', monospace`;
+      const label = n.label.toUpperCase();
+      const tw = ctx.measureText(label).width;
 
       // Candidate placements, tried in order: right, left, below, above, then
       // four diagonals and two stacked-further rows. First one that doesn't
@@ -588,7 +589,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
         ctx.shadowColor = n.color;
         ctx.shadowBlur = 8;
       }
-      ctx.fillText(n.label, tx, ty);
+      ctx.fillText(label, tx, ty);
       ctx.shadowBlur = 0;
     }
     ctx.textAlign = 'left';

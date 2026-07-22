@@ -257,19 +257,19 @@ export default function AboutSection() {
           </DustReveal>
         </Suspense>
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
+          <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+              <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 24 }}>
                 About
               </div>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
+              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 24 }}>
                 [ BIO ]
               </div>
             </Reveal>
           </div>
           <div className="flex-1">
             <Reveal delay={50}>
-              <h2 className="font-display text-2xl md:text-4xl font-light leading-tight mb-10">
+              <h2 className="font-display text-5xl md:text-7xl uppercase font-light leading-tight mb-10">
                 Art, technology, and
                 <span className="text-primary font-bold"> human expression</span>
               </h2>

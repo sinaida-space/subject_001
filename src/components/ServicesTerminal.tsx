@@ -43,16 +43,16 @@ export default function ServicesTerminal() {
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* LEFT COLUMN */}
-          <div className="md:w-[200px] shrink-0 md:sticky md:top-[15vh] md:self-start">
+          <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <div
               className="font-mono uppercase text-primary-legible"
-              style={{ letterSpacing: '0.2em', fontSize: 12 }}
+              style={{ letterSpacing: '0.2em', fontSize: 24 }}
             >
               Services
             </div>
             <div
               className="font-mono mt-2"
-              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}
+              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 24 }}
             >
               [ VALUE // ACTIVE ]
             </div>

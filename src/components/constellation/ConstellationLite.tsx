@@ -128,7 +128,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                   y={n.y + 4}
                   fontSize={n.kind === 'project' ? 13 : 11}
                   fontWeight={n.kind === 'project' ? 500 : 400}
-                  fontFamily="'Space Mono', monospace"
+                  fontFamily="'VT323', monospace"
                   fill={n.kind === 'project' ? '#f2efe9' : n.color}
                   opacity={labelAlpha}
                   style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
