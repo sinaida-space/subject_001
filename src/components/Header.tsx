@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -37,6 +38,9 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [snakeOpen, setSnakeOpen] = useState(false);
   const { mode, toggle } = useRenderMode();
+  const { pathname } = useLocation();
+  const onHome = pathname === '/';
+  const navHref = (hash: string) => (onHome ? hash : `/${hash}`);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -58,8 +62,9 @@ export default function Header() {
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
     setMenuOpen(false);
+    if (!onHome) return; // let the <a> navigate home, hash-scroll handled there
+    e.preventDefault();
     setTimeout(() => {
       const el = document.querySelector(href);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -86,7 +91,7 @@ export default function Header() {
 
           <nav className="hidden md:flex items-center gap-8">
             {NAV_ITEMS.map((item) => (
-              <a key={item.label} href={item.href} className="clinical-label hover:text-primary-legible transition-colors duration-300 cursor-none">
+              <a key={item.label} href={navHref(item.href)} className="clinical-label hover:text-primary-legible transition-colors duration-300 cursor-none">
                 {item.label}
               </a>
             ))}
@@ -104,7 +109,7 @@ export default function Header() {
               <ModeIcon mode={mode} />
             </button>
             <a
-              href="#contact"
+              href={navHref('#contact')}
               className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 flex items-center h-9 transition-all duration-300 cursor-none"
               style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
               onMouseEnter={contactEnter}
@@ -158,7 +163,7 @@ export default function Header() {
         {NAV_ITEMS.filter((item) => item.label !== 'Contact').map((item, i) => (
           <a
             key={item.label}
-            href={item.href}
+            href={navHref(item.href)}
             onClick={(e) => handleNavClick(e, item.href)}
             style={{
               display: 'block',
@@ -182,7 +187,7 @@ export default function Header() {
         ))}
 
         <a
-          href="#contact"
+          href={navHref('#contact')}
           onClick={(e) => handleNavClick(e, '#contact')}
           style={{
             marginTop: 40,

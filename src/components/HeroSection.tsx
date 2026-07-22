@@ -29,7 +29,7 @@ export default function HeroSection() {
               SINAIDA KRIVCHENKO | NEW MEDIA ARTIST
             </p>
             <h1
-              className="font-display text-4xl md:text-6xl leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8 my-[100px] lg:text-8xl font-bold"
+              className="font-display text-4xl md:text-6xl uppercase leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8 my-[100px] lg:text-8xl font-bold"
               data-text="Where Engineering Meets Imagination">
               
               Where

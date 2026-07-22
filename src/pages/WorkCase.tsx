@@ -6,6 +6,8 @@ import DisplacementImage from '@/components/DisplacementImage';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import SignalChain from '@/components/SignalChain';
 import NotFound from '@/pages/NotFound';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const SITE_NAME = 'sin.ai.da';
 
@@ -53,8 +55,9 @@ export default function WorkCase() {
   const intro = cs.intro ?? (project.blurb ? [project.blurb] : []);
 
   return (
-    <div className="min-h-screen bg-background py-24">
-      <div className="container mx-auto max-w-3xl px-6">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto max-w-3xl px-6 pt-40 pb-24 md:pt-32 lg:pt-36">
         <Link
           to="/"
           className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
@@ -82,7 +85,7 @@ export default function WorkCase() {
           </span>
         </div>
 
-        <h1 className="mt-4 font-display text-4xl font-light text-foreground md:text-5xl">
+        <h1 className="mt-4 font-display text-7xl font-light text-foreground md:text-8xl">
           {project.title}
         </h1>
 
@@ -229,6 +232,7 @@ export default function WorkCase() {
           </p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

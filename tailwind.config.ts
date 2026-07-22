@@ -15,11 +15,11 @@ export default {
   	extend: {
   		fontFamily: {
   			display: [
-  				'Space Grotesk',
+  				'VT323',
   				'sans-serif'
   			],
   			mono: [
-  				'Space Mono',
+  				'VT323',
   				'ui-monospace',
   				'SFMono-Regular',
   				'Menlo',
@@ -30,10 +30,11 @@ export default {
   				'monospace'
   			],
   			clinical: [
-  				'IBM Plex Mono',
+  				'VT323',
   				'monospace'
   			],
   			sans: [
+  				'VT323',
   				'ui-sans-serif',
   				'system-ui',
   				'sans-serif',
@@ -43,6 +44,7 @@ export default {
   				'Noto Color Emoji'
   			],
   			serif: [
+  				'VT323',
   				'ui-serif',
   				'Georgia',
   				'Cambria',

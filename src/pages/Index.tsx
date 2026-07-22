@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
@@ -16,6 +17,15 @@ const ParticleField = lazy(() => import('@/components/ParticleField'));
 const Index = () => {
   const { mode } = useRenderMode();
   const full = mode === 'full';
+  const { hash } = useLocation();
+
+  // Arriving from another page via a Header/Footer nav link (/#work etc.) —
+  // scroll to the section once it's mounted.
+  useEffect(() => {
+    if (!hash) return;
+    const el = document.querySelector(hash);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+  }, [hash]);
 
   return (
     <div className="relative min-h-screen bg-background grid-overlay">

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -6,6 +7,8 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 export default function Footer() {
   const [snakeOpen, setSnakeOpen] = useState(false);
   const { mode, toggle } = useRenderMode();
+  const { pathname } = useLocation();
+  const navHref = (hash: string) => (pathname === '/' ? hash : `/${hash}`);
 
   return (
     <footer className="relative z-10 border-t border-border py-16 md:py-20">
@@ -38,7 +41,7 @@ export default function Footer() {
                   { label: 'Services', href: '#services' },
                   { label: 'Contact', href: '#contact' },
                 ].map((item) => (
-                  <a key={item.label} href={item.href} className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                  <a key={item.label} href={navHref(item.href)} className="block font-mono text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                     {item.label}
                   </a>
                 ))}
