@@ -28,7 +28,7 @@
     --muted: 240 5% 12%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 180 100% 45%;
+    --accent: 0 100% 49%;
     --accent-foreground: 240 10% 3%;
 
     --destructive: 0 84.2% 60.2%;
@@ -44,7 +44,7 @@
     --neon-glow: 352 87% 40%;
     --clinical: 180 15% 70%;
     --particle-white: 40 67% 96%;
-    --bloom-cyan: 180 100% 45%;
+    --bloom-cyan: 0 100% 49%;
 
     /* Metrically-close system fallbacks so `font-display: swap` (set on the
        Google Fonts link in index.html) doesn't cause a visible text reflow
@@ -117,6 +117,9 @@
   html {
     scroll-behavior: smooth;
     scroll-timeline: --page-scroll block;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
@@ -284,12 +287,14 @@
     100% { transform: translateY(-20px); }
   }
 
-  /* Neon glow */
+  /* Neon glow — Safari renders stacked text-shadow blur noticeably heavier
+     than Chrome/Firefox at the same radii, so these are tuned conservatively
+     (checked in Safari, not just Chrome) rather than maximized for either. */
   .neon-glow {
     text-shadow:
-      0 0 7px hsl(var(--primary) / 0.6),
-      0 0 20px hsl(var(--primary) / 0.4),
-      0 0 42px hsl(var(--primary) / 0.2);
+      0 0 4px hsl(var(--primary) / 0.5),
+      0 0 10px hsl(var(--primary) / 0.28),
+      0 0 20px hsl(var(--primary) / 0.14);
   }
 
   .neon-glow-accent {
@@ -475,4 +480,19 @@
     filter: brightness(1) blur(0px);
     text-shadow: none;
   }
+}
+
+/* Hero tag "launch" cue on click — squash on takeoff, stretch as it settles.
+   Full mode + click-triggered only; see squashScrollTo in lib/squashScroll.ts
+   for the matching page-content squash during the scroll itself. */
+@keyframes tag-launch-squash {
+  0% { transform: scale(1, 1); }
+  20% { transform: scale(1.05, 0.94); }
+  45% { transform: scale(0.96, 1.05); }
+  70% { transform: scale(1.02, 0.99); }
+  100% { transform: scale(1, 1); }
+}
+
+.animate-tag-launch {
+  animation: tag-launch-squash 0.45s cubic-bezier(0.33, 1, 0.68, 1);
 }

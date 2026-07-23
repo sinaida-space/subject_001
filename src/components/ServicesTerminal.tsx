@@ -7,8 +7,7 @@ const SEPARATOR = '────────────────────�
 function ServiceBlock({ service }: { service: Service }) {
   return (
     <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <div style={{ color: 'hsl(var(--accent))' }}>{`$ load_module --id=${service.code}`}</div>
-      <h3 className="font-mono text-base font-medium mt-2 mb-2" style={{ color: 'hsl(var(--accent))' }}>
+      <h3 className="font-mono uppercase text-base font-medium mt-2 mb-2 text-primary-legible">
         {service.title}
       </h3>
       <p className="font-mono text-[13px] leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
@@ -52,20 +51,14 @@ export default function ServicesTerminal() {
             </div>
             <div
               className="font-mono mt-2"
-              style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 24 }}
+              style={{ color: 'hsl(var(--foreground) / 0.6)', fontSize: 16 }}
             >
-              [ VALUE // ACTIVE ]
+              Digital tools for human connection.
             </div>
           </div>
 
           {/* RIGHT COLUMN */}
           <div className="flex-1 font-mono">
-          {/* Terminal frame: static chrome, no reveal delay on content below */}
-          <div style={{ opacity: 0.35 }} className="text-sm mb-8 leading-relaxed">
-            <div>{`SINAIDA_OS v2.4.1 // CREATIVE SYSTEMS TERMINAL`}</div>
-            <div>{`Service modules loaded [████████████] 100%`}</div>
-          </div>
-
           {/* Service blocks — full content renders immediately, no typing/reveal */}
           <div className="space-y-2">
             {SERVICES.map((service, i) => (

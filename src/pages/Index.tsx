@@ -28,7 +28,7 @@ const Index = () => {
   }, [hash]);
 
   return (
-    <div className="relative min-h-screen bg-background grid-overlay">
+    <div className="relative min-h-screen bg-background">
       {/* Cosmic starfield backdrop — full mode only; lite uses the CSS gradient.
           fallback={null} is intentional, not a CLS gap: ParticleField renders
           `fixed inset-0`, so it's a background layer with zero in-flow height —
@@ -46,7 +46,7 @@ const Index = () => {
           to capture. (The custom cursor now mounts once at the App level,
           shared across every route, not duplicated per page.) */}
       {full && (
-        <ErrorBoundary fallback={null}>
+        <ErrorBoundary fallback={null} onError={(e) => console.error('ParticleField crashed:', e)}>
           <Suspense fallback={null}>
             <ParticleField />
           </Suspense>

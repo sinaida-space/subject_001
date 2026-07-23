@@ -6,6 +6,7 @@ import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
 import workEyesChico from '@/assets/work-eyes-chico.jpg';
 import workSubmerged from '@/assets/work-submerged.jpg';
 import workAetherCurrents from '@/assets/work-aether-currents.jpg';
+import workEtherealPath from '@/assets/work-ethereal-path.jpg';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
@@ -345,6 +346,7 @@ export const PROJECTS: Project[] = [
       "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam — all tracking on-device, nothing leaves the machine. Raymarched GLSL, no frameworks. Built as a physical reset for people who sit too long at screens, and a working study in movement-driven visuals: the same system that lets a performer's body drive the image.",
     tools: ['WebGL2 / GLSL raymarching', 'MediaPipe body tracking', 'Web Audio'],
     skills: ['creative-web', 'body-tracking', 'algorithmic-systems', 'perception-media', 'interactive-installations'],
+    image: workEtherealPath,
     url: 'https://sinaida-space.github.io/ethereal-path/',
     video: '15wl2Sko5GA',
     links: [

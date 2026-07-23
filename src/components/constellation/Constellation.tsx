@@ -6,6 +6,7 @@ import { constellationBus } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
 import PlainSignalIndex from './PlainSignalIndex';
 import ProjectDetail from './ProjectDetail';
+import DitherPreview from './DitherPreview';
 
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
 
@@ -18,6 +19,7 @@ const MOBILE_RESERVED_HEIGHT = Math.max(640, PROJECTS.length * 640);
 export default function Constellation() {
   const { mode } = useRenderMode();
   const [active, setActive] = useState<GraphNode['project'] | null>(null);
+  const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const [openId, setOpenId] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -58,8 +60,15 @@ export default function Constellation() {
           >
             {mode === 'full' && (
               <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
-                <ConstellationFull onActiveProject={setActive} />
+                <ConstellationFull onActiveProject={setActive} onPointerPosition={(x, y) => setPointerPos({ x, y })} />
               </Suspense>
+            )}
+
+            {/* Dithered image preview — trails the cursor while hovering a
+               project star on the graph itself, same specimen-tag treatment
+               as the plain-list rows below (desktop mouse only). */}
+            {mode === 'full' && !IS_COARSE && (
+              <DitherPreview src={active?.image ?? null} x={pointerPos.x} y={pointerPos.y} visible={!!active?.image} />
             )}
 
             {/* announce the hovered/opened project to screen readers only — a

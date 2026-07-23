@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import type { Project, ProjectKind } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
@@ -57,13 +58,13 @@ function Readout({ project }: { project: Project }) {
         <div className="flex flex-wrap items-center gap-3">
           <span
             style={{
-              border: '1px solid #CC1414',
+              border: '1px solid #ff3333',
               padding: '3px 8px',
-              fontFamily: 'monospace',
+              fontFamily: 'var(--font-mono)',
               fontSize: '10px',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
-              color: '#CC1414',
+              color: '#ff3333',
             }}
           >
             {KIND_LABEL[project.kind]}
@@ -86,7 +87,7 @@ function Readout({ project }: { project: Project }) {
             {project.tools.map((t) => (
               <span
                 key={t}
-                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
+                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
               >
                 {t}
               </span>
@@ -135,20 +136,20 @@ function Readout({ project }: { project: Project }) {
         >
           <div
             className="relative w-full max-w-xl"
-            style={{ background: 'hsl(var(--background))', border: '1px solid #CC1414', boxShadow: '0 0 40px rgba(204,20,20,0.22)' }}
+            style={{ background: 'hsl(var(--background))', border: '1px solid #ff3333', boxShadow: '0 0 40px rgba(255,51,51,0.22)' }}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-label={`${project.title} — full text`}
           >
             <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#ff3333', letterSpacing: '2px' }}>
                 FULL TEXT
               </span>
               <button
                 type="button"
                 onClick={() => setEssayOpen(false)}
-                style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
               >
                 [ CLOSE ]
               </button>
@@ -210,9 +211,13 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
 
   const headerLabel = project.title.split(' — ')[0].toUpperCase();
 
-  return (
+  // Portalled to <body> — the Constellation section this opens from sets its
+  // own `relative z-10` stacking context, which otherwise trapped this
+  // modal's z-index inside it and let the fixed site header (z-50, but
+  // outside that context) render on top of the modal's own top edge.
+  return createPortal(
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-black/55 p-4 transition-opacity duration-[180ms]"
+      className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-black/55 p-4 pt-24 pb-10 transition-opacity duration-[180ms]"
       style={{ opacity: mounted ? 1 : 0 }}
       onClick={onClose}
     >
@@ -220,8 +225,8 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out"
         style={{
           background: 'hsl(var(--background))',
-          border: '1px solid #CC1414',
-          boxShadow: '0 0 40px rgba(204,20,20,0.22)',
+          border: '1px solid #ff3333',
+          boxShadow: '0 0 40px rgba(255,51,51,0.22)',
           opacity: mounted ? 1 : 0,
           transform: mounted ? 'scale(1)' : 'scale(0.97)',
         }}
@@ -231,21 +236,22 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-label={`${project.title} — project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#ff3333', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{ fontFamily: 'monospace', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
           >
             [ CLOSE ]
           </button>
         </div>
-        <div className="max-h-[88vh] overflow-y-auto">
+        <div className="max-h-[80vh] overflow-y-auto">
           <Readout project={project} />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

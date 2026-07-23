@@ -7,22 +7,24 @@ export interface SignalChainStage {
 }
 
 export interface SignalChainProps {
-  /** terminal-style caption above the chain, e.g. "> signal_path.trace() // 9 patches loaded" */
+  /** kept for data-shape compatibility with existing case-study content; no
+   * longer rendered — the terminal-style trace/footer captions read as leftover
+   * dev-console chrome rather than content, so this component now shows only
+   * the chain itself. */
   trace: string;
   stages: SignalChainStage[];
-  /** terminal-style caption below the chain */
   footer: string;
 }
 
 const CYCLE = 6; // seconds for one full traversal of the chain
 
-export default function SignalChain({ trace, stages, footer }: SignalChainProps) {
+export default function SignalChain({ stages }: SignalChainProps) {
   const nodeStep = CYCLE / stages.length;
   return (
     <div>
       <style>{`
         @keyframes sc-node-glow {
-          0%, 8% { background: #22d3ee; box-shadow: 0 0 14px rgba(34,211,238,0.7); }
+          0%, 8% { background: #ff3333; box-shadow: 0 0 12px rgba(255,51,51,0.85), 0 0 24px rgba(255,51,51,0.35); }
           22%, 100% { background: #1a1a1a; box-shadow: none; }
         }
         @keyframes sc-dot-v {
@@ -35,7 +37,7 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
         .sc-connector { position: relative; width: 1px; flex: 1 1 auto; min-height: 24px; background: #1a1a1a; }
         .sc-dot {
           position: absolute; left: -2px; width: 5px; height: 5px; border-radius: 50%;
-          background: #22d3ee; box-shadow: 0 0 8px rgba(34,211,238,0.8);
+          background: #ff3333; box-shadow: 0 0 6px rgba(255,51,51,0.9), 0 0 14px rgba(255,51,51,0.5);
           animation: sc-dot-v ${CYCLE}s linear infinite;
         }
         @media (prefers-reduced-motion: reduce) {
@@ -44,17 +46,10 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
         }
       `}</style>
 
-      <div
-        className="mb-4 font-mono text-[11px] tracking-[0.12em]"
-        style={{ color: '#22d3ee' }}
-      >
-        {trace}
-      </div>
-
       <div className="flex flex-col">
         {stages.map((stage, i) => (
           <div key={stage.label} className="flex gap-4">
-            <div className="flex flex-col items-center pt-1">
+            <div className="flex flex-col items-center pt-[3px]">
               <div
                 className="sc-node w-2.5 h-2.5 shrink-0"
                 style={{ animationDelay: `${i * nodeStep}s` }}
@@ -68,20 +63,16 @@ export default function SignalChain({ trace, stages, footer }: SignalChainProps)
             <div className={i < stages.length - 1 ? 'pb-6 min-w-0' : 'min-w-0'}>
               <div
                 className="font-mono uppercase"
-                style={{ fontSize: '10px', letterSpacing: '0.15em', color: '#CC1414' }}
+                style={{ fontSize: '12px', letterSpacing: '0.15em', color: '#ff3333' }}
               >
                 {String(i + 1).padStart(2, '0')} · {stage.label}
               </div>
-              <p className="mt-2 font-mono text-[12px] leading-relaxed text-foreground/55">
+              <p className="mt-2 font-mono text-[14px] leading-relaxed text-foreground/70">
                 {stage.detail}
               </p>
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="mt-5 font-mono text-[11px] tracking-[0.12em] text-foreground/45">
-        {footer}
       </div>
     </div>
   );

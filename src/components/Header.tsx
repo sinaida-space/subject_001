@@ -27,9 +27,9 @@ function ModeIcon({ mode }: { mode: 'full' | 'lite' }) {
     );
   }
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="3" fill="currentColor" />
-    </svg>
+    <span className="font-mono text-[10px] uppercase tracking-[0.15em]" aria-hidden="true">
+      Light
+    </span>
   );
 }
 
@@ -89,7 +89,7 @@ export default function Header() {
 
           <Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={scrollTop} />
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8">
             {NAV_ITEMS.map((item) => (
               <a key={item.label} href={navHref(item.href)} className="clinical-label hover:text-primary-legible transition-colors duration-300 cursor-none">
                 {item.label}
@@ -97,11 +97,11 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-5">
+          <div className="hidden lg:flex items-center gap-5">
             <button
               type="button"
               onClick={() => toggle()}
-              className="cursor-none flex items-center justify-center w-9 h-9 transition-colors text-primary-legible/70 hover:text-accent"
+              className={`cursor-none flex items-center justify-center h-9 transition-colors text-primary-legible/70 hover:text-accent ${mode === 'full' ? 'w-9' : 'px-3'}`}
               style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
@@ -119,11 +119,11 @@ export default function Header() {
             </a>
           </div>
 
-          <div className="md:hidden flex items-center gap-3">
+          <div className="lg:hidden flex items-center gap-3">
             <button
               type="button"
               onClick={() => toggle()}
-              className="flex items-center justify-center w-9 h-9 transition-colors text-primary-legible/70"
+              className={`flex items-center justify-center h-9 transition-colors text-primary-legible/70 ${mode === 'full' ? 'w-9' : 'px-3'}`}
               style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
@@ -146,7 +146,7 @@ export default function Header() {
       </header>
 
       <div
-        className="md:hidden fixed inset-0 z-40 flex flex-col justify-center items-start"
+        className="lg:hidden fixed inset-0 z-40 flex flex-col justify-center items-start"
         style={{
           background: mode === 'lite' ? '#ffffff' : 'rgba(4,4,4,0.97)',
           backdropFilter: mode === 'lite' ? 'none' : 'blur(12px)',
@@ -156,10 +156,6 @@ export default function Header() {
           paddingLeft: 40,
         }}
       >
-        <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#ff3333', letterSpacing: '0.2em', marginBottom: 48, opacity: 0.6 }}>
-          [ NAV.SYS // OPEN ]
-        </div>
-
         {NAV_ITEMS.filter((item) => item.label !== 'Contact').map((item, i) => (
           <a
             key={item.label}
@@ -167,9 +163,10 @@ export default function Header() {
             onClick={(e) => handleNavClick(e, item.href)}
             style={{
               display: 'block',
-              fontFamily: 'monospace',
+              fontFamily: 'var(--font-mono)',
               fontSize: 28,
               fontWeight: 300,
+              textTransform: 'uppercase',
               color: mode === 'lite' ? '#0a0a0a' : '#ffffff',
               letterSpacing: '0.1em',
               marginBottom: 20,
@@ -179,9 +176,6 @@ export default function Header() {
               transition: mode === 'lite' ? 'none' : `opacity 0.35s ease ${i * 70}ms, transform 0.35s ease ${i * 70}ms`,
             }}
           >
-            <span style={{ color: '#ff3333', marginRight: 14, fontSize: 11, letterSpacing: '0.2em' }}>
-              {String(i + 1).padStart(2, '0')}
-            </span>
             {item.label}
           </a>
         ))}
@@ -191,7 +185,7 @@ export default function Header() {
           onClick={(e) => handleNavClick(e, '#contact')}
           style={{
             marginTop: 40,
-            fontFamily: 'monospace',
+            fontFamily: 'var(--font-mono)',
             fontSize: 12,
             letterSpacing: '0.2em',
             padding: '12px 28px',
@@ -212,7 +206,7 @@ export default function Header() {
           onClick={() => toggle()}
           style={{
             marginTop: 32,
-            fontFamily: 'monospace',
+            fontFamily: 'var(--font-mono)',
             fontSize: 12,
             letterSpacing: '0.15em',
             background: 'none',
@@ -228,7 +222,7 @@ export default function Header() {
           View: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
         </button>
 
-        <div style={{ marginTop: 16, fontFamily: 'monospace', fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 10, color: mode === 'lite' ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>
