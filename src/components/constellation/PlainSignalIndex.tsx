@@ -86,7 +86,7 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
   );
 }
 
-export default function PlainSignalIndex({ includeBackground = false }: { includeBackground?: boolean }) {
+export default function PlainSignalIndex() {
   const { mode } = useRenderMode();
   const previewEnabled = mode !== 'lite';
   const [preview, setPreview] = useState<{ src: string | null; x: number; y: number; instant: boolean }>({
@@ -103,7 +103,7 @@ export default function PlainSignalIndex({ includeBackground = false }: { includ
   return (
     <div className="w-full" style={{ minHeight: 'clamp(420px, 60vh, 720px)' }}>
       {KIND_ORDER.map((kind) => {
-        const items = PROJECTS.filter((p) => p.kind === kind && (includeBackground || !p.background));
+        const items = PROJECTS.filter((p) => p.kind === kind && !p.background);
         if (items.length === 0) return null;
         return (
           <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">

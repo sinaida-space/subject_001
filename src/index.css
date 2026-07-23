@@ -496,3 +496,24 @@
 .animate-tag-launch {
   animation: tag-launch-squash 0.45s cubic-bezier(0.33, 1, 0.68, 1);
 }
+
+/* VT323 is a thin pixel font that reads noticeably smaller than its px
+   value suggests, on any screen. Site-wide the smallest sizes were never
+   given a bump, so raise the floor here rather than touching every call
+   site. Mobile gets a bigger step since a phone is usually held closer at
+   arm's length. */
+.text-\[9px\] { font-size: 11px !important; }
+.text-\[10px\] { font-size: 12px !important; }
+.text-\[11px\] { font-size: 13px !important; }
+.text-\[12px\] { font-size: 14px !important; }
+.text-\[13px\] { font-size: 15px !important; }
+.text-\[14px\] { font-size: 16px !important; }
+
+@media (max-width: 767px) {
+  .text-\[9px\] { font-size: 12px !important; }
+  .text-\[10px\] { font-size: 13px !important; }
+  .text-\[11px\] { font-size: 14px !important; }
+  .text-\[12px\] { font-size: 15px !important; }
+  .text-\[13px\] { font-size: 16px !important; }
+  .text-\[14px\] { font-size: 17px !important; }
+}
