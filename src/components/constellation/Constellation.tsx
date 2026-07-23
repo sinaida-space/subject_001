@@ -1,7 +1,8 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { buildGraph } from '@/data/graph';
 import type { GraphNode } from '@/data/graph';
-import { projectById, PROJECTS } from '@/data/projects';
+import { projectById } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
 import PlainSignalIndex from './PlainSignalIndex';
@@ -11,10 +12,11 @@ import DitherPreview from './DitherPreview';
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
 
 const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
-// Mirrors ConstellationFull's MOBILE_BAND_HEIGHT — kept as a rough CLS
-// estimate here since the exact content-driven height is computed inside
-// ConstellationFull itself once it mounts.
-const MOBILE_RESERVED_HEIGHT = Math.max(640, PROJECTS.length * 640);
+// Mirrors ConstellationFull's own mobile band-height formula (one connected
+// web, not one band per project — see ConstellationFull's `layout()`) so this
+// CLS estimate doesn't reserve far more space than the graph actually renders.
+const MOBILE_BAND_HEIGHT = 640;
+const MOBILE_RESERVED_HEIGHT = Math.max(MOBILE_BAND_HEIGHT, Math.round(buildGraph().nodes.length * 58));
 
 export default function Constellation() {
   const { mode } = useRenderMode();
@@ -91,7 +93,7 @@ export default function Constellation() {
                it's the whole section — a fully semantic, keyboard-navigable
                list with no canvas/WebGL dependency. */}
             <div className={mode === 'full' ? 'mt-16' : undefined}>
-              <PlainSignalIndex includeBackground={mode !== 'full'} />
+              <PlainSignalIndex />
             </div>
           </div>
         </div>
