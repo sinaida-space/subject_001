@@ -48,7 +48,6 @@ function BioSignalLock() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [noise, setNoise] = useState('acquiring signal');
 
   const rows = [
     ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
@@ -74,11 +73,9 @@ function BioSignalLock() {
     let frame = 0;
     const interval = setInterval(() => {
       frame += 1;
-      setNoise(`x:${(50.08 + Math.random() * 0.08).toFixed(4)} y:${(14.39 + Math.random() * 0.08).toFixed(4)} freq:${(84 + Math.random() * 32).toFixed(1)}`);
       if (frame > 12) {
         clearInterval(interval);
         setLocked(true);
-        setNoise('signal locked');
       }
     }, 55);
     return () => clearInterval(interval);
@@ -115,9 +112,6 @@ function BioSignalLock() {
           }}
         />
       )}
-      <div className="font-mono mb-5" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: locked ? 0.55 : 0.8, letterSpacing: '0.18em' }}>
-        {locked ? '> BIO_SIGNAL.lock() // SUBJECT: SINAIDA // STATUS: ACTIVE' : `> ${noise}`}
-      </div>
       <div className="space-y-3">
         {rows.map(([key, val], index) => {
           const amount = locked ? 0 : Math.max(0.08, 0.38 - index * 0.08);
@@ -130,7 +124,7 @@ function BioSignalLock() {
                 gridTemplateColumns: '140px 20px 1fr',
                 gap: '0 4px',
                 fontSize: 12,
-                color: 'hsl(var(--foreground) / 0.5)',
+                color: 'hsl(var(--foreground) / 0.6)',
                 letterSpacing: '0.08em',
                 transition: 'color 0.35s ease',
               }}
@@ -179,28 +173,6 @@ function PhotoBlock() {
           boxShadow: '0 0 0 1px hsl(var(--accent) / 0.15), inset 0 0 30px rgba(0,0,0,0.5)',
         }}
       >
-        <style>{`
-          .photo-frame-wrapper::after {
-            content: "";
-            position: absolute;
-            top: -1px; right: -1px;
-            width: 18px; height: 18px;
-            border-top: 2px solid hsl(var(--accent));
-            border-right: 2px solid hsl(var(--accent));
-            pointer-events: none;
-            z-index: 2;
-          }
-          .photo-frame-wrapper::before {
-            content: "";
-            position: absolute;
-            bottom: -1px; left: -1px;
-            width: 18px; height: 18px;
-            border-bottom: 2px solid #ff3333;
-            border-left: 2px solid #ff3333;
-            pointer-events: none;
-            z-index: 2;
-          }
-        `}</style>
         <div style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1' }}>
           <img
             ref={imgRef}
@@ -233,14 +205,14 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <span className="block font-mono mt-2" style={{ fontSize: 12, color: '#ff3333', opacity: 0.6, letterSpacing: '0.2em' }}>
-        SUBJECT_001
-      </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
+      <span className="block font-mono mt-2" style={{ fontSize: 12, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.1em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.6)', letterSpacing: '0.1em' }}>
         NEW MEDIA ARTIST
+      </span>
+      <span className="block font-mono mt-3" style={{ fontSize: 10, color: 'hsl(var(--foreground) / 0.55)', letterSpacing: '0.02em' }}>
+        Photo by Roland Gaedtgens from Zhembrovskyy performance
       </span>
     </div>
   );
@@ -262,8 +234,8 @@ export default function AboutSection() {
               <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 24 }}>
                 About
               </div>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 24 }}>
-                [ BIO ]
+              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.6)', fontSize: 16 }}>
+                The story so far.
               </div>
             </Reveal>
           </div>

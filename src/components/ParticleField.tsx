@@ -3,8 +3,21 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
-const PARTICLE_COUNT = 800;
+const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
+
+interface ParticleFieldProps {
+  /** Renders a dimmer, sparser field for content-heavy pages (case studies):
+   * half the stars, half the luminosity of the homepage's field. */
+  subtle?: boolean;
+}
+
+// Disney's "ease + follow-through": a critically-under-damped spring pulls
+// each star back to its home position once activity drops, so the settle
+// has a soft overshoot instead of snapping flat to rest — read as an alive,
+// physical body rather than a lerp.
+const SPRING_STIFFNESS = 55;
+const SPRING_DAMPING = 9.5;
 
 // Custom shader for trail particles that expand over their lifetime
 const trailVertexShader = `
@@ -44,7 +57,47 @@ const trailFragmentShader = `
   }
 `;
 
-function Particles() {
+// R3F's own ResizeObserver-driven auto-sizing can get stuck on its very
+// first (sometimes 0×0, pre-layout) measurement and never re-fire even once
+// the fixed-position container settles to its real size — the canvas is
+// then left rendering at the default 300×150 buffer forever. Belt-and-
+// suspenders: drive the renderer/camera size ourselves from the actual
+// window dimensions, independent of whatever R3F's own observer is doing.
+function ForceViewportSize() {
+  const { gl, camera, size } = useThree();
+
+  useEffect(() => {
+    const resize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      gl.setSize(w, h);
+      if ('aspect' in camera) {
+        (camera as THREE.PerspectiveCamera).aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gl, camera]);
+
+  // Also re-sync whenever R3F's own tracked size changes (covers the cases
+  // where its observer does work correctly, so we stay in lockstep with it
+  // rather than fighting it).
+  useEffect(() => {
+    if (size.width > 0 && size.height > 0) {
+      gl.setSize(size.width, size.height);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size.width, size.height]);
+
+  return null;
+}
+
+function Particles({ subtle = false }: ParticleFieldProps) {
+  const particleCount = subtle ? Math.round(PARTICLE_COUNT / 2) : PARTICLE_COUNT;
+  const trailCount = subtle ? Math.round(TRAIL_COUNT / 2) : TRAIL_COUNT;
   const meshRef = useRef<THREE.Points>(null);
   const trailRef = useRef<THREE.Points>(null);
   const mouseRef = useRef({ x: 0, y: 0, active: false, prevX: 0, prevY: 0, speed: 0 });
@@ -59,12 +112,12 @@ function Particles() {
 
   // Base particles
   const [positions, basePositions, colors, sizes] = useMemo(() => {
-    const pos = new Float32Array(PARTICLE_COUNT * 3);
-    const base = new Float32Array(PARTICLE_COUNT * 3);
-    const col = new Float32Array(PARTICLE_COUNT * 3);
-    const siz = new Float32Array(PARTICLE_COUNT);
+    const pos = new Float32Array(particleCount * 3);
+    const base = new Float32Array(particleCount * 3);
+    const col = new Float32Array(particleCount * 3);
+    const siz = new Float32Array(particleCount);
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    for (let i = 0; i < particleCount; i++) {
       const x = (Math.random() - 0.5) * 20;
       const y = (Math.random() - 0.5) * 14;
       const z = (Math.random() - 0.5) * 8;
@@ -91,12 +144,12 @@ function Particles() {
 
   // Trail particles with custom attributes for expanding steam effect
   const [trailPositions, trailColors, trailSizes, trailAges] = useMemo(() => {
-    const pos = new Float32Array(TRAIL_COUNT * 3);
-    const col = new Float32Array(TRAIL_COUNT * 3);
-    const siz = new Float32Array(TRAIL_COUNT);
-    const ages = new Float32Array(TRAIL_COUNT);
+    const pos = new Float32Array(trailCount * 3);
+    const col = new Float32Array(trailCount * 3);
+    const siz = new Float32Array(trailCount);
+    const ages = new Float32Array(trailCount);
 
-    for (let i = 0; i < TRAIL_COUNT; i++) {
+    for (let i = 0; i < trailCount; i++) {
       pos[i * 3] = 0;
       pos[i * 3 + 1] = 0;
       pos[i * 3 + 2] = -100;
@@ -107,9 +160,11 @@ function Particles() {
     return [pos, col, siz, ages];
   }, []);
 
-  const trailAgesRef = useRef(new Float32Array(TRAIL_COUNT).fill(999));
+  const trailAgesRef = useRef(new Float32Array(trailCount).fill(999));
   // Store velocity per trail particle for organic drift
-  const trailVelocitiesRef = useRef(new Float32Array(TRAIL_COUNT * 3).fill(0));
+  const trailVelocitiesRef = useRef(new Float32Array(trailCount * 3).fill(0));
+  // Per-star velocity for the spring-based settle (follow-through/overshoot)
+  const starVelocitiesRef = useRef(new Float32Array(particleCount * 3).fill(0));
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (e.pointerType && e.pointerType !== 'mouse') return;
@@ -179,7 +234,7 @@ function Particles() {
       if (mouseSpeed > 0.004) {
         const spawnCount = Math.min(Math.floor(mouseSpeed * 30) + 1, 5);
         for (let s = 0; s < spawnCount; s++) {
-          const idx = trailIndexRef.current % TRAIL_COUNT;
+          const idx = trailIndexRef.current % trailCount;
           const t = s / spawnCount;
           // Interpolate between previous and current mouse pos for smooth trail
           const spawnX = THREE.MathUtils.lerp(mouseRef.current.prevX, mouseRef.current.x, t) * viewport.width * 0.5;
@@ -218,7 +273,7 @@ function Particles() {
       if (scrollAbs > 2) {
         const scrollSpawn = Math.min(Math.floor(scrollAbs * 0.18), 4);
         for (let s = 0; s < scrollSpawn; s++) {
-          const idx = trailIndexRef.current % TRAIL_COUNT;
+          const idx = trailIndexRef.current % trailCount;
           // Spawn across visible area
           trailPosArray[idx * 3] = (Math.random() - 0.5) * viewport.width;
           trailPosArray[idx * 3 + 1] = (Math.random() - 0.5) * viewport.height;
@@ -245,7 +300,7 @@ function Particles() {
       }
 
       // Update trail particles — expand + drift like dissipating steam
-      for (let i = 0; i < TRAIL_COUNT; i++) {
+      for (let i = 0; i < trailCount; i++) {
         ages[i] += delta * 0.8;
         const life = ages[i];
         trailAgeArray[i] = life;
@@ -271,7 +326,7 @@ function Particles() {
     }
 
     // === BASE PARTICLES ===
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    for (let i = 0; i < particleCount; i++) {
       const ix = i * 3;
       const bx = basePositions[ix];
       const by = basePositions[ix + 1];
@@ -302,10 +357,26 @@ function Particles() {
         posArray[ix] = THREE.MathUtils.lerp(posArray[ix], targetX, delta * 0.85);
         posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], targetY, delta * 0.85);
         posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], targetZ, delta * 0.85);
+        // Zeroed each active frame — once activity drops, the spring below
+        // finds its kinetic energy from residual displacement alone, so the
+        // release reads as one clean ease-out-with-overshoot, not a fight
+        // between two different motion models.
+        const vel = starVelocitiesRef.current;
+        vel[ix] = 0; vel[ix + 1] = 0; vel[ix + 2] = 0;
       } else {
-        posArray[ix] = THREE.MathUtils.lerp(posArray[ix], bx, delta * 1.4);
-        posArray[ix + 1] = THREE.MathUtils.lerp(posArray[ix + 1], by, delta * 1.4);
-        posArray[ix + 2] = THREE.MathUtils.lerp(posArray[ix + 2], bz, delta * 1.4);
+        // Settle: a lightly under-damped spring pulls the star home, with a
+        // brief overshoot and a couple of decaying oscillations before it
+        // truly stops — Disney's ease + follow-through, not a flat lerp.
+        const vel = starVelocitiesRef.current;
+        const dxs = posArray[ix] - bx;
+        const dys = posArray[ix + 1] - by;
+        const dzs = posArray[ix + 2] - bz;
+        vel[ix] += (-SPRING_STIFFNESS * dxs - SPRING_DAMPING * vel[ix]) * delta;
+        vel[ix + 1] += (-SPRING_STIFFNESS * dys - SPRING_DAMPING * vel[ix + 1]) * delta;
+        vel[ix + 2] += (-SPRING_STIFFNESS * dzs - SPRING_DAMPING * vel[ix + 2]) * delta;
+        posArray[ix] += vel[ix] * delta;
+        posArray[ix + 1] += vel[ix + 1] * delta;
+        posArray[ix + 2] += vel[ix + 2] * delta;
       }
     }
 
@@ -328,27 +399,27 @@ function Particles() {
     <>
       <points ref={meshRef}>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" count={PARTICLE_COUNT} array={positions} itemSize={3} />
-          <bufferAttribute attach="attributes-color" count={PARTICLE_COUNT} array={colors} itemSize={3} />
-          <bufferAttribute attach="attributes-size" count={PARTICLE_COUNT} array={sizes} itemSize={1} />
+          <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} />
+          <bufferAttribute attach="attributes-color" count={particleCount} array={colors} itemSize={3} />
+          <bufferAttribute attach="attributes-size" count={particleCount} array={sizes} itemSize={1} />
         </bufferGeometry>
-        <pointsMaterial size={0.018} vertexColors transparent opacity={0.42} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+        <pointsMaterial size={0.026} vertexColors transparent opacity={subtle ? 0.31 : 0.62} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
 
       {/* Trail particles — dreamy expanding steam */}
       <points ref={trailRef} material={trailMaterial}>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" count={TRAIL_COUNT} array={trailPositions} itemSize={3} />
-          <bufferAttribute attach="attributes-color" count={TRAIL_COUNT} array={trailColors} itemSize={3} />
-          <bufferAttribute attach="attributes-aSize" count={TRAIL_COUNT} array={trailSizes} itemSize={1} />
-          <bufferAttribute attach="attributes-aAge" count={TRAIL_COUNT} array={trailAges} itemSize={1} />
+          <bufferAttribute attach="attributes-position" count={trailCount} array={trailPositions} itemSize={3} />
+          <bufferAttribute attach="attributes-color" count={trailCount} array={trailColors} itemSize={3} />
+          <bufferAttribute attach="attributes-aSize" count={trailCount} array={trailSizes} itemSize={1} />
+          <bufferAttribute attach="attributes-aAge" count={trailCount} array={trailAges} itemSize={1} />
         </bufferGeometry>
       </points>
     </>
   );
 }
 
-export default function ParticleField() {
+export default function ParticleField({ subtle = false }: ParticleFieldProps) {
   return (
     <div className="fixed inset-0 z-0" style={{ filter: 'blur(0.5px)' }}>
       <Canvas
@@ -357,12 +428,13 @@ export default function ParticleField() {
         style={{ background: 'transparent' }}
         dpr={[1, 1.5]}
       >
-        <Particles />
+        <ForceViewportSize />
+        <Particles subtle={subtle} />
         <EffectComposer>
           <Bloom
-            intensity={1.25}
-            luminanceThreshold={0.05}
-            luminanceSmoothing={0.95}
+            intensity={subtle ? 1.1 : 2.2}
+            luminanceThreshold={0.02}
+            luminanceSmoothing={0.9}
             mipmapBlur
           />
         </EffectComposer>

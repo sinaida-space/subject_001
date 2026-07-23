@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projectById } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
@@ -8,6 +8,9 @@ import SignalChain from '@/components/SignalChain';
 import NotFound from '@/pages/NotFound';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useRenderMode } from '@/hooks/useRenderMode';
+
+const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 const SITE_NAME = 'sin.ai.da';
 
@@ -42,6 +45,7 @@ export default function WorkCase() {
   const project = projectById(slug ?? '');
   const cs = project?.caseStudy;
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const { mode } = useRenderMode();
 
   const title = project ? `${project.title} — Case Study | ${SITE_NAME}` : '';
   const description = project
@@ -55,181 +59,208 @@ export default function WorkCase() {
   const intro = cs.intro ?? (project.blurb ? [project.blurb] : []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      {/* Same starfield as the homepage, dialed way down — a subtle sense of
+          continuity behind a page that's mostly here to be read. */}
+      {mode === 'full' && (
+        <Suspense fallback={null}>
+          <ParticleField subtle />
+        </Suspense>
+      )}
       <Header />
-      <div className="container mx-auto max-w-3xl px-6 pt-40 pb-24 md:pt-32 lg:pt-36">
-        <Link
-          to="/"
-          className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
-        >
-          ← Back
-        </Link>
+      <div className="container relative z-10 mx-auto max-w-6xl px-6 pt-40 pb-24 md:pt-32 lg:pt-36">
+        <div className="grid grid-cols-1 gap-x-12 gap-y-10 md:grid-cols-12">
+          {/* ── Identity — back link, kind badge, title. Left column only; the
+              empty spacer beside it completes row 1, so row 2 (image + text)
+              starts level across both columns — that's what lines the intro
+              text up with the top of the hero image instead of the title. ── */}
+          <div className="md:col-span-5">
+            <Link
+              to="/"
+              className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
+            >
+              ← Back
+            </Link>
 
-        {/* ── Header / context ── */}
-        <div className="flex flex-wrap items-center gap-3">
-          <span
-            style={{
-              border: '1px solid #CC1414',
-              padding: '3px 8px',
-              fontFamily: 'monospace',
-              fontSize: '10px',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              color: '#CC1414',
-            }}
-          >
-            {cs.kindLabel}
-          </span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
-            {project.tagline}
-          </span>
-        </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span
+                style={{
+                  border: '1px solid #ff3333',
+                  padding: '3px 8px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10px',
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: '#ff3333',
+                }}
+              >
+                {cs.kindLabel}
+              </span>
+              <span className="font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/65">
+                {project.tagline}
+              </span>
+            </div>
 
-        <h1 className="mt-4 font-display text-7xl font-light text-foreground md:text-8xl">
-          {project.title}
-        </h1>
-
-        {/* ── The brief / narrative intro ── */}
-        {intro.map((p) => (
-          <p
-            key={p.slice(0, 32)}
-            className="mt-6 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/80"
-          >
-            {p}
-          </p>
-        ))}
-
-        {/* ── Hero still — pointer-driven ripple on desktop, static on touch ── */}
-        {project.image && (
-          <div className="relative mt-10 w-full" style={{ aspectRatio: '16 / 9' }}>
-            <DisplacementImage
-              src={project.image}
-              alt={project.title}
-              onLoad={() => setHeroLoaded(true)}
-              style={{ position: 'absolute', inset: 0, height: '100%', width: '100%' }}
-              imgClassName="h-full w-full object-cover"
-            />
-            <HeartbeatPlaceholder loaded={heroLoaded} width="100%" height="100%" className="absolute inset-0" />
+            <h1 className="mt-4 font-display text-5xl uppercase font-light leading-[0.95] text-foreground md:text-6xl">
+              {project.title}
+            </h1>
           </div>
-        )}
+          <div className="hidden md:block md:col-span-7" aria-hidden="true" />
 
-        {/* ── Prominent case action (e.g. enter the live web experience) ── */}
-        {cs.heroCta && (
-          <a
-            href={cs.heroCta.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-block font-mono text-[13px] uppercase tracking-[0.15em] text-foreground transition-colors hover:text-accent"
-            style={{ border: '1px solid #CC1414', padding: '12px 24px' }}
-          >
-            {cs.heroCta.label} ↗
-          </a>
-        )}
-
-        {/* ── Big-number stat card ── */}
-        {cs.stat && (
-          <div
-            className="mt-8 flex flex-col gap-4 sm:flex-row"
-            style={{ border: '1px solid #CC1414', background: 'rgba(204,20,20,0.05)', padding: '20px' }}
-          >
-            <div className="font-display text-5xl leading-none text-primary">{cs.stat.value}</div>
-            <div>
-              <div className="font-mono text-[13px] uppercase tracking-[0.12em] text-white">
-                {cs.stat.heading}
+          {/* ── LEFT — preview media, pinned while the right column scrolls ── */}
+          {/* Outer cell is left un-sized (default grid stretch) so it spans
+              the full row height, matching the right column — that height is
+              exactly what gives the inner sticky div room to pin instead of
+              scrolling in lockstep with it. */}
+          <div className="md:col-span-5">
+          <div className="md:sticky md:top-[15vh]">
+            {/* ── Hero still — pointer-driven ripple on desktop, static on touch ── */}
+            {project.image && (
+              <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+                <DisplacementImage
+                  src={project.image}
+                  alt={project.title}
+                  onLoad={() => setHeroLoaded(true)}
+                  style={{ position: 'absolute', inset: 0, height: '100%', width: '100%' }}
+                  imgClassName="h-full w-full object-cover"
+                />
+                <HeartbeatPlaceholder loaded={heroLoaded} width="100%" height="100%" className="absolute inset-0" />
               </div>
-              <p className="mt-2 max-w-[55ch] font-mono text-[13px] leading-relaxed text-foreground/55">
-                {cs.stat.body}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* ── Tech stack ── */}
-        {project.tools && (
-          <div className="mt-8">
-            <div className="clinical-label mb-3 text-foreground/45">Tech stack</div>
-            <div className="flex flex-wrap gap-2">
-              {project.tools.map((t) => (
-                <span
-                  key={t}
-                  style={{
-                    border: '1px solid #1a1a1a',
-                    padding: '4px 8px',
-                    fontFamily: 'monospace',
-                    fontSize: '10px',
-                    letterSpacing: '0.15em',
-                    color: 'hsl(var(--foreground) / 0.55)',
-                  }}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Labeled media sections (lazy YouTube embeds) ── */}
-        {cs.media?.map((m) => (
-          <div key={m.video} className="mt-10">
-            <div className="clinical-label mb-3 text-foreground/45">{m.label}</div>
-            <VideoEmbed id={m.video} title={`${project.title} — ${m.label}`} />
-            {m.caption && (
-              <p className="mt-2 max-w-[62ch] font-mono text-[12px] leading-relaxed text-foreground/55">
-                {m.caption}
-              </p>
             )}
-          </div>
-        ))}
 
-        {/* ── Method — animated signal-chain diagram (CSS-only) ── */}
-        {cs.method && (
-          <div className="mt-10">
-            <div className="clinical-label mb-3 text-foreground/45">Method</div>
-            <SignalChain {...cs.method} />
-          </div>
-        )}
-
-        {/* ── Credits ── */}
-        {cs.credits && (
-          <div className="mt-10">
-            <div className="clinical-label mb-3 text-foreground/45">Credits</div>
-            {cs.credits.map((c) => (
-              <p key={c} className="font-mono text-[12px] leading-relaxed text-foreground/60">
-                {c}
-              </p>
-            ))}
-          </div>
-        )}
-
-        {/* ── Case links ── */}
-        {cs.links && cs.links.length > 0 && (
-          <div className="mt-8 flex flex-wrap gap-4">
-            {cs.links.map((l) => (
+            {/* ── Prominent case action (e.g. enter the live web experience) ── */}
+            {cs.heroCta && (
               <a
-                key={l.url}
-                href={l.url}
+                href={cs.heroCta.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                className="mt-6 inline-block font-mono text-[13px] uppercase tracking-[0.15em] text-foreground transition-colors hover:text-accent"
+                style={{ border: '1px solid #ff3333', padding: '12px 24px' }}
               >
-                {l.label} ↗
+                {cs.heroCta.label} ↗
               </a>
-            ))}
-          </div>
-        )}
+            )}
 
-        {/* ── Conversion block ── */}
-        <div className="mt-14" style={{ borderTop: '1px solid #1a1a1a', paddingTop: '32px' }}>
-          <h2 className="font-display text-2xl font-light text-foreground">
-            {cs.order.heading}
-          </h2>
-          <p className="mt-4 max-w-[70ch] font-mono text-[15px] leading-relaxed text-foreground/80">
-            {cs.order.body}{' '}
-            <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
-              Get in touch
-            </a>{' '}
-            {cs.order.suffix}
-          </p>
+            {/* ── Tech stack ── */}
+            {project.tools && (
+              <div className="mt-8">
+                <div className="clinical-label mb-3 text-foreground/65">Tech stack</div>
+                <div className="flex flex-wrap gap-2">
+                  {project.tools.map((t) => (
+                    <span
+                      key={t}
+                      style={{
+                        border: '1px solid #1a1a1a',
+                        padding: '4px 8px',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '10px',
+                        letterSpacing: '0.15em',
+                        color: 'hsl(var(--foreground) / 0.55)',
+                      }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          </div>
+
+          {/* ── RIGHT — everything that reads, scrolls in the normal flow ── */}
+          <div className="md:col-span-7">
+            {/* ── The brief / narrative intro ── */}
+            {intro.map((p) => (
+              <p
+                key={p.slice(0, 32)}
+                className="mt-0 max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 first:mt-0 [&:not(:first-child)]:mt-6"
+              >
+                {p}
+              </p>
+            ))}
+
+            {/* ── Big-number stat card ── */}
+            {cs.stat && (
+              <div
+                className="mt-8 flex flex-col gap-4 sm:flex-row"
+                style={{ border: '1px solid #ff3333', background: 'rgba(255,51,51,0.05)', padding: '20px' }}
+              >
+                <div className="font-display text-5xl leading-none text-primary">{cs.stat.value}</div>
+                <div>
+                  <div className="font-mono text-[14px] uppercase tracking-[0.12em] text-white">
+                    {cs.stat.heading}
+                  </div>
+                  <p className="mt-2 max-w-[55ch] font-mono text-[14px] leading-relaxed text-foreground/65">
+                    {cs.stat.body}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* ── Labeled media sections (lazy YouTube embeds) ── */}
+            {cs.media?.map((m) => (
+              <div key={m.video} className="mt-10">
+                <div className="clinical-label mb-3 text-foreground/65">{m.label}</div>
+                <VideoEmbed id={m.video} title={`${project.title} — ${m.label}`} />
+                {m.caption && (
+                  <p className="mt-2 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
+                    {m.caption}
+                  </p>
+                )}
+              </div>
+            ))}
+
+            {/* ── Method — animated signal-chain diagram (CSS-only) ── */}
+            {cs.method && (
+              <div className="mt-10">
+                <div className="clinical-label mb-3 text-foreground/65">Method</div>
+                <SignalChain {...cs.method} />
+              </div>
+            )}
+
+            {/* ── Credits ── */}
+            {cs.credits && (
+              <div className="mt-10">
+                <div className="clinical-label mb-3 text-foreground/65">Credits</div>
+                {cs.credits.map((c) => (
+                  <p key={c} className="font-mono text-[13px] leading-relaxed text-foreground/70">
+                    {c}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            {/* ── Case links ── */}
+            {cs.links && cs.links.length > 0 && (
+              <div className="mt-8 flex flex-wrap gap-4">
+                {cs.links.map((l) => (
+                  <a
+                    key={l.url}
+                    href={l.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                  >
+                    {l.label} ↗
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {/* ── Conversion block ── */}
+            <div className="mt-14" style={{ borderTop: '1px solid #1a1a1a', paddingTop: '32px' }}>
+              <h2 className="font-display text-2xl uppercase font-light text-foreground">
+                {cs.order.heading}
+              </h2>
+              <p className="mt-4 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/85">
+                {cs.order.body}{' '}
+                <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
+                  Get in touch
+                </a>{' '}
+                {cs.order.suffix}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />

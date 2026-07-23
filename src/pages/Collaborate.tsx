@@ -24,8 +24,7 @@ const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, w
 function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
   return (
     <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <div className="text-foreground/50">{`$ load_module --id=${service.code}`}</div>
-      <h3 className="font-mono text-base font-medium mt-2 mb-2 text-foreground">
+      <h3 className="font-mono uppercase text-base font-medium mt-2 mb-2 text-foreground">
         {service.title}
       </h3>
       <p className="font-mono text-[13px] leading-relaxed text-foreground/[0.87]">
@@ -80,7 +79,7 @@ export default function Collaborate() {
         <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 24 }}>
           Collaborate
         </div>
-        <h1 className="font-display text-7xl md:text-8xl font-light mb-4">
+        <h1 className="font-display text-7xl md:text-8xl uppercase font-light mb-4">
           Work with <span className="text-primary font-bold">me</span>
         </h1>
         <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
@@ -183,18 +182,18 @@ export default function Collaborate() {
                 )}
                 <Link
                   to={`/work/${project.id}`}
-                  className="block font-mono mt-2 text-foreground/60 hover:text-accent transition-colors"
+                  className="block font-mono uppercase mt-2 text-foreground/60 hover:text-accent transition-colors"
                   style={{ fontSize: 12 }}
                 >
                   {project.title.split('—')[0].trim()}
                 </Link>
-                <div className="font-mono mt-1 text-foreground/40" style={{ fontSize: 11 }}>
+                <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 11 }}>
                   {project.tagline}
                 </div>
               </div>
             ))}
           </div>
-          <p className="font-mono text-[12px] mb-8 text-foreground/40">
+          <p className="font-mono text-[12px] mb-8 text-foreground/60">
             Click a still for the case study.
           </p>
 

@@ -35,7 +35,7 @@ export default function VHSImage({ src, alt, className = '', aspectRatio = '16/1
       }}
       onMouseEnter={handleMouseEnter}
     >
-      {/* Corner brackets — top-right cyan, bottom-left red */}
+      {/* Corner brackets — red on both corners */}
       <div
         className="absolute top-[-1px] right-[-1px] w-[18px] h-[18px] pointer-events-none z-[2]"
         style={{ borderTop: '2px solid hsl(var(--accent))', borderRight: '2px solid hsl(var(--accent))' }}

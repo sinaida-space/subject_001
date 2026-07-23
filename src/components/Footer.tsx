@@ -91,10 +91,10 @@ export default function Footer() {
         <div className="section-divider mb-8 mt-14" />
 
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <span className="font-mono text-[12px] text-foreground/40">
+          <span className="font-mono text-[12px] text-foreground/60">
             © {new Date().getFullYear()} Sinaida Krivchenko · Prague, CZ
           </span>
-          <span className="font-mono text-[12px] italic text-foreground/40">
+          <span className="font-mono text-[12px] italic text-foreground/60">
             Are we more than the data we leave behind?
           </span>
         </div>

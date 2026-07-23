@@ -86,9 +86,10 @@ const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer
 
 interface Props {
   onActiveProject?: (p: GraphNode['project'] | null) => void;
+  onPointerPosition?: (x: number, y: number) => void;
 }
 
-export default function ConstellationFull({ onActiveProject }: Props) {
+export default function ConstellationFull({ onActiveProject, onPointerPosition }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -265,7 +266,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
   }, []);
 
   const setActive = useCallback(
-    (id: string | null) => {
+    (id: string | null, opts?: { fromList?: boolean }) => {
       if (activeRef.current === id) return;
       activeRef.current = id;
       lastInputRef.current = performance.now();
@@ -276,7 +277,13 @@ export default function ConstellationFull({ onActiveProject }: Props) {
           if (e.a === id || e.b === id) pulsesRef.current.push({ edge: i, t: 0 });
         });
       }
-      onActiveProject?.(node?.kind === 'project' ? node.project ?? null : null);
+      // Cross-highlight from the plain-list rows only needs to light up the
+      // graph's node/edges — the list already renders its own DitherPreview
+      // at the cursor, so firing onActiveProject here too would stack a
+      // second, stale-positioned preview from Constellation on top of it.
+      if (!opts?.fromList) {
+        onActiveProject?.(node?.kind === 'project' ? node.project ?? null : null);
+      }
       start();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -754,7 +761,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
 
     // cross-highlight from lists
     const unsub = constellationBus.subscribe((id) => {
-      setActive(id);
+      setActive(id, { fromList: true });
       const node = id ? nodesRef.current.find((n) => n.id === id) : null;
       if (node) {
         showTooltip(node);
@@ -839,6 +846,7 @@ export default function ConstellationFull({ onActiveProject }: Props) {
       setActive(node ? node.id : null);
       if (node) showTooltip(node);
       else setTooltip(null);
+      onPointerPosition?.(e.clientX, e.clientY);
     }
     canvasRef.current!.style.cursor = hitTest(x, y) ? 'pointer' : 'default';
     start(); // pointer moved → resume the loop (settles & stops when input ceases)

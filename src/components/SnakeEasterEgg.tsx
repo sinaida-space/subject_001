@@ -258,13 +258,13 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#CC1414', letterSpacing: '2px' }}>
             SNAKE.EXE // SCORE: {score}
           </span>
           <button
             onClick={onClose}
             style={{
-              fontFamily: 'monospace', fontSize: '10px', color: '#555',
+              fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#555',
               background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px'
             }}
           >
@@ -287,10 +287,10 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           display: 'flex',
           justifyContent: 'space-between',
         }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#333' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: '#333' }}>
             ↑ ↓ ← → or WASD
           </span>
-          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#333' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: '#333' }}>
             swipe on mobile
           </span>
         </div>
@@ -310,7 +310,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 }
 
 const btnStyle: React.CSSProperties = {
-  fontFamily: 'monospace',
+  fontFamily: 'var(--font-mono)',
   fontSize: '14px',
   color: '#CC1414',
   background: '#0a0a0a',

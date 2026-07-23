@@ -6,12 +6,15 @@ import { PROJECTS, type Project } from './projects';
 
 export type Category = 'tech' | 'direction' | 'strategy' | 'research' | 'analytical';
 
+// A single red→off-white ramp, not a rainbow — categories read by
+// lightness/saturation, matching the site's black-and-red signature instead
+// of the old per-category hue-wheel palette.
 export const CATEGORY_COLORS: Record<Category, string> = {
-  tech: '#00e5ff', // creative technology — cyan
-  direction: '#ff3b52', // creative direction — ECG red
-  strategy: '#ff9933', // strategy & systems — amber
-  research: '#cc66ff', // research interests — violet
-  analytical: '#00ff88', // technical & analytical — green
+  direction: '#fa0000', // creative direction — full ECG red, the core signature
+  tech: '#ff5c5c', // creative technology — bright red
+  strategy: '#c9433f', // strategy & systems — muted red
+  analytical: '#b38080', // technical & analytical — dusty red-grey
+  research: '#f2efe9', // research interests — off-white
 };
 
 export const CATEGORY_LABEL: Record<Category, string> = {

@@ -1,9 +1,9 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
@@ -26,6 +26,18 @@ const SiteCursor = () => {
   return mode === 'full' ? <CustomCursor /> : null;
 };
 
+// A route change (e.g. clicking "View full case study") should land at the
+// top of the new page — the browser otherwise keeps whatever scroll offset
+// the previous page was at. Only fires on pathname change, not on in-page
+// hash navigation (Index handles its own #section scrolling).
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <RenderModeProvider>
@@ -33,6 +45,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter basename="/">
+          <ScrollToTop />
           <SiteCursor />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
