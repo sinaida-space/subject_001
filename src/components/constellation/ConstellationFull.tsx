@@ -522,25 +522,25 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // Projects are the product — flagships read first, background works
         // stay legible but clearly recede.
         const bg = !!n.project?.background;
-        fs = isActive ? 14 : isNeighbor ? 12 : n.accent ? 13 : bg ? 9 : 11;
+        fs = isActive ? 16 : isNeighbor ? 14 : n.accent ? 15 : bg ? 11 : 13;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.85 : n.accent ? 0.35 : 0.16;
+          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.45 : 0.22;
         } else {
           // Hero labels recede toward the regular baseline as heroFadeRef fades,
           // so the whole "first highlight" (edges + label brightness) recedes
           // together rather than just the connecting lines dimming alone.
-          alpha = n.accent ? 0.72 + 0.18 * heroFadeRef.current : bg ? 0.3 : 0.55;
+          alpha = n.accent ? 0.8 + 0.18 * heroFadeRef.current : bg ? 0.45 : 0.72;
         }
       } else {
         // Skills tier below projects: accent skills (the signals a producer
         // scans for) hold a bright baseline; the rest are quiet texture until
         // hover pulls their cluster forward.
-        fs = isActive ? 13 : isNeighbor ? 12 : n.accent ? 11.5 : 10;
+        fs = isActive ? 15 : isNeighbor ? 14 : n.accent ? 13.5 : 12;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.35 : 0.12;
+          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.45 : 0.18;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
-          alpha = n.accent ? 0.8 : 0.38;
+          alpha = n.accent ? 0.85 : 0.55;
           useCategoryColor = false; // neutral warm-gray at rest
         }
       }

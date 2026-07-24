@@ -81,13 +81,13 @@ export default function ConstellationLite({ onActiveProject }: Props) {
             ? isActive
               ? 1
               : isNeighbor
-                ? 0.85
+                ? 0.9
                 : n.kind === 'skill'
-                  ? (n.accent ? 0.55 : 0.12)
-                  : (n.accent ? 0.85 : 0)
+                  ? (n.accent ? 0.65 : 0.2)
+                  : (n.accent ? 0.9 : 0)
             : n.kind === 'skill'
-              ? (n.accent ? 0.9 : 0.68)
-              : (n.accent ? 0.85 : 0);
+              ? (n.accent ? 0.95 : 0.78)
+              : (n.accent ? 0.9 : 0);
           return (
             <g
               key={n.id}
@@ -126,7 +126,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                 <text
                   x={n.x + r + 7}
                   y={n.y + 4}
-                  fontSize={n.kind === 'project' ? 13 : 11}
+                  fontSize={n.kind === 'project' ? 15 : 13}
                   fontWeight={n.kind === 'project' ? 500 : 400}
                   fontFamily="'VT323', monospace"
                   fill={n.kind === 'project' ? '#f2efe9' : n.color}
