@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { resetStorageNotice } from './CookieBanner';
 
 export default function Footer() {
   const [snakeOpen, setSnakeOpen] = useState(false);
@@ -75,6 +76,13 @@ export default function Footer() {
                 <a href="/privacy" className="block font-mono uppercase text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Privacy Policy
                 </a>
+                <button
+                  type="button"
+                  onClick={resetStorageNotice}
+                  className="block w-full text-left bg-transparent border-0 p-0 font-mono uppercase text-[14px] text-foreground/60 transition-colors hover:text-foreground cursor-none"
+                >
+                  Cookie Notice
+                </button>
                 <button
                   type="button"
                   onClick={() => toggle()}

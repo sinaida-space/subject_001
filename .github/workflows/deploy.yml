@@ -23,24 +23,23 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # `npm run build` already materializes every SPA route as a real static
+      # page (scripts/prerender-routes.mjs, chained after `vite build`): it
+      # clones dist/index.html per route and rewrites that route's <title>,
+      # description, canonical, and og:*/twitter:* tags, so search engines and
+      # social crawlers (which don't execute JS) see each page's own metadata
+      # instead of the homepage's. Route data for /work/<slug>/ comes straight
+      # from src/data/projects.ts, so a new case study is picked up
+      # automatically — nothing to update here when one is added.
       - name: Build
         run: npm run build
 
+      # 404.html still needs to exist separately for GitHub Pages' SPA
+      # fallback (serves this for any path with no matching static file), and
+      # it must keep returning a real HTTP 404 status, unlike the routes
+      # prerendered above which return 200.
       - name: Copy index.html to 404.html for SPA routing
         run: cp dist/index.html dist/404.html
-
-      # Real 200-status pages for every route: the 404.html fallback renders
-      # fine in browsers but serves an HTTP 404, so crawlers and link previews
-      # treat deep links as nonexistent. booking/press kept for old shared
-      # links — the SPA redirects them to /collaborate. work/<id> routes:
-      # every project with a caseStudy in src/data/projects.ts — add new ids
-      # here when a new case study is added.
-      - name: Materialize SPA routes as static pages
-        run: |
-          for route in collaborate privacy booking press work/redkie-ptitsy work/the-eyes-chico work/aether-currents; do
-            mkdir -p "dist/$route"
-            cp dist/index.html "dist/$route/index.html"
-          done
 
       - uses: actions/upload-pages-artifact@v3
         with:

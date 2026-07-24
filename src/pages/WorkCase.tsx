@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projectById } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
@@ -9,34 +9,9 @@ import NotFound from '@/pages/NotFound';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
-
-const SITE_NAME = 'sin.ai.da';
-
-// Sets document.title + the meta description tag at runtime (client-side nav).
-// Vanilla DOM, no new dependency — the static <title>/<meta> in index.html
-// remain the fallback for crawlers that don't execute JS.
-function usePageMeta(title: string, description: string) {
-  useEffect(() => {
-    const prevTitle = document.title;
-    document.title = title;
-
-    let meta = document.querySelector('meta[name="description"]');
-    const prevContent = meta?.getAttribute('content') ?? null;
-    if (!meta) {
-      meta = document.createElement('meta');
-      meta.setAttribute('name', 'description');
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute('content', description);
-
-    return () => {
-      document.title = prevTitle;
-      if (meta && prevContent !== null) meta.setAttribute('content', prevContent);
-    };
-  }, [title, description]);
-}
 
 // Case pages are fully data-driven from `project.caseStudy` (src/data/projects.ts).
 // Projects without a caseStudy have no case page — the route 404s.
@@ -47,12 +22,13 @@ export default function WorkCase() {
   const [heroLoaded, setHeroLoaded] = useState(false);
   const { mode } = useRenderMode();
 
-  const title = project ? `${project.title} — Case Study | ${SITE_NAME}` : '';
+  const title = project ? `${project.title} — Case Study | ${SITE_NAME}` : document.title;
   const description = project
     ? `${project.tagline}. ${project.blurb ?? ''}`.slice(0, 300)
     : '';
+  const canonical = project ? `https://sinaida.eu/work/${project.id}/` : undefined;
 
-  usePageMeta(title || document.title, description || '');
+  usePageMeta({ title, description, canonical });
 
   if (!project || !cs) return <NotFound />;
 
