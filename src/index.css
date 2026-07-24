@@ -401,6 +401,80 @@
     );
   }
 
+  /* Cookie notice surface. The bar previously used a flat --card fill, which
+     sat at almost the same value as the page and read as part of the layout.
+     Now it's a translucent pane over a blurred backdrop, lit from its top edge
+     so it reads as a separate plane floating above the page. Static: the glow
+     is a gradient, never an animation. */
+  .notice-surface {
+    position: relative;
+    /* 0.86 rather than something more see-through: whatever shows through is
+       page behind live text, and the starfield's bright pixels raise the
+       composited background under it. At 0.86 the backdrop can shift the
+       effective background by only a few points, which keeps the contrast
+       ratios below predictable instead of dependent on what scrolled past. */
+    background: hsl(var(--card) / 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.25);
+    backdrop-filter: blur(14px) saturate(1.25);
+    border-top: 1px solid hsl(var(--accent) / 0.55);
+    /* Tight. The hairline carries the accent; the shadow only softens the seam
+       so the edge doesn't look cut with scissors. */
+    box-shadow:
+      0 -1px 4px -1px hsl(var(--accent) / 0.30),
+      0 -4px 10px -6px hsl(var(--accent) / 0.16);
+  }
+
+  /* --accent (#FA0000) measures 4.65:1 on the opaque card, which leaves no
+     room once a translucent surface lifts the background. #FF3333 is already
+     the site's brighter red (header Contact) and holds ~5:1 even against a
+     noticeably lit backdrop. */
+  .notice-surface a {
+    color: #ff3333;
+  }
+
+  .notice-surface a:hover {
+    color: #ff6b6b;
+  }
+
+  /* A short light leak off the top edge. Kept to ~16px: the point is to hint
+     that the bar is lit from its own seam, not to wash the page above it. */
+  .notice-surface::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 16px;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      hsl(var(--accent) / 0.10),
+      transparent 85%
+    );
+  }
+
+  /* Lite mode inverts to a white page, where a red bloom would be wrong and a
+     backdrop blur costs GPU on exactly the devices lite exists to protect.
+     --accent resolves to near-black here, so this stays a plain soft shadow. */
+  html[data-mode="lite"] .notice-surface {
+    background: hsl(var(--card) / 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-top: 1px solid hsl(var(--border));
+    box-shadow: 0 -6px 22px -10px hsl(var(--accent) / 0.28);
+  }
+
+  html[data-mode="lite"] .notice-surface::before {
+    display: none;
+  }
+
+  /* Lite is a white page, where #ff3333 would fail. Back to the token, which
+     resolves near-black here and measured 18:1 on white. */
+  html[data-mode="lite"] .notice-surface a,
+  html[data-mode="lite"] .notice-surface a:hover {
+    color: hsl(var(--accent));
+  }
+
   /* Hover glitch-bloom effect — desktop only, on elements without existing hover */
   @media (hover: hover) and (min-width: 1025px) {
     main h1,
