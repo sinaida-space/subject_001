@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 import { SERVICES } from '@/data/services';
 import { FEATURED_WORKS } from '@/data/projects';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const PROCESS_STEPS = [
   { code: '01', label: 'Brief', detail: 'You send the occasion, space, and constraints.' },
@@ -51,20 +51,12 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
 const SEPARATOR = '────────────────────────────────────────────';
 
 export default function Collaborate() {
-  useEffect(() => {
-    document.title = 'Work with me — Sinaida Krivchenko';
-    const meta = document.querySelector('meta[name="description"]');
-    const content =
-      'Work with Sinaida Krivchenko: live audio-reactive visuals for festivals and concerts, responsive scenography capability for theater and dance, immersive installations. Services, process, press kit, and contact.';
-    if (meta) {
-      meta.setAttribute('content', content);
-    } else {
-      const m = document.createElement('meta');
-      m.setAttribute('name', 'description');
-      m.setAttribute('content', content);
-      document.head.appendChild(m);
-    }
-  }, []);
+  usePageMeta({
+    title: 'Work with me — Sinaida Krivchenko',
+    description:
+      'She takes commissions for stage and projection design, immersive installations, and generative AI visual direction, based in Prague and touring for installs.',
+    canonical: 'https://sinaida.eu/collaborate/',
+  });
 
   const stills = FEATURED_WORKS.slice(0, 3);
 

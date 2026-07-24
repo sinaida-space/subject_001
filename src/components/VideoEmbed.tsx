@@ -10,8 +10,15 @@ interface VideoEmbedProps {
   maxHeightVh?: number;
 }
 
-// Lazy YouTube facade — a poster + play button; the heavy iframe only mounts
+// Lazy YouTube facade: a poster + play button, with the iframe mounting only
 // after a click. Keeps LCP fast and CLS ≈ 0.
+//
+// The poster is served from /public/video-posters/, self-hosted rather than
+// pulled from img.youtube.com. The old thumbnail URL sent every visitor's IP
+// to Google on page load, before any consent and before any intent to watch,
+// which defeated the point of the facade. Google is now contacted only once
+// the visitor actually presses play. To add a video, drop its
+// hqdefault.jpg into that folder named <videoId>.jpg.
 export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) {
   const [playing, setPlaying] = useState(false);
   return (
@@ -40,10 +47,13 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           aria-label={`Play ${title}`}
         >
           <img
-            src={`https://img.youtube.com/vi/${id}/hqdefault.jpg`}
+            src={`/video-posters/${id}.jpg`}
             alt=""
+            width={480}
+            height={360}
             className="absolute inset-0 h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-90"
             loading="lazy"
+            decoding="async"
           />
           <span
             className="relative flex h-14 w-14 items-center justify-center rounded-full border border-primary/70 bg-black/50 backdrop-blur-sm transition-transform group-hover:scale-110"
