@@ -55,7 +55,7 @@ const Index = () => {
 
       <Header />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         {/* WHY — who she is, human first */}
         <HeroSection />
         <AboutSection />

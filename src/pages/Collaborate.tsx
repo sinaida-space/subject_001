@@ -71,7 +71,7 @@ export default function Collaborate() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-6 max-w-4xl pt-40 pb-24 md:pt-32 lg:pt-36">
+      <main id="main-content" tabIndex={-1} className="container mx-auto px-6 max-w-4xl pt-40 pb-24 md:pt-32 lg:pt-36">
         <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
           ← Back
         </a>
@@ -92,7 +92,7 @@ export default function Collaborate() {
 
         {/* Services */}
         <section className="mb-20">
-          <div className="clinical-label text-primary-legible mb-6">Services</div>
+          <h2 className="clinical-label text-primary-legible mb-6">Services</h2>
           <div className="space-y-2">
             {SERVICES.map((service, i) => (
               <div key={service.code}>
@@ -109,7 +109,7 @@ export default function Collaborate() {
 
         {/* Process */}
         <section className="mb-20">
-          <div className="clinical-label text-primary-legible mb-3">Process</div>
+          <h2 className="clinical-label text-primary-legible mb-3">Process</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
             Structured the way I ran technical projects for years before this — brief, concept,
             build, rehearsal, show. Nothing invented for the website.
@@ -117,7 +117,7 @@ export default function Collaborate() {
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (
               <div key={step.code} className="flex-1 font-mono">
-                <div className="text-primary-legible" style={{ fontSize: 12 }}>{step.code}</div>
+                <div className="text-primary-legible" style={{ fontSize: 16 }}>{step.code}</div>
                 <div className="text-base font-medium mt-1 mb-1 text-foreground">
                   {step.label}
                 </div>
@@ -136,7 +136,7 @@ export default function Collaborate() {
 
         {/* Practicalities */}
         <section className="mb-20">
-          <div className="clinical-label text-primary-legible mb-6">Practicalities</div>
+          <h2 className="clinical-label text-primary-legible mb-6">Practicalities</h2>
           <div className="font-mono text-[13px] leading-relaxed space-y-4 text-foreground/75">
             <p>
               <span className="text-foreground">Travel — </span>
@@ -158,7 +158,7 @@ export default function Collaborate() {
 
         {/* Press kit */}
         <section className="mb-20">
-          <div className="clinical-label text-primary-legible mb-3">Press kit</div>
+          <h2 className="clinical-label text-primary-legible mb-3">Press kit</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
             For programmers, promoters, and journalists — boilerplate and stills, ready to paste.
           </p>
@@ -183,11 +183,11 @@ export default function Collaborate() {
                 <Link
                   to={`/work/${project.id}`}
                   className="block font-mono uppercase mt-2 text-foreground/60 hover:text-accent transition-colors"
-                  style={{ fontSize: 12 }}
+                  style={{ fontSize: 16 }}
                 >
                   {project.title.split('—')[0].trim()}
                 </Link>
-                <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 11 }}>
+                <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 16 }}>
                   {project.tagline}
                 </div>
               </div>
@@ -209,7 +209,7 @@ export default function Collaborate() {
 
         {/* Contact */}
         <section>
-          <div className="clinical-label text-primary-legible mb-6">Contact</div>
+          <h2 className="clinical-label text-primary-legible mb-6">Contact</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-4 text-foreground/75">
             Send the occasion, space, and timeline — a reply follows with next steps.
           </p>
@@ -218,7 +218,7 @@ export default function Collaborate() {
             className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
           />
         </section>
-      </div>
+      </main>
       <Footer />
     </div>
   );

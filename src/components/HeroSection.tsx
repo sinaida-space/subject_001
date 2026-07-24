@@ -87,7 +87,7 @@ export default function HeroSection() {
                   style={{
                     border: '1px solid hsl(var(--foreground) / 0.2)',
                     padding: '6px 12px',
-                    fontSize: 13,
+                    fontSize: 16,
                     letterSpacing: '0.1em',
                     color: 'hsl(var(--foreground) / 0.7)',
                     background: 'transparent',

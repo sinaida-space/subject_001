@@ -180,6 +180,8 @@ export default function NotFound() {
 
   return (
     <div
+      id="main-content"
+      tabIndex={-1}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       style={{ background: 'hsl(280 33% 3%)' }}
     >
@@ -227,7 +229,7 @@ export default function NotFound() {
 
         <div
           className="font-mono text-left w-full mb-10 space-y-1"
-          style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: '0.75rem' }}
+          style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: '1rem' }}
         >
           <div>{line1.displayed}{!line1.done && <span className="animate-terminal-cursor">█</span>}</div>
           {line1.done && <div>{line2.displayed}{!line2.done && <span className="animate-terminal-cursor">█</span>}</div>}

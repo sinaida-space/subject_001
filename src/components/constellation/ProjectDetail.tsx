@@ -61,7 +61,7 @@ function Readout({ project }: { project: Project }) {
               border: '1px solid #ff3333',
               padding: '3px 8px',
               fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
+              fontSize: '16px',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               color: '#ff3333',
@@ -87,7 +87,7 @@ function Readout({ project }: { project: Project }) {
             {project.tools.map((t) => (
               <span
                 key={t}
-                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
+                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'var(--font-mono)', fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
               >
                 {t}
               </span>
@@ -143,13 +143,13 @@ function Readout({ project }: { project: Project }) {
             aria-label={`${project.title} — full text`}
           >
             <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#ff3333', letterSpacing: '2px' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: '#ff3333', letterSpacing: '2px' }}>
                 FULL TEXT
               </span>
               <button
                 type="button"
                 onClick={() => setEssayOpen(false)}
-                style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
               >
                 [ CLOSE ]
               </button>
@@ -236,13 +236,13 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-label={`${project.title} — project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#ff3333', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: '#ff3333', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
           >
             [ CLOSE ]
           </button>

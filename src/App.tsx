@@ -45,6 +45,12 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter basename="/">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-background focus:text-primary-legible focus:border focus:border-primary focus:px-4 focus:py-2 focus:font-mono focus:uppercase focus:text-sm focus:tracking-widest"
+          >
+            Skip to content
+          </a>
           <ScrollToTop />
           <SiteCursor />
           <Suspense fallback={<RouteFallback />}>

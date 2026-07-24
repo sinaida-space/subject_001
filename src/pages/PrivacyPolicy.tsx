@@ -1,6 +1,6 @@
 const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen bg-background py-24">
+    <div id="main-content" tabIndex={-1} className="min-h-screen bg-background py-24">
       <div className="container mx-auto px-6 max-w-3xl">
         <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
           ← Back
@@ -9,7 +9,7 @@ const PrivacyPolicy = () => {
         <h1 className="font-display text-4xl font-light mb-8">Privacy Policy</h1>
 
         <div className="prose prose-invert font-clinical text-sm text-secondary-foreground space-y-6 leading-relaxed">
-          <p>Zinaida Krivchenko ("I", "me", or "the Website") is committed to protecting your personal data. This privacy policy will explain how I use the personal data collected from you when you use this website.</p>
+          <p>Sinaida Krivchenko ("I", "me", or "the Website") is committed to protecting your personal data. This privacy policy will explain how I use the personal data collected from you when you use this website.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">Topics</h2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
@@ -17,6 +17,7 @@ const PrivacyPolicy = () => {
             <li>How do I collect your data?</li>
             <li>How will I use your data?</li>
             <li>How do I store your data?</li>
+            <li>Third-party service providers</li>
             <li>Marketing</li>
             <li>What are your data protection rights?</li>
             <li>What are cookies?</li>
@@ -31,15 +32,15 @@ const PrivacyPolicy = () => {
 
           <h2 className="font-display text-lg text-foreground mt-8">What data do I collect?</h2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-            <li>Personal identification information (Name, email address, etc.) should you choose to reach out via contact forms or external links.</li>
-            <li>Basic technical data that may be processed by the website hosting provider, such as IP address, browser type, and request metadata.</li>
+            <li>Personal identification information (Name, email address, etc.) should you choose to reach out via the email link on this website or external links.</li>
+            <li>Basic technical data processed on my behalf by the infrastructure providers that deliver this website, Cloudflare (security and content delivery) and GitHub Pages (hosting): IP address, browser type, device/request metadata, and approximate location derived from IP address.</li>
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">How do I collect your data?</h2>
           <p className="text-muted-foreground">You directly provide most of the data I collect. I collect and process data when you:</p>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-            <li>Voluntarily complete a contact form or provide feedback via email or Telegram.</li>
-            <li>Use or view my website, where basic technical signals may be processed by my hosting provider.</li>
+            <li>Voluntarily reach out via the email link on this website.</li>
+            <li>Use or view my website, where basic technical signals are automatically processed by Cloudflare and GitHub Pages as part of serving the page to you.</li>
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">How will I use your data?</h2>
@@ -50,7 +51,19 @@ const PrivacyPolicy = () => {
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">How do I store your data?</h2>
-          <p className="text-muted-foreground">Your data is securely stored on encrypted servers provided by my website hosting provider. I will keep your personal identification data for as long as is necessary for the purposes set out in this privacy policy, or until you request its deletion.</p>
+          <p className="text-muted-foreground">Your data is securely stored on encrypted servers provided by GitHub Pages, my website hosting provider. I will keep your personal identification data for as long as is necessary for the purposes set out in this privacy policy, or until you request its deletion. Technical request logs held by Cloudflare and GitHub Pages are retained only for the short period those providers need for security and reliability purposes, per their own retention schedules. I do not extend or separately store these logs myself.</p>
+
+          <h2 className="font-display text-lg text-foreground mt-8">Third-party service providers</h2>
+          <p className="text-muted-foreground">
+            This website is delivered to you through two infrastructure providers acting as data processors on my behalf. I don't use either for analytics, advertising, or tracking; their role is limited to serving the site securely and reliably:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+            <li><span className="text-foreground">Cloudflare, Inc.</span>: sits in front of the website to provide security (DDoS and bot mitigation), performance, and to enforce HTTPS. As part of this, Cloudflare automatically processes your IP address, browser and device metadata, and request logs. Cloudflare is based in the United States; where it processes data outside the EU/EEA, that transfer is safeguarded by Standard Contractual Clauses under Cloudflare's Data Processing Addendum. Legal basis: legitimate interest in keeping the website secure and available.</li>
+            <li><span className="text-foreground">GitHub Pages (GitHub, Inc., a Microsoft company)</span>: hosts the website's files and serves the page content itself. Legal basis: legitimate interest, necessary to provide the website.</li>
+          </ul>
+          <p className="text-muted-foreground">
+            Neither provider is used to build an advertising profile of you, and I don't receive or store their raw request logs myself.
+          </p>
 
           <h2 className="font-display text-lg text-foreground mt-8">Marketing</h2>
           <p className="text-muted-foreground">I would like to send you information about my latest projects or exhibition openings that I think you might like. If you have agreed to receive marketing, you may always opt out at a later date.</p>
@@ -65,7 +78,7 @@ const PrivacyPolicy = () => {
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">Cookies</h2>
-          <p className="text-muted-foreground">Cookies and local storage are browser technologies used to remember preferences or support website functionality. This website does not use analytics cookies.</p>
+          <p className="text-muted-foreground">Cookies and local storage are browser technologies used to remember preferences or support website functionality. This website does not use analytics cookies. Cloudflare, the security provider in front of this site (see "Third-party service providers" above), does not set cookies during normal browsing. It may set a short-lived, strictly necessary security cookie only if it detects unusual traffic and needs to verify you're not an automated bot; this is exempt from consent under GDPR as it's necessary for site security.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">How do I use cookies?</h2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
@@ -86,16 +99,16 @@ const PrivacyPolicy = () => {
           <p className="text-muted-foreground">The Website contains links to other websites (such as Instagram or LinkedIn). My privacy policy applies only to my website, so if you click on a link to another website, you should read their privacy policy.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">Changes to my privacy policy</h2>
-          <p className="text-muted-foreground">I keep my privacy policy under regular review and place any updates on this web page. This privacy policy was last updated on March 8, 2026.</p>
+          <p className="text-muted-foreground">I keep my privacy policy under regular review and place any updates on this web page. This privacy policy was last updated on July 24, 2026.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">How to contact me</h2>
           <p className="text-muted-foreground">
             If you have any questions about this privacy policy, the data I hold on you, or you would like to exercise one of your data protection rights, please do not hesitate to contact me.
           </p>
           <p className="text-muted-foreground">
-            Name: Zinaida Krivchenko<br />
+            Name: Sinaida Krivchenko<br />
             Location: Prague, Czechia<br />
-            Contact: Telegram @theswansarenotwhattheyseem
+            Email: gallant_mod5v@icloud.com
           </p>
 
           <h2 className="font-display text-lg text-foreground mt-8">How to contact the appropriate authority</h2>
