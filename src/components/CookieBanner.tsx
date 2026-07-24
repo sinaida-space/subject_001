@@ -65,7 +65,7 @@ const CookieBanner = () => {
     <div
       role="region"
       aria-label="Cookie notice"
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border py-4"
+      className="notice-surface fixed bottom-0 left-0 right-0 z-50 py-4"
     >
       {/* Same container and gutter as Footer.tsx, so the notice's text starts
           on the site's own left edge instead of a narrower one of its own. */}
@@ -75,7 +75,7 @@ const CookieBanner = () => {
             No tracking cookies. Aggregate visit statistics only.{' '}
             <a
               href="/privacy"
-              className="text-accent hover:text-accent/80 underline"
+              className="underline transition-colors"
             >
               Privacy Policy
             </a>
