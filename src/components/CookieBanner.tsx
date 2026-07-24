@@ -1,78 +1,94 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
-// Bump this when the Privacy Policy's substance changes — recorded alongside
-// each consent choice so an old choice can be told apart from consent to the
-// current policy. Keep in sync with the "last updated" date in PrivacyPolicy.tsx.
-export const PRIVACY_POLICY_VERSION = '2026-07-24';
+// Bump this when the Privacy Policy's substance changes, so an acknowledgement
+// recorded against an older disclosure can be told apart from one against the
+// current text. Tracks the "last updated" date in PrivacyPolicy.tsx, with a
+// suffix when the policy changes substantively more than once in a day.
+//
+// -2 covers the Cloudflare and analytics disclosure. The version deployed
+// earlier today stated the site used no analytics, so anyone who acknowledged
+// that gets shown the notice again rather than being left with a stale claim.
+export const PRIVACY_POLICY_VERSION = '2026-07-24-2';
+
+// Removes the stored acknowledgement and reloads so the notice shows again.
+// Guarded in a try/catch: Safari private mode throws on localStorage access.
+export function resetStorageNotice() {
+  try {
+    localStorage.removeItem('cookie-consent');
+  } catch {
+    // localStorage unavailable (e.g. Safari private mode) — nothing to clear.
+  }
+  window.location.reload();
+}
 
 const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) {
+    try {
+      const stored = localStorage.getItem('cookie-consent');
+      if (!stored) {
+        setIsVisible(true);
+        return;
+      }
+      // Show the notice again when it was acknowledged against an older
+      // version of the policy. Recording the version was pointless while
+      // nothing ever compared it. Anything unparseable (hand-edited, or the
+      // bare string this key used to hold) counts as not acknowledged.
+      const record = JSON.parse(stored) as { policyVersion?: unknown };
+      if (record?.policyVersion !== PRIVACY_POLICY_VERSION) {
+        setIsVisible(true);
+      }
+    } catch {
+      // localStorage unavailable, or a malformed record: show the notice.
       setIsVisible(true);
     }
   }, []);
 
-  const recordConsent = (choice: 'accepted' | 'essential' | 'declined') => {
-    localStorage.setItem('cookie-consent', JSON.stringify({
-      choice,
-      timestamp: new Date().toISOString(),
-      policyVersion: PRIVACY_POLICY_VERSION,
-    }));
+  const handleAcknowledge = () => {
+    try {
+      localStorage.setItem('cookie-consent', JSON.stringify({
+        choice: 'acknowledged',
+        timestamp: new Date().toISOString(),
+        policyVersion: PRIVACY_POLICY_VERSION,
+      }));
+    } catch {
+      // localStorage unavailable — the notice will simply reappear next visit.
+    }
     setIsVisible(false);
   };
-
-  const handleAccept = () => recordConsent('accepted');
-  const handleEssential = () => recordConsent('essential');
-  const handleDecline = () => recordConsent('declined');
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border p-4 md:p-6">
-      <div className="container mx-auto max-w-4xl">
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <div className="flex-1">
-            <h3 className="font-display text-sm font-medium mb-2 text-foreground">Cookie Consent</h3>
-            <p className="font-clinical text-xs text-muted-foreground leading-relaxed">
-              This website stores your consent choice locally and uses essential browser storage for
-              basic site functionality. Learn more in our{' '}
-              <a 
-                href="/privacy" 
-                className="text-primary hover:text-primary/80 underline"
-              >
-                Privacy Policy
-              </a>.
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-2 md:gap-3 shrink-0">
+    <div
+      role="region"
+      aria-label="Cookie notice"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border py-4"
+    >
+      {/* Same container and gutter as Footer.tsx, so the notice's text starts
+          on the site's own left edge instead of a narrower one of its own. */}
+      <div className="container mx-auto px-6 max-w-7xl">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p className="font-clinical text-xs text-muted-foreground">
+            No tracking cookies. Aggregate visit statistics only.{' '}
+            <a
+              href="/privacy"
+              className="text-accent hover:text-accent/80 underline"
+            >
+              Privacy Policy
+            </a>
+          </p>
+
+          <div className="shrink-0">
             <Button
-              onClick={handleAccept}
+              onClick={handleAcknowledge}
               variant="outline"
               size="sm"
               className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
             >
-              Accept All
-            </Button>
-            <Button
-              onClick={handleEssential}
-              variant="outline"
-              size="sm"
-              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
-            >
-              Essential Only
-            </Button>
-            <Button
-              onClick={handleDecline}
-              variant="outline"
-              size="sm"
-              className="font-clinical text-xs tracking-widest uppercase border-border text-foreground hover:bg-accent/10 hover:text-foreground"
-            >
-              Decline All
+              GOT IT
             </Button>
           </div>
         </div>

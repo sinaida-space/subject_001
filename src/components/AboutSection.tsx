@@ -174,21 +174,37 @@ function PhotoBlock() {
         }}
       >
         <div style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1' }}>
-          <img
-            ref={imgRef}
-            src="/sinaida-photo.jpg"
-            alt="Sinaida"
-            onLoad={() => setImgLoaded(true)}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              display: 'block',
-              objectFit: 'cover',
-              filter: 'contrast(1.08) brightness(0.92) saturate(0.85)',
-            }}
-          />
+          {/* Was a single 2000x2000 / 3.26 MB JPEG rendering at ~258 CSS px.
+              Now two widths in WebP with JPEG fallbacks; the browser picks by
+              viewport and pixel density. Same crop, ~99% less transferred. */}
+          <picture>
+            <source
+              type="image/webp"
+              srcSet="/sinaida-photo-600.webp 600w, /sinaida-photo-1200.webp 1200w"
+              sizes="(max-width: 768px) 90vw, 320px"
+            />
+            <img
+              ref={imgRef}
+              src="/sinaida-photo-600.jpg"
+              srcSet="/sinaida-photo-600.jpg 600w, /sinaida-photo-1200.jpg 1200w"
+              sizes="(max-width: 768px) 90vw, 320px"
+              alt="Sinaida Krivchenko"
+              width={600}
+              height={600}
+              loading="lazy"
+              decoding="async"
+              onLoad={() => setImgLoaded(true)}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                display: 'block',
+                objectFit: 'cover',
+                filter: 'contrast(1.08) brightness(0.92) saturate(0.85)',
+              }}
+            />
+          </picture>
           <HeartbeatPlaceholder
             loaded={imgLoaded}
             width="100%"
