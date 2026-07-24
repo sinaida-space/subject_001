@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
+// Bump this when the Privacy Policy's substance changes — recorded alongside
+// each consent choice so an old choice can be told apart from consent to the
+// current policy. Keep in sync with the "last updated" date in PrivacyPolicy.tsx.
+export const PRIVACY_POLICY_VERSION = '2026-07-24';
+
 const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -11,20 +16,18 @@ const CookieBanner = () => {
     }
   }, []);
 
-  const handleAccept = () => {
-    localStorage.setItem('cookie-consent', 'accepted');
+  const recordConsent = (choice: 'accepted' | 'essential' | 'declined') => {
+    localStorage.setItem('cookie-consent', JSON.stringify({
+      choice,
+      timestamp: new Date().toISOString(),
+      policyVersion: PRIVACY_POLICY_VERSION,
+    }));
     setIsVisible(false);
   };
 
-  const handleEssential = () => {
-    localStorage.setItem('cookie-consent', 'essential');
-    setIsVisible(false);
-  };
-
-  const handleDecline = () => {
-    localStorage.setItem('cookie-consent', 'declined');
-    setIsVisible(false);
-  };
+  const handleAccept = () => recordConsent('accepted');
+  const handleEssential = () => recordConsent('essential');
+  const handleDecline = () => recordConsent('declined');
 
   if (!isVisible) return null;
 

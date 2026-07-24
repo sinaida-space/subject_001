@@ -38,9 +38,9 @@ export default function Constellation() {
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* LEFT COLUMN — label + legend */}
           <div className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
-            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
+            <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
               Body of Work
-            </div>
+            </h2>
 
             <p
               className="mt-2 max-w-[460px] font-mono uppercase leading-relaxed"

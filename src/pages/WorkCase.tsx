@@ -68,7 +68,7 @@ export default function WorkCase() {
         </Suspense>
       )}
       <Header />
-      <div className="container relative z-10 mx-auto max-w-6xl px-6 pt-40 pb-24 md:pt-32 lg:pt-36">
+      <main id="main-content" tabIndex={-1} className="container relative z-10 mx-auto max-w-6xl px-6 pt-40 pb-24 md:pt-32 lg:pt-36">
         <div className="grid grid-cols-1 gap-x-12 gap-y-10 md:grid-cols-12">
           {/* ── Identity — back link, kind badge, title. Left column only; the
               empty spacer beside it completes row 1, so row 2 (image + text)
@@ -88,7 +88,7 @@ export default function WorkCase() {
                   border: '1px solid #ff3333',
                   padding: '3px 8px',
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '10px',
+                  fontSize: '16px',
                   letterSpacing: '0.15em',
                   textTransform: 'uppercase',
                   color: '#ff3333',
@@ -153,7 +153,7 @@ export default function WorkCase() {
                         border: '1px solid #1a1a1a',
                         padding: '4px 8px',
                         fontFamily: 'var(--font-mono)',
-                        fontSize: '10px',
+                        fontSize: '16px',
                         letterSpacing: '0.15em',
                         color: 'hsl(var(--foreground) / 0.55)',
                       }}
@@ -262,7 +262,7 @@ export default function WorkCase() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );
