@@ -10,6 +10,7 @@ interface Props {
   onReset: () => void;
   showUnlockCard: boolean;
   onDismissCard: () => void;
+  visible: boolean;
 }
 
 function Slider({
@@ -50,18 +51,22 @@ function Slider({
   );
 }
 
-export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: Props) {
+export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, visible }: Props) {
   const [state, setState] = useState<SynthState>(synth.getState());
 
   useEffect(() => synth.subscribe(setState), []);
 
   return (
-    // Full-height overlay pinned to the bottom of the map, so the sticky footer
-    // has a flow position at the wrap's bottom edge (the canvas itself is
-    // absolutely positioned and out of flow). The bar then rides the viewport
-    // bottom while the map is on screen and leaves with the section.
-    <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-end">
-      <div className="pointer-events-none sticky bottom-4 flex w-full flex-col items-center gap-3 px-3">
+    // Pinned to the viewport bottom (not sticky-inside-absolute, which left it
+    // stuck off-screen at the bottom of the graph's own — very tall on mobile
+    // — box instead of the visible viewport). Gated by `visible`, which the
+    // parent derives from an IntersectionObserver on the graph wrapper, so the
+    // bar only shows while a meaningful chunk of the graph is on screen and
+    // never blocks anything once it's scrolled away.
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex flex-col items-center gap-3 px-3 transition-opacity duration-300"
+      style={{ opacity: visible ? 1 : 0, visibility: visible ? 'visible' : 'hidden' }}
+    >
         {/* "You found it" window — retro-OS framing, matches the project readout */}
       {showUnlockCard && (
         <div
@@ -159,7 +164,6 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard }: P
         >
           ■ Home
         </button>
-        </div>
       </div>
     </div>
   );

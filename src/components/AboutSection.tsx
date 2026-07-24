@@ -231,10 +231,10 @@ export default function AboutSection() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <div className="font-mono uppercase text-primary-legible" style={{ letterSpacing: '0.2em', fontSize: 24 }}>
+              <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
                 About
               </div>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.6)', fontSize: 16 }}>
+              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
                 The story so far.
               </div>
             </Reveal>
