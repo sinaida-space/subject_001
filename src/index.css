@@ -120,6 +120,11 @@
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* iOS/macOS Safari paints its own default (white) behind the rubber-band
+       overscroll area at the top/bottom of the page — that's the "white
+       tabs" edge, not the browser chrome. theme-color alone doesn't cover
+       it; the html element itself needs a matching background. */
+    background-color: hsl(var(--background));
   }
 
   body {
