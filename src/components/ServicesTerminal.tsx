@@ -44,14 +44,14 @@ export default function ServicesTerminal() {
           {/* LEFT COLUMN */}
           <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <div
-              className="font-mono uppercase text-primary-legible"
-              style={{ letterSpacing: '0.2em', fontSize: 24 }}
+              className="font-mono uppercase text-primary"
+              style={{ letterSpacing: '0.2em', fontSize: 32 }}
             >
               Services
             </div>
             <div
               className="font-mono mt-2"
-              style={{ color: 'hsl(var(--foreground) / 0.6)', fontSize: 16 }}
+              style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}
             >
               Digital tools for human connection.
             </div>

@@ -49,12 +49,12 @@ export default function ContactChannel() {
           {/* LEFT COLUMN */}
           <div className="md:w-[280px] shrink-0 md:self-start">
             <div
-              className="font-mono uppercase text-primary-legible"
-              style={{ letterSpacing: '0.2em', fontSize: 24 }}
+              className="font-mono uppercase text-primary"
+              style={{ letterSpacing: '0.2em', fontSize: 32 }}
             >
               Contact
             </div>
-            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.6)', fontSize: 16 }}>
+            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
               Get in touch.
             </div>
 

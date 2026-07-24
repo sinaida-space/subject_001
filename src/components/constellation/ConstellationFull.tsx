@@ -161,6 +161,13 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // panel mounts, and a one-time "you found it" window appears.
   const [synthReady, setSynthReady] = useState(false);
   const [showUnlockCard, setShowUnlockCard] = useState(false);
+  // Gates the fixed audio control panel: true once a meaningful chunk of the
+  // graph is in view (roughly "a couple of stars visible"), not just a sliver
+  // at the edge. Drives `position: fixed` visibility directly instead of
+  // relying on `position: sticky` inside an absolutely-positioned ancestor,
+  // which was leaving the panel stuck off-screen at the bottom of the (very
+  // tall, on mobile) graph wrapper instead of pinned to the viewport.
+  const [panelVisible, setPanelVisible] = useState(false);
 
   // ── Layout / sizing ──
   const layout = useCallback(() => {
@@ -742,8 +749,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
           lastInputRef.current = performance.now();
           start();
         } else stop();
+        setPanelVisible(entry.isIntersecting && entry.intersectionRatio > 0.15);
       },
-      { threshold: 0.05 },
+      { threshold: [0, 0.05, 0.15, 0.3] },
     );
     if (wrapRef.current) io.observe(wrapRef.current);
     const onVis = () => {
@@ -987,6 +995,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
           onReset={resetStars}
           showUnlockCard={showUnlockCard}
           onDismissCard={() => setShowUnlockCard(false)}
+          visible={panelVisible}
         />
       )}
     </div>

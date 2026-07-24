@@ -38,11 +38,14 @@ export default function Constellation() {
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* LEFT COLUMN — label + legend */}
           <div className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
-            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 24 }}>
+            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
               Body of Work
             </div>
 
-            <p className="mt-6 max-w-[460px] font-mono text-[28px] leading-relaxed text-foreground/70">
+            <p
+              className="mt-2 max-w-[460px] font-mono leading-relaxed"
+              style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}
+            >
               Selected works and the skills that happen to resonate.
             </p>
           </div>
