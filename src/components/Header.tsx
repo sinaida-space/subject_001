@@ -85,7 +85,7 @@ export default function Header() {
     <>
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : ''}`}>
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-2 sm:gap-4">
 
           <Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={scrollTop} />
 
@@ -119,11 +119,11 @@ export default function Header() {
             </a>
           </div>
 
-          <div className="lg:hidden flex items-center gap-3">
+          <div className="lg:hidden flex items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => toggle()}
-              className={`flex items-center justify-center h-9 transition-colors text-primary-legible/70 ${mode === 'full' ? 'w-9' : 'px-3'}`}
+              className={`flex items-center justify-center h-8 sm:h-9 transition-colors text-primary-legible/70 ${mode === 'full' ? 'w-8 sm:w-9' : 'px-2 sm:px-3'}`}
               style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
@@ -131,7 +131,7 @@ export default function Header() {
               <ModeIcon mode={mode} />
             </button>
             <button
-              className="flex flex-col justify-center items-center w-9 h-9 gap-[5px]"
+              className="flex flex-col justify-center items-center w-8 h-8 sm:w-9 sm:h-9 gap-[5px]"
               onClick={() => setMenuOpen(!menuOpen)}
               style={{ background: 'none', border: '1px solid #ff3333', cursor: 'pointer', padding: 0, zIndex: 60 }}
               aria-label="Menu"

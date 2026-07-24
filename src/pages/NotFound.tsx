@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState, useRef, useCallback } from 'react'
 import { useLocation } from 'react-router-dom';
 import VHSOverlay from '@/components/VHSOverlay';
 import SnakeEasterEgg from '@/components/SnakeEasterEgg';
+import { useNoIndex } from '@/hooks/usePageMeta';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -164,6 +165,7 @@ export default function NotFound() {
   const [glitchActive, setGlitchActive] = useState(false);
   const [snakeOpen, setSnakeOpen] = useState(false);
   const glitched404 = useGlitch('404', glitchActive);
+  useNoIndex();
 
   const line1 = useTyper('> ERROR_CODE: 404', 6, 300);
   const line2 = useTyper('> SIGNAL_LOST — navigating the void', 6, 300 + 18 * 6 + 120);

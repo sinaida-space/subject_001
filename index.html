@@ -8,6 +8,28 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#bf0d25" />
+
+    <!-- Content-Security-Policy limits what this page is allowed to load.
+         Everything comes from this origin, with one deliberate exception:
+         youtube.com as a frame, reachable only after a visitor presses play on
+         a video. VideoEmbed.tsx serves its own poster locally, so nothing
+         reaches Google before that click.
+
+         Cloudflare's analytics is measured server-side from request logs and
+         loads no script here, so no allowance for it is needed. If Web
+         Analytics (the JS beacon) is ever switched on in the Cloudflare
+         dashboard, it will be injected into this HTML and silently blocked by
+         this policy. Enabling it means adding
+         https://static.cloudflareinsights.com to script-src and
+         https://cloudflareinsights.com to connect-src, and saying so in the
+         Analytics section of PrivacyPolicy.tsx.
+
+         frame-ancestors, Strict-Transport-Security and X-Content-Type-Options
+         are ignored inside a meta tag; those come from Cloudflare's Transform
+         Rule, verified live on the apex.
+         See docs/audits/sinaida-eu-audit-2026-07-24-b.md. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>Sinaida Krivchenko | New media artist · Interactive projections & stage visuals · Prague</title>
     <meta name="description" content="Sinaida Krivchenko is a Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Trained as a biomedical engineer.">
     <meta name="keywords" content="new media artist, interactive projections, stage visuals, TouchDesigner, GLSL, audio-reactive visuals, projection mapping, immersive installations, digital art, Prague, live performance, cultural institutions">
@@ -18,13 +40,17 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Sinaida Krivchenko | New media artist · Interactive projections & stage visuals">
     <meta property="og:description" content="Prague-based new media artist. Living visual systems for stages and physical spaces — TouchDesigner, GLSL, interactive projections, and audio-reactive visuals for live performance.">
-    <meta property="og:image" content="https://sinaida.eu/og-skills.png">
+    <meta property="og:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="An ECG trace rendered in red particles against black, the sin.ai.da visual signature.">
     <meta property="og:url" content="https://sinaida.eu/">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Sinaida Krivchenko | New media artist · Interactive projections & stage visuals">
     <meta name="twitter:description" content="Prague-based new media artist. Living visual systems for stages and physical spaces — TouchDesigner, GLSL, interactive projections, and audio-reactive visuals for live performance.">
-    <meta name="twitter:image" content="https://sinaida.eu/og-skills.png">
+    <meta name="twitter:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
+    <meta name="twitter:image:alt" content="An ECG trace rendered in red particles against black, the sin.ai.da visual signature.">
 
     <script type="application/ld+json">
     {
