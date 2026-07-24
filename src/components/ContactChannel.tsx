@@ -54,7 +54,7 @@ export default function ContactChannel() {
             >
               Contact
             </div>
-            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
+            <div className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
               Get in touch.
             </div>
 

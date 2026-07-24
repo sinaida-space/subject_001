@@ -43,7 +43,7 @@ export default function Constellation() {
             </div>
 
             <p
-              className="mt-2 max-w-[460px] font-mono leading-relaxed"
+              className="mt-2 max-w-[460px] font-mono uppercase leading-relaxed"
               style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}
             >
               Selected works and the skills that happen to resonate.

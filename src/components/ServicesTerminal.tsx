@@ -50,7 +50,7 @@ export default function ServicesTerminal() {
               Services
             </div>
             <div
-              className="font-mono mt-2"
+              className="font-mono uppercase mt-2"
               style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}
             >
               Digital tools for human connection.

@@ -234,7 +234,7 @@ export default function AboutSection() {
               <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
                 About
               </div>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
+              <div className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
                 The story so far.
               </div>
             </Reveal>
