@@ -26,9 +26,9 @@ export default function Logo({
     const segments = 120;
     
     ctx.beginPath();
-    ctx.strokeStyle = `hsl(0 100% 55%)`;
+    ctx.strokeStyle = `hsl(0 100% 52%)`; // primary-legible — canvas needs a literal, not var()
     ctx.lineWidth = 1.5;
-    ctx.shadowColor = `hsl(0 100% 55%)`;
+    ctx.shadowColor = `hsl(0 100% 52%)`;
     ctx.shadowBlur = intensity > 0.1 ? 8 + intensity * 12 : 4;
     
     for (let i = 0; i <= segments; i++) {
@@ -68,7 +68,7 @@ export default function Logo({
     
     // Glow line underneath
     ctx.beginPath();
-    ctx.strokeStyle = `hsla(0, 100%, 55%, ${0.15 + intensity * 0.2})`;
+    ctx.strokeStyle = `hsla(0, 100%, 52%, ${0.15 + intensity * 0.2})`; // primary-legible
     ctx.lineWidth = 3;
     ctx.shadowBlur = 0;
     ctx.moveTo(0, mid);

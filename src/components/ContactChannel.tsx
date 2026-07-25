@@ -76,7 +76,7 @@ export default function ContactChannel() {
               <span className="block text-foreground font-light">
                 Open for
               </span>
-              <span className="block font-bold" style={{ color: '#ff3333' }}>
+              <span className="block font-bold" style={{ color: 'hsl(var(--sinaida-red))' }}>
                 Collaboration
               </span>
             </h2>
@@ -88,7 +88,7 @@ export default function ContactChannel() {
                 return (
                   <>
                     {PARA_1.slice(0, idx)}
-                    <span style={{ color: '#ff3333', fontWeight: 700 }}>{PARA_1.slice(idx)}</span>
+                    <span style={{ color: 'hsl(var(--primary-legible))', fontWeight: 700 }}>{PARA_1.slice(idx)}</span>
                   </>
                 );
               })()}
@@ -103,7 +103,7 @@ export default function ContactChannel() {
               {PARA_2.split('·').map((seg, i, arr) => (
                 <span key={i}>
                   {seg}
-                  {i < arr.length - 1 && <span style={{ color: '#ff3333' }}>·</span>}
+                  {i < arr.length - 1 && <span style={{ color: 'hsl(var(--primary-legible))' }}>·</span>}
                 </span>
               ))}
             </div>
@@ -114,17 +114,17 @@ export default function ContactChannel() {
                 label="EMAIL ME ↗"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
                 style={{
-                  border: '1px solid #ff3333',
-                  color: '#ff3333',
-                  background: 'rgba(255,51,51,0.06)',
+                  border: '1px solid hsl(var(--sinaida-red))',
+                  color: 'hsl(var(--primary-legible))',
+                  background: 'hsl(var(--sinaida-red) / 0.06)',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = '#ff3333';
+                  e.currentTarget.style.background = 'hsl(var(--primary-legible))';
                   e.currentTarget.style.color = '#000';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
-                  e.currentTarget.style.color = '#ff3333';
+                  e.currentTarget.style.background = 'hsl(var(--sinaida-red) / 0.06)';
+                  e.currentTarget.style.color = 'hsl(var(--primary-legible))';
                 }}
               />
               <a

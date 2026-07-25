@@ -29,7 +29,7 @@ export default function VHSImage({ src, alt, className = '', aspectRatio = '16/1
     <div
       className={`vhs-project-frame relative overflow-hidden ${className}`}
       style={{
-        border: '1px solid rgba(255,51,51,0.4)',
+        border: '1px solid hsl(var(--sinaida-red) / 0.4)',
         boxShadow: '0 0 0 1px hsl(var(--accent) / 0.15), inset 0 0 30px rgba(0,0,0,0.5)',
         aspectRatio,
       }}
@@ -42,7 +42,7 @@ export default function VHSImage({ src, alt, className = '', aspectRatio = '16/1
       />
       <div
         className="absolute bottom-[-1px] left-[-1px] w-[18px] h-[18px] pointer-events-none z-[2]"
-        style={{ borderBottom: '2px solid #ff3333', borderLeft: '2px solid #ff3333' }}
+        style={{ borderBottom: '2px solid hsl(var(--sinaida-red))', borderLeft: '2px solid hsl(var(--sinaida-red))' }}
       />
 
       {/* Image */}

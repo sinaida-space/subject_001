@@ -69,9 +69,9 @@ function PulsingECG({ onClick }: { onClick: () => void }) {
     const intensity = bright ? 1 : 0.7;
 
     ctx.beginPath();
-    ctx.strokeStyle = `hsl(0 100% 55%)`;
+    ctx.strokeStyle = `hsl(0 100% 52%)`; // primary-legible — canvas needs a literal, not var()
     ctx.lineWidth = 1.5;
-    ctx.shadowColor = `hsl(0 100% 55%)`;
+    ctx.shadowColor = `hsl(0 100% 52%)`;
     ctx.shadowBlur = bright ? 14 : 6;
 
     for (let i = 0; i <= segments; i++) {
@@ -99,7 +99,7 @@ function PulsingECG({ onClick }: { onClick: () => void }) {
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.strokeStyle = `hsla(0, 100%, 55%, ${bright ? 0.25 : 0.12})`;
+    ctx.strokeStyle = `hsla(0, 100%, 52%, ${bright ? 0.25 : 0.12})`; // primary-legible
     ctx.lineWidth = 3;
     ctx.shadowBlur = 0;
     ctx.moveTo(0, mid);
@@ -185,7 +185,7 @@ export default function NotFound() {
       id="main-content"
       tabIndex={-1}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: 'hsl(280 33% 3%)' }}
+      style={{ background: 'hsl(var(--background))' }}
     >
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
 
@@ -212,11 +212,11 @@ export default function NotFound() {
             fontSize: 'clamp(8rem, 22vw, 18rem)',
             lineHeight: 1,
             color: 'transparent',
-            WebkitTextStroke: '1.5px #ff3333',
+            WebkitTextStroke: '1.5px hsl(var(--sinaida-red))',
             letterSpacing: '-0.04em',
             textShadow: glitchActive
-              ? '3px 0 #ff3333, -3px 0 #ffffff'
-              : '0 0 60px rgba(255,51,51,0.15)',
+              ? '3px 0 hsl(var(--sinaida-red)), -3px 0 #ffffff'
+              : '0 0 60px hsl(var(--sinaida-red) / 0.15)',
             transition: glitchActive ? 'none' : 'text-shadow 0.3s ease',
           }}
         >
@@ -243,17 +243,17 @@ export default function NotFound() {
             href="/"
             className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 flex items-center justify-center transition-all duration-200"
             style={{
-              border: '1px solid #ff3333',
-              color: '#ff3333',
+              border: '1px solid hsl(var(--sinaida-red))',
+              color: 'hsl(var(--primary-legible))',
               letterSpacing: '0.2em',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.background = '#ff3333';
+              (e.currentTarget as HTMLAnchorElement).style.background = 'hsl(var(--primary-legible))';
               (e.currentTarget as HTMLAnchorElement).style.color = '#000';
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-              (e.currentTarget as HTMLAnchorElement).style.color = '#ff3333';
+              (e.currentTarget as HTMLAnchorElement).style.color = 'hsl(var(--primary-legible))';
             }}
           >
             → Return to Home
@@ -269,9 +269,9 @@ export default function NotFound() {
               letterSpacing: '0.2em',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = '#ff3333';
-              (e.currentTarget as HTMLAnchorElement).style.color = '#ff3333';
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 20px rgba(255,51,51,0.15)';
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'hsl(var(--sinaida-red))';
+              (e.currentTarget as HTMLAnchorElement).style.color = 'hsl(var(--primary-legible))';
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 20px hsl(var(--sinaida-red) / 0.15)';
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLAnchorElement).style.borderColor = 'hsl(var(--foreground) / 0.25)';

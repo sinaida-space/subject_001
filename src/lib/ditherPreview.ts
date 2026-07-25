@@ -14,10 +14,10 @@ const BAYER_4X4 = [
   [15, 7, 13, 5],
 ];
 
-// Site palette (see index.css --background / --primary), hardcoded as hex
+// Site palette (see index.css --background / --sinaida-red), hardcoded as hex
 // per the issue's contract — this runs in a canvas pixel loop, not CSS.
-const COLOR_DARK: [number, number, number] = [7, 5, 8]; // ~hsl(280 33% 3%)
-const COLOR_RED: [number, number, number] = [250, 0, 0]; // #fa0000
+const COLOR_DARK: [number, number, number] = [5, 5, 5]; // Void, #050505
+const COLOR_RED: [number, number, number] = [205, 0, 0]; // sinaida-red, #cd0000
 
 const cache = new Map<string, string>();
 const inflight = new Map<string, Promise<string | null>>();

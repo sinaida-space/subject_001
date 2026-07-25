@@ -6,15 +6,21 @@ import { PROJECTS, type Project } from './projects';
 
 export type Category = 'tech' | 'direction' | 'strategy' | 'research' | 'analytical';
 
+// Single source of truth for the constellation's off-white — canvas/SVG fill
+// attributes here can't resolve CSS custom properties, so this is the one
+// place the literal lives; everything else (ConstellationFull/Lite) imports
+// it instead of re-typing the hex. See docs/design-system.md.
+export const OFF_WHITE = '#f2efe9';
+
 // A single red→off-white ramp, not a rainbow — categories read by
 // lightness/saturation, matching the site's black-and-red signature instead
 // of the old per-category hue-wheel palette.
 export const CATEGORY_COLORS: Record<Category, string> = {
-  direction: '#fa0000', // creative direction — full ECG red, the core signature
+  direction: '#cd0000', // creative direction — sinaida-red, the core signature
   tech: '#ff5c5c', // creative technology — bright red
   strategy: '#c9433f', // strategy & systems — muted red
   analytical: '#b38080', // technical & analytical — dusty red-grey
-  research: '#f2efe9', // research interests — off-white
+  research: OFF_WHITE, // research interests — off-white
 };
 
 export const CATEGORY_LABEL: Record<Category, string> = {
