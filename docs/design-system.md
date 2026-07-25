@@ -124,6 +124,31 @@ have been a design-system token. Found and fixed real drift beyond the
   tokens (alphas preserved exactly where they'd been deliberately tuned
   differently between light/dark).
 
+## 2026-07-26 — second pass (`260726_color-audit`)
+
+Re-ran the same sweep, widened to files the first pass didn't cover (`index.html`,
+`public/*.svg`). Four things were still off-system:
+
+- **`index.html`'s `theme-color`** was `#bf0d25` — the retired pre-redesign
+  `--primary`. That value paints the browser chrome on mobile, so the first
+  thing a phone visitor sees framed the site in the old red. Now `#cd0000`.
+- **`public/favicon.svg`** carried both retired values: `#07050a` (the old
+  purple-tinted Void) as its ground and `#ff3333` as the ECG stroke. Now
+  `#050505` / `#cd0000`. The raster icons (`favicon.ico`, `icon-192.png`,
+  `apple-touch-icon.png`) are baked images and still show the old red —
+  they need regenerating from the SVG.
+- **`VHSOverlay.tsx`**'s color-shift gradient used `hsl(0 100% 55%)` and
+  `hsl(0 100% 30%)` — a fifth and sixth red lightness, neither a token. It
+  renders on the 404 page. Now `--primary-legible` / `--sinaida-red`, which
+  keeps the bright/dark two-tone the gradient wanted.
+- **`ConstellationFull.tsx`**'s project-node dot was pure `#ffffff` while the
+  label right next to it drew in `OFF_WHITE` — the dot read colder than its
+  own text. Both are `OFF_WHITE` now.
+
+`src/App.css` was the stock Vite template stylesheet (`#646cffaa`,
+`#61dafbaa`, `#888`) — nothing imported it, so it's deleted rather than
+tokenized (see the 2026-07-26 dead-code sweep below).
+
 ## What's intentionally out of scope
 
 - `--destructive` and the `--sidebar-*` tokens are unrelated shadcn
@@ -142,30 +167,46 @@ have been a design-system token. Found and fixed real drift beyond the
 - `graph.ts`'s `CATEGORY_COLORS` ramp (`tech`/`strategy`/`analytical`/`research`)
   is a deliberate red→off-white gradient for the Constellation diagram, not
   accidental duplicates — only `direction` (the literal brand red) was swept.
-- `ParticleCard.tsx`'s cyan (`#00ffff`) default and the amber/violet/green
-  category rainbow in `SkillConstellation.tsx` are decorative, non-brand
-  colors unrelated to the red/gray/Cathode system — left as-is (only
-  `SkillConstellation`'s "red" category was swept, for what it's worth — see
-  below on why that file barely matters).
+- `ParticleCard.tsx`'s cyan (`#00ffff`) default is a decorative, non-brand
+  color unrelated to the red/gray/Cathode system — left as-is. (`graph.ts`'s
+  category ramp, above, is the only other place a deliberate non-brand
+  color lives — `SkillConstellation.tsx`, which had its own rainbow, is gone;
+  see the dead-code sweep below.)
 - Generic black/white scrims and shadows (`rgba(0,0,0,X)` modal backdrops,
   `rgba(255,255,255,X)` highlight edges on photo frames, pure `#fff` on the
   hero letter-hover ghost and whisper text) are left as literal — they're
   opacity/dimming utilities, not stand-ins for a named brand color, and
   there's no "white" or "black" token in the system to route them through.
 
-## Dead code found during the audit (not touched)
+## Dead code found during the audit — removed 2026-07-26
 
-These files are never imported by any live page/route — nothing here was
-fixed for the palette because it never renders, but it's worth knowing they
-exist next time the design system changes and these silently *don't* get the
-update:
+Originally logged here as "found, not touched" — swept for real on
+`260726_color-audit` once it was clear none of it was reachable from any
+route:
 
 - `SkillConstellation.tsx` and `SkillsSection.tsx` — an older
   Constellation-style component, fully superseded by
-  `ConstellationFull.tsx`/`ConstellationLite.tsx`, orphaned.
-- `components/ui/sheet.tsx`, `drawer.tsx`, `dialog.tsx`, `alert-dialog.tsx`,
-  `command.tsx`, `chart.tsx`, `sidebar.tsx` — stock shadcn primitives that
-  came with the project template; none are imported outside the `ui/`
-  folder itself. `toast.tsx`/`toaster.tsx` *is* mounted in `App.tsx`, but no
-  page ever calls `useToast()`, so its hardcoded `text-red-*` destructive
-  variant never actually paints.
+  `ConstellationFull.tsx`/`ConstellationLite.tsx`. Already gone by the time
+  of the second pass (removed in an earlier, undocumented commit).
+- The entire `components/ui/` shadcn scaffold except `button.tsx` (the one
+  primitive actually used, by `CookieBanner.tsx`): `accordion`, `alert`,
+  `alert-dialog`, `aspect-ratio`, `avatar`, `badge`, `breadcrumb`,
+  `calendar`, `card`, `carousel`, `chart`, `checkbox`, `collapsible`,
+  `command`, `context-menu`, `dialog`, `drawer`, `dropdown-menu`, `form`,
+  `hover-card`, `input-otp`, `input`, `label`, `menubar`, `navigation-menu`,
+  `pagination`, `popover`, `progress`, `radio-group`, `resizable`,
+  `scroll-area`, `select`, `separator`, `sheet`, `sidebar`, `skeleton`,
+  `slider`, `sonner`, `switch`, `table`, `tabs`, `textarea`, `toast`,
+  `toaster`, `toggle`, `toggle-group`, `tooltip`, plus `ui/use-toast.ts` and
+  `hooks/use-toast.ts`. `toast.tsx`/`toaster.tsx` and `sonner.tsx`/`tooltip.tsx`
+  *were* mounted in `App.tsx` (as was `@tanstack/react-query`'s
+  `QueryClientProvider`), but nothing anywhere ever called `useToast()`,
+  `toast()`, or `useQuery()` — the wiring rendered nothing and did nothing.
+  `App.tsx` now renders `RenderModeProvider` → `BrowserRouter` directly.
+- Pruned the now-unreachable dependencies from `package.json`:
+  `@hookform/resolvers`, every `@radix-ui/react-*` package except
+  `react-slot` (button's dependency), `@tanstack/react-query`, `cmdk`,
+  `date-fns`, `embla-carousel-react`, `input-otp`, `next-themes`,
+  `react-day-picker`, `react-hook-form`, `react-resizable-panels`,
+  `recharts`, `sonner`, `vaul`, `zod`. Verified with `npm run build` and
+  `vitest run` after the prune — both clean.

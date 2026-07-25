@@ -46,7 +46,7 @@ export default function VHSOverlay() {
           <div
             className="absolute inset-0 mix-blend-screen opacity-5"
             style={{
-              background: `linear-gradient(${Math.random() * 360}deg, hsl(0 100% 55% / 0.1), transparent, hsl(0 100% 30% / 0.1))`,
+              background: `linear-gradient(${Math.random() * 360}deg, hsl(var(--primary-legible) / 0.1), transparent, hsl(var(--sinaida-red) / 0.1))`,
             }}
           />
         </div>
