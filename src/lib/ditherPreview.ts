@@ -4,7 +4,7 @@
 // site's near-black / red palette. Result is cached as a dataURL keyed by
 // src so repeated hovers over the same project never re-run the dither.
 
-const PREVIEW_SIZE = 240;
+const PREVIEW_SIZE = 480;
 
 // 4x4 Bayer matrix, normalized to 0..15.
 const BAYER_4X4 = [

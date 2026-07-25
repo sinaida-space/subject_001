@@ -7,7 +7,7 @@ import { getDitheredPreview } from '@/lib/ditherPreview';
 // ditherPreview.ts) and is cached, so steady-state cost here is just a
 // rAF-driven transform lerp — no per-frame canvas work.
 
-const SIZE = 220;
+const SIZE = 440;
 const OFFSET = 24;
 
 interface DitherPreviewProps {
