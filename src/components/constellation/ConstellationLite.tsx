@@ -45,7 +45,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
           const a = posById.get(e.a)!;
           const b = posById.get(e.b)!;
           const touches = !!active && (e.a === active || e.b === active);
-          const op = active ? (touches ? 0.5 : 0.04) : 0.09;
+          const op = active ? (touches ? 0.65 : 0.06) : 0.2;
           return (
             <line
               key={i}
@@ -55,7 +55,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
               y2={b.y}
               stroke={e.color}
               strokeOpacity={op}
-              strokeWidth={touches ? 1.4 : 1}
+              strokeWidth={touches ? 1.8 : 1.3}
               style={{ transition: 'stroke-opacity 0.25s' }}
             />
           );
@@ -123,18 +123,32 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                 style={{ transition: 'r 0.2s' }}
               />
               {showLabel && labelAlpha > 0.02 && (
-                <text
-                  x={n.x + r + 7}
-                  y={n.y + 4}
-                  fontSize={n.kind === 'project' ? 15 : 13}
-                  fontWeight={n.kind === 'project' ? 500 : 400}
-                  fontFamily="'VT323', monospace"
-                  fill={n.kind === 'project' ? '#f2efe9' : n.color}
-                  opacity={labelAlpha}
-                  style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
-                >
-                  {n.label}
-                </text>
+                <>
+                  {/* Darkened backdrop so background stars don't compete with
+                      the name's readability — width is a monospace estimate
+                      since SVG can't measure text without a DOM round-trip. */}
+                  <rect
+                    x={n.x + r + 4}
+                    y={n.y + 4 - (n.kind === 'project' ? 13 : 11)}
+                    width={n.label.length * (n.kind === 'project' ? 10 : 8.6) + 6}
+                    height={n.kind === 'project' ? 19 : 16}
+                    fill="#050505"
+                    opacity={Math.min(0.72, labelAlpha + 0.15)}
+                    style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
+                  />
+                  <text
+                    x={n.x + r + 7}
+                    y={n.y + 4}
+                    fontSize={n.kind === 'project' ? 17 : 15}
+                    fontWeight={n.kind === 'project' ? 500 : 400}
+                    fontFamily="'VT323', monospace"
+                    fill={n.kind === 'project' ? '#f2efe9' : n.color}
+                    opacity={Math.min(1, labelAlpha + 0.15)}
+                    style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
+                  >
+                    {n.label}
+                  </text>
+                </>
               )}
             </g>
           );

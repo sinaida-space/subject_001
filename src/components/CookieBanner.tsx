@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { notifyCookieBannerAcknowledged } from '@/lib/cookieBannerVisibility';
 
 // Bump this when the Privacy Policy's substance changes, so an acknowledgement
 // recorded against an older disclosure can be told apart from one against the
@@ -57,6 +58,7 @@ const CookieBanner = () => {
       // localStorage unavailable — the notice will simply reappear next visit.
     }
     setIsVisible(false);
+    notifyCookieBannerAcknowledged();
   };
 
   if (!isVisible) return null;

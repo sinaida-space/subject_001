@@ -413,7 +413,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     const nodeById = (id: string) => nodes.find((n) => n.id === id)!;
 
     // ── edges ──
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.3;
     for (let i = 0; i < GEDGES.length; i++) {
       const e = GEDGES[i];
       const a = nodeById(e.a);
@@ -422,8 +422,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       // Hero chains lit at rest, fading (heroFadeRef) once the pointer
       // engages the canvas at all; everything else a much quieter haze — a
       // lighter ambient web reads as spacious instead of a dense net of lines.
-      let op = HERO_EDGES.has(i) ? 0.22 * heroFadeRef.current : 0.05;
-      if (active) op = touchesActive ? 0.5 : 0.015;
+      let op = HERO_EDGES.has(i) ? 0.34 * heroFadeRef.current : 0.13;
+      if (active) op = touchesActive ? 0.65 : 0.04;
       ctx.strokeStyle = hexA(e.color, op);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
@@ -522,25 +522,25 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // Projects are the product — flagships read first, background works
         // stay legible but clearly recede.
         const bg = !!n.project?.background;
-        fs = isActive ? 16 : isNeighbor ? 14 : n.accent ? 15 : bg ? 11 : 13;
+        fs = isActive ? 17 : isNeighbor ? 15 : n.accent ? 16 : bg ? 12 : 14;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.45 : 0.22;
+          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.32;
         } else {
           // Hero labels recede toward the regular baseline as heroFadeRef fades,
           // so the whole "first highlight" (edges + label brightness) recedes
           // together rather than just the connecting lines dimming alone.
-          alpha = n.accent ? 0.8 + 0.18 * heroFadeRef.current : bg ? 0.45 : 0.72;
+          alpha = n.accent ? 0.85 + 0.15 * heroFadeRef.current : bg ? 0.6 : 0.85;
         }
       } else {
         // Skills tier below projects: accent skills (the signals a producer
         // scans for) hold a bright baseline; the rest are quiet texture until
         // hover pulls their cluster forward.
-        fs = isActive ? 15 : isNeighbor ? 14 : n.accent ? 13.5 : 12;
+        fs = isActive ? 16 : isNeighbor ? 15 : n.accent ? 14.5 : 13;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.9 : n.accent ? 0.45 : 0.18;
+          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.28;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
-          alpha = n.accent ? 0.85 : 0.55;
+          alpha = n.accent ? 0.95 : 0.75;
           useCategoryColor = false; // neutral warm-gray at rest
         }
       }
@@ -594,6 +594,11 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       labelBoxesRef.current.set(n.id, box);
       ctx.textAlign = flip ? 'right' : 'left';
       const tx = flip ? lx + tw : lx;
+      // Darkened backdrop under the name so background stars don't compete
+      // with the text — a plain solid pad rather than a soft gradient, kept
+      // cheap since it's redrawn every animating frame.
+      ctx.fillStyle = hexA('#050505', Math.min(0.72, alpha + 0.15));
+      ctx.fillRect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
       let color: string;
       if (n.kind === 'project') color = hexA('#f2efe9', alpha);
       else if (useCategoryColor) color = hexA(n.color, alpha);

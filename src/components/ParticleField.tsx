@@ -2,6 +2,8 @@ import { useRef, useMemo, useCallback, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
+import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
+import { heroTunnelBus } from '@/lib/heroTunnelBus';
 
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
@@ -106,9 +108,31 @@ function Particles({ subtle = false }: ParticleFieldProps) {
   const lastScrollRef = useRef(0);
   const velocityRef = useRef(0);
   const scrollDirRef = useRef(0);
+  const parallaxRef = useRef(0);
   const trailIndexRef = useRef(0);
   const timeRef = useRef(0);
+  // Tunnel-dive: eased 0..1 toward 1 while the hero name/role or headline is
+  // hovered, back toward 0 on mouse-leave. Purely a hover response — see
+  // heroTunnelBus. tunnelHoldStartRef timestamps when the current hover
+  // began, so the dive can accelerate the longer it's held rather than
+  // snapping straight to full speed — reset to null on release, so a fresh
+  // hover always restarts the ramp from the beginning.
+  const tunnelTargetRef = useRef(0);
+  const tunnelAmountRef = useRef(0);
+  const tunnelHoldStartRef = useRef<number | null>(null);
   const { viewport } = useThree();
+
+  useEffect(() => {
+    const unsub = heroTunnelBus.subscribe((active) => {
+      tunnelTargetRef.current = active ? 1 : 0;
+      if (active) {
+        if (tunnelHoldStartRef.current === null) tunnelHoldStartRef.current = performance.now();
+      } else {
+        tunnelHoldStartRef.current = null;
+      }
+    });
+    return unsub;
+  }, []);
 
   // Base particles
   const [positions, basePositions, colors, sizes] = useMemo(() => {
@@ -142,6 +166,17 @@ function Particles({ subtle = false }: ParticleFieldProps) {
     return [pos, base, col, siz];
   }, []);
 
+  // Per-star parallax coefficient, baked once: near stars travel several times
+  // further per screen of scroll than far ones, which is what makes the field
+  // read as depth instead of a flat backdrop.
+  const parallaxFactors = useMemo(() => {
+    const f = new Float32Array(particleCount);
+    for (let i = 0; i < particleCount; i++) {
+      f[i] = depthParallaxFactor(basePositions[i * 3 + 2]);
+    }
+    return f;
+  }, [basePositions, particleCount]);
+
   // Trail particles with custom attributes for expanding steam effect
   const [trailPositions, trailColors, trailSizes, trailAges] = useMemo(() => {
     const pos = new Float32Array(trailCount * 3);
@@ -165,6 +200,12 @@ function Particles({ subtle = false }: ParticleFieldProps) {
   const trailVelocitiesRef = useRef(new Float32Array(trailCount * 3).fill(0));
   // Per-star velocity for the spring-based settle (follow-through/overshoot)
   const starVelocitiesRef = useRef(new Float32Array(particleCount * 3).fill(0));
+  // How far each star has advanced into the tunnel, independent of the eased
+  // tunnelAmt above. Rendered depth is bz + travel*tunnelAmt (mirrors the X/Y
+  // "outward" factor below), so releasing hover eases the dive back home in
+  // lockstep with tunnelAmt's own damp instead of handing off to the spring-
+  // settle branch from some arbitrary, possibly-large depth offset.
+  const tunnelTravelRef = useRef(new Float32Array(particleCount).fill(0));
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (e.pointerType && e.pointerType !== 'mouse') return;
@@ -214,9 +255,27 @@ function Particles({ subtle = false }: ParticleFieldProps) {
     lastScrollRef.current = scrollRef.current;
     velocityRef.current = THREE.MathUtils.lerp(velocityRef.current, scrollAbs * 0.015, 0.15);
 
+    // Scroll position in viewport-heights, damped so a trackpad fling or a
+    // jump-link doesn't snap the whole field. Purely scroll-driven: at rest
+    // this contributes nothing and the stars hold still.
+    const screens = parallaxScreens(scrollRef.current, window.innerHeight);
+    parallaxRef.current = THREE.MathUtils.damp(parallaxRef.current, screens, 6, delta);
+    const parallax = parallaxRef.current;
+
     activityRef.current = THREE.MathUtils.damp(activityRef.current, 0, 2.4, delta);
     const activity = Math.max(activityRef.current, Math.min(velocityRef.current * 2, 1));
     const isActive = activity > 0.01;
+
+    // Tunnel-dive: eases toward the hover target, so engaging/releasing reads
+    // as a smooth warp-in/warp-out rather than a snap.
+    tunnelAmountRef.current = THREE.MathUtils.damp(tunnelAmountRef.current, tunnelTargetRef.current, 3, delta);
+    const tunneling = tunnelAmountRef.current > 0.01;
+    const tunnelAmt = tunnelAmountRef.current;
+    // Ramps 1x → ~3.2x over roughly 5s of continuously held hover.
+    const tunnelHoldSeconds = tunnelHoldStartRef.current !== null
+      ? (performance.now() - tunnelHoldStartRef.current) / 1000
+      : 0;
+    const tunnelHoldMult = 1 + Math.min(tunnelHoldSeconds / 4.5, 2.2);
 
     // === TRAIL: Dreamy expanding steam ===
     if (trailRef.current) {
@@ -329,13 +388,43 @@ function Particles({ subtle = false }: ParticleFieldProps) {
     for (let i = 0; i < particleCount; i++) {
       const ix = i * 3;
       const bx = basePositions[ix];
-      const by = basePositions[ix + 1];
+      // Home position is shifted by the depth parallax, so the spring settle
+      // below follows the drifting target instead of fighting it.
+      const by = basePositions[ix + 1] + parallax * parallaxFactors[i];
       const bz = basePositions[ix + 2];
 
       const floatX = Math.sin(timeRef.current * 0.25 + i * 0.1) * 0.012 * activity;
       const floatY = Math.cos(timeRef.current * 0.18 + i * 0.15) * 0.01 * activity;
 
-      if (isActive) {
+      if (tunneling) {
+        // Fly toward the camera (z=7) along each star's own radial direction
+        // from center, streaking outward as it nears — a warp/tunnel dive.
+        // Passing the camera wraps it back to the far side near the vanishing
+        // point, so the stream reads as continuous while hovered. Depth is
+        // travel*tunnelAmt (not a raw accumulator) so releasing the hover
+        // eases the dive back to bz at exactly the same rate tunnelAmt itself
+        // damps back to 0 — symmetric ease-in/ease-out, matching the X/Y
+        // outward factor below rather than handing a large depth offset to
+        // the fixed-stiffness settle spring once tunneling flips off.
+        const travel = tunnelTravelRef.current;
+        if (tunnelTargetRef.current === 1) {
+          const speed = (3.2 + Math.abs(bz) * 0.4) * tunnelHoldMult;
+          travel[i] += speed * delta;
+        }
+        const z = bz + travel[i] * tunnelAmt;
+        posArray[ix + 2] = z;
+        const depthT = THREE.MathUtils.clamp((z + 4) / 11, 0, 1);
+        const outward = 1 + depthT * depthT * 2.6 * tunnelAmt;
+        posArray[ix] = bx * outward + floatX;
+        posArray[ix + 1] = by * outward + floatY;
+        if (z > 7.2) {
+          travel[i] = (-6 - Math.random() * 2 - bz) / Math.max(tunnelAmt, 0.0001);
+          posArray[ix] = bx * 0.12;
+          posArray[ix + 1] = by * 0.12;
+        }
+        const vel = starVelocitiesRef.current;
+        vel[ix] = 0; vel[ix + 1] = 0; vel[ix + 2] = 0;
+      } else if (isActive) {
         const dx = posArray[ix] - mx;
         const dy = posArray[ix + 1] - my;
         const dist = Math.sqrt(dx * dx + dy * dy);

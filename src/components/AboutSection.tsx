@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, lazy, Suspense } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
+import { scrambleText } from '@/lib/scramble';
 
 const DustReveal = lazy(() => import('@/components/DustReveal'));
 
@@ -33,16 +34,6 @@ function Reveal({ delay = 0, children }: { delay?: number; children: React.React
   );
 }
 
-function scrambleText(text: string, amount: number) {
-  const chars = '░▒▓█/\\_';
-  return text
-    .split('')
-    .map((char) => {
-      if (char === ' ' || char === '.' || char === ',') return char;
-      return Math.random() < amount ? chars[Math.floor(Math.random() * chars.length)] : char;
-    })
-    .join('');
-}
 
 function BioSignalLock() {
   const ref = useRef<HTMLDivElement>(null);
@@ -247,17 +238,24 @@ export default function AboutSection() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
-              <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
+              {/* h2/p (not div) — matches Services' and Body of Work's own
+                  eyebrow+caption markup, so all four sections' labels pick up
+                  the same sitewide hover glitch/bloom (index.css) instead of
+                  some getting it and others silently not. */}
+              <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
                 About
-              </div>
-              <div className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
+              </h2>
+              <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
                 The story so far.
-              </div>
+              </p>
             </Reveal>
           </div>
           <div className="flex-1">
             <Reveal delay={50}>
-              <h2 className="font-display text-5xl md:text-7xl uppercase font-light leading-tight mb-10">
+              {/* Same scale as the Contact heading and a case study's project
+                  title (WorkCase h1) — one shared "section headline" size
+                  sitewide, a step below the hero. */}
+              <h2 className="font-display text-5xl md:text-6xl uppercase font-light leading-[0.95] mb-10">
                 Art, technology, and
                 <span className="text-primary font-bold"> human expression</span>
               </h2>

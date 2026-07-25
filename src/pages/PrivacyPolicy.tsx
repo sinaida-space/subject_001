@@ -1,4 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useRenderMode } from '@/hooks/useRenderMode';
+
+const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 const PrivacyPolicy = () => {
   usePageMeta({
@@ -7,9 +11,18 @@ const PrivacyPolicy = () => {
     canonical: 'https://sinaida.eu/privacy/',
   });
 
+  const { mode } = useRenderMode();
+
   return (
-    <div id="main-content" tabIndex={-1} className="min-h-screen bg-background py-24">
-      <div className="container mx-auto px-6 max-w-3xl">
+    <div id="main-content" tabIndex={-1} className="relative min-h-screen bg-background py-24">
+      {/* Same starfield as the case study template — dialed down, a subtle
+          sense of continuity behind a page that's mostly here to be read. */}
+      {mode === 'full' && (
+        <Suspense fallback={null}>
+          <ParticleField subtle />
+        </Suspense>
+      )}
+      <div className="container relative z-10 mx-auto px-6 max-w-3xl">
         <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
           ← Back
         </a>
