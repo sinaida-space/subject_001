@@ -316,6 +316,29 @@
   .hero-glow-active .hero-ghost-red { animation: hero-flash-red 1.1s ease-in-out infinite; }
   .hero-glow-active .hero-ghost-white { animation: hero-flash-white 1.1s ease-in-out infinite; }
 
+  /* Whisper question — surfaces mid-hover/hold over the starfield (see
+     useHeroWhisper in HeroSection.tsx). Evaporates via blur+scale rather
+     than a plain fade so it reads as dissolving into the galaxy, not a UI
+     toast appearing/disappearing. */
+  .hero-whisper {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(6px);
+    transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+  }
+  .hero-whisper-visible {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  .hero-whisper-text {
+    color: #fff;
+    text-shadow:
+      0 0 6px hsl(var(--primary) / 0.55),
+      0 0 18px hsl(var(--primary) / 0.32),
+      0 0 34px hsl(var(--primary) / 0.16);
+  }
+
   /* ECG lock pulse — traces a hovered target's outline once, never loops */
   .cursor-lock-pulse {
     stroke-dasharray: 1;

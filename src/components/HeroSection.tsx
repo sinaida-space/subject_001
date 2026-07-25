@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { useScrambleReveal } from '@/hooks/useScrambleReveal';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
@@ -8,6 +8,72 @@ const ROLE = 'NEW MEDIA ARTIST';
 const EYEBROW = `${NAME} | ${ROLE}`;
 const LINE_A = 'VISUAL WORLDS FOR ';
 const LINE_B = 'PHYSICAL SPACES';
+
+// Asked one at a time during a sustained hover/hold — see useHeroWhisper.
+const WHISPER_QUESTIONS = [
+  "DIDN'T YOU COME HERE TO SEE WHO I AM?",
+  'WHAT BROUGHT YOU HERE?',
+  'WHAT DO YOU SEE IN THE NOISE?',
+  'WHAT DO YOU FEEL NOW?',
+  'WHAT WOULD MAKE TODAY FEEL WELL SPENT?',
+  'WHEN DID YOU LAST LOSE TRACK OF TIME?',
+  'WHAT ARE YOU QUIETLY PROUD OF?',
+  "WHAT WOULD YOU DO IF YOU KNEW YOU COULDN'T FAIL?",
+  'WHAT DO YOU WISH SOMEONE ASKED YOU MORE OFTEN?',
+  'WHAT ARE YOU AFRAID TO WISH FOR?',
+  'WHEN DID YOU LAST FEEL COMPLETELY YOURSELF?',
+  'WHAT WOULD YOU DO IF NO ONE WAS WATCHING?',
+  'WHAT DO YOU KEEP RETURNING TO?',
+  "WHAT WOULD YOU CREATE IF TIME DIDN'T MATTER?",
+];
+
+// Surfaces a random question 2s into a sustained hover/hold, holds it for
+// 3s, evaporates it, then (while still active) waits 2s and asks another —
+// never repeating the immediately-previous question. Fully idle (not
+// active) the moment hover/hold ends; no timers survive a mouseleave/touchend.
+function useHeroWhisper(active: boolean, pool: string[]) {
+  const [text, setText] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
+  const lastIndexRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!active || pool.length === 0) {
+      setVisible(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timeouts: number[] = [];
+    const wait = (ms: number, fn: () => void) => {
+      timeouts.push(window.setTimeout(() => { if (!cancelled) fn(); }, ms));
+    };
+    const pickNext = () => {
+      if (pool.length === 1) return pool[0];
+      let idx = Math.floor(Math.random() * pool.length);
+      while (idx === lastIndexRef.current) idx = Math.floor(Math.random() * pool.length);
+      lastIndexRef.current = idx;
+      return pool[idx];
+    };
+    const cycle = () => {
+      wait(2000, () => {
+        setText(pickNext());
+        setVisible(true);
+        wait(3000, () => {
+          setVisible(false);
+          cycle();
+        });
+      });
+    };
+    cycle();
+
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+    };
+  }, [active, pool]);
+
+  return { text, visible };
+}
 
 // Per-letter spans so the hover effect (drift + heartbeat glow + ghost
 // flash, see .hero-ltr/.hero-glow-active in index.css) can animate each
@@ -57,24 +123,39 @@ export default function HeroSection() {
   const [glowing, setGlowing] = useState(false);
   const enterTunnel = () => { if (canHover()) { heroTunnelBus.setActive(true); setGlowing(true); } };
   const leaveTunnel = () => { if (canHover()) { heroTunnelBus.setActive(false); setGlowing(false); } };
-  // Touch has no hover state to key off, so the same effect toggles on tap
-  // instead — full mode only (lite skips it entirely, same as everywhere
-  // else heavy motion is gated). Desktop pointers no-op here since canHover()
-  // is true there and the enter/leave handlers above already own it.
-  const tapTunnel = () => {
+  // Touch has no hover state to key off, so the same effect runs for as long
+  // as a tap is held anywhere on the hero — full mode only (lite skips it
+  // entirely, same as everywhere else heavy motion is gated). Desktop
+  // pointers no-op here since canHover() is true there and the enter/leave
+  // handlers above already own it.
+  const holdTunnel = () => {
     if (lite || canHover()) return;
-    setGlowing((g) => {
-      const next = !g;
-      heroTunnelBus.setActive(next);
-      return next;
-    });
+    heroTunnelBus.setActive(true);
+    setGlowing(true);
+  };
+  const releaseTunnel = () => {
+    if (lite || canHover()) return;
+    heroTunnelBus.setActive(false);
+    setGlowing(false);
   };
   const glowClass = `hero-glow${glowing ? ' hero-glow-active' : ''}`;
+  const whisper = useHeroWhisper(glowing, WHISPER_QUESTIONS);
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-[18vh] md:pb-[20vh]">
+      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-[18vh] md:pb-[20vh]"
+      onTouchStart={holdTunnel}
+      onTouchEnd={releaseTunnel}
+      onTouchCancel={releaseTunnel}
+    >
+      {/* Whisper question — see useHeroWhisper. Centered over the void
+          between the two headline anchors, not tied to cursor position. */}
+      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-8 text-center" aria-hidden="true">
+        <p className={`hero-whisper hero-whisper-text font-display uppercase tracking-tight text-[clamp(1.1rem,3.4vw,1.9rem)] ${whisper.visible ? 'hero-whisper-visible' : ''}`}>
+          {whisper.text}
+        </p>
+      </div>
 
       <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl mt-6 md:mt-10">
         {/* Same face and same size as the headline. The two lines are one
@@ -86,7 +167,6 @@ export default function HeroSection() {
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(2.3rem,11.5vw,4.15rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
-          onClick={tapTunnel}
         >
           <span className="hero-layer hero-layer-base">
             <Letters text={nameDisplay} prefix="eb-n" />
@@ -118,7 +198,6 @@ export default function HeroSection() {
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(2.3rem,11.5vw,4.15rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
-          onClick={tapTunnel}
         >
           <span className="hero-layer hero-layer-base">
             <Letters text={headA} prefix="ha" />

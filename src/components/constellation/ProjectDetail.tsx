@@ -74,26 +74,7 @@ function Readout({ project }: { project: Project }) {
           </span>
         </div>
 
-        <h3 className="mt-2 font-display text-2xl text-foreground md:text-3xl">{project.title}</h3>
-
-        {project.blurb && (
-          <p className="mt-3 max-w-[62ch] font-mono text-[14px] leading-snug text-foreground/80">
-            {project.blurb}
-          </p>
-        )}
-
-        {project.tools && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {project.tools.map((t) => (
-              <span
-                key={t}
-                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'var(--font-mono)', fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        )}
+        <h3 className="mt-2 font-display text-2xl uppercase text-foreground md:text-3xl">{project.title}</h3>
 
         {(links.length > 0 || CASE_PAGES[project.id] || project.essay) && (
           <div className="mt-3 flex flex-wrap gap-4">
@@ -124,6 +105,25 @@ function Readout({ project }: { project: Project }) {
               >
                 {l.label} ↗
               </a>
+            ))}
+          </div>
+        )}
+
+        {project.blurb && (
+          <p className="mt-3 w-full font-mono text-[14px] leading-snug text-foreground/80">
+            {project.blurb}
+          </p>
+        )}
+
+        {project.tools && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {project.tools.map((t) => (
+              <span
+                key={t}
+                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'var(--font-mono)', fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
+              >
+                {t}
+              </span>
             ))}
           </div>
         )}
