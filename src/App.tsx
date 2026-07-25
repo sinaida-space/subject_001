@@ -1,8 +1,4 @@
 import { Suspense, lazy, useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
@@ -12,8 +8,6 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Collaborate = lazy(() => import("./pages/Collaborate"));
 const WorkCase = lazy(() => import("./pages/WorkCase"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-
-const queryClient = new QueryClient();
 
 const RouteFallback = () => (
   <div className="min-h-screen bg-background" aria-hidden="true" />
@@ -39,36 +33,30 @@ const ScrollToTop = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <RenderModeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter basename="/">
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-background focus:text-primary-legible focus:border focus:border-primary focus:px-4 focus:py-2 focus:font-mono focus:uppercase focus:text-sm focus:tracking-widest"
-          >
-            Skip to content
-          </a>
-          <ScrollToTop />
-          <SiteCursor />
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/collaborate" element={<Collaborate />} />
-              {/* Old routes live in shared links and search results — keep redirecting */}
-              <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
-              <Route path="/press" element={<Navigate to="/collaborate" replace />} />
-              <Route path="/work/:slug" element={<WorkCase />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
-    </RenderModeProvider>
-  </QueryClientProvider>
+  <RenderModeProvider>
+    <BrowserRouter basename="/">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-background focus:text-primary-legible focus:border focus:border-primary focus:px-4 focus:py-2 focus:font-mono focus:uppercase focus:text-sm focus:tracking-widest"
+      >
+        Skip to content
+      </a>
+      <ScrollToTop />
+      <SiteCursor />
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/collaborate" element={<Collaborate />} />
+          {/* Old routes live in shared links and search results — keep redirecting */}
+          <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
+          <Route path="/press" element={<Navigate to="/collaborate" replace />} />
+          <Route path="/work/:slug" element={<WorkCase />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  </RenderModeProvider>
 );
 
 export default App;

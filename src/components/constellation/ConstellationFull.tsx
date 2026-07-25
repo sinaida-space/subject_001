@@ -483,7 +483,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const rr = n.r * (isActive ? 1.5 : n.accent ? 1.15 : 1);
       ctx.beginPath();
       ctx.arc(n.x, n.y, rr, 0, Math.PI * 2);
-      ctx.fillStyle = n.kind === 'project' ? hexA('#ffffff', 0.9 * intensity) : hexA(n.color, 0.9 * intensity);
+      // OFF_WHITE, same constant the project label uses below — was a pure
+      // '#ffffff' that made the dot read colder than its own text.
+      ctx.fillStyle = n.kind === 'project' ? hexA(OFF_WHITE, 0.9 * intensity) : hexA(n.color, 0.9 * intensity);
       ctx.fill();
       if (n.kind === 'project') {
         ctx.beginPath();
