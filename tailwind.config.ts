@@ -93,7 +93,12 @@ export default {
   				cyan: 'hsl(var(--accent))',
   				magenta: 'hsl(var(--neon-magenta))'
   			},
-  			clinical: 'hsl(var(--clinical))',
+  			cathode: 'hsl(var(--cathode))',
+			graphite: 'hsl(var(--graphite))',
+			gunmetal: 'hsl(var(--gunmetal))',
+			slate: 'hsl(var(--slate))',
+			fog: 'hsl(var(--fog))',
+			haze: 'hsl(var(--haze))',
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar-background))',
   				foreground: 'hsl(var(--sidebar-foreground))',

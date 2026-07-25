@@ -57,7 +57,7 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           />
           <span
             className="relative flex h-14 w-14 items-center justify-center rounded-full border border-primary/70 bg-black/50 backdrop-blur-sm transition-transform group-hover:scale-110"
-            style={{ boxShadow: '0 0 24px rgba(255,59,82,0.4)' }}
+            style={{ boxShadow: '0 0 24px hsl(var(--sinaida-red) / 0.4)' }}
           >
             <span className="ml-1 block h-0 w-0 border-y-[9px] border-l-[15px] border-y-transparent border-l-primary" />
           </span>

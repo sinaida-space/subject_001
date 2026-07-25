@@ -24,8 +24,8 @@ export default function SignalChain({ stages }: SignalChainProps) {
     <div>
       <style>{`
         @keyframes sc-node-glow {
-          0%, 8% { background: #ff3333; box-shadow: 0 0 12px rgba(255,51,51,0.85), 0 0 24px rgba(255,51,51,0.35); }
-          22%, 100% { background: #1a1a1a; box-shadow: none; }
+          0%, 8% { background: hsl(var(--sinaida-red)); box-shadow: 0 0 12px hsl(var(--sinaida-red) / 0.85), 0 0 24px hsl(var(--sinaida-red) / 0.35); }
+          22%, 100% { background: hsl(var(--graphite)); box-shadow: none; }
         }
         @keyframes sc-dot-v {
           0% { top: 0%; opacity: 0; }
@@ -34,10 +34,10 @@ export default function SignalChain({ stages }: SignalChainProps) {
           26%, 100% { top: 100%; opacity: 0; }
         }
         .sc-node { border-radius: 50%; animation: sc-node-glow ${CYCLE}s linear infinite; }
-        .sc-connector { position: relative; width: 1px; flex: 1 1 auto; min-height: 24px; background: #1a1a1a; }
+        .sc-connector { position: relative; width: 1px; flex: 1 1 auto; min-height: 24px; background: hsl(var(--graphite)); }
         .sc-dot {
           position: absolute; left: -2px; width: 5px; height: 5px; border-radius: 50%;
-          background: #ff3333; box-shadow: 0 0 6px rgba(255,51,51,0.9), 0 0 14px rgba(255,51,51,0.5);
+          background: hsl(var(--sinaida-red)); box-shadow: 0 0 6px hsl(var(--sinaida-red) / 0.9), 0 0 14px hsl(var(--sinaida-red) / 0.5);
           animation: sc-dot-v ${CYCLE}s linear infinite;
         }
         @media (prefers-reduced-motion: reduce) {
@@ -63,7 +63,7 @@ export default function SignalChain({ stages }: SignalChainProps) {
             <div className={i < stages.length - 1 ? 'pb-6 min-w-0' : 'min-w-0'}>
               <div
                 className="font-mono uppercase"
-                style={{ fontSize: '16px', letterSpacing: '0.15em', color: '#ff3333' }}
+                style={{ fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--primary-legible))' }}
               >
                 {String(i + 1).padStart(2, '0')} · {stage.label}
               </div>

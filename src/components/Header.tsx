@@ -72,13 +72,15 @@ export default function Header() {
   };
 
   const contactEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.currentTarget.style.background = '#ff3333';
+    // --primary-legible, not raw --sinaida-red: this is a solid fill behind
+    // black text, and cd0000 alone only clears ~3.6:1 there — below AA.
+    e.currentTarget.style.background = 'hsl(var(--primary-legible))';
     e.currentTarget.style.color = '#000';
   };
 
   const contactLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
-    e.currentTarget.style.color = '#ff3333';
+    e.currentTarget.style.background = 'hsl(var(--sinaida-red) / 0.06)';
+    e.currentTarget.style.color = 'hsl(var(--primary-legible))';
   };
 
   return (
@@ -102,7 +104,7 @@ export default function Header() {
               type="button"
               onClick={() => toggle()}
               className={`cursor-none flex items-center justify-center h-9 transition-colors text-primary-legible/70 hover:text-accent ${mode === 'full' ? 'w-9' : 'px-3'}`}
-              style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
+              style={{ border: mode === 'full' ? 'none' : '1px solid hsl(var(--foreground) / 0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
             >
@@ -111,7 +113,7 @@ export default function Header() {
             <a
               href={navHref('#contact')}
               className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 flex items-center h-9 transition-all duration-300 cursor-none"
-              style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
+              style={{ border: '1px solid hsl(var(--sinaida-red))', color: 'hsl(var(--primary-legible))', background: 'hsl(var(--sinaida-red) / 0.06)' }}
               onMouseEnter={contactEnter}
               onMouseLeave={contactLeave}
             >
@@ -124,7 +126,7 @@ export default function Header() {
               type="button"
               onClick={() => toggle()}
               className={`flex items-center justify-center h-8 sm:h-9 transition-colors text-primary-legible/70 ${mode === 'full' ? 'w-8 sm:w-9' : 'px-2 sm:px-3'}`}
-              style={{ border: mode === 'full' ? 'none' : '1px solid rgba(255,255,255,0.12)' }}
+              style={{ border: mode === 'full' ? 'none' : '1px solid hsl(var(--foreground) / 0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
             >
@@ -133,12 +135,12 @@ export default function Header() {
             <button
               className="flex flex-col justify-center items-center w-8 h-8 sm:w-9 sm:h-9 gap-[5px]"
               onClick={() => setMenuOpen(!menuOpen)}
-              style={{ background: 'none', border: '1px solid #ff3333', cursor: 'pointer', padding: 0, zIndex: 60 }}
+              style={{ background: 'none', border: '1px solid hsl(var(--sinaida-red))', cursor: 'pointer', padding: 0, zIndex: 60 }}
               aria-label="Menu"
             >
-              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none') }} />
-              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', opacity: mode === 'lite' ? 1 : (menuOpen ? 0 : 1) }} />
-              <span style={{ display: 'block', width: 16, height: 1.5, background: '#ff3333', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none') }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: 'hsl(var(--sinaida-red))', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(6.5px) rotate(45deg)' : 'none') }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: 'hsl(var(--sinaida-red))', transition: mode === 'lite' ? 'none' : 'all 0.3s', opacity: mode === 'lite' ? 1 : (menuOpen ? 0 : 1) }} />
+              <span style={{ display: 'block', width: 16, height: 1.5, background: 'hsl(var(--sinaida-red))', transition: mode === 'lite' ? 'none' : 'all 0.3s', transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : 'none') }} />
             </button>
           </div>
 
@@ -148,7 +150,7 @@ export default function Header() {
       <div
         className="lg:hidden fixed inset-0 z-40 flex flex-col justify-center items-start"
         style={{
-          background: mode === 'lite' ? '#ffffff' : 'rgba(4,4,4,0.97)',
+          background: mode === 'lite' ? 'hsl(var(--background))' : 'hsl(var(--background) / 0.97)',
           backdropFilter: mode === 'lite' ? 'none' : 'blur(12px)',
           opacity: menuOpen ? 1 : 0,
           pointerEvents: menuOpen ? 'all' : 'none',
@@ -167,7 +169,7 @@ export default function Header() {
               fontSize: 28,
               fontWeight: 300,
               textTransform: 'uppercase',
-              color: mode === 'lite' ? '#0a0a0a' : '#ffffff',
+              color: 'hsl(var(--foreground))',
               letterSpacing: '0.1em',
               marginBottom: 20,
               textDecoration: 'none',
@@ -189,9 +191,9 @@ export default function Header() {
             fontSize: 16,
             letterSpacing: '0.2em',
             padding: '12px 28px',
-            border: '1px solid #ff3333',
-            color: '#ff3333',
-            background: 'rgba(255,51,51,0.06)',
+            border: '1px solid hsl(var(--sinaida-red))',
+            color: 'hsl(var(--primary-legible))',
+            background: 'hsl(var(--sinaida-red) / 0.06)',
             textDecoration: 'none',
             opacity: menuOpen ? 1 : 0,
             transform: mode === 'lite' ? 'none' : (menuOpen ? 'translateX(0)' : 'translateX(-16px)'),
@@ -213,16 +215,16 @@ export default function Header() {
             border: 'none',
             padding: 0,
             cursor: 'pointer',
-            color: mode === 'lite' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.45)',
+            color: mode === 'lite' ? 'hsl(var(--foreground) / 0.5)' : 'hsl(var(--foreground) / 0.45)',
             opacity: menuOpen ? 1 : 0,
             transition: mode === 'lite' ? 'none' : 'opacity 0.35s ease',
           }}
           aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
         >
-          View: <span style={{ color: '#ff3333' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
+          View: <span style={{ color: 'hsl(var(--primary-legible))' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
         </button>
 
-        <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 16, color: mode === 'lite' ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 16, color: mode === 'lite' ? 'hsl(var(--foreground) / 0.65)' : 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>

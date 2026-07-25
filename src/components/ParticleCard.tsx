@@ -13,7 +13,7 @@ const PARTICLE_COUNT = 3000;
 export default function ParticleCard({
   children,
   particleColor = '#00ffff',
-  accentColor = '#ff3333',
+  accentColor = '#cd0000', // sinaida-red — THREE.Color needs a literal, not var()
 }: ParticleCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);

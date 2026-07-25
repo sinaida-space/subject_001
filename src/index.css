@@ -23,7 +23,8 @@
 
 @layer base {
   :root {
-    --background: 280 33% 3%;
+    /* Void — see docs/design-system.md */
+    --background: 0 0% 2%;
     --foreground: 0 0% 88%;
 
     --card: 240 8% 6%;
@@ -32,13 +33,22 @@
     --popover: 240 8% 6%;
     --popover-foreground: 0 0% 88%;
 
-    --primary: 352 87% 40%;
+    /* cd0000 — THE single brand red. Every other red token/hardcoded value
+       in the codebase should point back to this one. See docs/design-system.md. */
+    --sinaida-red: 0 100% 40%;
+
+    --primary: var(--sinaida-red);
     --primary-foreground: 0 0% 100%;
-    /* Same hue/saturation as --primary, lightness raised to clear WCAG AA
+    /* Same hue/saturation as --sinaida-red, lightness raised to clear WCAG AA
        4.5:1 against --background for SMALL informational text only (labels,
        eyebrows, ~12px). Large text/headings, buttons, and decorative accents
-       must keep using --primary — do not replace those. See AA contrast fix. */
-    --primary-legible: 352 87% 52%;
+       must keep using --primary/--sinaida-red — do not replace those.
+       Confirmed 5.14:1. */
+    --primary-legible: 0 100% 52%;
+    /* One step brighter still — hover state for a --primary-legible link
+       (e.g. the cookie notice, see .notice-surface a:hover). Was a bare
+       #ff6b6b with no token backing it. */
+    --primary-hover: 0 100% 71%;
 
     --secondary: 240 6% 10%;
     --secondary-foreground: 0 0% 75%;
@@ -46,7 +56,7 @@
     --muted: 240 5% 12%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 0 100% 49%;
+    --accent: var(--sinaida-red);
     --accent-foreground: 240 10% 3%;
 
     --destructive: 0 84.2% 60.2%;
@@ -54,15 +64,23 @@
 
     --border: 240 6% 15%;
     --input: 240 6% 15%;
-    --ring: 352 87% 40%;
+    --ring: var(--sinaida-red);
 
     --radius: 0px;
 
     --neon-magenta: 320 100% 55%;
-    --neon-glow: 352 87% 40%;
-    --clinical: 180 15% 70%;
+    --neon-glow: var(--sinaida-red);
+    /* Cathode — was --clinical, same value. See docs/design-system.md. */
+    --cathode: 180 15% 70%;
     --particle-white: 40 67% 96%;
     --bloom-cyan: 0 100% 49%;
+
+    /* Gray scale — Graphite → Haze. See docs/design-system.md. */
+    --graphite: 0 0% 15%;
+    --gunmetal: 0 0% 30%;
+    --slate: 0 0% 45%;
+    --fog: 0 0% 60%;
+    --haze: 0 0% 80%;
 
     /* Metrically-close system fallbacks so `font-display: swap` (set on the
        Google Fonts link in index.html) doesn't cause a visible text reflow
@@ -90,19 +108,23 @@
      HSL tokens everything else already renders through, so it doesn't need
      a parallel set of components. */
   html[data-mode="lite"] {
-    --background: 0 0% 100%;
+    /* Chalk — see docs/design-system.md */
+    --background: 0 0% 96%;
     --foreground: 0 0% 8%;
-    --card: 0 0% 100%;
+    --card: 0 0% 96%;
     --card-foreground: 0 0% 8%;
-    --popover: 0 0% 100%;
+    --popover: 0 0% 96%;
     --popover-foreground: 0 0% 8%;
-    --primary: 352 87% 42%;
+    /* --sinaida-red, same red as dark mode — confirmed 5.35:1 against Chalk. */
+    --primary: var(--sinaida-red);
     --primary-foreground: 0 0% 100%;
-    --primary-legible: 352 87% 38%;
+    --primary-legible: var(--sinaida-red);
     --secondary: 0 0% 95%;
     --secondary-foreground: 0 0% 8%;
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 15%;
+    /* Deliberately not the brand red: lite mode is a flat black-and-white
+       read mode with no color and no motion by design. See docs/design-system.md. */
     --accent: 0 0% 8%;
     --accent-foreground: 0 0% 100%;
     --border: 0 0% 85%;
@@ -260,7 +282,7 @@
   }
 
   .hero-ghost-red {
-    color: #ff3333;
+    color: hsl(var(--sinaida-red));
   }
 
   .hero-ghost-white {
@@ -541,16 +563,16 @@
       0 -4px 10px -6px hsl(var(--accent) / 0.16);
   }
 
-  /* --accent (#FA0000) measures 4.65:1 on the opaque card, which leaves no
-     room once a translucent surface lifts the background. #FF3333 is already
-     the site's brighter red (header Contact) and holds ~5:1 even against a
-     noticeably lit backdrop. */
+  /* --sinaida-red measures ~3.5:1 on the opaque card, which leaves no room
+     once a translucent surface lifts the background further. --primary-legible
+     is the token already built for exactly this — same hue, raised lightness,
+     confirmed ~5:1 even against a noticeably lit backdrop. */
   .notice-surface a {
-    color: #ff3333;
+    color: hsl(var(--primary-legible));
   }
 
   .notice-surface a:hover {
-    color: #ff6b6b;
+    color: hsl(var(--primary-hover));
   }
 
   /* A short light leak off the top edge. Kept to ~16px: the point is to hint
@@ -585,7 +607,7 @@
     display: none;
   }
 
-  /* Lite is a white page, where #ff3333 would fail. Back to the token, which
+  /* Lite is a white page, where the raised --primary-legible would fail. Back to the token, which
      resolves near-black here and measured 18:1 on white. */
   html[data-mode="lite"] .notice-surface a,
   html[data-mode="lite"] .notice-surface a:hover {

@@ -120,7 +120,7 @@ function BioSignalLock() {
                 transition: 'color 0.35s ease',
               }}
             >
-              <span style={{ color: locked ? 'hsl(var(--foreground) / 0.75)' : '#ff3333', animation: locked ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
+              <span style={{ color: locked ? 'hsl(var(--foreground) / 0.75)' : 'hsl(var(--primary-legible))', animation: locked ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
                 {locked ? key : scrambleText(key, amount)}
               </span>
               <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
@@ -160,7 +160,7 @@ function PhotoBlock() {
         className="photo-frame-wrapper"
         style={{
           position: 'relative',
-          border: '1px solid rgba(255,51,51,0.4)',
+          border: '1px solid hsl(var(--sinaida-red) / 0.4)',
           boxShadow: '0 0 0 1px hsl(var(--accent) / 0.15), inset 0 0 30px rgba(0,0,0,0.5)',
         }}
       >
@@ -293,9 +293,9 @@ export default function AboutSection() {
                 <Reveal delay={900}>
                   <div className="font-mono" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
-                    <span style={{ color: '#ff3333' }}> · </span>
+                    <span style={{ color: 'hsl(var(--primary-legible))' }}> · </span>
                     {'REACH: Global'}
-                    <span style={{ color: '#ff3333' }}> · </span>
+                    <span style={{ color: 'hsl(var(--primary-legible))' }}> · </span>
                     {'AVAILABLE: Projects between engineering and emotion'}
                   </div>
                 </Reveal>

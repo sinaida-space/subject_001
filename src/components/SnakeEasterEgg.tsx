@@ -45,11 +45,11 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     const s = stateRef.current;
 
     // Background — dark grid
-    ctx.fillStyle = '#060606';
+    ctx.fillStyle = '#050505'; // Void
     ctx.fillRect(0, 0, SIZE, SIZE);
 
     // Grid lines
-    ctx.strokeStyle = '#1a1a1a';
+    ctx.strokeStyle = '#262626'; // Graphite
     ctx.lineWidth = 0.5;
     for (let i = 0; i <= GRID; i++) {
       ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, SIZE); ctx.stroke();
@@ -62,7 +62,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
       ctx.font = 'bold 13px monospace';
       ctx.textAlign = 'center';
       ctx.fillText('PRESS ANY KEY', SIZE / 2, SIZE / 2 - 10);
-      ctx.fillStyle = '#555';
+      ctx.fillStyle = '#737373'; // Slate
       ctx.font = '10px monospace';
       ctx.fillText('or swipe to start', SIZE / 2, SIZE / 2 + 10);
       return;
@@ -89,7 +89,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 
     // ECG line overlay on snake head
     const head = s.snake[0];
-    ctx.strokeStyle = '#FF3333';
+    ctx.strokeStyle = '#cd0000'; // sinaida-red
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(head.x * CELL, head.y * CELL + CELL / 2);
@@ -108,10 +108,10 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
       ctx.font = 'bold 14px monospace';
       ctx.textAlign = 'center';
       ctx.fillText('FLATLINE', SIZE / 2, SIZE / 2 - 20);
-      ctx.fillStyle = '#888';
+      ctx.fillStyle = '#999999'; // Fog
       ctx.font = '10px monospace';
       ctx.fillText(`SCORE: ${s.score}`, SIZE / 2, SIZE / 2);
-      ctx.fillStyle = '#555';
+      ctx.fillStyle = '#737373'; // Slate
       ctx.fillText('PRESS R OR TAP TO RESTART', SIZE / 2, SIZE / 2 + 20);
     }
   }, []);
@@ -247,12 +247,12 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
       <div style={{
         border: '1px solid #CC1414',
         boxShadow: '0 0 40px rgba(204,20,20,0.3)',
-        background: '#060606',
+        background: 'hsl(var(--background))',
         padding: '0',
       }}>
         {/* Header */}
         <div style={{
-          borderBottom: '1px solid #1a1a1a',
+          borderBottom: '1px solid hsl(var(--graphite))',
           padding: '8px 12px',
           display: 'flex',
           justifyContent: 'space-between',
@@ -264,7 +264,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           <button
             onClick={onClose}
             style={{
-              fontFamily: 'var(--font-mono)', fontSize: '16px', color: '#555',
+              fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--slate))',
               background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px'
             }}
           >
@@ -282,15 +282,15 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 
         {/* Footer controls hint */}
         <div style={{
-          borderTop: '1px solid #1a1a1a',
+          borderTop: '1px solid hsl(var(--graphite))',
           padding: '6px 12px',
           display: 'flex',
           justifyContent: 'space-between',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: '#333' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--gunmetal))' }}>
             ↑ ↓ ← → or WASD
           </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: '#333' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--gunmetal))' }}>
             swipe on mobile
           </span>
         </div>
@@ -313,8 +313,8 @@ const btnStyle: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: '16px',
   color: '#CC1414',
-  background: '#0a0a0a',
-  border: '1px solid #1a1a1a',
+  background: 'hsl(var(--background))',
+  border: '1px solid hsl(var(--graphite))',
   padding: '8px',
   cursor: 'pointer',
   textAlign: 'center',

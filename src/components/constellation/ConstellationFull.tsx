@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { buildGraph, buildAdjacency, type GraphNode } from '@/data/graph';
+import { buildGraph, buildAdjacency, type GraphNode, OFF_WHITE } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 import { synth, type VoiceKind } from '@/lib/constellationSynth';
@@ -51,7 +51,9 @@ GEDGES.forEach((e, i) => {
 // Neutral warm-gray for skill labels at rest — kills the "rainbow dashboard" look.
 // The category color returns only as a hover/active response (see label drawing).
 // Hex (not rgba) so per-tier alpha can be applied via hexA at draw time.
-const SKILL_LABEL_REST = '#f0efe9';
+// Was '#f0efe9' (one-character drift from OFF_WHITE) — now the same constant
+// everything else in the constellation uses.
+const SKILL_LABEL_REST = OFF_WHITE;
 
 // ── Pre-baked radial glow sprite, one per colour (additive bloom, no shader) ──
 const glowCache = new Map<string, HTMLCanvasElement>();
@@ -597,10 +599,10 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       // Darkened backdrop under the name so background stars don't compete
       // with the text — a plain solid pad rather than a soft gradient, kept
       // cheap since it's redrawn every animating frame.
-      ctx.fillStyle = hexA('#050505', Math.min(0.72, alpha + 0.15));
+      ctx.fillStyle = hexA('#050505', Math.min(0.72, alpha + 0.15)); // Void — canvas needs a literal, not var()
       ctx.fillRect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
       let color: string;
-      if (n.kind === 'project') color = hexA('#f2efe9', alpha);
+      if (n.kind === 'project') color = hexA(OFF_WHITE, alpha);
       else if (useCategoryColor) color = hexA(n.color, alpha);
       else color = hexA(SKILL_LABEL_REST, alpha);
       ctx.fillStyle = color;
@@ -620,11 +622,11 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     if (playhead >= 0) {
       const px = 6 + playhead * (w - 12);
       const grad = ctx.createLinearGradient(px - 10, 0, px + 2, 0);
-      grad.addColorStop(0, 'rgba(255,59,82,0)');
-      grad.addColorStop(1, 'rgba(255,59,82,0.5)');
+      grad.addColorStop(0, 'rgba(205,0,0,0)');
+      grad.addColorStop(1, 'rgba(205,0,0,0.5)');
       ctx.fillStyle = grad;
       ctx.fillRect(px - 10, 0, 10, h);
-      ctx.strokeStyle = 'rgba(255,80,100,0.7)';
+      ctx.strokeStyle = 'rgba(205,0,0,0.7)'; // sinaida-red — canvas needs a literal, not var()
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(px, 0);
@@ -636,7 +638,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     // ── Shine: one-second full-graph bloom on each drop. Eases back to 0.
     if (shineRef.current > 0.004) {
       ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = hexA('#f2efe9', shineRef.current * 0.12);
+      ctx.fillStyle = hexA(OFF_WHITE, shineRef.current * 0.12);
       ctx.fillRect(0, 0, w, h);
       ctx.globalCompositeOperation = 'source-over';
       shineRef.current *= 0.92;

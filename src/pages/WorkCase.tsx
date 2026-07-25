@@ -61,13 +61,13 @@ export default function WorkCase() {
             <div className="flex flex-wrap items-center gap-3">
               <span
                 style={{
-                  border: '1px solid #ff3333',
+                  border: '1px solid hsl(var(--sinaida-red))',
                   padding: '3px 8px',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '16px',
                   letterSpacing: '0.15em',
                   textTransform: 'uppercase',
-                  color: '#ff3333',
+                  color: 'hsl(var(--primary-legible))',
                 }}
               >
                 {cs.kindLabel}
@@ -111,7 +111,7 @@ export default function WorkCase() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-6 inline-block font-mono text-[13px] uppercase tracking-[0.15em] text-foreground transition-colors hover:text-accent"
-                style={{ border: '1px solid #ff3333', padding: '12px 24px' }}
+                style={{ border: '1px solid hsl(var(--sinaida-red))', padding: '12px 24px' }}
               >
                 {cs.heroCta.label} ↗
               </a>
@@ -126,7 +126,7 @@ export default function WorkCase() {
                     <span
                       key={t}
                       style={{
-                        border: '1px solid #1a1a1a',
+                        border: '1px solid hsl(var(--graphite))',
                         padding: '4px 8px',
                         fontFamily: 'var(--font-mono)',
                         fontSize: '16px',
@@ -159,7 +159,7 @@ export default function WorkCase() {
             {cs.stat && (
               <div
                 className="mt-8 flex flex-col gap-4 sm:flex-row"
-                style={{ border: '1px solid #ff3333', background: 'rgba(255,51,51,0.05)', padding: '20px' }}
+                style={{ border: '1px solid hsl(var(--sinaida-red))', background: 'hsl(var(--sinaida-red) / 0.05)', padding: '20px' }}
               >
                 <div className="font-display text-5xl leading-none text-primary">{cs.stat.value}</div>
                 <div>
@@ -224,7 +224,7 @@ export default function WorkCase() {
             )}
 
             {/* ── Conversion block ── */}
-            <div className="mt-14" style={{ borderTop: '1px solid #1a1a1a', paddingTop: '32px' }}>
+            <div className="mt-14" style={{ borderTop: '1px solid hsl(var(--graphite))', paddingTop: '32px' }}>
               <h2 className="font-display text-2xl uppercase font-light text-foreground">
                 {cs.order.heading}
               </h2>

@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { buildGraph, buildAdjacency, type GraphNode } from '@/data/graph';
+import { buildGraph, buildAdjacency, type GraphNode, OFF_WHITE } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 
@@ -117,7 +117,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                 cx={n.x}
                 cy={n.y}
                 r={r * (isActive ? 1.4 : 1)}
-                fill={n.kind === 'project' ? '#f2efe9' : n.color}
+                fill={n.kind === 'project' ? OFF_WHITE : n.color}
                 stroke={n.kind === 'project' ? n.color : 'none'}
                 strokeWidth={n.kind === 'project' ? 1.2 : 0}
                 style={{ transition: 'r 0.2s' }}
@@ -132,7 +132,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                     y={n.y + 4 - (n.kind === 'project' ? 13 : 11)}
                     width={n.label.length * (n.kind === 'project' ? 10 : 8.6) + 6}
                     height={n.kind === 'project' ? 19 : 16}
-                    fill="#050505"
+                    fill="hsl(var(--background))"
                     opacity={Math.min(0.72, labelAlpha + 0.15)}
                     style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
                   />
@@ -142,7 +142,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                     fontSize={n.kind === 'project' ? 17 : 15}
                     fontWeight={n.kind === 'project' ? 500 : 400}
                     fontFamily="'VT323', monospace"
-                    fill={n.kind === 'project' ? '#f2efe9' : n.color}
+                    fill={n.kind === 'project' ? OFF_WHITE : n.color}
                     opacity={Math.min(1, labelAlpha + 0.15)}
                     style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
                   >
