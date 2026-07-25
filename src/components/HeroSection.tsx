@@ -1,120 +1,143 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
-import { squashScrollTo } from '@/lib/squashScroll';
+import { useScrambleReveal } from '@/hooks/useScrambleReveal';
+import { heroTunnelBus } from '@/lib/heroTunnelBus';
+
+const NAME = 'SINAIDA KRIVCHENKO';
+const ROLE = 'NEW MEDIA ARTIST';
+const EYEBROW = `${NAME} | ${ROLE}`;
+const LINE_A = 'VISUAL WORLDS FOR ';
+const LINE_B = 'PHYSICAL SPACES';
+
+// Per-letter spans so the hover effect (drift + heartbeat glow + ghost
+// flash, see .hero-ltr/.hero-glow-active in index.css) can animate each
+// character independently. A plain ' ' (not nbsp) so word-wrap still works.
+function Letters({ text, prefix }: { text: string; prefix: string }) {
+  return (
+    <>
+      {[...text].map((ch, i) => (
+        <span key={`${prefix}-${i}`} className="hero-ltr" style={{ animationDelay: `${(i * 0.05).toFixed(2)}s` }}>
+          {ch}
+        </span>
+      ))}
+    </>
+  );
+}
 
 export default function HeroSection() {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const [launchingTag, setLaunchingTag] = useState<string | null>(null);
   const { mode } = useRenderMode();
+  const lite = mode !== 'full';
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+  // Lite mode also covers prefers-reduced-motion, so the scramble is skipped
+  // there and both lines paint solid.
+  const eyebrow = useScrambleReveal(EYEBROW, { duration: 520, disabled: lite });
+  const headA = useScrambleReveal(LINE_A, { delay: 260, duration: 760, disabled: lite });
+  const headB = useScrambleReveal(LINE_B, { delay: 420, duration: 860, disabled: lite });
 
-  const scrollToContact = () => {
-    document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+  // Scramble preserves string length/positions throughout the reveal, so
+  // slicing at the fixed prefix boundary is safe even mid-animation.
+  const nameDisplay = eyebrow.slice(0, NAME.length);
+  const roleDisplay = eyebrow.slice(NAME.length + 3);
+
+  // Hover-capable desktop widths only. Below 1024px matches the site's own
+  // lg breakpoint (no hover UI on touch/narrow layouts anyway).
+  const canHover = () =>
+    !lite &&
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(hover: hover) and (min-width: 1024px)').matches;
+
+  // Driven by React state from the same onMouseEnter/onMouseLeave that fire
+  // the starfield tunnel, not CSS :hover — the sitewide `main p:hover` /
+  // `main h1:hover` glitch+bloom (index.css) is a one-shot ~1s flash that
+  // finishes and reverts to `filter: none` even while still hovered, which
+  // read as "nothing happens" for a sustained hover. This glow instead stays
+  // on for exactly as long as the pointer is over the text, matching the
+  // tunnel's own hover-held duration.
+  const [glowing, setGlowing] = useState(false);
+  const enterTunnel = () => { if (canHover()) { heroTunnelBus.setActive(true); setGlowing(true); } };
+  const leaveTunnel = () => { if (canHover()) { heroTunnelBus.setActive(false); setGlowing(false); } };
+  // Touch has no hover state to key off, so the same effect toggles on tap
+  // instead — full mode only (lite skips it entirely, same as everywhere
+  // else heavy motion is gated). Desktop pointers no-op here since canHover()
+  // is true there and the enter/leave handlers above already own it.
+  const tapTunnel = () => {
+    if (lite || canHover()) return;
+    setGlowing((g) => {
+      const next = !g;
+      heroTunnelBus.setActive(next);
+      return next;
+    });
   };
-
-  // Hero tags jump straight to the projects section. Full mode gets the
-  // squash-and-stretch "launch" treatment (tag + page content); lite mode
-  // (and reduced-motion, which forces lite) just gets a plain smooth scroll.
-  const scrollToWork = (tag: string) => {
-    const target = document.querySelector('#work');
-    if (!target) return;
-
-    if (mode !== 'full') {
-      target.scrollIntoView({ behavior: 'smooth' });
-      return;
-    }
-
-    setLaunchingTag(tag);
-    window.setTimeout(() => setLaunchingTag(null), 500);
-    squashScrollTo(target, document.querySelector('main'));
-  };
+  const glowClass = `hero-glow${glowing ? ' hero-glow-active' : ''}`;
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center z-10 pt-40 md:pt-32 lg:pt-36 pb-16 md:pb-20">
-      
-      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl flex flex-col gap-10 md:gap-8 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-end">
-        {/* Main title area */}
-        <div className="lg:col-span-8 py-10 md:py-12 lg:py-16 min-w-0">
-          <div
-            className={`transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
-            }>
-            
-            <p className="clinical-label mb-6 text-primary-legible break-words" style={{ fontSize: 20 }}>
-              SINAIDA{' '}KRIVCHENKO | NEW{' '}MEDIA ARTIST
-            </p>
-            <h1
-              className="font-display text-4xl md:text-6xl uppercase leading-[0.95] tracking-tight text-foreground glitch-text mt-6 mb-8 my-[100px] lg:text-8xl font-bold"
-              data-text="Visual Worlds For Physical Spaces">
+      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-[18vh] md:pb-[20vh]">
 
-              Visual
-              <br />
-              Worlds
-              <br />
-              For
-              <br />
-              <span className="neon-glow text-primary font-bold">Physical Spaces</span>
-            </h1>
-          </div>
-        </div>
+      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl mt-6 md:mt-10">
+        {/* Same face and same size as the headline. The two lines are one
+            voice; only weight and the red span separate them. Both hero lines
+            share the same hover behavior: a sustained glow/bloom (hero-text-
+            glow, JS-state-driven — see comment above) plus the starfield
+            tunnel dive (heroTunnelBus + ParticleField). */}
+        <p
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(2.3rem,11.5vw,4.15rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
+          onMouseEnter={enterTunnel}
+          onMouseLeave={leaveTunnel}
+          onClick={tapTunnel}
+        >
+          <span className="hero-layer hero-layer-base">
+            <Letters text={nameDisplay} prefix="eb-n" />
+            <Letters text=" | " prefix="eb-s" />
+            <Letters text={roleDisplay} prefix="eb-r" />
+          </span>
+          <span className="hero-layer hero-ghost hero-ghost-red" aria-hidden="true">
+            <Letters text={nameDisplay} prefix="ebgr-n" />
+            <Letters text=" | " prefix="ebgr-s" />
+            <Letters text={roleDisplay} prefix="ebgr-r" />
+          </span>
+          <span className="hero-layer hero-ghost hero-ghost-white" aria-hidden="true">
+            <Letters text={nameDisplay} prefix="ebgw-n" />
+            <Letters text=" | " prefix="ebgw-s" />
+            <Letters text={roleDisplay} prefix="ebgw-r" />
+          </span>
+        </p>
+      </div>
 
-        {/* Side info */}
-        <div
-          className={`lg:col-span-4 transition-all duration-1000 delay-300 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
-          }>
-          
-          <div className="border-l border-primary/30 pl-8 space-y-5">
-            <p className="font-mono text-[15px] leading-relaxed my-4" style={{ color: 'hsl(var(--foreground) / 0.82)' }}>
-              Transforming complex ideas into visual systems for stages, concerts, performances,
-              and spaces where sound becomes light.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {['Experience Design', 'Stage Visuals', 'New Media Art'].map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => scrollToWork(t)}
-                  className={`font-mono uppercase transition-colors hover:border-primary/60 hover:text-primary cursor-none ${
-                    launchingTag === t ? 'animate-tag-launch' : ''
-                  }`}
-                  style={{
-                    border: '1px solid hsl(var(--foreground) / 0.2)',
-                    padding: '6px 12px',
-                    fontSize: 16,
-                    letterSpacing: '0.1em',
-                    color: 'hsl(var(--foreground) / 0.7)',
-                    background: 'transparent',
-                  }}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={scrollToContact}
-              className="font-mono text-[12px] uppercase tracking-[0.15em] px-5 py-3 transition-all duration-300 cursor-none"
-              style={{ border: '1px solid #ff3333', color: '#ff3333', background: 'rgba(255,51,51,0.06)' }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = '#ff3333';
-                e.currentTarget.style.color = '#000';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255,51,51,0.06)';
-                e.currentTarget.style.color = '#ff3333';
-              }}
-            >
-              Contact me
-            </button>
-          </div>
-        </div>
+      {/* The void between the two anchors is the composition. Nothing goes
+          here: the starfield reads as depth only if it is given the room. */}
+      <div className="flex-1" aria-hidden="true" />
+
+      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl mb-6 md:mb-10">
+        {/* Two sizing regimes: below md the headline breaks into two lines and
+            can run wide; above md it must hold on a single line, so the vw
+            factor is set by character count. */}
+        <h1
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(2.3rem,11.5vw,4.15rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
+          onMouseEnter={enterTunnel}
+          onMouseLeave={leaveTunnel}
+          onClick={tapTunnel}
+        >
+          <span className="hero-layer hero-layer-base">
+            <Letters text={headA} prefix="ha" />
+            <br className="md:hidden" />
+            <span className="neon-glow neon-glow-hero text-primary font-bold">
+              <Letters text={headB} prefix="hb" />
+            </span>
+          </span>
+          <span className="hero-layer hero-ghost hero-ghost-red" aria-hidden="true">
+            <Letters text={headA} prefix="hagr" />
+            <br className="md:hidden" />
+            <Letters text={headB} prefix="hbgr" />
+          </span>
+          <span className="hero-layer hero-ghost hero-ghost-white" aria-hidden="true">
+            <Letters text={headA} prefix="hagw" />
+            <br className="md:hidden" />
+            <Letters text={headB} prefix="hbgw" />
+          </span>
+        </h1>
       </div>
     </section>
   );

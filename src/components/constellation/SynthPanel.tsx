@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { synth, type SynthState } from '@/lib/constellationSynth';
+import { isCookieBannerAcknowledged, subscribeCookieBannerAcknowledged } from '@/lib/cookieBannerVisibility';
 
 // ── The instrument's control surface ────────────────────────
 // Revealed only after the visitor drags a star (see ConstellationFull). Styled
@@ -53,8 +54,16 @@ function Slider({
 
 export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, visible }: Props) {
   const [state, setState] = useState<SynthState>(synth.getState());
+  // Undismissed cookie notice sits fixed at the very bottom of the viewport
+  // (z-50) — without this, this panel's own bottom-4 position lands right
+  // behind it. Bumping past the banner's z-index alone would still leave the
+  // controls visually overlapping its text, so this also lifts the panel
+  // clear of the banner's height while it's showing.
+  const [bannerShowing, setBannerShowing] = useState(() => !isCookieBannerAcknowledged());
 
   useEffect(() => synth.subscribe(setState), []);
+
+  useEffect(() => subscribeCookieBannerAcknowledged(() => setBannerShowing(false)), []);
 
   return (
     // Pinned to the viewport bottom (not sticky-inside-absolute, which left it
@@ -64,7 +73,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, vis
     // bar only shows while a meaningful chunk of the graph is on screen and
     // never blocks anything once it's scrolled away.
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex flex-col items-center gap-3 px-3 transition-opacity duration-300"
+      className={`pointer-events-none fixed inset-x-0 z-[60] flex flex-col items-center gap-3 px-3 transition-[opacity,bottom] duration-300 ${bannerShowing ? 'bottom-24 sm:bottom-20' : 'bottom-4'}`}
       style={{ opacity: visible ? 1 : 0, visibility: visible ? 'visible' : 'hidden' }}
     >
         {/* "You found it" window — retro-OS framing, matches the project readout */}

@@ -48,15 +48,19 @@ export default function ContactChannel() {
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* LEFT COLUMN */}
           <div className="md:w-[280px] shrink-0 md:self-start">
-            <div
+            {/* h2/p (not div) — matches Services' and Body of Work's own
+                eyebrow+caption markup, so all four sections' labels pick up
+                the same sitewide hover glitch/bloom (index.css) instead of
+                some getting it and others silently not. */}
+            <h2
               className="font-mono uppercase text-primary"
               style={{ letterSpacing: '0.2em', fontSize: 32 }}
             >
               Contact
-            </div>
-            <div className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
+            </h2>
+            <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
               Get in touch.
-            </div>
+            </p>
 
             <SignalBars />
           </div>
@@ -65,12 +69,14 @@ export default function ContactChannel() {
           <div className="flex-1">
 
           <div className="max-w-2xl">
-            {/* Heading */}
-            <h2 className="mb-8 uppercase">
-              <span className="block text-foreground font-light" style={{ fontSize: 'clamp(32px, 4vw, 52px)' }}>
+            {/* Heading — same scale as the About heading and a case study's
+                project title (WorkCase h1): one shared "section headline"
+                size sitewide, a step below the hero. */}
+            <h2 className="mb-8 font-display text-5xl md:text-6xl uppercase leading-[0.95]">
+              <span className="block text-foreground font-light">
                 Open for
               </span>
-              <span className="block font-bold" style={{ fontSize: 'clamp(32px, 4vw, 52px)', color: '#ff3333' }}>
+              <span className="block font-bold" style={{ color: '#ff3333' }}>
                 Collaboration
               </span>
             </h2>

@@ -1,10 +1,14 @@
+import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 import { SERVICES } from '@/data/services';
 import { FEATURED_WORKS } from '@/data/projects';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta } from '@/hooks/usePageMeta';
+
+const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 const PROCESS_STEPS = [
   { code: '01', label: 'Brief', detail: 'You send the occasion, space, and constraints.' },
@@ -59,11 +63,19 @@ export default function Collaborate() {
   });
 
   const stills = FEATURED_WORKS.slice(0, 3);
+  const { mode } = useRenderMode();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      {/* Same starfield as the case study template — dialed down, a subtle
+          sense of continuity behind a page that's mostly here to be read. */}
+      {mode === 'full' && (
+        <Suspense fallback={null}>
+          <ParticleField subtle />
+        </Suspense>
+      )}
       <Header />
-      <main id="main-content" tabIndex={-1} className="container mx-auto px-6 max-w-4xl pt-40 pb-24 md:pt-32 lg:pt-36">
+      <main id="main-content" tabIndex={-1} className="container relative z-10 mx-auto px-6 max-w-4xl pt-40 pb-24 md:pt-32 lg:pt-36">
         <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
           ← Back
         </a>

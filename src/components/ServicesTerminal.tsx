@@ -49,12 +49,16 @@ export default function ServicesTerminal() {
             >
               Services
             </h2>
-            <div
+            {/* h2/p (not div) — matches About's, Contact's, and Body of Work's
+                own eyebrow+caption markup, so all four sections' labels pick up
+                the same sitewide hover glitch/bloom (index.css) instead of
+                some getting it and others silently not. */}
+            <p
               className="font-mono uppercase mt-2"
               style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}
             >
               Digital tools for human connection.
-            </div>
+            </p>
           </div>
 
           {/* RIGHT COLUMN */}
