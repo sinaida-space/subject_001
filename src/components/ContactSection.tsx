@@ -21,9 +21,6 @@ export default function ContactSection() {
         <div className="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
           <div className="col-span-12 md:col-span-3">
             <span className="clinical-label text-primary">Contact</span>
-            <div className="mt-2 text-xs font-clinical text-muted-foreground">
-              [ COMM.SYS // OPEN ]
-            </div>
           </div>
 
           <div className={`col-span-12 md:col-span-9 transition-all duration-200 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>

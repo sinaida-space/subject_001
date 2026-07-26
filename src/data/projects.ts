@@ -103,9 +103,9 @@ export const PROJECTS: Project[] = [
     id: 'redkie-ptitsy',
     title: 'Redkie Ptitsy — Live Concert Visuals',
     kind: 'stage',
-    tagline: 'Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song',
+    tagline: 'Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song',
     blurb:
-      'Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine unique audio-reactive projections — one crafted for each song — ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.',
+      'Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine unique audio-reactive projections — one crafted for each song — ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: [
       'touchdesigner',
@@ -154,7 +154,7 @@ export const PROJECTS: Project[] = [
           { label: 'Per-song patch ×9', detail: 'One visual system per song — no two share a look.' },
           { label: 'Projection', detail: 'Light in the room, responding all night.' },
         ],
-        footer: '> full-set run · Sklad №3, Moscow · 26 March 2026',
+        footer: '> full-set run · Sklad №3, Moscow · 26 March 2026',
       },
       order: {
         heading: 'What a festival can order',

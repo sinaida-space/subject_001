@@ -77,7 +77,7 @@ export default function WorkCase() {
               </span>
             </div>
 
-            <h1 className="mt-4 font-display text-5xl uppercase font-light leading-[0.95] text-foreground md:text-6xl">
+            <h1 className="mt-4 font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl">
               {project.title}
             </h1>
           </div>

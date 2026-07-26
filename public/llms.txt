@@ -14,7 +14,7 @@ Sinaida Krivchenko is a Prague-based new media artist building living visual sys
 
 ## Selected Work
 
-- Redkie Ptitsy — Live Concert Visuals (https://sinaida.eu/work/redkie-ptitsy) — 9 audio-reactive projections, one per song, live at Sklad №3, Moscow, 26 March 2026
+- Redkie Ptitsy — Live Concert Visuals (https://sinaida.eu/work/redkie-ptitsy) — 9 audio-reactive projections, one per song, live at Sklad №3, Moscow, 26 March 2026
 - The Eyes Chico (https://sinaida.eu/work/the-eyes-chico) — acrylic painting by Alisa Feer turned playable web experience and immersive projection installation (on-device MediaPipe hand tracking), live at https://the-eyes-chico.sinaida.eu/ — installation form available for its first public showing
 - Ethereal Path (https://sinaida-space.github.io/ethereal-path/) — off-axis WebGL descent steered by head and hand movement; the body is the controller
 - Stereolove (https://sinaida-space.github.io/stereolove/) — head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume

@@ -42,7 +42,7 @@ function BioSignalLock() {
 
   const rows = [
     ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
-    ['DIVERGENCE', 'Ballet. General Electric IT Leadership Program. Generative systems.'],
+    ['DRIFT', 'Ballet. General Electric IT Leadership Program. Generative systems.'],
     ['CURRENT STATE', 'TouchDesigner visuals + audio-reactive stage systems.'],
   ];
 
@@ -254,9 +254,9 @@ export default function AboutSection() {
               {/* Same scale as the Contact heading and a case study's project
                   title (WorkCase h1) — one shared "section headline" size
                   sitewide, a step below the hero. */}
-              <h2 className="font-display text-5xl md:text-6xl uppercase font-light leading-[0.95] mb-10">
-                Art, technology, and
-                <span className="text-primary font-bold"> human expression</span>
+              <h2 className="font-display text-4xl md:text-5xl uppercase font-light leading-[0.95] mb-10">
+                Human first.
+                <span className="text-primary font-bold"> Digital second.</span>
               </h2>
             </Reveal>
             <div className="flex flex-col md:flex-row items-start gap-12">
@@ -270,16 +270,6 @@ export default function AboutSection() {
                     <p>
                       I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
                     </p>
-                  </div>
-                </Reveal>
-                <Reveal delay={700}>
-                  <div className="mb-7" style={{ lineHeight: 2.2 }}>
-                    <div className="font-mono" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.9)' }}>
-                      Human first.
-                    </div>
-                    <div className="font-mono" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
-                      Digital second.
-                    </div>
                   </div>
                 </Reveal>
                 <Reveal delay={800}>
