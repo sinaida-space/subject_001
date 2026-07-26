@@ -64,7 +64,7 @@ export default function WorkCase() {
                   border: '1px solid hsl(var(--sinaida-red))',
                   padding: '3px 8px',
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '16px',
+                  fontSize: '20px',
                   letterSpacing: '0.15em',
                   textTransform: 'uppercase',
                   color: 'hsl(var(--primary-legible))',
@@ -129,7 +129,7 @@ export default function WorkCase() {
                         border: '1px solid hsl(var(--graphite))',
                         padding: '4px 8px',
                         fontFamily: 'var(--font-mono)',
-                        fontSize: '16px',
+                        fontSize: '20px',
                         letterSpacing: '0.15em',
                         color: 'hsl(var(--foreground) / 0.55)',
                       }}

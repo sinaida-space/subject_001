@@ -258,13 +258,13 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: '#CC1414', letterSpacing: '2px' }}>
             SNAKE.EXE // SCORE: {score}
           </span>
           <button
             onClick={onClose}
             style={{
-              fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--slate))',
+              fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--slate))',
               background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px'
             }}
           >
@@ -287,10 +287,10 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           display: 'flex',
           justifyContent: 'space-between',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--gunmetal))' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--gunmetal))' }}>
             ↑ ↓ ← → or WASD
           </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--gunmetal))' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--gunmetal))' }}>
             swipe on mobile
           </span>
         </div>
@@ -311,7 +311,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
 
 const btnStyle: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
-  fontSize: '16px',
+  fontSize: '20px',
   color: '#CC1414',
   background: 'hsl(var(--background))',
   border: '1px solid hsl(var(--graphite))',

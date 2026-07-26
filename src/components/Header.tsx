@@ -166,7 +166,7 @@ export default function Header() {
             style={{
               display: 'block',
               fontFamily: 'var(--font-mono)',
-              fontSize: 28,
+              fontSize: 35,
               fontWeight: 300,
               textTransform: 'uppercase',
               color: 'hsl(var(--foreground))',
@@ -188,7 +188,7 @@ export default function Header() {
           style={{
             marginTop: 40,
             fontFamily: 'var(--font-mono)',
-            fontSize: 16,
+            fontSize: 20,
             letterSpacing: '0.2em',
             padding: '12px 28px',
             border: '1px solid hsl(var(--sinaida-red))',
@@ -209,7 +209,7 @@ export default function Header() {
           style={{
             marginTop: 32,
             fontFamily: 'var(--font-mono)',
-            fontSize: 16,
+            fontSize: 20,
             letterSpacing: '0.15em',
             background: 'none',
             border: 'none',
@@ -224,7 +224,7 @@ export default function Header() {
           View: <span style={{ color: 'hsl(var(--primary-legible))' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
         </button>
 
-        <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 16, color: mode === 'lite' ? 'hsl(var(--foreground) / 0.65)' : 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 20, color: mode === 'lite' ? 'hsl(var(--foreground) / 0.65)' : 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>

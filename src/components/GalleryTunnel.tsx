@@ -328,10 +328,10 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="flex flex-col md:flex-row gap-8 md:gap-12">
             <div className="md:w-[200px] shrink-0">
-              <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+              <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 20 }}>
                 Selected Projects
               </div>
-              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
+              <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 20 }}>
                 [ RECENT WORK ]
               </div>
             </div>
@@ -360,10 +360,10 @@ export default function GalleryTunnel({ projects }: GalleryTunnelProps) {
 
         <div className="container mx-auto px-6 max-w-7xl absolute inset-0 pointer-events-none flex items-center">
           <div className="md:w-[200px] shrink-0">
-            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 12 }}>
+            <div className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 20 }}>
               Selected Projects
             </div>
-            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 12 }}>
+            <div className="font-mono mt-2" style={{ color: 'hsl(var(--foreground) / 0.4)', fontSize: 20 }}>
               [ RECENT WORK ]
             </div>
           </div>

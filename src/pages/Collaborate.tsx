@@ -80,7 +80,7 @@ export default function Collaborate() {
           ← Back
         </a>
 
-        <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 24 }}>
+        <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 30 }}>
           Collaborate
         </div>
         <h1 className="font-display text-7xl md:text-8xl uppercase font-light mb-4">
@@ -121,7 +121,7 @@ export default function Collaborate() {
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (
               <div key={step.code} className="flex-1 font-mono">
-                <div className="text-primary-legible" style={{ fontSize: 16 }}>{step.code}</div>
+                <div className="text-primary-legible" style={{ fontSize: 20 }}>{step.code}</div>
                 <div className="text-base font-medium mt-1 mb-1 text-foreground">
                   {step.label}
                 </div>
@@ -187,11 +187,11 @@ export default function Collaborate() {
                 <Link
                   to={`/work/${project.id}`}
                   className="block font-mono uppercase mt-2 text-foreground/60 hover:text-accent transition-colors"
-                  style={{ fontSize: 16 }}
+                  style={{ fontSize: 20 }}
                 >
                   {project.title.split('—')[0].trim()}
                 </Link>
-                <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 16 }}>
+                <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 20 }}>
                   {project.tagline}
                 </div>
               </div>

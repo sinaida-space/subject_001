@@ -86,6 +86,18 @@ function hexA(hex: string, a: number): string {
 // Detect coarse (touch) pointers → scroll drives parallax; fine → pointer drives it.
 const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
 
+// Canvas labels are outside CSS, so the site-wide type scale (x1.25 with a
+// 20px floor — see tailwind.config.ts and index.css) has to be applied to
+// them in JS. The floor swallows most of the size hierarchy these labels used
+// to carry, which is fine here: alpha and category color already separate
+// active / neighbor / accent / background far more strongly than 2px of type
+// ever did, and legibility on a phone wins over that last distinction.
+const LABEL_SCALE = 1.25;
+const LABEL_MIN = 20;
+function labelSize(base: number): number {
+  return Math.max(LABEL_MIN, Math.round(base * LABEL_SCALE));
+}
+
 interface Props {
   onActiveProject?: (p: GraphNode['project'] | null) => void;
   onPointerPosition?: (x: number, y: number) => void;
@@ -506,7 +518,11 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     // never left silently blank.
     ctx.textBaseline = 'middle';
     const drawn: { x1: number; y1: number; x2: number; y2: number }[] = [];
-    const LABEL_H = 15; // approx line box height for collision tests
+    // Approximate line box height for collision tests. It has to track the
+    // label type size (labelSize above, 20-21px) with a little padding, or
+    // the boxes come out shorter than the glyphs and neighbouring labels are
+    // allowed to overlap.
+    const LABEL_H = 24;
     // Star cores count as occupied space too — a label must dodge other
     // nodes' dots, not just other labels (own-node candidates already sit
     // clear of the own core by construction).
@@ -526,7 +542,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // Projects are the product — flagships read first, background works
         // stay legible but clearly recede.
         const bg = !!n.project?.background;
-        fs = isActive ? 17 : isNeighbor ? 15 : n.accent ? 16 : bg ? 12 : 14;
+        fs = labelSize(isActive ? 17 : isNeighbor ? 15 : n.accent ? 16 : bg ? 12 : 14);
         if (active) {
           alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.32;
         } else {
@@ -539,7 +555,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // Skills tier below projects: accent skills (the signals a producer
         // scans for) hold a bright baseline; the rest are quiet texture until
         // hover pulls their cluster forward.
-        fs = isActive ? 16 : isNeighbor ? 15 : n.accent ? 14.5 : 13;
+        fs = labelSize(isActive ? 16 : isNeighbor ? 15 : n.accent ? 14.5 : 13);
         if (active) {
           alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.28;
           useCategoryColor = isActive || !!isNeighbor;
@@ -571,28 +587,48 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         { lx: n.x - rx - tw, ty: n.y - vy, flip: true },
         { lx: n.x - tw / 2, ty: n.y + vy + LABEL_H, flip: false },
         { lx: n.x - tw / 2, ty: n.y - vy - LABEL_H, flip: false },
+        // Rows two and three out. At the 20px floor a long skill label
+        // ("CREATIVE WEB TECHNOLOGY") is most of a phone's canvas width, so
+        // the sideways and diagonal escapes are all blocked and only a clear
+        // row further out will do. Without these the loop falls through to
+        // the last candidate and draws one label straight over another.
+        { lx: n.x - tw / 2, ty: n.y + vy + LABEL_H * 2, flip: false },
+        { lx: n.x - tw / 2, ty: n.y - vy - LABEL_H * 2, flip: false },
+        { lx: n.x - tw / 2, ty: n.y + vy + LABEL_H * 3, flip: false },
+        { lx: n.x - tw / 2, ty: n.y - vy - LABEL_H * 3, flip: false },
       ];
-      let chosen = candidates[0];
+      // Every candidate is nudged back inside the canvas before it is tested,
+      // and the nudged position is the one that gets drawn. Testing the raw
+      // position and shifting afterwards used to let a candidate pass the
+      // collision check and then be moved on top of a neighbour; it also
+      // rejected every sideways placement for labels wider than about half
+      // the canvas, so on a phone the long ones fell through to the last
+      // candidate and overlapped. Clamping first means the row search sees
+      // real geometry and keeps looking until it finds a clear row.
+      const clampX = (x: number) => Math.max(6, Math.min(x, w - 6 - tw));
+      let chosen = { ...candidates[0], lx: clampX(candidates[0].lx) };
+      let bestOverlap = Infinity;
       for (const c of candidates) {
-        const box = { x1: c.lx - 2, y1: c.ty - LABEL_H / 2, x2: c.lx + tw + 2, y2: c.ty + LABEL_H / 2 };
-        let collides = box.x1 < 6 || box.x2 > w - 6; // off-canvas doesn't count as "clear"
-        if (!collides) {
-          for (const d of drawn) {
-            if (box.x1 < d.x2 && box.x2 > d.x1 && box.y1 < d.y2 && box.y2 > d.y1) {
-              collides = true;
-              break;
-            }
-          }
+        const cx = clampX(c.lx);
+        const box = { x1: cx - 2, y1: c.ty - LABEL_H / 2, x2: cx + tw + 2, y2: c.ty + LABEL_H / 2 };
+        // Total overlapped area rather than a yes/no, so that when every
+        // placement is blocked — two long labels on one crowded hub at phone
+        // width — the least-bad one wins instead of whichever happened to be
+        // last in the list. Zero means clear, and the first clear candidate
+        // still wins outright, preserving the right/left/below/above order.
+        let overlap = 0;
+        for (const d of drawn) {
+          const ox = Math.min(box.x2, d.x2) - Math.max(box.x1, d.x1);
+          const oy = Math.min(box.y2, d.y2) - Math.max(box.y1, d.y1);
+          if (ox > 0 && oy > 0) overlap += ox * oy;
         }
-        chosen = c;
-        if (!collides) break; // good candidate found, stop here
+        if (overlap < bestOverlap) {
+          bestOverlap = overlap;
+          chosen = { ...c, lx: cx };
+        }
+        if (overlap === 0) break; // good candidate found, stop here
       }
-      const { ty, flip } = chosen;
-      let { lx } = chosen;
-      // Whatever candidate won (or fell through), the text itself must stay
-      // on-canvas — shift it inside rather than letting it clip at the edge.
-      if (lx + tw > w - 6) lx = w - 6 - tw;
-      if (lx < 6) lx = 6;
+      const { ty, flip, lx } = chosen;
       const box = { x1: lx - 2, y1: ty - LABEL_H / 2, x2: lx + tw + 2, y2: ty + LABEL_H / 2 };
       drawn.push(box);
       labelBoxesRef.current.set(n.id, box);
