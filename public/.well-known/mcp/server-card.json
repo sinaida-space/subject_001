@@ -1,0 +1,21 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card/2026-01.json",
+  "serverInfo": {
+    "name": "sinaida-portfolio",
+    "title": "Sinaida Krivchenko — Portfolio MCP Server",
+    "version": "1.0.0",
+    "description": "Read-only tools for querying Sinaida Krivchenko's new-media art practice: bio, selected works, and contact channels."
+  },
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "https://sinaida.eu/mcp"
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": false,
+    "prompts": false
+  },
+  "contact": {
+    "url": "https://sinaida.eu/collaborate"
+  }
+}

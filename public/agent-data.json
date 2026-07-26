@@ -1,0 +1,78 @@
+{
+  "name": "Sinaida Krivchenko",
+  "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, working globally.",
+  "bio": "Sinaida Krivchenko is a Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University), with prior careers in IT leadership at General Electric and creative direction for cultural institutions in Amsterdam. Works with performing-arts organisations, musicians, festivals, and cultural institutions.",
+  "services": [
+    "Stage and projection design — real-time generative environments for live performance, built in TouchDesigner and GLSL",
+    "Audio-reactive concert visuals — full visual sets for live music, one look per song, driven live by the sound",
+    "Interactive and immersive installations — body- and gesture-tracked visual systems (MediaPipe, WebGL) for exhibitions and physical spaces",
+    "Generative AI visual direction — campaign imagery, key art, and production visuals directed to the specific aesthetic of each project",
+    "Creative direction for cultural institutions — visual identity, digital infrastructure, and audience strategy"
+  ],
+  "skills": [
+    "TouchDesigner", "Generative AI Systems", "Real-time audio-reactive visuals",
+    "Body & gesture tracking (MediaPipe)", "Projection mapping", "GLSL / WebGL",
+    "Procedural animation", "AI-assisted visual pipelines", "Post-production",
+    "Color grading", "Creative direction", "Visual narrative development",
+    "Biomedical engineering MSc", "Systems design thinking", "Algorithmic visual systems",
+    "Creative web development"
+  ],
+  "projects": [
+    {
+      "id": "redkie-ptitsy",
+      "title": "Redkie Ptitsy — Live Concert Visuals",
+      "kind": "stage",
+      "tagline": "Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song",
+      "url": "https://sinaida.eu/work/redkie-ptitsy"
+    },
+    {
+      "id": "the-eyes-chico",
+      "title": "The Eyes Chico",
+      "kind": "installation",
+      "tagline": "Acrylic painting turned playable web experience & projection installation, with Alisa Feer",
+      "url": "https://sinaida.eu/work/the-eyes-chico"
+    },
+    {
+      "id": "aether-currents",
+      "title": "Aether Currents",
+      "kind": "game",
+      "tagline": "Browser instrument played with bare hands, with Telefm",
+      "url": "https://sinaida.eu/work/aether-currents"
+    },
+    {
+      "id": "ethereal-path",
+      "title": "Ethereal Path",
+      "kind": "game",
+      "tagline": "Off-axis descent steered by head & hand movement — the body is the controller",
+      "url": "https://sinaida-space.github.io/ethereal-path/"
+    },
+    {
+      "id": "stereolove",
+      "title": "Stereolove",
+      "kind": "game",
+      "tagline": "Head-coupled op-art — the screen becomes an unstable optical volume",
+      "url": "https://sinaida-space.github.io/stereolove/"
+    },
+    {
+      "id": "submerged",
+      "title": "Submerged Realities",
+      "kind": "installation",
+      "tagline": "Projection-mapping study on fluid surfaces",
+      "url": "https://sinaida.eu"
+    },
+    {
+      "id": "mahler",
+      "title": "Mahler — The Orchestrator",
+      "kind": "tool",
+      "tagline": "Multi-model orchestrator for Claude",
+      "url": "https://github.com/sinaida-space/mahler-the-orchestrator"
+    }
+  ],
+  "contact": {
+    "website": "https://sinaida.eu/",
+    "collaborate": "https://sinaida.eu/collaborate",
+    "instagram": "https://www.instagram.com/sin.ai.da/",
+    "linkedin": "https://www.linkedin.com/in/sinaida",
+    "location": "Prague, CZ"
+  }
+}
