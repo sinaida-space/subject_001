@@ -1,0 +1,10 @@
+name = "sinaida-agent-gateway"
+main = "index.js"
+compatibility_date = "2026-07-01"
+
+# Runs in front of the whole zone; the Worker passes every request straight
+# through to the GitHub Pages origin except POST /mcp and GET / (which get
+# markdown negotiation + a Link header). See index.js for the pass-through logic.
+routes = [
+  { pattern = "sinaida.eu/*", zone_name = "sinaida.eu" }
+]

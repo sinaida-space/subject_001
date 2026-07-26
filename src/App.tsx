@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
+import WebMcpTools from "@/components/WebMcpTools";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -43,6 +44,7 @@ const App = () => (
       </a>
       <ScrollToTop />
       <SiteCursor />
+      <WebMcpTools />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<Index />} />
