@@ -8,8 +8,33 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- cd0000 — --sinaida-red. Browser chrome can't read CSS vars, so the
-         literal has to stay, but it must stay the same literal as the token. -->
+         literal has to stay, but it must stay the same literal as the token.
+
+         Three tags, because one is not enough to actually tint iOS Safari:
+
+         - color-scheme tells the browser this document is dark. Without it
+           Safari renders its chrome in the light appearance regardless of the
+           device setting, which is why the toolbars stayed white on a phone
+           in dark mode.
+         - theme-color is repeated with explicit light/dark media queries as
+           well as unqualified, because Safari picks the media-matched tag
+           first and ignores the bare one when any media-qualified tag is
+           present. Both resolve to the same red on purpose.
+         - apple-mobile-web-app-status-bar-style only applies once the site is
+           added to the home screen, where it keeps the status bar dark
+           instead of reverting to black-on-white. It stays opaque ("black")
+           rather than translucent because nothing in the layout reserves
+           env(safe-area-inset-top), so a translucent bar would sit on top of
+           the header.
+
+         Known limit: iOS Safari drops theme-color tinting entirely in Private
+         Browsing tabs and shows its own chrome there. Nothing in the page can
+         override that. -->
+    <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#cd0000" />
+    <meta name="theme-color" content="#cd0000" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#cd0000" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
     <!-- Content-Security-Policy limits what this page is allowed to load.
          Everything comes from this origin, with one deliberate exception:
@@ -106,8 +131,8 @@
     </script>
 
     <link rel="preload" href="/fonts/vt323-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <script type="module" crossorigin src="/assets/index-AadrbZqw.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CdDwhuyS.css">
+    <script type="module" crossorigin src="/assets/index-Cc-nqkhB.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cp3sDxvJ.css">
   </head>
   <body>
     <div id="root"></div>

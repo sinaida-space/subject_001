@@ -8,8 +8,33 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- cd0000 — --sinaida-red. Browser chrome can't read CSS vars, so the
-         literal has to stay, but it must stay the same literal as the token. -->
+         literal has to stay, but it must stay the same literal as the token.
+
+         Three tags, because one is not enough to actually tint iOS Safari:
+
+         - color-scheme tells the browser this document is dark. Without it
+           Safari renders its chrome in the light appearance regardless of the
+           device setting, which is why the toolbars stayed white on a phone
+           in dark mode.
+         - theme-color is repeated with explicit light/dark media queries as
+           well as unqualified, because Safari picks the media-matched tag
+           first and ignores the bare one when any media-qualified tag is
+           present. Both resolve to the same red on purpose.
+         - apple-mobile-web-app-status-bar-style only applies once the site is
+           added to the home screen, where it keeps the status bar dark
+           instead of reverting to black-on-white. It stays opaque ("black")
+           rather than translucent because nothing in the layout reserves
+           env(safe-area-inset-top), so a translucent bar would sit on top of
+           the header.
+
+         Known limit: iOS Safari drops theme-color tinting entirely in Private
+         Browsing tabs and shows its own chrome there. Nothing in the page can
+         override that. -->
+    <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#cd0000" />
+    <meta name="theme-color" content="#cd0000" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#cd0000" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
     <!-- Content-Security-Policy limits what this page is allowed to load.
          Everything comes from this origin, with one deliberate exception:
@@ -32,7 +57,7 @@
          See docs/audits/sinaida-eu-audit-2026-07-24-b.md. -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>The Eyes Chico — Case Study | sin.ai.da</title>
+    <title>The Eyes Chico — Case Study | sin.ai.da</title>
     <meta name="description" content="Acrylic painting turned playable web experience &amp; projection installation · with Alisa Feer. A collaboration with artist Alisa Feer: her acrylic painting is…">
     <meta name="keywords" content="new media artist, interactive projections, stage visuals, TouchDesigner, GLSL, audio-reactive visuals, projection mapping, immersive installations, digital art, Prague, live performance, cultural institutions">
     <meta name="author" content="Sinaida Krivchenko">
@@ -40,7 +65,7 @@
     <link rel="canonical" href="https://sinaida.eu/work/the-eyes-chico/">
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="The Eyes Chico — Case Study | sin.ai.da">
+    <meta property="og:title" content="The Eyes Chico — Case Study | sin.ai.da">
     <meta property="og:description" content="Acrylic painting turned playable web experience &amp; projection installation · with Alisa Feer. A collaboration with artist Alisa Feer: her acrylic painting is…">
     <meta property="og:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
     <meta property="og:image:width" content="1200">
@@ -49,7 +74,7 @@
     <meta property="og:url" content="https://sinaida.eu/work/the-eyes-chico/">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="The Eyes Chico — Case Study | sin.ai.da">
+    <meta name="twitter:title" content="The Eyes Chico — Case Study | sin.ai.da">
     <meta name="twitter:description" content="Acrylic painting turned playable web experience &amp; projection installation · with Alisa Feer. A collaboration with artist Alisa Feer: her acrylic painting is…">
     <meta name="twitter:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
     <meta name="twitter:image:alt" content="An ECG trace rendered in red particles against black, the sin.ai.da visual signature.">
@@ -106,8 +131,8 @@
     </script>
 
     <link rel="preload" href="/fonts/vt323-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <script type="module" crossorigin src="/assets/index-AadrbZqw.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CdDwhuyS.css">
+    <script type="module" crossorigin src="/assets/index-Cc-nqkhB.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cp3sDxvJ.css">
   </head>
   <body>
     <div id="root"></div>
