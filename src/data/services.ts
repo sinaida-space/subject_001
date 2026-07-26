@@ -24,7 +24,7 @@ export const SERVICES: Service[] = [
     record: [
       { text: 'Shown live with ' },
       { text: 'Redkie Ptitsy', href: '/work/redkie-ptitsy' },
-      { text: ' at Sklad №3, Moscow.' },
+      { text: ' at Sklad №3, Moscow.' },
     ],
     brief: 'Brief to show: send the setlist and stage dimensions.',
   },

@@ -203,7 +203,7 @@ export default function NotFound() {
           className="font-mono uppercase mb-6 tracking-widest text-xs"
           style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em' }}
         >
-          SINAIDA_OS v2.4.1 — NAVIGATION ERROR
+          SINAIDA_OS v3.1.1 — NAVIGATION ERROR
         </div>
 
         <h1

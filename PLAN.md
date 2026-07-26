@@ -72,7 +72,7 @@ type Edge        = { skill: string; project: string }
 
 No big cards. A vertical list of 3–4 rows, each: `year — title — one-line context — [expand]`. Expanding reveals inline: 2–3 sentences, video embed, tools, link. Order optimized for festival/theater bookers:
 
-1. **Redkie Ptitsy — Live Concert Visuals** (2026, Sklad №3, Moscow) — 19 unique audio-reactive projections, one per song, TouchDesigner. *The flagship: this is literally the service festivals buy.*
+1. **Redkie Ptitsy — Live Concert Visuals** (2026, Sklad №3, Moscow) — 19 unique audio-reactive projections, one per song, TouchDesigner. *The flagship: this is literally the service festivals buy.*
 2. **Submerged Realities** — projection mapping study.
 3. **Synesthetic Bloom** — audio-responsive organism (proof of real-time sound-to-visual craft).
 4. **Legacy in the Age of Stochastic Output** — conceptual depth (theater/dance relevance: narrative, soul).

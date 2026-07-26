@@ -72,7 +72,7 @@ export default function ContactChannel() {
             {/* Heading — same scale as the About heading and a case study's
                 project title (WorkCase h1): one shared "section headline"
                 size sitewide, a step below the hero. */}
-            <h2 className="mb-8 font-display text-5xl md:text-6xl uppercase leading-[0.95]">
+            <h2 className="mb-8 font-display text-4xl md:text-5xl uppercase leading-[0.95]">
               <span className="block text-foreground font-light">
                 Open for
               </span>
