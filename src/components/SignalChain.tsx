@@ -63,7 +63,7 @@ export default function SignalChain({ stages }: SignalChainProps) {
             <div className={i < stages.length - 1 ? 'pb-6 min-w-0' : 'min-w-0'}>
               <div
                 className="font-mono uppercase"
-                style={{ fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--primary-legible))' }}
+                style={{ fontSize: '20px', letterSpacing: '0.15em', color: 'hsl(var(--primary-legible))' }}
               >
                 {String(i + 1).padStart(2, '0')} · {stage.label}
               </div>

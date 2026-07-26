@@ -45,7 +45,7 @@ export default function ServicesTerminal() {
           <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <h2
               className="font-mono uppercase text-primary"
-              style={{ letterSpacing: '0.2em', fontSize: 32 }}
+              style={{ letterSpacing: '0.2em', fontSize: 40 }}
             >
               Services
             </h2>
@@ -55,7 +55,7 @@ export default function ServicesTerminal() {
                 some getting it and others silently not. */}
             <p
               className="font-mono uppercase mt-2"
-              style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}
+              style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}
             >
               Digital tools for human connection.
             </p>

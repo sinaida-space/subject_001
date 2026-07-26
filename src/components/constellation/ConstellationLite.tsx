@@ -139,7 +139,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                   <text
                     x={n.x + r + 7}
                     y={n.y + 4}
-                    fontSize={n.kind === 'project' ? 17 : 15}
+                    fontSize={n.kind === 'project' ? 21 : 20}
                     fontWeight={n.kind === 'project' ? 500 : 400}
                     fontFamily="'VT323', monospace"
                     fill={n.kind === 'project' ? OFF_WHITE : n.color}

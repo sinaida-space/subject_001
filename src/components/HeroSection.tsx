@@ -152,7 +152,7 @@ export default function HeroSection() {
       {/* Whisper question — see useHeroWhisper. Centered over the void
           between the two headline anchors, not tied to cursor position. */}
       <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-8 text-center" aria-hidden="true">
-        <p className={`hero-whisper hero-whisper-text font-display uppercase tracking-tight text-[clamp(1.1rem,3.4vw,1.9rem)] ${whisper.visible ? 'hero-whisper-visible' : ''}`}>
+        <p className={`hero-whisper hero-whisper-text font-display uppercase tracking-tight text-[clamp(1.375rem,4.25vw,2.375rem)] ${whisper.visible ? 'hero-whisper-visible' : ''}`}>
           {whisper.text}
         </p>
       </div>
@@ -164,7 +164,7 @@ export default function HeroSection() {
             glow, JS-state-driven — see comment above) plus the starfield
             tunnel dive (heroTunnelBus + ParticleField). */}
         <p
-          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(2.3rem,11.5vw,4.15rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(2.3rem,11.5vw,5.1875rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
         >
@@ -193,9 +193,18 @@ export default function HeroSection() {
       <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl mb-6 md:mb-10">
         {/* Two sizing regimes: below md the headline breaks into two lines and
             can run wide; above md it must hold on a single line, so the vw
-            factor is set by character count. */}
+            factor is set by character count.
+
+            The site-wide x1.25 type bump reaches the upper bound of these
+            clamps only. The vw terms and the floors are both fit constraints
+            rather than size choices: scaling vw pushes the headline off the
+            single line it has to hold above md, and raising the mobile floor
+            above 11.5vw (~45px at 390px wide) makes the second line wrap a
+            single orphan character. The headline is the one thing on the page
+            that was never too small, so it keeps its measured fit and only
+            gains headroom on wide screens. */}
         <h1
-          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(2.3rem,11.5vw,4.15rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(2.3rem,11.5vw,5.1875rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
         >

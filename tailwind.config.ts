@@ -13,6 +13,28 @@ export default {
   		}
   	},
   	extend: {
+  		// VT323 is a thin pixel face that reads a full tier smaller than its
+  		// px value suggests, so the whole named scale is redefined here at
+  		// Tailwind's default sizes x1.25, with a 20px floor. Overriding the
+  		// scale in config (rather than patching call sites) means every
+  		// text-sm / text-lg / text-5xl in the codebase moves together and
+  		// stays in proportion. Arbitrary values (text-[13px]) can't be
+  		// reached from here; those are remapped in src/index.css.
+  		fontSize: {
+  			xs: ['20px', { lineHeight: '1.5' }],
+  			sm: ['20px', { lineHeight: '1.5' }],
+  			base: ['20px', { lineHeight: '1.6' }],
+  			lg: ['22.5px', { lineHeight: '1.55' }],
+  			xl: ['25px', { lineHeight: '1.5' }],
+  			'2xl': ['30px', { lineHeight: '1.4' }],
+  			'3xl': ['37.5px', { lineHeight: '1.3' }],
+  			'4xl': ['45px', { lineHeight: '1.2' }],
+  			'5xl': ['60px', { lineHeight: '1.1' }],
+  			'6xl': ['75px', { lineHeight: '1.05' }],
+  			'7xl': ['90px', { lineHeight: '1' }],
+  			'8xl': ['120px', { lineHeight: '1' }],
+  			'9xl': ['160px', { lineHeight: '1' }],
+  		},
   		fontFamily: {
   			display: [
   				'VT323',

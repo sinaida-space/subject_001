@@ -476,7 +476,9 @@
 
   .clinical-label {
     font-family: var(--font-mono);
-    font-size: 1rem;
+    /* 20px — the site-wide floor. This class carries the nav links and the
+       small all-caps labels, which were the least readable text on a phone. */
+    font-size: 1.25rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: hsl(var(--muted-foreground));
@@ -739,11 +741,14 @@
 }
 
 /* VT323 is a thin pixel font that reads noticeably smaller than its px
-   value suggests, on any screen. Site-wide the smallest sizes were never
-   given a bump, so raise the floor here rather than touching every call
-   site. 16px is the accepted minimum for comfortable reading, so every
-   utility below that floor is normalized up to it; sizes already at/above
-   16px are left as the designed hierarchy (labels vs. headings). */
+   value suggests, on any screen. The named scale (text-sm, text-5xl, ...) is
+   redefined wholesale in tailwind.config.ts at Tailwind's defaults x1.25
+   with a 20px floor. Tailwind emits arbitrary values like text-[13px]
+   verbatim and the config cannot reach them, so the same transform is
+   applied to them here: anything landing under 20px is clamped to 20px (the
+   readable floor for this face on a phone), everything above keeps the
+   designed hierarchy, scaled. !important is needed only because these
+   utilities already sit at maximum specificity for their own class. */
 .text-\[9px\],
 .text-\[10px\],
 .text-\[11px\],
@@ -751,7 +756,10 @@
 .text-\[13px\],
 .text-\[14px\],
 .text-\[15px\],
-.text-xs,
-.text-sm {
-  font-size: 16px !important;
+.text-\[16px\] {
+  font-size: 20px !important;
 }
+
+.text-\[17px\] { font-size: 21px !important; }
+.text-\[20px\] { font-size: 25px !important; }
+.text-\[28px\] { font-size: 35px !important; }

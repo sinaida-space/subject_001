@@ -209,7 +209,7 @@ export default function NotFound() {
         <h1
           className="font-mono select-none"
           style={{
-            fontSize: 'clamp(8rem, 22vw, 18rem)',
+            fontSize: 'clamp(10rem, 22vw, 22.5rem)',
             lineHeight: 1,
             color: 'transparent',
             WebkitTextStroke: '1.5px hsl(var(--sinaida-red))',
@@ -224,14 +224,14 @@ export default function NotFound() {
         </h1>
 
         <div className="mt-2 mb-8" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
-          <span className="font-mono" style={{ fontSize: '1.1rem', letterSpacing: '0.12em' }}>
+          <span className="font-mono" style={{ fontSize: '1.375rem', letterSpacing: '0.12em' }}>
             — lost in the void.
           </span>
         </div>
 
         <div
           className="font-mono text-left w-full mb-10 space-y-1"
-          style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: '1rem' }}
+          style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: '1.25rem' }}
         >
           <div>{line1.displayed}{!line1.done && <span className="animate-terminal-cursor">█</span>}</div>
           {line1.done && <div>{line2.displayed}{!line2.done && <span className="animate-terminal-cursor">█</span>}</div>}

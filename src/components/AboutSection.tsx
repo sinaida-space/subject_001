@@ -114,7 +114,7 @@ function BioSignalLock() {
                 display: 'grid',
                 gridTemplateColumns: '140px 20px 1fr',
                 gap: '0 4px',
-                fontSize: 16,
+                fontSize: 20,
                 color: 'hsl(var(--foreground) / 0.6)',
                 letterSpacing: '0.08em',
                 transition: 'color 0.35s ease',
@@ -212,13 +212,13 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <span className="block font-mono mt-2" style={{ fontSize: 16, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
+      <span className="block font-mono mt-2" style={{ fontSize: 20, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
       </span>
-      <span className="block font-mono mt-1" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.6)', letterSpacing: '0.1em' }}>
+      <span className="block font-mono mt-1" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.6)', letterSpacing: '0.1em' }}>
         NEW MEDIA ARTIST
       </span>
-      <span className="block font-mono mt-3" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.55)', letterSpacing: '0.02em' }}>
+      <span className="block font-mono mt-3" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.55)', letterSpacing: '0.02em' }}>
         Photo by Roland Gaedtgens from Zhembrovskyy performance
       </span>
     </div>
@@ -242,10 +242,10 @@ export default function AboutSection() {
                   eyebrow+caption markup, so all four sections' labels pick up
                   the same sitewide hover glitch/bloom (index.css) instead of
                   some getting it and others silently not. */}
-              <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 32 }}>
+              <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
                 About
               </h2>
-              <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
+              <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
                 The story so far.
               </p>
             </Reveal>
@@ -267,7 +267,7 @@ export default function AboutSection() {
               <div className="flex-1 min-w-0">
                 <BioSignalLock />
                 <Reveal delay={600}>
-                  <div className="font-mono mb-7" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
                       I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
                     </p>
@@ -275,23 +275,23 @@ export default function AboutSection() {
                 </Reveal>
                 <Reveal delay={700}>
                   <div className="mb-7" style={{ lineHeight: 2.2 }}>
-                    <div className="font-mono" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.9)' }}>
+                    <div className="font-mono" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.9)' }}>
                       Human first.
                     </div>
-                    <div className="font-mono" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
+                    <div className="font-mono" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
                       Digital second.
                     </div>
                   </div>
                 </Reveal>
                 <Reveal delay={800}>
-                  <div className="font-mono mb-7" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
+                  <div className="font-mono mb-7" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
                       I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.
                     </p>
                   </div>
                 </Reveal>
                 <Reveal delay={900}>
-                  <div className="font-mono" style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
+                  <div className="font-mono" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
                     {'LOCATION: Prague'}
                     <span style={{ color: 'hsl(var(--primary-legible))' }}> · </span>
                     {'REACH: Global'}

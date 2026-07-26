@@ -54,11 +54,11 @@ export default function ContactChannel() {
                 some getting it and others silently not. */}
             <h2
               className="font-mono uppercase text-primary"
-              style={{ letterSpacing: '0.2em', fontSize: 32 }}
+              style={{ letterSpacing: '0.2em', fontSize: 40 }}
             >
               Contact
             </h2>
-            <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 16 }}>
+            <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
               Get in touch.
             </p>
 
