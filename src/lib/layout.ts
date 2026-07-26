@@ -222,7 +222,11 @@ export function computeLayout(
     }
   }
 
-  const orbitR = Math.max(96, Math.min(minDim * 0.15, 165));
+  // Skills sit further off their hub than they used to. The graph is the
+  // point of this section — it has to read as structure, and structure needs
+  // negative space around every node, not just enough room to avoid a
+  // literal overlap.
+  const orbitR = Math.max(140, Math.min(minDim * 0.22, 240));
   for (const [pid, list] of soloByProject) {
     const hub = pos.get(pid);
     if (!hub) continue;
@@ -272,10 +276,16 @@ export function computeLayout(
   // Labels are wide and short, so "personal space" is an ellipse: generous
   // horizontally, tighter vertically. Accent skills are heavier — they hold
   // their spot and push plain skills out of the way, not vice versa.
-  const sepX = Math.min(150, boxW * 0.16);
-  const sepY = 46;
-  const projSepX = 120;
-  const projSepY = 64;
+  // Personal space per node, as an ellipse — labels are wide and short, so
+  // the horizontal reach is much larger than the vertical one. These were
+  // tuned against 13-15px labels; the type scale moved skills to 16px and
+  // projects to 20px, which is roughly 35% wider text, and the values are
+  // opened up past that on purpose so nodes read as separated rather than
+  // merely non-overlapping.
+  const sepX = Math.min(230, boxW * 0.24);
+  const sepY = 74;
+  const projSepX = 200;
+  const projSepY = 104;
   const skillPos = skills.map((s) => ({ n: s, p: pos.get(s.id)! }));
   const projPos = nodes.filter((n) => n.kind === 'project').map((n) => ({ n, p: pos.get(n.id)! }));
   for (let it = 0; it < 90; it++) {
