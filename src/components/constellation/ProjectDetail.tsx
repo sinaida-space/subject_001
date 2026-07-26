@@ -39,89 +39,85 @@ function Readout({ project }: { project: Project }) {
   const hasMedia = !!(project.video || project.image);
   return (
     <>
-      {/* Two columns from md up: media is the whole left column, every word
-          is in the right one. Stacked below md.
-
-          Both columns start at the same top edge and the media runs full
-          bleed to the panel's edges — no centering, no letterbox margin, no
-          second inset frame inside the dialog frame. The text column owns the
-          only padding, so every line in it shares one left edge from the
-          badge down to the tools. */}
-      <div className={hasMedia ? 'md:grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-stretch' : ''}>
-        {/* A 16/9 player can't fill a column as tall as the text beside it, so
-            it centres in the black plate instead of sitting at the top with the
-            void underneath. Images have no such problem: they crop to fill. */}
+      {/* Two columns from md up. LEFT owns everything visual and factual
+          about the piece: media, then kind badge, tagline and tool tags
+          directly under it. RIGHT is pure action — title, then the links
+          (case study / external) get the visual weight, since those are
+          what someone opening this card actually wants to do next. The
+          blurb is real but secondary, so it sits last and quiet — small,
+          muted, no competing for attention with the links above it. */}
+      <div className={hasMedia ? 'md:grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-start' : ''}>
         {hasMedia && (
-          <div
-            className="relative flex flex-col justify-center bg-black md:border-r"
-            style={{ borderColor: 'hsl(var(--border))' }}
-          >
-            {project.video ? (
-              // No maxHeightVh here: that prop centres the player and caps it
-              // to a share of viewport height, which inside a column reads as
-              // a small video floating in a black box.
-              <VideoEmbed id={project.video} title={project.title} />
-            ) : (
-              <div className="relative aspect-video w-full md:h-full md:aspect-auto md:min-h-[420px]">
-                <DisplacementImage
-                  src={project.image!}
-                  alt={project.title}
-                  onLoad={() => setImgLoaded(true)}
-                  className="h-full w-full"
-                  style={{ position: 'absolute', inset: 0, height: '100%' }}
-                  imgClassName="h-full w-full object-cover"
-                />
-                <HeartbeatPlaceholder loaded={imgLoaded} width="100%" height="100%" className="absolute inset-0" />
-              </div>
-            )}
+          <div className="flex flex-col md:border-r" style={{ borderColor: 'hsl(var(--border))' }}>
+            <div className="relative flex flex-col justify-start bg-black">
+              {project.video ? (
+                <VideoEmbed id={project.video} title={project.title} />
+              ) : (
+                <div className="relative aspect-video w-full">
+                  <DisplacementImage
+                    src={project.image!}
+                    alt={project.title}
+                    onLoad={() => setImgLoaded(true)}
+                    className="h-full w-full"
+                    style={{ position: 'absolute', inset: 0, height: '100%' }}
+                    imgClassName="h-full w-full object-cover"
+                  />
+                  <HeartbeatPlaceholder loaded={imgLoaded} width="100%" height="100%" className="absolute inset-0" />
+                </div>
+              )}
+            </div>
+
+            {/* Tags and one-line description, directly under the media. */}
+            <div className="flex flex-col gap-3 p-5 md:p-8">
+              <span
+                className="inline-block w-fit"
+                style={{
+                  border: '1px solid hsl(var(--sinaida-red))',
+                  padding: '2px 10px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '20px',
+                  lineHeight: 1.3,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: 'hsl(var(--primary-legible))',
+                }}
+              >
+                {KIND_LABEL[project.kind]}
+              </span>
+              <p className="font-mono uppercase leading-snug tracking-[0.12em] text-foreground/55" style={{ fontSize: 16 }}>
+                {project.tagline}
+              </p>
+              {project.tools && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {project.tools.map((t) => (
+                    <span
+                      key={t}
+                      className="uppercase"
+                      style={{ border: '1px solid hsl(var(--border))', padding: '3px 10px', fontFamily: 'var(--font-mono)', fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.45)' }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         <div className="flex flex-col gap-5 p-5 md:p-8">
-          {/* Kind badge and one-line context, stacked rather than sharing a
-              row — side by side they baseline-mismatched, the badge being a
-              boxed 20px and the tagline unboxed. */}
-          <div>
-            <span
-              className="inline-block"
-              style={{
-                border: '1px solid hsl(var(--sinaida-red))',
-                padding: '2px 10px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '20px',
-                lineHeight: 1.3,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'hsl(var(--primary-legible))',
-              }}
-            >
-              {KIND_LABEL[project.kind]}
-            </span>
-            <p className="mt-3 font-mono uppercase leading-snug tracking-[0.12em] text-foreground/55" style={{ fontSize: 16 }}>
-              {project.tagline}
-            </p>
-          </div>
-
           <h3 className="font-display text-3xl uppercase leading-[1.05] text-foreground md:text-4xl">
             {project.title}
           </h3>
 
-          {project.blurb && (
-            <p className="font-mono leading-relaxed text-foreground/80" style={{ fontSize: 20 }}>
-              {project.blurb}
-            </p>
-          )}
-
-          {/* Links sit under the text they belong to rather than above it —
-              at the top of the column they read as a toolbar and pushed the
-              title down past the media's top edge. */}
+          {/* The links are the point of this column — bigger, bolder, and
+              first, not buried under the blurb. */}
           {(links.length > 0 || CASE_PAGES[project.id] || project.essay) && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {CASE_PAGES[project.id] && (
                 <Link
                   to={CASE_PAGES[project.id]}
                   className="font-mono uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
-                  style={{ fontSize: 16 }}
+                  style={{ fontSize: 20 }}
                 >
                   View full case study →
                 </Link>
@@ -131,7 +127,7 @@ function Readout({ project }: { project: Project }) {
                   type="button"
                   onClick={() => setEssayOpen(true)}
                   className="text-left font-mono uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
-                  style={{ fontSize: 16 }}
+                  style={{ fontSize: 20 }}
                 >
                   Read the full text →
                 </button>
@@ -143,7 +139,7 @@ function Readout({ project }: { project: Project }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-mono uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
-                  style={{ fontSize: 16 }}
+                  style={{ fontSize: 20 }}
                 >
                   {l.label} ↗
                 </a>
@@ -151,18 +147,11 @@ function Readout({ project }: { project: Project }) {
             </div>
           )}
 
-          {project.tools && (
-            <div className="mt-auto flex flex-wrap gap-2 pt-2">
-              {project.tools.map((t) => (
-                <span
-                  key={t}
-                  className="uppercase"
-                  style={{ border: '1px solid hsl(var(--border))', padding: '3px 10px', fontFamily: 'var(--font-mono)', fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.45)' }}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
+          {/* Least priority in the layout: smaller, dimmer, last. */}
+          {project.blurb && (
+            <p className="mt-auto border-t pt-4 font-mono leading-relaxed text-foreground/50" style={{ fontSize: 14, borderColor: 'hsl(var(--border))' }}>
+              {project.blurb}
+            </p>
           )}
         </div>
       </div>
@@ -260,7 +249,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out md:max-w-[1100px]"
+        className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out md:max-w-[1400px]"
         style={{
           background: 'hsl(var(--background))',
           border: '1px solid hsl(var(--sinaida-red))',

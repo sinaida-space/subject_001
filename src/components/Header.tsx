@@ -87,7 +87,7 @@ export default function Header() {
     <>
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : ''}`}>
-        <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-2 sm:gap-4">
+        <div className="container mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-2 sm:gap-4">
 
           <Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={scrollTop} />
 
