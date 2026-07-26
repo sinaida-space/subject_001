@@ -36,11 +36,11 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
       </p>
       <p className="font-mono text-[13px] leading-relaxed mt-2 text-foreground/60">
         {service.record.map((part, i) =>
-          part.href ? (
+          part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
               {part.text}
             </Link>
-          ) : (
+          ) : (
             <span key={i}>{part.text}</span>
           )
         )}
@@ -77,21 +77,21 @@ export default function Collaborate() {
       <Header />
       <main id="main-content" tabIndex={-1} className="container relative z-10 mx-auto px-6 max-w-4xl pt-40 pb-24 md:pt-32 lg:pt-36">
         <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
-          ← Back
+          ← Back
         </a>
 
         <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 30 }}>
           Collaborate
         </div>
         <h1 className="font-display text-7xl md:text-8xl uppercase font-light mb-4">
-          Work with <span className="text-primary font-bold">me</span>
+          Work with <span className="text-primary font-bold">me</span>
         </h1>
         <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
-          Human first. Digital second. I build living visual systems for stages, concerts, and
-          performance spaces — this page is what actually happens if we work together on one.
+          Human first. Digital second. I build living visual systems for stages, concerts, and
+          performance spaces — this page is what actually happens if we work together on one.
         </p>
         <p className="font-mono text-[28px] leading-relaxed mb-16 text-foreground/60">
-          Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
+          Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
         </p>
 
         {/* Services */}
@@ -115,8 +115,8 @@ export default function Collaborate() {
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-3">Process</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            Structured the way I ran technical projects for years before this — brief, concept,
-            build, rehearsal, show. Nothing invented for the website.
+            Structured the way I ran technical projects for years before this — brief, concept,
+            build, rehearsal, show. Nothing invented for the website.
           </p>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (
@@ -143,28 +143,28 @@ export default function Collaborate() {
           <h2 className="clinical-label text-primary-legible mb-6">Practicalities</h2>
           <div className="font-mono text-[13px] leading-relaxed space-y-4 text-foreground/75">
             <p>
-              <span className="text-foreground">Travel — </span>
-              Based in Prague, working globally. Touring and international bookings are welcome;
-              travel and accommodation are arranged case by case.
+              <span className="text-foreground">Travel — </span>
+              Based in Prague, working globally. Touring and international bookings are welcome;
+              travel and accommodation are arranged case by case.
             </p>
             <p>
-              <span className="text-foreground">Tech rider — </span>
-              Typical requirements are a projector or LED surface, a dedicated playback/render machine,
-              and a feed from the live audio mix where the work is audio-reactive. Exact specs are
-              confirmed once the venue and format are known.
+              <span className="text-foreground">Tech rider — </span>
+              Typical requirements are a projector or LED surface, a dedicated playback/render machine,
+              and a feed from the live audio mix where the work is audio-reactive. Exact specs are
+              confirmed once the venue and format are known.
             </p>
             <p>
-              <span className="text-foreground">Lead time — </span>
-              Depends on set length and scope — confirmed once the brief is in. Earlier is always better.
+              <span className="text-foreground">Lead time — </span>
+              Depends on set length and scope — confirmed once the brief is in. Earlier is always better.
             </p>
           </div>
         </section>
 
         {/* Press kit */}
         <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-3">Press kit</h2>
+          <h2 className="clinical-label text-primary-legible mb-3">Press kit</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            For programmers, promoters, and journalists — boilerplate and stills, ready to paste.
+            For programmers, promoters, and journalists — boilerplate and stills, ready to paste.
           </p>
 
           <div className="font-mono text-[14px] leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
@@ -198,7 +198,7 @@ export default function Collaborate() {
             ))}
           </div>
           <p className="font-mono text-[12px] mb-8 text-foreground/60">
-            Click a still for the case study.
+            Click a still for the case study.
           </p>
 
           <ul className="font-mono text-[13px] space-y-2 text-foreground/75">
@@ -215,7 +215,7 @@ export default function Collaborate() {
         <section>
           <h2 className="clinical-label text-primary-legible mb-6">Contact</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-4 text-foreground/75">
-            Send the occasion, space, and timeline — a reply follows with next steps.
+            Send the occasion, space, and timeline — a reply follows with next steps.
           </p>
           <ObfuscatedMailto
             label="EMAIL ME ↗"

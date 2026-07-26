@@ -194,6 +194,22 @@
     letter-spacing: -0.02em;
   }
 
+  /* Line-breaking hygiene. Short function words and numbers are glued to what
+     follows them with real non-breaking spaces in the copy itself (see
+     src/data/projects.ts and the section components) — that is the part that
+     has to be exact. Gluing the longer ones ("the", "and", "for", "with") the
+     same way would freeze most lines in a paragraph and overflow narrow
+     viewports, so they are left to the browser here instead: `pretty` biases
+     the last line away from a single word, `balance` evens out short headings.
+     Both are hints, which is why the nbsp pass exists as well. */
+  p, li, dd, blockquote, figcaption {
+    text-wrap: pretty;
+  }
+
+  h1, h2, h3, h4, h5, h6, button, .clinical-label {
+    text-wrap: balance;
+  }
+
   ::selection {
     background: hsl(var(--primary) / 0.3);
     color: hsl(var(--primary-foreground));
@@ -354,7 +370,9 @@
     filter: blur(0);
   }
   .hero-whisper-text {
-    color: #fff;
+    /* Haze, not white — the questions are meant to surface out of the
+       starfield and sink back into it, and pure white read as UI. */
+    color: hsl(var(--haze));
     text-shadow:
       0 0 6px hsl(var(--primary) / 0.55),
       0 0 18px hsl(var(--primary) / 0.32),
@@ -472,6 +490,30 @@
       linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
     background-size: 60px 60px;
+  }
+
+  /* ORIGIN / DIVERGENCE / CURRENT STATE readout in AboutSection. On a phone
+     the 140px label column left the value column too narrow to read, so the
+     label column shrinks and wraps instead ("CURRENT STATE" takes two lines)
+     and the value gets the width back. The dotted leader also collapses,
+     since there is nothing left for it to span. */
+  .bio-row {
+    grid-template-columns: 88px 1fr;
+    align-items: start;
+  }
+
+  .bio-row > :nth-child(2) {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .bio-row {
+      grid-template-columns: 140px 20px 1fr;
+    }
+
+    .bio-row > :nth-child(2) {
+      display: block;
+    }
   }
 
   .clinical-label {

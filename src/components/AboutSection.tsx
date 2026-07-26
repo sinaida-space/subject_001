@@ -109,10 +109,9 @@ function BioSignalLock() {
           return (
             <div
               key={key}
-              className="font-mono"
+              className="font-mono bio-row"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '140px 20px 1fr',
                 gap: '0 4px',
                 fontSize: 20,
                 color: 'hsl(var(--foreground) / 0.6)',
@@ -216,10 +215,10 @@ function PhotoBlock() {
         SINAIDA
       </span>
       <span className="block font-mono mt-1" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.6)', letterSpacing: '0.1em' }}>
-        NEW MEDIA ARTIST
+        NEW MEDIA ARTIST
       </span>
       <span className="block font-mono mt-3" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.55)', letterSpacing: '0.02em' }}>
-        Photo by Roland Gaedtgens from Zhembrovskyy performance
+        Photo by Roland Gaedtgens from Zhembrovskyy performance
       </span>
     </div>
   );
@@ -246,7 +245,7 @@ export default function AboutSection() {
                 About
               </h2>
               <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
-                The story so far.
+                The story so far.
               </p>
             </Reveal>
           </div>
@@ -256,8 +255,8 @@ export default function AboutSection() {
                   title (WorkCase h1) — one shared "section headline" size
                   sitewide, a step below the hero. */}
               <h2 className="font-display text-5xl md:text-6xl uppercase font-light leading-[0.95] mb-10">
-                Art, technology, and
-                <span className="text-primary font-bold"> human expression</span>
+                Art, technology, and
+                <span className="text-primary font-bold"> human expression</span>
               </h2>
             </Reveal>
             <div className="flex flex-col md:flex-row items-start gap-12">
@@ -269,24 +268,24 @@ export default function AboutSection() {
                 <Reveal delay={600}>
                   <div className="font-mono mb-7" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
-                      I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
+                      I believe that technology is only meaningful when it helps people feel seen, heard, and connected.
                     </p>
                   </div>
                 </Reveal>
                 <Reveal delay={700}>
                   <div className="mb-7" style={{ lineHeight: 2.2 }}>
                     <div className="font-mono" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.9)' }}>
-                      Human first.
+                      Human first.
                     </div>
                     <div className="font-mono" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.65)', paddingLeft: 24 }}>
-                      Digital second.
+                      Digital second.
                     </div>
                   </div>
                 </Reveal>
                 <Reveal delay={800}>
                   <div className="font-mono mb-7" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.82)', lineHeight: 1.85 }}>
                     <p>
-                      I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.
+                      I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.
                     </p>
                   </div>
                 </Reveal>

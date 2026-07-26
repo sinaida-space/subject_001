@@ -86,16 +86,17 @@ function hexA(hex: string, a: number): string {
 // Detect coarse (touch) pointers → scroll drives parallax; fine → pointer drives it.
 const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
 
-// Canvas labels are outside CSS, so the site-wide type scale (x1.25 with a
-// 20px floor — see tailwind.config.ts and index.css) has to be applied to
-// them in JS. The floor swallows most of the size hierarchy these labels used
-// to carry, which is fine here: alpha and category color already separate
-// active / neighbor / accent / background far more strongly than 2px of type
-// ever did, and legibility on a phone wins over that last distinction.
+// Canvas labels are outside CSS, so the site-wide type scale (x1.25 — see
+// tailwind.config.ts and index.css) has to be applied to them in JS. Two
+// floors rather than one: project names are the structure and sit at the
+// site's 20px floor, skills are the vocabulary hanging off them and hold at
+// 16px. That gap is what makes the graph read as a hierarchy at a glance
+// instead of as one flat wall of words.
 const LABEL_SCALE = 1.25;
-const LABEL_MIN = 20;
-function labelSize(base: number): number {
-  return Math.max(LABEL_MIN, Math.round(base * LABEL_SCALE));
+const PROJECT_LABEL_MIN = 20;
+const SKILL_LABEL_MIN = 16;
+function labelSize(base: number, min: number): number {
+  return Math.max(min, Math.round(base * LABEL_SCALE));
 }
 
 interface Props {
@@ -518,11 +519,13 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     // never left silently blank.
     ctx.textBaseline = 'middle';
     const drawn: { x1: number; y1: number; x2: number; y2: number }[] = [];
-    // Approximate line box height for collision tests. It has to track the
-    // label type size (labelSize above, 20-21px) with a little padding, or
-    // the boxes come out shorter than the glyphs and neighbouring labels are
-    // allowed to overlap.
-    const LABEL_H = 24;
+    // Approximate line box height for collision tests, derived per label from
+    // its own type size rather than fixed — projects and skills no longer
+    // share one size, and a box shorter than the glyphs lets neighbours
+    // overlap. The extra 10px is breathing room: labels that merely miss each
+    // other still read as crowded, so the box is deliberately taller than the
+    // text it guards.
+    const labelBoxH = (fs: number) => Math.round(fs * 1.15) + 10;
     // Star cores count as occupied space too — a label must dodge other
     // nodes' dots, not just other labels (own-node candidates already sit
     // clear of the own core by construction).
@@ -542,7 +545,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // Projects are the product — flagships read first, background works
         // stay legible but clearly recede.
         const bg = !!n.project?.background;
-        fs = labelSize(isActive ? 17 : isNeighbor ? 15 : n.accent ? 16 : bg ? 12 : 14);
+        fs = labelSize(isActive ? 17 : isNeighbor ? 15 : n.accent ? 16 : bg ? 12 : 14, PROJECT_LABEL_MIN);
         if (active) {
           alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.32;
         } else {
@@ -555,7 +558,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // Skills tier below projects: accent skills (the signals a producer
         // scans for) hold a bright baseline; the rest are quiet texture until
         // hover pulls their cluster forward.
-        fs = labelSize(isActive ? 16 : isNeighbor ? 15 : n.accent ? 14.5 : 13);
+        fs = labelSize(isActive ? 16 : isNeighbor ? 15 : n.accent ? 14.5 : 13, SKILL_LABEL_MIN);
         if (active) {
           alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.28;
           useCategoryColor = isActive || !!isNeighbor;
@@ -569,13 +572,16 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const label = n.label.toUpperCase();
       const tw = ctx.measureText(label).width;
 
-      // Candidate placements, tried in order: right, left, below, above, then
-      // four diagonals and two stacked-further rows. First one that doesn't
-      // collide wins; if none do, use the last one anyway rather than hiding
-      // the label. The extra escape routes matter at narrow (mobile) widths
-      // where several skill labels crowd one hub star.
-      const rx = n.r + 8;
-      const vy = n.r + 12;
+      const lh = labelBoxH(fs);
+      // Candidate placements, nearest first: right, left, below, above, the
+      // four diagonals, then rows stacked progressively further out above and
+      // below. Rows go out far enough that a clear slot effectively always
+      // exists — a name covering another name is the one thing this graph
+      // must never do, and it is worth pushing a label well away from its
+      // star to avoid. The line that connects them stays drawn either way, so
+      // a displaced label is still unambiguous.
+      const rx = n.r + 10;
+      const vy = n.r + 14;
       const candidates: { lx: number; ty: number; flip: boolean }[] = [
         { lx: n.x + rx, ty: n.y, flip: false },
         { lx: n.x - rx - tw, ty: n.y, flip: true },
@@ -585,18 +591,18 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         { lx: n.x - rx - tw, ty: n.y + vy, flip: true },
         { lx: n.x + rx, ty: n.y - vy, flip: false },
         { lx: n.x - rx - tw, ty: n.y - vy, flip: true },
-        { lx: n.x - tw / 2, ty: n.y + vy + LABEL_H, flip: false },
-        { lx: n.x - tw / 2, ty: n.y - vy - LABEL_H, flip: false },
-        // Rows two and three out. At the 20px floor a long skill label
-        // ("CREATIVE WEB TECHNOLOGY") is most of a phone's canvas width, so
-        // the sideways and diagonal escapes are all blocked and only a clear
-        // row further out will do. Without these the loop falls through to
-        // the last candidate and draws one label straight over another.
-        { lx: n.x - tw / 2, ty: n.y + vy + LABEL_H * 2, flip: false },
-        { lx: n.x - tw / 2, ty: n.y - vy - LABEL_H * 2, flip: false },
-        { lx: n.x - tw / 2, ty: n.y + vy + LABEL_H * 3, flip: false },
-        { lx: n.x - tw / 2, ty: n.y - vy - LABEL_H * 3, flip: false },
       ];
+      for (let row = 1; row <= 6; row++) {
+        const dy = vy + lh * row;
+        candidates.push(
+          { lx: n.x - tw / 2, ty: n.y + dy, flip: false },
+          { lx: n.x - tw / 2, ty: n.y - dy, flip: false },
+          // Offset copies of each row: two labels forced onto the same row
+          // from neighbouring stars would otherwise both centre and collide.
+          { lx: n.x + rx, ty: n.y + dy, flip: false },
+          { lx: n.x - rx - tw, ty: n.y - dy, flip: true },
+        );
+      }
       // Every candidate is nudged back inside the canvas before it is tested,
       // and the nudged position is the one that gets drawn. Testing the raw
       // position and shifting afterwards used to let a candidate pass the
@@ -610,7 +616,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       let bestOverlap = Infinity;
       for (const c of candidates) {
         const cx = clampX(c.lx);
-        const box = { x1: cx - 2, y1: c.ty - LABEL_H / 2, x2: cx + tw + 2, y2: c.ty + LABEL_H / 2 };
+        const box = { x1: cx - 2, y1: c.ty - lh / 2, x2: cx + tw + 2, y2: c.ty + lh / 2 };
         // Total overlapped area rather than a yes/no, so that when every
         // placement is blocked — two long labels on one crowded hub at phone
         // width — the least-bad one wins instead of whichever happened to be
@@ -629,7 +635,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         if (overlap === 0) break; // good candidate found, stop here
       }
       const { ty, flip, lx } = chosen;
-      const box = { x1: lx - 2, y1: ty - LABEL_H / 2, x2: lx + tw + 2, y2: ty + LABEL_H / 2 };
+      const box = { x1: lx - 2, y1: ty - lh / 2, x2: lx + tw + 2, y2: ty + lh / 2 };
       drawn.push(box);
       labelBoxesRef.current.set(n.id, box);
       ctx.textAlign = flip ? 'right' : 'left';
@@ -1024,16 +1030,13 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerLeave}
       />
-      {tooltip?.node.project?.tagline && (
-        <div
-          className="pointer-events-none absolute z-20 max-w-[240px] -translate-y-full font-mono"
-          style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
-        >
-          <div className="border border-foreground/10 bg-black/80 px-3 py-2 backdrop-blur-sm">
-            <div className="text-[11px] leading-snug text-foreground/70">{tooltip.node.project.tagline}</div>
-          </div>
-        </div>
-      )}
+      {/* The floating tagline box that used to sit beside the hovered star is
+          gone: GraphHoverCard (rendered by Constellation) now carries the
+          tagline along with the preview, the name and the wired-to skills,
+          docked in the corner opposite the star. A box pinned next to the
+          star could only ever land on top of the labels around it, which is
+          the one thing this graph must not do. `tooltip` is still tracked —
+          the hit test and touch preview flow both read it. */}
 
       {synthReady && (
         <SynthPanel

@@ -34,7 +34,7 @@ export default function WorkCase() {
 
   const intro = cs.intro ?? (project.blurb ? [project.blurb] : []);
 
-  return (
+  return (
     <div className="relative min-h-screen bg-background">
       {/* Same starfield as the homepage, dialed way down — a subtle sense of
           continuity behind a page that's mostly here to be read. */}
@@ -55,7 +55,7 @@ export default function WorkCase() {
               to="/"
               className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
             >
-              ← Back
+              ← Back
             </Link>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -120,7 +120,7 @@ export default function WorkCase() {
             {/* ── Tech stack ── */}
             {project.tools && (
               <div className="mt-8">
-                <div className="clinical-label mb-3 text-foreground/65">Tech stack</div>
+                <div className="clinical-label mb-3 text-foreground/65">Tech stack</div>
                 <div className="flex flex-wrap gap-2">
                   {project.tools.map((t) => (
                     <span
@@ -163,7 +163,11 @@ export default function WorkCase() {
               >
                 <div className="font-display text-5xl leading-none text-primary">{cs.stat.value}</div>
                 <div>
-                  <div className="font-mono text-[14px] uppercase tracking-[0.12em] text-white">
+                  {/* text-foreground, not text-white: this sits on a 5%-red
+                      tint, which in lite mode is a near-white plate, and a
+                      hardcoded white heading disappeared into it. The token
+                      flips to near-black there and stays Chalk in dark mode. */}
+                  <div className="font-mono text-[14px] uppercase tracking-[0.12em] text-foreground">
                     {cs.stat.heading}
                   </div>
                   <p className="mt-2 max-w-[55ch] font-mono text-[14px] leading-relaxed text-foreground/65">
@@ -207,7 +211,7 @@ export default function WorkCase() {
             )}
 
             {/* ── Case links ── */}
-            {cs.links && cs.links.length > 0 && (
+            {cs.links && cs.links.length > 0 && (
               <div className="mt-8 flex flex-wrap gap-4">
                 {cs.links.map((l) => (
                   <a
@@ -231,7 +235,7 @@ export default function WorkCase() {
               <p className="mt-4 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/85">
                 {cs.order.body}{' '}
                 <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
-                  Get in touch
+                  Get in touch
                 </a>{' '}
                 {cs.order.suffix}
               </p>

@@ -7,7 +7,7 @@ import { constellationBus } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
 import PlainSignalIndex from './PlainSignalIndex';
 import ProjectDetail from './ProjectDetail';
-import DitherPreview from './DitherPreview';
+import GraphHoverCard from './GraphHoverCard';
 
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
 
@@ -23,7 +23,7 @@ export default function Constellation() {
   const [active, setActive] = useState<GraphNode['project'] | null>(null);
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const [openId, setOpenId] = useState<string | null>(null);
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const unsub = constellationBus.subscribeFocus((id) => setOpenId(id));
@@ -39,14 +39,14 @@ export default function Constellation() {
           {/* LEFT COLUMN — label + legend */}
           <div className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
             <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
-              Body of Work
+              Body of Work
             </h2>
 
             <p
               className="mt-2 max-w-[460px] font-mono uppercase leading-relaxed"
               style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}
             >
-              Selected works and the skills that happen to resonate.
+              Selected works and the skills that happen to resonate.
             </p>
           </div>
 
@@ -69,12 +69,12 @@ export default function Constellation() {
               </Suspense>
             )}
 
-            {/* Dithered image preview — trails the cursor while hovering a
-               project star on the graph itself, same specimen-tag treatment
-               as the plain-list rows below (desktop mouse only). */}
-            {mode === 'full' && !IS_COARSE && (
-              <DitherPreview src={active?.image ?? null} x={pointerPos.x} y={pointerPos.y} visible={!!active?.image} />
-            )}
+            {/* Hover readout — preview, name and one-line context for the
+               hovered project. Pinned to the bottom-left of the viewport, in
+               the empty half of the section: it can never cover a star, a
+               label or an edge, and it stays put as you scroll the graph.
+               Desktop mouse only. */}
+            {mode === 'full' && !IS_COARSE && <GraphHoverCard project={active} />}
 
             {/* announce the hovered/opened project to screen readers only — a
                second visible caption here duplicated the project's name and

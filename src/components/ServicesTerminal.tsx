@@ -15,11 +15,11 @@ function ServiceBlock({ service }: { service: Service }) {
       </p>
       <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.record.map((part, i) =>
-          part.href ? (
+          part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
               {part.text}
             </Link>
-          ) : (
+          ) : (
             <span key={i}>{part.text}</span>
           )
         )}
@@ -34,7 +34,7 @@ function ServiceBlock({ service }: { service: Service }) {
 export default function ServicesTerminal() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  return (
+  return (
     <section
       ref={sectionRef}
       id="services" className="relative z-10 py-24"
@@ -57,7 +57,7 @@ export default function ServicesTerminal() {
               className="font-mono uppercase mt-2"
               style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}
             >
-              Digital tools for human connection.
+              Digital tools for human connection.
             </p>
           </div>
 

@@ -28,7 +28,7 @@ export default function Footer() {
               }}
             />
             <p className="mt-5 max-w-xs font-mono uppercase text-[13px] tracking-[0.15em] leading-relaxed text-foreground/55">
-              Sinaida Krivchenko<br />New media artist
+              Sinaida Krivchenko<br />New media artist
             </p>
           </div>
 
@@ -71,17 +71,17 @@ export default function Footer() {
               <div className="clinical-label mb-5 text-primary-legible">More</div>
               <div className="space-y-3.5">
                 <a href="/collaborate" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
-                  Work with me
+                  Work with me
                 </a>
                 <a href="/privacy" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
-                  Privacy Policy
+                  Privacy Policy
                 </a>
                 <button
                   type="button"
                   onClick={resetStorageNotice}
                   className="block w-full text-left bg-transparent border-0 p-0 font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none"
                 >
-                  Cookie Notice
+                  Cookie Notice
                 </button>
                 <button
                   type="button"
@@ -103,7 +103,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Sinaida Krivchenko · Prague, CZ
           </span>
           <span className="font-mono uppercase text-[12px] tracking-[0.15em] italic text-foreground/60">
-            Are we more than the data we leave behind?
+            Are we more than the data we leave behind?
           </span>
         </div>
       </div>

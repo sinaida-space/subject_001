@@ -36,97 +36,135 @@ function Readout({ project }: { project: Project }) {
   const links = projectLinks(project);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [essayOpen, setEssayOpen] = useState(false);
+  const hasMedia = !!(project.video || project.image);
   return (
     <>
-      {project.video ? (
-        <VideoEmbed id={project.video} title={project.title} maxHeightVh={34} />
-      ) : project.image ? (
-        <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '46vh' }}>
-          <DisplacementImage
-            src={project.image}
-            alt={project.title}
-            onLoad={() => setImgLoaded(true)}
-            className="max-h-[46vh] w-full"
-            style={{ position: 'absolute', inset: 0, height: '100%' }}
-            imgClassName="max-h-[46vh] w-full object-cover"
-          />
-          <HeartbeatPlaceholder loaded={imgLoaded} width="100%" height="100%" className="absolute inset-0" />
-        </div>
-      ) : null}
+      {/* Two columns from md up: media is the whole left column, every word
+          is in the right one. Stacked below md.
 
-      <div className="p-5 md:p-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <span
-            style={{
-              border: '1px solid hsl(var(--sinaida-red))',
-              padding: '3px 8px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '20px',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              color: 'hsl(var(--primary-legible))',
-            }}
+          Both columns start at the same top edge and the media runs full
+          bleed to the panel's edges — no centering, no letterbox margin, no
+          second inset frame inside the dialog frame. The text column owns the
+          only padding, so every line in it shares one left edge from the
+          badge down to the tools. */}
+      <div className={hasMedia ? 'md:grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-stretch' : ''}>
+        {/* A 16/9 player can't fill a column as tall as the text beside it, so
+            it centres in the black plate instead of sitting at the top with the
+            void underneath. Images have no such problem: they crop to fill. */}
+        {hasMedia && (
+          <div
+            className="relative flex flex-col justify-center bg-black md:border-r"
+            style={{ borderColor: 'hsl(var(--border))' }}
           >
-            {KIND_LABEL[project.kind]}
-          </span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-foreground/55">
-            {project.tagline}
-          </span>
+            {project.video ? (
+              // No maxHeightVh here: that prop centres the player and caps it
+              // to a share of viewport height, which inside a column reads as
+              // a small video floating in a black box.
+              <VideoEmbed id={project.video} title={project.title} />
+            ) : (
+              <div className="relative aspect-video w-full md:h-full md:aspect-auto md:min-h-[420px]">
+                <DisplacementImage
+                  src={project.image!}
+                  alt={project.title}
+                  onLoad={() => setImgLoaded(true)}
+                  className="h-full w-full"
+                  style={{ position: 'absolute', inset: 0, height: '100%' }}
+                  imgClassName="h-full w-full object-cover"
+                />
+                <HeartbeatPlaceholder loaded={imgLoaded} width="100%" height="100%" className="absolute inset-0" />
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex flex-col gap-5 p-5 md:p-8">
+          {/* Kind badge and one-line context, stacked rather than sharing a
+              row — side by side they baseline-mismatched, the badge being a
+              boxed 20px and the tagline unboxed. */}
+          <div>
+            <span
+              className="inline-block"
+              style={{
+                border: '1px solid hsl(var(--sinaida-red))',
+                padding: '2px 10px',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '20px',
+                lineHeight: 1.3,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: 'hsl(var(--primary-legible))',
+              }}
+            >
+              {KIND_LABEL[project.kind]}
+            </span>
+            <p className="mt-3 font-mono uppercase leading-snug tracking-[0.12em] text-foreground/55" style={{ fontSize: 16 }}>
+              {project.tagline}
+            </p>
+          </div>
+
+          <h3 className="font-display text-3xl uppercase leading-[1.05] text-foreground md:text-4xl">
+            {project.title}
+          </h3>
+
+          {project.blurb && (
+            <p className="font-mono leading-relaxed text-foreground/80" style={{ fontSize: 20 }}>
+              {project.blurb}
+            </p>
+          )}
+
+          {/* Links sit under the text they belong to rather than above it —
+              at the top of the column they read as a toolbar and pushed the
+              title down past the media's top edge. */}
+          {(links.length > 0 || CASE_PAGES[project.id] || project.essay) && (
+            <div className="flex flex-col gap-2">
+              {CASE_PAGES[project.id] && (
+                <Link
+                  to={CASE_PAGES[project.id]}
+                  className="font-mono uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                  style={{ fontSize: 16 }}
+                >
+                  View full case study →
+                </Link>
+              )}
+              {project.essay && !CASE_PAGES[project.id] && (
+                <button
+                  type="button"
+                  onClick={() => setEssayOpen(true)}
+                  className="text-left font-mono uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                  style={{ fontSize: 16 }}
+                >
+                  Read the full text →
+                </button>
+              )}
+              {links.map((l) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                  style={{ fontSize: 16 }}
+                >
+                  {l.label} ↗
+                </a>
+              ))}
+            </div>
+          )}
+
+          {project.tools && (
+            <div className="mt-auto flex flex-wrap gap-2 pt-2">
+              {project.tools.map((t) => (
+                <span
+                  key={t}
+                  className="uppercase"
+                  style={{ border: '1px solid hsl(var(--border))', padding: '3px 10px', fontFamily: 'var(--font-mono)', fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.45)' }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-
-        <h3 className="mt-2 font-display text-2xl uppercase text-foreground md:text-3xl">{project.title}</h3>
-
-        {(links.length > 0 || CASE_PAGES[project.id] || project.essay) && (
-          <div className="mt-3 flex flex-wrap gap-4">
-            {CASE_PAGES[project.id] && (
-              <Link
-                to={CASE_PAGES[project.id]}
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
-              >
-                View full case study →
-              </Link>
-            )}
-            {project.essay && !CASE_PAGES[project.id] && (
-              <button
-                type="button"
-                onClick={() => setEssayOpen(true)}
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
-              >
-                Read the full text →
-              </button>
-            )}
-            {links.map((l) => (
-              <a
-                key={l.url}
-                href={l.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
-              >
-                {l.label} ↗
-              </a>
-            ))}
-          </div>
-        )}
-
-        {project.blurb && (
-          <p className="mt-3 w-full font-mono text-[14px] leading-snug text-foreground/80">
-            {project.blurb}
-          </p>
-        )}
-
-        {project.tools && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {project.tools.map((t) => (
-              <span
-                key={t}
-                style={{ border: '1px solid hsl(var(--border))', padding: '4px 8px', fontFamily: 'var(--font-mono)', fontSize: '20px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.4)' }}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
       {project.essay && essayOpen && (
@@ -222,7 +260,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out"
+        className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out md:max-w-[1100px]"
         style={{
           background: 'hsl(var(--background))',
           border: '1px solid hsl(var(--sinaida-red))',
