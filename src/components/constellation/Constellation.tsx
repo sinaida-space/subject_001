@@ -24,6 +24,8 @@ export default function Constellation() {
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const [openId, setOpenId] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const graphBoundsRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const unsub = constellationBus.subscribeFocus((id) => setOpenId(id));
@@ -37,7 +39,7 @@ export default function Constellation() {
       <div className="container mx-auto max-w-7xl px-6">
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* LEFT COLUMN — label + legend */}
-          <div className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
+          <div ref={headingRef} className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
             <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
               Body of Work
             </h2>
@@ -63,18 +65,29 @@ export default function Constellation() {
                 : undefined
             }
           >
-            {mode === 'full' && (
-              <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
-                <ConstellationFull onActiveProject={setActive} onPointerPosition={(x, y) => setPointerPos({ x, y })} />
-              </Suspense>
-            )}
+            {/* Bounds the hover card to the graph's own footprint, not the
+               whole flex-1 wrapper below — that wrapper also contains the
+               plain list, which would let the card's clamp range extend
+               down into that list's text. */}
+            <div ref={graphBoundsRef}>
+              {mode === 'full' && (
+                <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
+                  <ConstellationFull onActiveProject={setActive} onPointerPosition={(x, y) => setPointerPos({ x, y })} />
+                </Suspense>
+              )}
+            </div>
 
             {/* Hover readout — preview, name and one-line context for the
-               hovered project. Pinned to the bottom-left of the viewport, in
-               the empty half of the section: it can never cover a star, a
-               label or an edge, and it stays put as you scroll the graph.
-               Desktop mouse only. */}
-            {mode === 'full' && !IS_COARSE && <GraphHoverCard project={active} />}
+               hovered project. Anchored bottom-left, clamped to the graph's
+               own bounds below and to the heading's bottom edge above (the
+               heading sits in the sticky left column, at the same row as
+               the graph's own top — clamping to the graph's top alone once
+               let a tall card sit flush against it and cover the heading
+               text). Also capped to a max-height so an oversized card
+               shrinks instead of breaching either edge. Desktop mouse only. */}
+            {mode === 'full' && !IS_COARSE && (
+              <GraphHoverCard project={active} boundsRef={graphBoundsRef} avoidRef={headingRef} />
+            )}
 
             {/* announce the hovered/opened project to screen readers only — a
                second visible caption here duplicated the project's name and
