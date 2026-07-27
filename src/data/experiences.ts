@@ -54,7 +54,7 @@ export const EXPERIENCES_META: {
     'Daria Blokhina, spatial design and build, Valencia. Sinaida Krivchenko, interactive systems, Prague. Working together on exhibition and event spaces.',
   hook: 'Most booths and installations arrive as two purchased line items. A designer draws the room, then a vendor drops screens and motion graphics into it afterward. The content doesn’t know the space, and the space wasn’t built for what runs inside.',
   golden: {
-    why: 'A stand and its interactive layer belong to one design process, not two separate hires briefed one after another.',
+    why: 'A stand and its interactive layer belong to one design process: a single brief, briefed once, in place of two separate hires briefed one after another.',
     how: 'Daria designs and builds the physical structure. Sinaida designs the real-time system that runs inside it, in TouchDesigner and GLSL.',
     what: 'One team, briefed once, for the next stand, activation, or installation.',
   },
@@ -65,10 +65,10 @@ export const DARIA_PROJECTS: ExperienceProject[] = [
     id: 'mipim-cannes-2025',
     title: 'MIPIM Cannes 2025',
     client: 'Invest Saudi',
-    detail: '600 m² two-floor pavilion',
+    detail: '600 m² two-floor pavilion',
     images: [
       { src: '/experiences/mipim-cannes-2025/01.jpg', alt: 'Meeting room with a long wood table set for a briefing, gold latticed screen and a satellite city photo mural' },
-      { src: '/experiences/mipim-cannes-2025/02.jpg', alt: 'Illuminated scale model of a walled desert compound at night, overlaid with "218Mn+ project manhours to date"' },
+      { src: '/experiences/mipim-cannes-2025/02.jpg', alt: 'Illuminated scale model of a walled desert compound at night, overlaid with “218Mn+ project manhours to date”' },
       { src: '/experiences/mipim-cannes-2025/03.jpg', alt: 'Meeting room with a folded triangular ceiling canopy, gold mesh panel doors and a satellite city photo mural' },
       { src: '/experiences/mipim-cannes-2025/04.jpg', alt: 'Exterior facade under construction, blue Invest Saudi branded canopy fabric being fitted by installers on a lift' },
       { src: '/experiences/mipim-cannes-2025/05.jpg', alt: 'Lounge with white armchairs around low tables, glass wall onto the red carpet outside, city photo mural behind the sofa' },
@@ -81,14 +81,14 @@ export const DARIA_PROJECTS: ExperienceProject[] = [
     id: 'smart-city-barcelona',
     title: 'Smart City Expo World Congress',
     client: 'New Murabba',
-    detail: '154 m² booth, 360° LED cube',
+    detail: '154 m² booth, 360° LED cube',
     images: [
-      { src: '/experiences/smart-city-barcelona/01.jpg', alt: 'Vertical screen showing a map graphic and QR code under an "Embracing Sustainability" sign, pink floor in front' },
+      { src: '/experiences/smart-city-barcelona/01.jpg', alt: 'Vertical screen showing a map graphic and QR code under an “Embracing Sustainability” sign, pink floor in front' },
       { src: '/experiences/smart-city-barcelona/02.jpg', alt: 'Booth under construction, black overhead canopy with exposed truss lighting above the reception desk' },
-      { src: '/experiences/smart-city-barcelona/03.jpg', alt: 'Cube-shaped booth wall wrapped in an aerial city print reading "The Iconic Mukaab", adjacent screen and lounge seating' },
+      { src: '/experiences/smart-city-barcelona/03.jpg', alt: 'Cube-shaped booth wall wrapped in an aerial city print reading “The Iconic Mukaab”, adjacent screen and lounge seating' },
       { src: '/experiences/smart-city-barcelona/04.jpg', alt: 'New Murabba overhead sign above a screen of pedestrians in a green social space, dark wood bar counter below' },
       { src: '/experiences/smart-city-barcelona/05.jpg', alt: 'Wide booth overview under twin New Murabba signs, portrait screen and gold hexagonal lattice structure, pink carpet' },
-      { src: '/experiences/smart-city-barcelona/06.jpg', alt: 'Booth overview with a screen of a desert tower captioned "Riyadh\'s new modern downtown" beside the reception counter' },
+      { src: '/experiences/smart-city-barcelona/06.jpg', alt: 'Booth overview with a screen of a desert tower captioned “Riyadh’s new modern downtown” beside the reception counter' },
       { src: '/experiences/smart-city-barcelona/07.jpg', alt: 'Wide, motion-blurred view of visitors walking past the stand beneath its black overhead canopy' },
       { src: '/experiences/smart-city-barcelona/08.jpg', alt: 'Large screen showing a rendered desert dome, pink lit panel wall alongside a seating area' },
       { src: '/experiences/smart-city-barcelona/09.jpg', alt: 'Visitor standing inside a fully enclosed LED cube, screens wrapping floor, walls and ceiling with a nature scene' },
@@ -99,7 +99,7 @@ export const DARIA_PROJECTS: ExperienceProject[] = [
 export const SINAIDA_VIDEOS: ExperienceVideo[] = [
   {
     id: 'bDDAXRlz5FQ',
-    title: 'Redkie Ptitsy, live at Sklad №3',
+    title: 'Redkie Ptitsy, live at Sklad №3',
     caseHref: '/work/redkie-ptitsy',
     caption: 'A commissioned real-time interactive system for a live concert in Moscow: nine audio-reactive projections, one per song, listening to the mix straight from the desk.',
   },
@@ -181,7 +181,7 @@ export const EXPERIENCES_SECTIONS: {
   progress: {
     heading: 'Track record',
     paragraphs: [
-      'Daria has designed and built exhibition stands and pavilions for clients including Invest Saudi at MIPIM Cannes 2025 (a 600 m² two-floor pavilion) and New Murabba at Smart City Expo World Congress in Barcelona (a 154 m² booth built around a 360° LED cube). Sinaida has delivered a commissioned real-time interactive system for Redkie Ptitsy in Moscow, and a prototyped installation for The Eyes Chico. Structural delivery at full exhibition scale and real-time interactive delivery are each independently proven; this page is where the two combine.',
+      'Daria has designed and built exhibition stands and pavilions for clients including Invest Saudi at MIPIM Cannes 2025 (a 600 m² two-floor pavilion) and New Murabba at Smart City Expo World Congress in Barcelona (a 154 m² booth built around a 360° LED cube). Sinaida has delivered a commissioned real-time interactive system for Redkie Ptitsy in Moscow, and a prototyped installation for The Eyes Chico. Structural delivery at full exhibition scale and real-time interactive delivery are each independently proven; this page is where the two combine.',
     ],
   },
   team: {
@@ -203,8 +203,8 @@ export const EXPERIENCES_SECTIONS: {
     ],
   },
   risks: [
-    { risk: 'Interactive system installed on unfamiliar venue hardware or conditions', level: 'Medium', mitigation: 'On-site testing scheduled ahead of doors-open, not assumed to work first time cold' },
-    { risk: 'Two-city coordination (Prague / Valencia) slows decisions', level: 'Low', mitigation: 'Single integrated brief and shared timeline from project start, not sequential handoffs' },
+    { risk: 'Interactive system installed on unfamiliar venue hardware or conditions', level: 'Medium', mitigation: 'On-site testing scheduled ahead of doors-open, so nothing is assumed to work first time cold' },
+    { risk: 'Two-city coordination (Prague / Valencia) slows decisions', level: 'Low', mitigation: 'A single integrated brief and shared timeline, set from project start, ahead of sequential handoffs' },
     { risk: 'First joint delivery as a combined team', level: 'Low', mitigation: 'Scope is split cleanly by domain, structure versus interactive system, each partner accountable for their own delivery' },
   ],
   market: {
