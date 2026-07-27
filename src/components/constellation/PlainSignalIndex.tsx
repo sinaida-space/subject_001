@@ -4,7 +4,7 @@ import { PROJECTS, BADGE_LABEL, type Project, type ProjectKind } from '@/data/pr
 import { constellationBus } from '@/lib/constellationBus';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import DitherPreview from './DitherPreview';
-import logoSinaida from '@/assets/logo-sinaida.png';
+import sanctuary from '@/assets/sanctuary.jpg';
 
 const EXPERIENCES_ENTRY = {
   label: 'SINAIDA AND DARIA',
@@ -104,11 +104,11 @@ function ExperienceRow({ previewEnabled, onPreview }: ExperienceRowProps) {
   const rowRef = useRef<HTMLAnchorElement>(null);
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    if (previewEnabled) onPreview(logoSinaida, e.clientX, e.clientY, false);
+    if (previewEnabled) onPreview(sanctuary, e.clientX, e.clientY, false);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (previewEnabled) onPreview(logoSinaida, e.clientX, e.clientY, false);
+    if (previewEnabled) onPreview(sanctuary, e.clientX, e.clientY, false);
   };
 
   const handleMouseLeave = () => {
@@ -119,7 +119,7 @@ function ExperienceRow({ previewEnabled, onPreview }: ExperienceRowProps) {
     if (!previewEnabled) return;
     const rect = rowRef.current?.getBoundingClientRect();
     if (!rect) return;
-    onPreview(logoSinaida, rect.right, rect.top, true);
+    onPreview(sanctuary, rect.right, rect.top, true);
   };
 
   const handleBlur = () => {
