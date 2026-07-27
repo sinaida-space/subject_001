@@ -5,7 +5,11 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  // .claude/worktrees holds throwaway agent worktrees checked out *inside* the
+  // repo. Without this, eslint walks whatever old revision is sitting there and
+  // reports its files as errors in the current source, which made every lint run
+  // unreadable and hid real failures.
+  { ignores: ["dist", ".claude/worktrees", "**/node_modules"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
