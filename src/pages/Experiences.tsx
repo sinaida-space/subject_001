@@ -317,7 +317,7 @@ export default function Experiences() {
             />
             <ObfuscatedMailto
               label="EMAIL DARIA ↗"
-              address="onlystrikes@gmail.com"
+              addressParts={['onlystrikes', '@', 'gmail', '.com']}
               className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
             />
           </div>
