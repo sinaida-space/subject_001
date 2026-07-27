@@ -173,6 +173,14 @@ function buildRoutes() {
     robots: 'noindex, follow',
   };
 
+  const experiences = {
+    path: 'experiences',
+    title: 'Experiences · Sinaida Krivchenko and Daria Blokhina',
+    description:
+      'Exhibition and event spaces where the physical structure and the real-time interactive system are designed as one brief. Daria Blokhina builds the space, Sinaida Krivchenko builds the system.',
+    canonical: `${SITE_URL}/experiences/`,
+  };
+
   // Legacy redirect stubs: the SPA sends /booking/ and /press/ visitors on to
   // /collaborate/, so their static shells reuse collaborate's copy and point
   // search engines at the real destination instead of indexing the redirect.
@@ -184,7 +192,7 @@ function buildRoutes() {
     robots: 'noindex, follow',
   });
 
-  return [collaborate, privacy, legacyRedirect('booking'), legacyRedirect('press'), ...workRoutes];
+  return [collaborate, experiences, privacy, legacyRedirect('booking'), legacyRedirect('press'), ...workRoutes];
 }
 
 // ── apply a route's tags to the base template ────────────────────────────
