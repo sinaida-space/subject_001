@@ -133,7 +133,7 @@ export default function Experiences() {
 
         {/* Daria's work */}
         <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-6">Daria's work</h2>
+          <h2 className="clinical-label text-primary-legible mb-6">Daria’s work</h2>
           {DARIA_PROJECTS.map((project) => (
             <ProjectGallery key={project.id} project={project} />
           ))}
@@ -141,7 +141,7 @@ export default function Experiences() {
 
         {/* Sinaida's work */}
         <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-6">Sinaida's work</h2>
+          <h2 className="clinical-label text-primary-legible mb-6">Sinaida’s work</h2>
           <div className="space-y-14">
             {SINAIDA_VIDEOS.map((video) => (
               <div key={video.id}>

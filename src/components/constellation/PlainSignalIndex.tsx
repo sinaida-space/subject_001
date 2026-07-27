@@ -14,7 +14,7 @@ const EXPERIENCES_ENTRY = {
 };
 
 // The "lights up" reading of the Signal Map: every project, grouped plainly
-// by kind, semantic headings throughout — legible to a screen reader, a
+// by kind, semantic headings throughout: legible to a screen reader, a
 // search crawler, and a producer skimming on a slow connection.
 const KIND_ORDER: ProjectKind[] = ['stage', 'installation', 'conceptual', 'game', 'tool'];
 const KIND_LABEL: Record<ProjectKind, string> = {
