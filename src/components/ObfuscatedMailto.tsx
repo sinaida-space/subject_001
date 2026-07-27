@@ -8,8 +8,14 @@ interface ObfuscatedMailtoProps {
   label: string;
   className?: string;
   style?: React.CSSProperties;
-  /** Overrides the default (Sinaida's) address. Assembled at click time only, same as the default. */
-  address?: string;
+  /**
+   * Overrides the default (Sinaida's) address, as fragments joined at click time.
+   * Fragments rather than a whole string on purpose: a complete address passed as
+   * a prop stays out of the DOM but is still readable in plain text in the compiled
+   * JS bundle, which is where scrapers look. Split it so no contiguous address exists
+   * in the shipped output, e.g. ['name', '@', 'provider', '.com'].
+   */
+  addressParts?: string[];
   onMouseEnter?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
   onMouseLeave?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
@@ -18,14 +24,14 @@ export default function ObfuscatedMailto({
   label,
   className,
   style,
-  address,
+  addressParts,
   onMouseEnter,
   onMouseLeave,
 }: ObfuscatedMailtoProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     // Assemble address only on click, mirroring ContactSection.tsx pattern
-    const resolved = address ?? ['gallant', '_mod5v', '@', 'icloud', '.com'].join('');
+    const resolved = (addressParts ?? ['gallant', '_mod5v', '@', 'icloud', '.com']).join('');
     window.location.href = `mailto:${resolved}`;
   };
 
