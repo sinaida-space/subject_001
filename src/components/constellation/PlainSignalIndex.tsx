@@ -1,8 +1,17 @@
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PROJECTS, BADGE_LABEL, type Project, type ProjectKind } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import DitherPreview from './DitherPreview';
+import logoSinaida from '@/assets/logo-sinaida.png';
+
+const EXPERIENCES_ENTRY = {
+  label: 'SINAIDA AND DARIA',
+  tagline: 'Exhibition and event spaces, built as one brief with Daria Blokhina',
+  href: '/experiences',
+  heading: 'Experiences',
+};
 
 // The "lights up" reading of the Signal Map: every project, grouped plainly
 // by kind, semantic headings throughout — legible to a screen reader, a
@@ -86,6 +95,60 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
   );
 }
 
+interface ExperienceRowProps {
+  previewEnabled: boolean;
+  onPreview: (src: string | null, x: number, y: number, instant: boolean) => void;
+}
+
+function ExperienceRow({ previewEnabled, onPreview }: ExperienceRowProps) {
+  const rowRef = useRef<HTMLAnchorElement>(null);
+
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    if (previewEnabled) onPreview(logoSinaida, e.clientX, e.clientY, false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (previewEnabled) onPreview(logoSinaida, e.clientX, e.clientY, false);
+  };
+
+  const handleMouseLeave = () => {
+    if (previewEnabled) onPreview(null, 0, 0, false);
+  };
+
+  const handleFocus = () => {
+    if (!previewEnabled) return;
+    const rect = rowRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    onPreview(logoSinaida, rect.right, rect.top, true);
+  };
+
+  const handleBlur = () => {
+    if (previewEnabled) onPreview(null, 0, 0, true);
+  };
+
+  return (
+    <Link
+      ref={rowRef}
+      to={EXPERIENCES_ENTRY.href}
+      onMouseEnter={handleMouseEnter}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      className="group flex w-full items-baseline gap-3 border-t border-l-2 border-l-transparent border-foreground/10 py-4 pl-3 -ml-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
+    >
+      <span className="font-mono text-[14px] text-accent transition-transform group-hover:translate-x-1">→</span>
+      <span className="flex-1">
+        <span className="font-display text-lg uppercase text-foreground transition-colors group-hover:text-accent">
+          {EXPERIENCES_ENTRY.label}
+        </span>
+        <span className="ml-3 font-mono text-[13px] text-foreground/60">{EXPERIENCES_ENTRY.tagline}</span>
+      </span>
+      <span className="shrink-0 font-mono text-[11px] text-foreground/30 transition-opacity group-hover:opacity-70">▸</span>
+    </Link>
+  );
+}
+
 export default function PlainSignalIndex() {
   const { mode } = useRenderMode();
   const previewEnabled = mode !== 'lite';
@@ -104,21 +167,39 @@ export default function PlainSignalIndex() {
     <div className="w-full" style={{ minHeight: 'clamp(420px, 60vh, 720px)' }}>
       {KIND_ORDER.map((kind) => {
         const items = PROJECTS.filter((p) => p.kind === kind && !p.background);
-        if (items.length === 0) return null;
+        const kindSection =
+          items.length === 0 ? null : (
+            <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
+              <h3
+                id={`plain-signal-${kind}`}
+                className="mb-3 font-mono text-[20px] uppercase tracking-[0.2em] text-foreground/60"
+              >
+                {KIND_LABEL[kind]}
+              </h3>
+              <div className="border-b border-foreground/10">
+                {items.map((p) => (
+                  <Row key={p.id} project={p} previewEnabled={previewEnabled} onPreview={handlePreview} />
+                ))}
+              </div>
+            </section>
+          );
         return (
-          <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
-            <h3
-              id={`plain-signal-${kind}`}
-              className="mb-3 font-mono text-[20px] uppercase tracking-[0.2em] text-foreground/60"
-            >
-              {KIND_LABEL[kind]}
-            </h3>
-            <div className="border-b border-foreground/10">
-              {items.map((p) => (
-                <Row key={p.id} project={p} previewEnabled={previewEnabled} onPreview={handlePreview} />
-              ))}
-            </div>
-          </section>
+          <Fragment key={kind}>
+            {kindSection}
+            {kind === 'stage' && (
+              <section key="experiences" aria-labelledby="plain-signal-experiences" className="mb-12">
+                <h3
+                  id="plain-signal-experiences"
+                  className="mb-3 font-mono text-[20px] uppercase tracking-[0.2em] text-foreground/60"
+                >
+                  {EXPERIENCES_ENTRY.heading}
+                </h3>
+                <div className="border-b border-foreground/10">
+                  <ExperienceRow previewEnabled={previewEnabled} onPreview={handlePreview} />
+                </div>
+              </section>
+            )}
+          </Fragment>
         );
       })}
       {previewEnabled && (
