@@ -86,7 +86,7 @@ function SectionBlock({ section }: { section: ExperienceSection }) {
 
 export default function Experiences() {
   usePageMeta({
-    title: 'Experiences — Sinaida Krivchenko and Daria Blokhina',
+    title: 'Experiences · Sinaida Krivchenko and Daria Blokhina',
     description:
       'Exhibition and event spaces where the physical structure and the real-time interactive system are designed as one brief. Daria Blokhina builds the space, Sinaida Krivchenko builds the system.',
     canonical: 'https://sinaida.eu/experiences/',
