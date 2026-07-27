@@ -54,7 +54,7 @@ export const EXPERIENCES_META: {
     'Daria Blokhina, spatial design and build, Valencia. Sinaida Krivchenko, interactive systems, Prague. Working together on exhibition and event spaces.',
   hook: 'Most booths and installations arrive as two purchased line items. A designer draws the room, then a vendor drops screens and motion graphics into it afterward. The content doesn’t know the space, and the space wasn’t built for what runs inside.',
   golden: {
-    why: 'A stand and its interactive layer belong to one design process: a single brief, briefed once, in place of two separate hires briefed one after another.',
+    why: 'A stand and its interactive layer belong to one design process, decided in a single brief that covers the structure and the system it holds.',
     how: 'Daria designs and builds the physical structure. Sinaida designs the real-time system that runs inside it, in TouchDesigner and GLSL.',
     what: 'One team, briefed once, for the next stand, activation, or installation.',
   },
@@ -181,7 +181,7 @@ export const EXPERIENCES_SECTIONS: {
   progress: {
     heading: 'Track record',
     paragraphs: [
-      'Daria has designed and built exhibition stands and pavilions for clients including Invest Saudi at MIPIM Cannes 2025 (a 600 m² two-floor pavilion) and New Murabba at Smart City Expo World Congress in Barcelona (a 154 m² booth built around a 360° LED cube). Sinaida has delivered a commissioned real-time interactive system for Redkie Ptitsy in Moscow, and a prototyped installation for The Eyes Chico. Structural delivery at full exhibition scale and real-time interactive delivery are each independently proven; this page is where the two combine.',
+      'Daria has designed and built exhibition stands and pavilions for clients including Invest Saudi at MIPIM Cannes 2025 (a 600 m² two-floor pavilion) and New Murabba at Smart City Expo World Congress in Barcelona (a 154 m² booth built around a 360° LED cube). Sinaida has delivered a commissioned real-time interactive system for Redkie Ptitsy in Moscow, and a prototyped installation for The Eyes Chico. The team brings both records to the same brief: structural delivery at full exhibition scale, and real-time interactive systems that hold up in front of an audience.',
     ],
   },
   team: {
@@ -204,8 +204,8 @@ export const EXPERIENCES_SECTIONS: {
   },
   risks: [
     { risk: 'Interactive system installed on unfamiliar venue hardware or conditions', level: 'Medium', mitigation: 'On-site testing scheduled ahead of doors-open, so nothing is assumed to work first time cold' },
-    { risk: 'Two-city coordination (Prague / Valencia) slows decisions', level: 'Low', mitigation: 'A single integrated brief and shared timeline, set from project start, ahead of sequential handoffs' },
-    { risk: 'First joint delivery as a combined team', level: 'Low', mitigation: 'Scope is split cleanly by domain, structure versus interactive system, each partner accountable for their own delivery' },
+    { risk: 'Two-city coordination (Prague / Valencia) slows decisions', level: 'Low', mitigation: 'One integrated brief and a shared timeline, both set at project start' },
+    { risk: 'Structure and interactive system compete for the same install window', level: 'Low', mitigation: 'Scope is split cleanly by domain, structure versus interactive system, with each partner accountable for their own delivery and build order agreed upfront' },
   ],
   market: {
     heading: 'Market',
