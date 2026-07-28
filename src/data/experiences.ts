@@ -27,6 +27,23 @@ export interface ExperienceSection {
   paragraphs: string[];
 }
 
+// A rich-text paragraph: a sequence of parts, some plain, some linked.
+// Mirrors RecordPart in src/data/services.ts.
+export interface RichTextPart {
+  text: string;
+  href?: string;
+}
+
+export interface ExperienceRichSection {
+  heading: string;
+  paragraphs: RichTextPart[][];
+}
+
+export interface ExperienceStat {
+  value: string;
+  label: string;
+}
+
 export interface ExperienceCtq {
   description: string;
   target: string;
@@ -47,11 +64,11 @@ export const EXPERIENCES_META: {
   hook: string;
   golden: { why: string; how: string; what: string };
 } = {
-  headline: 'Space and system, built by the same hands.',
-  headlineLead: 'Space and system,',
-  headlineAccent: 'built by the same hands.',
+  headline: 'We build the room and what runs inside it.',
+  headlineLead: 'We build the room',
+  headlineAccent: 'and what runs inside it.',
   whoLine:
-    'Daria Blokhina, spatial design and build, Valencia. Sinaida Krivchenko, interactive systems, Prague. Working together on exhibition and event spaces.',
+    'Daria Blokhina, spatial designer, Valencia. Sinaida Krivchenko, interactive systems, Prague. Working together on exhibition and event spaces.',
   hook: 'Most booths and installations arrive as two purchased line items. A designer draws the room, then a vendor drops screens and motion graphics into it afterward. The content doesn’t know the space, and the space wasn’t built for what runs inside.',
   golden: {
     why: 'A stand and its interactive layer belong to one design process, decided in a single brief that covers the structure and the system it holds.',
@@ -111,6 +128,12 @@ export const SINAIDA_VIDEOS: ExperienceVideo[] = [
   },
 ];
 
+export const EXPERIENCES_STATS: ExperienceStat[] = [
+  { value: '600 m²', label: 'Two-floor pavilion, MIPIM Cannes 2025' },
+  { value: '154 m²', label: 'Booth with a 360° LED cube, Smart City Expo' },
+  { value: '9', label: 'Audio-reactive projections, Redkie Ptitsy' },
+];
+
 export const EXPERIENCES_SECTIONS: {
   execSummary: ExperienceSection;
   problem: ExperienceSection;
@@ -119,8 +142,8 @@ export const EXPERIENCES_SECTIONS: {
   goal: { statement: string; ctqs: ExperienceCtq[] };
   scope: { inScope: string[]; outScope: string[] };
   differentiation: ExperienceSection;
-  progress: ExperienceSection;
-  team: ExperienceSection;
+  progress: ExperienceRichSection;
+  team: ExperienceRichSection;
   resources: { have: string[]; need: string[] };
   risks: ExperienceRisk[];
   market: ExperienceSection;
@@ -181,15 +204,31 @@ export const EXPERIENCES_SECTIONS: {
   progress: {
     heading: 'Track record',
     paragraphs: [
-      'Daria has designed and built exhibition stands and pavilions for clients including Invest Saudi at MIPIM Cannes 2025 (a 600 m² two-floor pavilion) and New Murabba at Smart City Expo World Congress in Barcelona (a 154 m² booth built around a 360° LED cube). Sinaida has delivered a commissioned real-time interactive system for Redkie Ptitsy in Moscow, and a prototyped installation for The Eyes Chico. The team brings both records to the same brief: structural delivery at full exhibition scale, and real-time interactive systems that hold up in front of an audience.',
+      [
+        { text: 'Daria has designed and built exhibition stands and pavilions for clients including Invest Saudi at MIPIM Cannes 2025 (a 600 m² two-floor pavilion) and New Murabba at Smart City Expo World Congress in Barcelona (a 154 m² booth built around a 360° LED cube). Sinaida has delivered a commissioned real-time interactive system for ' },
+        { text: 'Redkie Ptitsy', href: '/work/redkie-ptitsy' },
+        { text: ' in Moscow, and a prototyped installation for ' },
+        { text: 'The Eyes Chico', href: '/work/the-eyes-chico' },
+        { text: '. The team brings both records to the same brief: structural delivery at full exhibition scale, and real-time interactive systems that hold up in front of an audience.' },
+      ],
     ],
   },
   team: {
     heading: 'Team',
     paragraphs: [
-      'Daria Blokhina, spatial design and build, based in Valencia. Owns the physical stand: concept, buildable model, materials, and construction management. Project archive: github.com/onlystrikes/Released-Projects.',
-      'Sinaida Krivchenko, interactive systems, based in Prague. Owns the interactive layer: real-time visuals and sensor systems built in TouchDesigner and GLSL. Portfolio: sinaida.eu.',
-      'Both are available on-site or remote, depending on the project.',
+      [
+        { text: 'Daria Blokhina, spatial designer, based in Valencia. Owns the physical stand: concept, buildable model, materials, and construction management. Portfolio: ' },
+        { text: 'Behance', href: 'https://www.behance.net/dariablokhina' },
+        { text: '. Project archive: ' },
+        { text: 'GitHub', href: 'https://github.com/onlystrikes/Released-Projects' },
+        { text: '.' },
+      ],
+      [
+        { text: 'Sinaida Krivchenko, interactive systems, based in Prague. Owns the interactive layer: real-time visuals and sensor systems built in TouchDesigner and GLSL. Portfolio: sinaida.eu.' },
+      ],
+      [
+        { text: 'Both are available on-site or remote, depending on the project.' },
+      ],
     ],
   },
   resources: {
@@ -216,7 +255,7 @@ export const EXPERIENCES_SECTIONS: {
   businessModel: {
     heading: 'How we work',
     paragraphs: [
-      'Every project is scoped and quoted individually. Structure and interactive-system work can be quoted together as one proposal, or broken out by domain where useful. Fee is on request.',
+      'Each project is scoped and quoted as one proposal covering the structure and the interactive system together. A client can contract a single agreement with one partner as lead and the second contracted under it, or contract each scope directly, whichever suits their procurement. Invoicing is issued within the EU. Fee is on request.',
     ],
   },
   nextSteps: {
