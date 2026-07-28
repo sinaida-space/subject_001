@@ -99,7 +99,6 @@ function ProjectGallery({ project }: { project: ExperienceProject }) {
         role="region"
         aria-label={`${project.title} gallery`}
         className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-6 px-6"
-        style={{ scrollbarWidth: 'thin' }}
       >
         {project.images.map((img) => {
           const avif = img.src.replace(/\.jpg$/, '.avif');

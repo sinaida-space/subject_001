@@ -532,6 +532,80 @@
     text-transform: uppercase;
   }
 
+  /* ── Scrollbars, site-wide ──
+     The OS default is a grey chrome bar sitting on a black field full of red
+     signal, and it broke the page every time it appeared. These draw the track
+     as a hairline red rule with a glowing thumb, in the same signal language as
+     the ECG mark and the constellation.
+
+     Firefox supports only scrollbar-width and scrollbar-color, so it gets the
+     red colouring at thin width and none of the bloom. Deliberate degradation.
+
+     The gutter stays 12px wide even though the drawn line is 1px: the bar has
+     to remain grabbable with a mouse. Never shrink the hit area to match the
+     drawing. The thumb's length is set by the browser from the content ratio
+     and cannot be forced to a circle, so it reads as a dot on long pages and a
+     lozenge on short ones. */
+  /* Firefox only. This must NOT apply in Chromium: once scrollbar-width is set
+     there, the whole ::-webkit-scrollbar family below is ignored and the bloom
+     silently disappears. Measured it doing exactly that before this guard. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--primary-legible)) transparent;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    background-image: linear-gradient(
+      to right,
+      transparent calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  ::-webkit-scrollbar-track:horizontal {
+    background-image: linear-gradient(
+      to bottom,
+      transparent calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  /* The transparent border plus background-clip keeps the lit core at 8px
+     inside the 12px gutter, so the bloom has room to fall off inside the
+     track rather than being clipped at the edge. */
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--primary-legible));
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+    box-shadow:
+      0 0 6px hsl(var(--sinaida-red) / 0.85),
+      0 0 14px hsl(var(--sinaida-red) / 0.5);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--primary-hover));
+    box-shadow:
+      0 0 8px hsl(var(--sinaida-red)),
+      0 0 20px hsl(var(--sinaida-red) / 0.7);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
   .no-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
