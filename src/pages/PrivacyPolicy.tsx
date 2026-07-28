@@ -165,8 +165,9 @@ const PrivacyPolicy = () => {
           <p className="text-muted-foreground">
             Name: Sinaida Krivchenko<br />
             Location: Prague, Czechia<br />
+            Email:{' '}
             <ObfuscatedMailto
-              label={'Email me ↗'}
+              label={'gallant_mod5v [at] icloud [dot] com'}
               className="text-primary-legible underline underline-offset-2 hover:text-accent transition-colors"
             />
           </p>
