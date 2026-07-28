@@ -114,7 +114,7 @@ const PrivacyPolicy = () => {
           </p>
 
           <h2 className="font-display text-lg text-foreground mt-8">Marketing</h2>
-          <p className="text-muted-foreground">I don't send marketing communications and I don't operate a mailing list. If you email me, I reply to you about your enquiry and nothing else.</p>
+          <p className="text-muted-foreground">I don’t send marketing communications and I don’t operate a mailing list. If you email me, I reply to you about your enquiry and nothing else.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">What are your data protection rights?</h2>
           <p className="text-muted-foreground">Under GDPR (General Data Protection Regulation), you are entitled to the following:</p>
