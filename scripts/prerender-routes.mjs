@@ -123,6 +123,7 @@ function extractCaseStudyProjects(source) {
 
     const id = extractField(block, 'id');
     const title = extractField(block, 'title');
+    const subtitle = extractField(block, 'subtitle'); // optional
     const tagline = extractField(block, 'tagline');
     const blurb = extractField(block, 'blurb'); // optional
 
@@ -133,10 +134,11 @@ function extractCaseStudyProjects(source) {
     }
 
     const combined = blurb ? `${tagline}. ${blurb}` : tagline;
+    const fullTitle = subtitle ? `${title}: ${subtitle}` : title;
 
     routes.push({
       path: `work/${id}`,
-      title: `${title} — Case Study | ${SITE_NAME}`,
+      title: `${fullTitle} · Case Study | ${SITE_NAME}`,
       description: trimToWordBoundary(combined, 160),
       canonical: `${SITE_URL}/work/${id}/`,
     });
@@ -159,7 +161,7 @@ function buildRoutes() {
 
   const collaborate = {
     path: 'collaborate',
-    title: 'Work with me — Sinaida Krivchenko',
+    title: 'Work with me | Sinaida Krivchenko',
     description:
       'She takes commissions for stage and projection design, immersive installations, and generative AI visual direction, based in Prague and touring for installs.',
     canonical: `${SITE_URL}/collaborate/`,
@@ -167,7 +169,7 @@ function buildRoutes() {
 
   const privacy = {
     path: 'privacy',
-    title: 'Privacy Policy — Sinaida Krivchenko',
+    title: 'Privacy Policy | Sinaida Krivchenko',
     description: 'How this website handles personal data, what it stores, and the rights visitors have under GDPR.',
     canonical: `${SITE_URL}/privacy/`,
     robots: 'noindex, follow',

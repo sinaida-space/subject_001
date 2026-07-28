@@ -167,7 +167,7 @@ function Readout({ project }: { project: Project }) {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label={`${project.title} — full text`}
+            aria-label={`${project.title}: full text`}
           >
             <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
@@ -236,7 +236,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
     };
   }, [onClose]);
 
-  const headerLabel = project.title.split(' — ')[0].toUpperCase();
+  const headerLabel = project.title.toUpperCase();
 
   // Portalled to <body> — the Constellation section this opens from sets its
   // own `relative z-10` stacking context, which otherwise trapped this
@@ -260,7 +260,7 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label={`${project.title} — project readout`}
+        aria-label={`${project.title}: project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>

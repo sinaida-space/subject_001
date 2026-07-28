@@ -20,10 +20,10 @@ const PROCESS_STEPS = [
 
 const TECH_BASICS = ['TouchDesigner', 'GLSL / real-time shaders', 'Audio-reactive systems', 'Generative AI visuals'];
 
-// Third-person boilerplate — written to be copy-pasted verbatim into program
+// Third-person boilerplate, written to be copy-pasted verbatim into program
 // booklets and press. Facts only: no availability, timeline, or client claims
 // beyond the two real credits.
-const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, working globally. Trained as a biomedical engineer and shaped by years of creative direction in the cultural sector, she builds living visual systems for stages, concerts, and performance spaces — real-time TouchDesigner and GLSL work that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (commissioned live concert visuals, Moscow, 2026) and The Eyes Chico (interactive installation and web experience, with Alisa Feer).`;
+const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, working globally. Trained as a biomedical engineer and shaped by years of creative direction in the cultural sector, she builds living visual systems for stages, concerts, and performance spaces. The work is real-time TouchDesigner and GLSL that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (commissioned live concert visuals, Moscow, 2026) and The Eyes Chico (interactive installation and web experience, with Alisa Feer).`;
 
 function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
   return (
@@ -56,7 +56,7 @@ const SEPARATOR = '────────────────────�
 
 export default function Collaborate() {
   usePageMeta({
-    title: 'Work with me — Sinaida Krivchenko',
+    title: 'Work with me | Sinaida Krivchenko',
     description:
       'She takes commissions for stage and projection design, immersive installations, and generative AI visual direction, based in Prague and touring for installs.',
     canonical: 'https://sinaida.eu/collaborate/',
@@ -67,7 +67,7 @@ export default function Collaborate() {
 
   return (
     <div className="relative min-h-screen bg-background">
-      {/* Same starfield as the case study template — dialed down, a subtle
+      {/* Same starfield as the case study template, dialed down for a subtle
           sense of continuity behind a page that's mostly here to be read. */}
       {mode === 'full' && (
         <Suspense fallback={null}>
@@ -88,7 +88,7 @@ export default function Collaborate() {
         </h1>
         <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
           Human first. Digital second. I build living visual systems for stages, concerts, and
-          performance spaces — this page is what actually happens if we work together on one.
+          performance spaces. This page is what actually happens if we work together on one.
         </p>
         <p className="font-mono text-[28px] leading-relaxed mb-16 text-foreground/60">
           Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
@@ -115,7 +115,7 @@ export default function Collaborate() {
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-3">Process</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            Structured the way I ran technical projects for years before this — brief, concept,
+            Structured the way I ran technical projects for years before this: brief, concept,
             build, rehearsal, show. Nothing invented for the website.
           </p>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
@@ -143,19 +143,19 @@ export default function Collaborate() {
           <h2 className="clinical-label text-primary-legible mb-6">Practicalities</h2>
           <div className="font-mono text-[13px] leading-relaxed space-y-4 text-foreground/75">
             <p>
-              <span className="text-foreground">Travel — </span>
+              <span className="text-foreground">Travel: </span>
               Based in Prague, working globally. Touring and international bookings are welcome;
               travel and accommodation are arranged case by case.
             </p>
             <p>
-              <span className="text-foreground">Tech rider — </span>
+              <span className="text-foreground">Tech rider: </span>
               Typical requirements are a projector or LED surface, a dedicated playback/render machine,
               and a feed from the live audio mix where the work is audio-reactive. Exact specs are
               confirmed once the venue and format are known.
             </p>
             <p>
-              <span className="text-foreground">Lead time — </span>
-              Depends on set length and scope — confirmed once the brief is in. Earlier is always better.
+              <span className="text-foreground">Lead time: </span>
+              Depends on set length and scope, confirmed once the brief is in. Earlier is always better.
             </p>
           </div>
         </section>
@@ -164,7 +164,7 @@ export default function Collaborate() {
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-3">Press kit</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            For programmers, promoters, and journalists — boilerplate and stills, ready to paste.
+            For programmers, promoters, and journalists: boilerplate and stills, ready to paste.
           </p>
 
           <div className="font-mono text-[14px] leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
@@ -189,7 +189,7 @@ export default function Collaborate() {
                   className="block font-mono uppercase mt-2 text-foreground/60 hover:text-accent transition-colors"
                   style={{ fontSize: 20 }}
                 >
-                  {project.title.split('—')[0].trim()}
+                  {project.title}
                 </Link>
                 <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 20 }}>
                   {project.tagline}
@@ -215,7 +215,7 @@ export default function Collaborate() {
         <section>
           <h2 className="clinical-label text-primary-legible mb-6">Contact</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-4 text-foreground/75">
-            Send the occasion, space, and timeline — a reply follows with next steps.
+            Send the occasion, space, and timeline. A reply follows with next steps.
           </p>
           <ObfuscatedMailto
             label="EMAIL ME ↗"
