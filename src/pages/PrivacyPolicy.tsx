@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -164,7 +165,10 @@ const PrivacyPolicy = () => {
           <p className="text-muted-foreground">
             Name: Sinaida Krivchenko<br />
             Location: Prague, Czechia<br />
-            Email: gallant_mod5v@icloud.com
+            <ObfuscatedMailto
+              label={'Email me ↗'}
+              className="text-primary-legible underline underline-offset-2 hover:text-accent transition-colors"
+            />
           </p>
 
           <h2 className="font-display text-lg text-foreground mt-8">How to contact the appropriate authority</h2>
