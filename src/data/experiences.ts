@@ -39,11 +39,6 @@ export interface ExperienceRichSection {
   paragraphs: RichTextPart[][];
 }
 
-export interface ExperienceStat {
-  value: string;
-  label: string;
-}
-
 export interface ExperienceCtq {
   description: string;
   target: string;
@@ -60,15 +55,19 @@ export const EXPERIENCES_META: {
   headline: string;
   headlineLead: string;
   headlineAccent: string;
-  whoLine: string;
+  /** One sentence per line, hard-broken. Rendered as one paragraph, not three. */
+  whoLines: string[];
   hook: string;
   golden: { why: string; how: string; what: string };
 } = {
   headline: 'We build the room and what runs inside it.',
   headlineLead: 'We build the room',
   headlineAccent: 'and what runs inside it.',
-  whoLine:
-    'Daria Blokhina, spatial designer, Valencia. Sinaida Krivchenko, interactive systems, Prague. Working together on exhibition and event spaces.',
+  whoLines: [
+    'Daria Blokhina, spatial designer, Valencia, Spain.',
+    'Sinaida Krivchenko, interactive systems, Prague, Czechia.',
+    'Working together on exhibition and event spaces.',
+  ],
   hook: 'Most booths and installations arrive as two purchased line items. A designer draws the room, then a vendor drops screens and motion graphics into it afterward. The content doesn’t know the space, and the space wasn’t built for what runs inside.',
   golden: {
     why: 'A stand and its interactive layer belong to one design process, decided in a single brief that covers the structure and the system it holds.',
@@ -80,7 +79,7 @@ export const EXPERIENCES_META: {
 export const DARIA_PROJECTS: ExperienceProject[] = [
   {
     id: 'mipim-cannes-2025',
-    title: 'MIPIM Cannes 2025',
+    title: 'MIPIM, Cannes, France, 2025',
     client: 'Invest Saudi',
     detail: '600 m² two-floor pavilion',
     images: [
@@ -96,7 +95,7 @@ export const DARIA_PROJECTS: ExperienceProject[] = [
   },
   {
     id: 'smart-city-barcelona',
-    title: 'Smart City Expo World Congress',
+    title: 'Smart City Expo World Congress, Barcelona, Spain, 2024',
     client: 'New Murabba',
     detail: '154 m² booth, 360° LED cube',
     images: [
@@ -126,12 +125,6 @@ export const SINAIDA_VIDEOS: ExperienceVideo[] = [
     caseHref: '/work/the-eyes-chico',
     caption: 'A painting translated into a navigable field, prototyped as a projection installation: a raised palm steers the scene, in real time, on-device.',
   },
-];
-
-export const EXPERIENCES_STATS: ExperienceStat[] = [
-  { value: '600 m²', label: 'Two-floor pavilion, MIPIM Cannes 2025' },
-  { value: '154 m²', label: 'Booth with a 360° LED cube, Smart City Expo' },
-  { value: '9', label: 'Audio-reactive projections, Redkie Ptitsy' },
 ];
 
 export const EXPERIENCES_SECTIONS: {

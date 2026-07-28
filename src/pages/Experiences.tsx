@@ -12,7 +12,6 @@ import {
   EXPERIENCES_META,
   DARIA_PROJECTS,
   SINAIDA_VIDEOS,
-  EXPERIENCES_STATS,
   EXPERIENCES_SECTIONS,
   type ExperienceProject,
   type ExperienceSection,
@@ -89,7 +88,7 @@ function ProjectGallery({ project }: { project: ExperienceProject }) {
   return (
     <div className="mb-14">
       <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-4 font-mono">
-        <h3 className="text-foreground text-base font-medium">{project.title}</h3>
+        <h3 className="text-foreground text-base font-medium uppercase tracking-[0.08em]">{project.title}</h3>
         <div className="text-[13px] text-foreground/60">
           {project.client} · {project.detail}
         </div>
@@ -147,24 +146,6 @@ function SectionBlock({ section, highlight }: { section: ExperienceSection; high
   );
 }
 
-function StatRow() {
-  return (
-    <section className="mb-20">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {EXPERIENCES_STATS.map((stat) => (
-          <div
-            key={stat.label}
-            style={{ border: '1px solid hsl(var(--sinaida-red))', background: 'hsl(var(--sinaida-red) / 0.05)', padding: '20px' }}
-          >
-            <div className="font-display text-5xl leading-none text-primary">{stat.value}</div>
-            <p className="mt-2 font-mono text-[13px] leading-relaxed text-foreground/65">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export default function Experiences() {
   usePageMeta({
     title: 'Experiences · Sinaida Krivchenko and Daria Blokhina',
@@ -196,8 +177,14 @@ export default function Experiences() {
           {EXPERIENCES_META.headlineLead}{' '}
           <span className="text-primary font-bold">{EXPERIENCES_META.headlineAccent}</span>
         </h1>
+        {/* One paragraph, hard-broken so each sentence starts its own line. */}
         <p className="font-mono text-[15px] leading-[1.8] mb-4 text-foreground/[0.87]">
-          {EXPERIENCES_META.whoLine}
+          {EXPERIENCES_META.whoLines.map((line, i) => (
+            <span key={line}>
+              {i > 0 && <br />}
+              {line}
+            </span>
+          ))}
         </p>
         <p className="font-mono text-[15px] leading-[1.8] mb-16 text-foreground/60">
           {EXPERIENCES_META.hook}
@@ -219,8 +206,6 @@ export default function Experiences() {
             <ProjectGallery key={project.id} project={project} />
           ))}
         </section>
-
-        <StatRow />
 
         {/* Sinaida's work */}
         <section className="mb-20">
