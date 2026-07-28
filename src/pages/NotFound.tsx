@@ -168,7 +168,7 @@ export default function NotFound() {
   useNoIndex();
 
   const line1 = useTyper('> ERROR_CODE: 404', 6, 300);
-  const line2 = useTyper('> SIGNAL_LOST — navigating the void', 6, 300 + 18 * 6 + 120);
+  const line2 = useTyper('> SIGNAL_LOST: navigating the void', 6, 300 + 18 * 6 + 120);
   const line3 = useTyper('> awaiting_redirect.exe', 8, 300 + 18 * 6 + 120 + 37 * 6 + 200);
 
   useEffect(() => {
@@ -203,7 +203,7 @@ export default function NotFound() {
           className="font-mono uppercase mb-6 tracking-widest text-xs"
           style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em' }}
         >
-          SINAIDA_OS v3.1.1 — NAVIGATION ERROR
+          SINAIDA_OS v3.1.1: NAVIGATION ERROR
         </div>
 
         <h1
@@ -225,7 +225,7 @@ export default function NotFound() {
 
         <div className="mt-2 mb-8" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
           <span className="font-mono" style={{ fontSize: '1.375rem', letterSpacing: '0.12em' }}>
-            — lost in the void.
+            Lost in the void.
           </span>
         </div>
 

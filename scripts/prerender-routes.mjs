@@ -169,7 +169,7 @@ function buildRoutes() {
 
   const privacy = {
     path: 'privacy',
-    title: 'Privacy Policy — Sinaida Krivchenko',
+    title: 'Privacy Policy | Sinaida Krivchenko',
     description: 'How this website handles personal data, what it stores, and the rights visitors have under GDPR.',
     canonical: `${SITE_URL}/privacy/`,
     robots: 'noindex, follow',
