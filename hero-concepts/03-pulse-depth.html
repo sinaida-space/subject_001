@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero concept 3 — Pulse depth</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;900&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#090610;overflow:hidden;font-family:Archivo,system-ui,sans-serif}
+  canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+  .name{position:fixed;left:6vw;top:5vh;font-size:12px;letter-spacing:.24em;color:rgba(245,239,226,.5);pointer-events:none}
+  .head{position:fixed;left:6vw;bottom:9vh;pointer-events:none}
+  .head h1{font-size:clamp(2.6rem,6.5vw,6rem);font-weight:900;line-height:1.02;letter-spacing:-.02em;color:#f5efe2;margin:0}
+  .tag{position:fixed;right:4vw;bottom:5vh;font-size:11px;letter-spacing:.18em;color:rgba(245,239,226,.32);pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="name">SINAIDA KRIVCHENKO</div>
+<div class="head"><h1>Living visual<br>systems for stages</h1></div>
+<div class="tag">CONCEPT 3 / PULSE DEPTH</div>
+<script>
+(function(){
+var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+var W,H,dpr,dust=[];
+function rs(){dpr=Math.min(window.devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;dust=[];var n=Math.round(W*H/16000);for(var i=0;i<n;i++)dust.push({x:Math.random()*W,y:Math.random()*H,r:.6+Math.random()*1.8,a:.04+Math.random()*.09,vx:(Math.random()-.5)*.12,vy:-.06-Math.random()*.2});}
+function G(t,a,c,s){return a*Math.exp(-(t-c)*(t-c)/(2*s*s));}
+function ecg(t){t=((t%1)+1)%1;return G(t,.13,.18,.03)+G(t,-.1,.36,.01)+G(t,1,.4,.014)+G(t,-.22,.445,.012)+G(t,.34,.62,.05);}
+var mx=.5,my=.5;
+addEventListener('pointermove',function(e){mx=e.clientX/W;my=e.clientY/H;});
+function lerp(a,b,k){return a+(b-a)*k;}
+function draw(ts){
+var t=ts/1000;
+ctx.setTransform(dpr,0,0,dpr,0,0);
+ctx.globalCompositeOperation='source-over';
+ctx.fillStyle='#090610';ctx.fillRect(0,0,W,H);
+var wl=W*.6,spd=W*.1;
+var vx=W*(.5+(mx-.5)*.12),vy=H*(.36+(my-.5)*.1);
+var u0=(vx+t*spd)/wl;var e0=ecg(u0);var flash=Math.max(0,e0-.45)/.55;
+ctx.globalCompositeOperation='lighter';
+var bg=ctx.createRadialGradient(vx,vy,0,vx,vy,H*1.05);
+bg.addColorStop(0,'rgba(200,18,45,'+(.05+.12*flash)+')');
+bg.addColorStop(1,'rgba(200,18,45,0)');
+ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ctx.lineJoin='round';ctx.lineCap='round';
+for(var i=6;i>=0;i--){
+var k=i/6,s=1-.74*k;
+var cy=lerp(H*.5,vy,k*.92),amp=H*.27*s;
+var ph=k*.5;
+ctx.beginPath();
+for(var x=-10;x<=W+10;x+=4){var u=(x+t*spd)/wl+ph;var xx=vx+(x-vx)*s;var yy=cy-ecg(u)*amp;if(x===-10)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);}
+ctx.strokeStyle='rgba(205,20,48,'+lerp(.8,.1,k)+')';
+ctx.lineWidth=lerp(2.2,5,k);
+ctx.shadowColor='rgba(215,25,55,0.85)';
+ctx.shadowBlur=lerp(7,22,k);
+ctx.stroke();
+if(i===0){ctx.shadowBlur=0;ctx.strokeStyle='rgba(251,244,230,'+(.55+.35*flash)+')';ctx.lineWidth=1;ctx.stroke();}
+}
+ctx.shadowBlur=0;
+for(var j=0;j<dust.length;j++){var p=dust[j];p.x+=p.vx;p.y+=p.vy;if(p.y<-4){p.y=H+4;p.x=Math.random()*W;}if(p.x<-4)p.x=W+4;if(p.x>W+4)p.x=-4;
+ctx.fillStyle='rgba(248,238,222,'+(p.a*(0.7+0.6*flash))+')';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.fill();}
+requestAnimationFrame(draw);}
+rs();addEventListener('resize',rs);requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

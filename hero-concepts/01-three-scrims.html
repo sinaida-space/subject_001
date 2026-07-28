@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero concept 1 — Three scrims</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;900&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#0a0710;overflow:hidden;font-family:Archivo,system-ui,sans-serif}
+  canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+  .name{position:fixed;left:6vw;top:5vh;font-size:12px;letter-spacing:.24em;color:rgba(245,239,226,.5);pointer-events:none}
+  .head{position:fixed;left:6vw;bottom:9vh;pointer-events:none}
+  .head h1{font-size:clamp(2.6rem,6.5vw,6rem);font-weight:900;line-height:1.02;letter-spacing:-.02em;color:#f5efe2;margin:0}
+  .tag{position:fixed;right:4vw;bottom:5vh;font-size:11px;letter-spacing:.18em;color:rgba(245,239,226,.32);pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="name">SINAIDA KRIVCHENKO</div>
+<div class="head"><h1>Living visual<br>systems for stages</h1></div>
+<div class="tag">CONCEPT 1 / THREE SCRIMS</div>
+<script>
+(function(){
+var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+var W,H,dpr,weave;
+function makeWeave(){weave=document.createElement('canvas');weave.width=W;weave.height=H;var w=weave.getContext('2d');w.strokeStyle='rgba(0,0,0,0.42)';w.lineWidth=1;for(var x=0;x<W;x+=3){w.beginPath();w.moveTo(x+.5,0);w.lineTo(x+.5,H);w.stroke();}w.strokeStyle='rgba(0,0,0,0.16)';for(var y=0;y<H;y+=7){w.beginPath();w.moveTo(0,y+.5);w.lineTo(W,y+.5);w.stroke();}}
+function rs(){dpr=Math.min(window.devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;makeWeave();}
+function G(t,a,c,s){return a*Math.exp(-(t-c)*(t-c)/(2*s*s));}
+function ecg(t){t=((t%1)+1)%1;return G(t,.13,.18,.03)+G(t,-.1,.36,.01)+G(t,1,.4,.014)+G(t,-.22,.445,.012)+G(t,.34,.62,.05);}
+var mx=.5,my=.5;
+addEventListener('pointermove',function(e){mx=e.clientX/W;my=e.clientY/H;});
+var layers=[{ph:.16,blur:30,a:.28,lw:8,par:9,dy:.05},{ph:.08,blur:14,a:.5,lw:4.5,par:20,dy:.015},{ph:0,blur:7,a:.95,lw:2.2,par:38,dy:-.02}];
+function trace(L,t,wl,spd,cy,amp){ctx.beginPath();for(var x=-10;x<=W+10;x+=4){var u=(x+t*spd)/wl+L.ph;var y=cy+L.dy*H+(my-.5)*L.par*.6-ecg(u)*amp;var xx=x+(mx-.5)*L.par;if(x===-10)ctx.moveTo(xx,y);else ctx.lineTo(xx,y);}}
+function draw(ts){
+var t=ts/1000;
+ctx.setTransform(dpr,0,0,dpr,0,0);
+ctx.globalCompositeOperation='source-over';
+ctx.fillStyle='#0a0710';ctx.fillRect(0,0,W,H);
+ctx.globalCompositeOperation='lighter';
+for(var i=0;i<3;i++){var fx=W*(.25+.5*(.5+.5*Math.sin(t*.08+i*2.1)));var fy=H*(.35+.3*Math.sin(t*.06+i*1.7));var g=ctx.createRadialGradient(fx,fy,0,fx,fy,H*.9);g.addColorStop(0,'rgba(193,19,43,0.05)');g.addColorStop(1,'rgba(193,19,43,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+var wl=W*.62,spd=W*.11,cy=H*.42;
+var amp=H*.24*(1+.12*(1-Math.min(1,Math.hypot(mx-.5,my-.5)*2)));
+ctx.lineJoin='round';ctx.lineCap='round';
+for(var j=0;j<3;j++){var L=layers[j];trace(L,t,wl,spd,cy,amp);ctx.strokeStyle=j===2?'rgba(238,58,80,'+L.a+')':'rgba(200,18,45,'+L.a+')';ctx.lineWidth=L.lw;ctx.shadowColor='rgba(215,25,55,0.9)';ctx.shadowBlur=L.blur;ctx.stroke();}
+ctx.shadowBlur=0;
+trace(layers[2],t,wl,spd,cy,amp);
+ctx.strokeStyle='rgba(251,244,230,0.75)';ctx.lineWidth=.9;ctx.stroke();
+ctx.globalCompositeOperation='source-over';
+ctx.globalAlpha=.55;ctx.drawImage(weave,0,0,W,H);ctx.globalAlpha=1;
+requestAnimationFrame(draw);}
+rs();addEventListener('resize',rs);requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
