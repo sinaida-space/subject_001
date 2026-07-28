@@ -38,19 +38,22 @@ function useGlitch(text: string, active: boolean) {
 function useTyper(text: string, speed: number, delay: number) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let i = 0;
-    const start = setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       const tick = () => {
         i++;
         setDisplayed(text.slice(0, i));
         if (i >= text.length) { setDone(true); return; }
-        setTimeout(tick, speed * (0.6 + Math.random() * 0.8));
+        timeoutRef.current = setTimeout(tick, speed * (0.6 + Math.random() * 0.8));
       };
-      setTimeout(tick, 0);
+      timeoutRef.current = setTimeout(tick, 0);
     }, delay);
-    return () => clearTimeout(start);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [text, speed, delay]);
 
   return { displayed, done };
