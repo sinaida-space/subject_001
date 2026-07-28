@@ -7,6 +7,8 @@ import workEyesChico from '@/assets/work-eyes-chico.jpg';
 import workSubmerged from '@/assets/work-submerged.jpg';
 import workAetherCurrents from '@/assets/work-aether-currents.jpg';
 import workEtherealPath from '@/assets/work-ethereal-path.jpg';
+import workStereolove from '@/assets/work-stereolove.jpg';
+import workMahler from '@/assets/work-mahler.jpg';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
@@ -371,6 +373,7 @@ export const PROJECTS: Project[] = [
     skills: ['creative-web', 'body-tracking', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
     video: 'jQy4Kk70hxM',
+    image: workStereolove,
     links: [
       { label: 'GitHub', url: 'https://github.com/sinaida-space/stereolove' },
     ],
@@ -390,6 +393,7 @@ export const PROJECTS: Project[] = [
     tools: ['Claude', 'GitHub'],
     skills: ['tech-strategy', 'system-architecture', 'ai-orchestration', 'algorithmic-systems'],
     url: 'https://github.com/sinaida-space/mahler-the-orchestrator',
+    image: workMahler,
     links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/mahler-the-orchestrator' }],
     weight: 0.7,
     background: true,
