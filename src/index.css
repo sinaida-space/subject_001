@@ -842,8 +842,7 @@
 }
 
 /* Hero tag "launch" cue on click — squash on takeoff, stretch as it settles.
-   Full mode + click-triggered only; see squashScrollTo in lib/squashScroll.ts
-   for the matching page-content squash during the scroll itself. */
+   Full mode + click-triggered only. */
 @keyframes tag-launch-squash {
   0% { transform: scale(1, 1); }
   20% { transform: scale(1.05, 0.94); }
