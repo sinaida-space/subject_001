@@ -169,7 +169,7 @@ export default function Logo({
         ecg
       )}
       {onNameClick ? (
-        <a href="/" onClick={onNameClick} aria-label="Sinaida — back to top" className="cursor-none">
+        <a href="/" onClick={onNameClick} aria-label="Sinaida: back to top" className="cursor-none">
           {name}
         </a>
       ) : (

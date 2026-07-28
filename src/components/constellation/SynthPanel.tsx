@@ -85,7 +85,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, vis
           aria-label="Audio unlocked"
         >
           <div className="flex items-center justify-between border-b border-primary/40 px-3 py-1.5">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-primary">SIGNAL // AUDIO — UNLOCKED</span>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-primary">SIGNAL // AUDIO UNLOCKED</span>
             <button
               type="button"
               onClick={onDismissCard}
@@ -100,7 +100,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, vis
               You pulled a star out of place, and the map answered. This constellation is also an instrument.
             </p>
             <p className="text-[12px] leading-relaxed text-foreground/60">
-              Project stars are drums and bass — left/right sets when they fire, up/down sets their pitch. Skill stars
+              Project stars are drums and bass. Left/right sets when they fire, up/down sets their pitch. Skill stars
               never sound; they bend the signal by where you leave them. Drag, drop, listen. ■ sends the stars home.
             </p>
             <button
@@ -108,7 +108,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, vis
               onClick={onDismissCard}
               className="w-full border border-primary/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-primary transition-colors hover:bg-primary/10"
             >
-              OK — compose
+              OK · compose
             </button>
           </div>
         </div>

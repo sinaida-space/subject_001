@@ -7,7 +7,7 @@ const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 const PrivacyPolicy = () => {
   usePageMeta({
-    title: 'Privacy Policy — Sinaida Krivchenko',
+    title: 'Privacy Policy | Sinaida Krivchenko',
     description: 'How this website handles personal data, what it stores, and the rights visitors have under GDPR.',
     canonical: 'https://sinaida.eu/privacy/',
   });
