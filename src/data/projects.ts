@@ -63,6 +63,9 @@ export interface CaseStudy {
 export interface Project {
   id: string;
   title: string;
+  /** optional second half of the title, e.g. a medium or role descriptor.
+   *  Kept separate so the joining punctuation is a per-surface presentation choice. */
+  subtitle?: string;
   kind: ProjectKind;
   /** one-line descriptor, used in lists and as constellation tooltip */
   tagline: string;
@@ -101,7 +104,8 @@ export const PROJECTS: Project[] = [
   // ── Flagship stage work ────────────────────────────────────
   {
     id: 'redkie-ptitsy',
-    title: 'Redkie Ptitsy — Live Concert Visuals',
+    title: 'Redkie Ptitsy',
+    subtitle: 'Live Concert Visuals',
     kind: 'stage',
     tagline: 'Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song',
     blurb:
@@ -378,7 +382,8 @@ export const PROJECTS: Project[] = [
   // ── Tools ──────────────────────────────────────────────────
   {
     id: 'mahler',
-    title: 'Mahler — The Orchestrator',
+    title: 'Mahler',
+    subtitle: 'The Orchestrator',
     kind: 'tool',
     tagline: 'Orchestrator for Claude',
     blurb: 'A multi-model orchestrator for Claude, designed to maximize ROI on tokens.',

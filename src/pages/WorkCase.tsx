@@ -14,7 +14,7 @@ import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 // Case pages are fully data-driven from `project.caseStudy` (src/data/projects.ts).
-// Projects without a caseStudy have no case page — the route 404s.
+// Projects without a caseStudy have no case page: the route 404s.
 export default function WorkCase() {
   const { slug } = useParams<{ slug: string }>();
   const project = projectById(slug ?? '');
@@ -22,7 +22,9 @@ export default function WorkCase() {
   const [heroLoaded, setHeroLoaded] = useState(false);
   const { mode } = useRenderMode();
 
-  const title = project ? `${project.title} — Case Study | ${SITE_NAME}` : document.title;
+  const title = project
+    ? `${project.title}${project.subtitle ? `: ${project.subtitle}` : ''} · Case Study | ${SITE_NAME}`
+    : document.title;
   const description = project
     ? `${project.tagline}. ${project.blurb ?? ''}`.slice(0, 300)
     : '';
@@ -79,6 +81,11 @@ export default function WorkCase() {
 
             <h1 className="mt-4 font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl">
               {project.title}
+              {project.subtitle && (
+                <span className="mt-1 block text-2xl text-foreground/60 md:text-3xl">
+                  {project.subtitle}
+                </span>
+              )}
             </h1>
           </div>
           <div className="hidden md:block md:col-span-7" aria-hidden="true" />
@@ -181,7 +188,7 @@ export default function WorkCase() {
             {cs.media?.map((m) => (
               <div key={m.video} className="mt-10">
                 <div className="clinical-label mb-3 text-foreground/65">{m.label}</div>
-                <VideoEmbed id={m.video} title={`${project.title} — ${m.label}`} />
+                <VideoEmbed id={m.video} title={`${project.title}: ${m.label}`} />
                 {m.caption && (
                   <p className="mt-2 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
                     {m.caption}

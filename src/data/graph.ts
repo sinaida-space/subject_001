@@ -120,7 +120,7 @@ export function buildGraph(): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const category: Category = firstSkill ? firstSkill.category : 'tech';
     nodes.push({
       id: p.id,
-      label: p.title.split(' — ')[0], // short star label
+      label: p.title, // short star label
       kind: 'project',
       category,
       color: CATEGORY_COLORS[category],

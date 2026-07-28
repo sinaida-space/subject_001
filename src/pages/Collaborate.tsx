@@ -189,7 +189,7 @@ export default function Collaborate() {
                   className="block font-mono uppercase mt-2 text-foreground/60 hover:text-accent transition-colors"
                   style={{ fontSize: 20 }}
                 >
-                  {project.title.split('—')[0].trim()}
+                  {project.title}
                 </Link>
                 <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 20 }}>
                   {project.tagline}
