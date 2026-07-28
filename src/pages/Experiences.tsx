@@ -4,27 +4,84 @@ import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 import VideoEmbed from '@/components/VideoEmbed';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SectionBreak from '@/components/SectionBreak';
+import SignalMark from '@/components/SignalMark';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
   EXPERIENCES_META,
   DARIA_PROJECTS,
   SINAIDA_VIDEOS,
+  EXPERIENCES_STATS,
   EXPERIENCES_SECTIONS,
   type ExperienceProject,
   type ExperienceSection,
+  type ExperienceRichSection,
+  type RichTextPart,
 } from '@/data/experiences';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
-function GoldenBlock({ label, text }: { label: string; text: string }) {
+function GoldenBlock({ level, label, text }: { level: 1 | 2 | 3; label: string; text: string }) {
   return (
     <div>
-      <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.15em', fontSize: 13 }}>
-        {label}
-      </div>
-      <p className="font-mono text-[13px] leading-relaxed text-foreground/75">{text}</p>
+      <SignalMark level={level} />
+      <span className="sr-only">{label}</span>
+      <p className="font-mono text-[15px] leading-[1.8] text-foreground/[0.87] mt-2">{text}</p>
     </div>
+  );
+}
+
+// Renders a rich-text paragraph: plain parts as text, linked parts as
+// internal (react-router) or external links. Mirrors the pattern used by
+// SERVICES[].record in Collaborate.tsx.
+function RichParagraph({ parts }: { parts: RichTextPart[] }) {
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (!part.href) return <span key={i}>{part.text}</span>;
+        if (part.href.startsWith('/')) {
+          return (
+            <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
+              {part.text}
+            </Link>
+          );
+        }
+        return (
+          <a
+            key={i}
+            href={part.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-accent transition-colors"
+          >
+            {part.text}
+          </a>
+        );
+      })}
+    </>
+  );
+}
+
+function RichTextBlock({ section, highlight }: { section: ExperienceRichSection; highlight?: boolean }) {
+  return (
+    <section className="mb-20">
+      <h2 className="clinical-label text-primary-legible mb-6">{section.heading}</h2>
+      <div className="space-y-4">
+        {section.paragraphs.map((parts, i) => (
+          <p
+            key={i}
+            className={
+              highlight && i === 0
+                ? 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87] border-l-2 border-primary/40 pl-4'
+                : 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87]'
+            }
+          >
+            <RichParagraph parts={parts} />
+          </p>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -69,15 +126,40 @@ function ProjectGallery({ project }: { project: ExperienceProject }) {
   );
 }
 
-function SectionBlock({ section }: { section: ExperienceSection }) {
+function SectionBlock({ section, highlight }: { section: ExperienceSection; highlight?: boolean }) {
   return (
     <section className="mb-20">
       <h2 className="clinical-label text-primary-legible mb-6">{section.heading}</h2>
       <div className="space-y-4">
         {section.paragraphs.map((p, i) => (
-          <p key={i} className="font-mono text-[13px] leading-relaxed text-foreground/75">
+          <p
+            key={i}
+            className={
+              highlight && i === 0
+                ? 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87] border-l-2 border-primary/40 pl-4'
+                : 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87]'
+            }
+          >
             {p}
           </p>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StatRow() {
+  return (
+    <section className="mb-20">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {EXPERIENCES_STATS.map((stat) => (
+          <div
+            key={stat.label}
+            style={{ border: '1px solid hsl(var(--sinaida-red))', background: 'hsl(var(--sinaida-red) / 0.05)', padding: '20px' }}
+          >
+            <div className="font-display text-5xl leading-none text-primary">{stat.value}</div>
+            <p className="mt-2 font-mono text-[13px] leading-relaxed text-foreground/65">{stat.label}</p>
+          </div>
         ))}
       </div>
     </section>
@@ -115,19 +197,19 @@ export default function Experiences() {
           {EXPERIENCES_META.headlineLead}{' '}
           <span className="text-primary font-bold">{EXPERIENCES_META.headlineAccent}</span>
         </h1>
-        <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
+        <p className="font-mono text-[15px] leading-[1.8] mb-4 text-foreground/[0.87]">
           {EXPERIENCES_META.whoLine}
         </p>
-        <p className="font-mono text-[15px] leading-relaxed mb-16 text-foreground/60">
+        <p className="font-mono text-[15px] leading-[1.8] mb-16 text-foreground/60">
           {EXPERIENCES_META.hook}
         </p>
 
         {/* Why / How / What */}
         <section className="mb-20">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <GoldenBlock label="Why" text={EXPERIENCES_META.golden.why} />
-            <GoldenBlock label="How" text={EXPERIENCES_META.golden.how} />
-            <GoldenBlock label="What" text={EXPERIENCES_META.golden.what} />
+            <GoldenBlock level={1} label="Why" text={EXPERIENCES_META.golden.why} />
+            <GoldenBlock level={2} label="How" text={EXPERIENCES_META.golden.how} />
+            <GoldenBlock level={3} label="What" text={EXPERIENCES_META.golden.what} />
           </div>
         </section>
 
@@ -138,6 +220,8 @@ export default function Experiences() {
             <ProjectGallery key={project.id} project={project} />
           ))}
         </section>
+
+        <StatRow />
 
         {/* Sinaida's work */}
         <section className="mb-20">
@@ -163,6 +247,7 @@ export default function Experiences() {
           </div>
         </section>
 
+        {/* Act one: the argument */}
         <SectionBlock section={s.execSummary} />
         <SectionBlock section={s.problem} />
 
@@ -173,22 +258,25 @@ export default function Experiences() {
               <div className="font-mono uppercase text-foreground/60 mb-2" style={{ letterSpacing: '0.15em', fontSize: 13 }}>
                 Before
               </div>
-              <p className="font-mono text-[13px] leading-relaxed text-foreground/75">{s.beforeAfter.before}</p>
+              <p className="font-mono text-[15px] leading-[1.8] text-foreground/[0.87]">{s.beforeAfter.before}</p>
             </div>
             <div>
               <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.15em', fontSize: 13 }}>
                 After
               </div>
-              <p className="font-mono text-[13px] leading-relaxed text-foreground/75">{s.beforeAfter.after}</p>
+              <p className="font-mono text-[15px] leading-[1.8] text-foreground/[0.87]">{s.beforeAfter.after}</p>
             </div>
           </div>
         </section>
 
-        <SectionBlock section={s.clientBenefit} />
+        <SectionBlock section={s.clientBenefit} highlight />
 
+        <SectionBreak />
+
+        {/* Act two: the plan */}
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-6">Goal</h2>
-          <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/75">{s.goal.statement}</p>
+          <p className="font-mono text-[15px] leading-[1.8] mb-6 text-foreground/[0.87]">{s.goal.statement}</p>
           <div className="overflow-x-auto">
             <table className="font-mono text-[13px] w-full border-collapse">
               <thead>
@@ -244,9 +332,12 @@ export default function Experiences() {
         </section>
 
         <SectionBlock section={s.differentiation} />
-        <SectionBlock section={s.progress} />
-        <SectionBlock section={s.team} />
+        <RichTextBlock section={s.progress} highlight />
+        <RichTextBlock section={s.team} />
 
+        <SectionBreak />
+
+        {/* Act three: the practicalities */}
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-6">Resources</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -304,7 +395,7 @@ export default function Experiences() {
         </section>
 
         <SectionBlock section={s.market} />
-        <SectionBlock section={s.businessModel} />
+        <SectionBlock section={s.businessModel} highlight />
         <SectionBlock section={s.nextSteps} />
 
         {/* Contact */}

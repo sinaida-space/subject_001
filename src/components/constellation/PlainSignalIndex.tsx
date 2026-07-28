@@ -7,8 +7,8 @@ import DitherPreview from './DitherPreview';
 import sanctuary from '@/assets/sanctuary.jpg';
 
 const EXPERIENCES_ENTRY = {
-  label: 'SINAIDA AND DARIA',
-  tagline: 'Exhibition and event spaces, built as one brief with Daria Blokhina',
+  label: 'Spatial design and live systems',
+  tagline: 'with Daria Blokhina',
   href: '/experiences',
   heading: 'Experiences',
 };
@@ -139,7 +139,7 @@ function ExperienceRow({ previewEnabled, onPreview }: ExperienceRowProps) {
     >
       <span className="font-mono text-[14px] text-accent transition-transform group-hover:translate-x-1">→</span>
       <span className="flex-1">
-        <span className="font-display text-lg uppercase text-foreground transition-colors group-hover:text-accent">
+        <span className="font-display text-lg text-foreground transition-colors group-hover:text-accent">
           {EXPERIENCES_ENTRY.label}
         </span>
         <span className="ml-3 font-mono text-[13px] text-foreground/60">{EXPERIENCES_ENTRY.tagline}</span>
