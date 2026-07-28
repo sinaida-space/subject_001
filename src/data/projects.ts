@@ -315,7 +315,7 @@ export const PROJECTS: Project[] = [
       method: {
         trace: '> idea_pipeline.trace() // gesture → grain',
         stages: [
-          { label: 'The conviction', detail: 'An instrument to practice on, born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
+          { label: 'The conviction', detail: 'A practice instrument, born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
           { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. A vocabulary that already lives in the body.' },
           { label: 'Signal engineering', detail: 'Camera → on-device tracking at 40Hz → granular engine → WebGL. One signal drives both the sound and the light.' },
           { label: 'Musicality guardrails', detail: 'Scale-quantized pitch: no wrong notes possible, only expressive ones. Constraint as the source of range, not its limit.' },
