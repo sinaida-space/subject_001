@@ -84,13 +84,13 @@ export interface Project {
   badges?: Badge[];
   /** shows as an expandable row in Selected Works */
   featured?: boolean;
-  /** always-labeled star in the Signal Map — the two flagship works */
+  /** always-labeled star in the Signal Map: the two flagship works */
   hero?: boolean;
   /** relative visual weight of the star in the constellation (1 = default) */
   weight?: number;
   /** dim background star: shown in the constellation but omitted from the visible plain list in full mode */
   background?: boolean;
-  /** full written piece behind the project — opens as a text popup */
+  /** full written piece behind the project, opens as a text popup */
   essay?: {
     contentWarning?: string;
     paragraphs: string[];
@@ -109,7 +109,7 @@ export const PROJECTS: Project[] = [
     kind: 'stage',
     tagline: 'Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song',
     blurb:
-      'Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine unique audio-reactive projections — one crafted for each song — ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.',
+      'Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine unique audio-reactive projections, one crafted for each song, ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: [
       'touchdesigner',
@@ -133,7 +133,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '9',
         heading: 'Audio-reactive projections, one per song',
-        body: 'A full-set backdrop: each song in the set got its own real-time TouchDesigner system, built to listen to the live mix and respond in the room — no two songs share a look.',
+        body: 'A full-set backdrop: each song in the set got its own real-time TouchDesigner system, built to listen to the live mix and respond in the room. No two songs share a look.',
       },
       media: [
         {
@@ -153,9 +153,9 @@ export const PROJECTS: Project[] = [
       method: {
         trace: '> signal_path.trace() // 9 patches loaded',
         stages: [
-          { label: 'Live audio in', detail: 'Feed from the desk — the live mix enters as raw signal.' },
+          { label: 'Live audio in', detail: 'Feed from the desk: the live mix enters as raw signal.' },
           { label: 'CHOP analysis', detail: 'Bands, beats and envelopes extracted in real time.' },
-          { label: 'Per-song patch ×9', detail: 'One visual system per song — no two share a look.' },
+          { label: 'Per-song patch ×9', detail: 'One visual system per song. No two share a look.' },
           { label: 'Projection', detail: 'Light in the room, responding all night.' },
         ],
         footer: '> full-set run · Sklad №3, Moscow · 26 March 2026',
@@ -247,7 +247,7 @@ export const PROJECTS: Project[] = [
     kind: 'installation',
     tagline: 'Projection-mapping study on fluid surfaces',
     blurb:
-      'AI-generated aesthetics mapped onto moving water — digital textures interacting with the physics of fluid and red-light environments. A study in how generative imagery behaves once it leaves the screen and lands on a living surface.',
+      'AI-generated aesthetics mapped onto moving water: digital textures interacting with the physics of fluid and red-light environments. A study in how generative imagery behaves once it leaves the screen and lands on a living surface.',
     tools: ['TouchDesigner', 'AI visuals', 'DaVinci Resolve'],
     skills: ['projection-mapping', 'generative-ai', 'touchdesigner', 'davinci', 'concept-design', 'interactive-installations'],
     image: workSubmerged,
@@ -315,11 +315,11 @@ export const PROJECTS: Project[] = [
       method: {
         trace: '> idea_pipeline.trace() // gesture → grain',
         stages: [
-          { label: 'The conviction', detail: 'An instrument to practice, not software to operate — born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
+          { label: 'The conviction', detail: 'An instrument to practice on, born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
           { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. A vocabulary that already lives in the body.' },
           { label: 'Signal engineering', detail: 'Camera → on-device tracking at 40Hz → granular engine → WebGL. One signal drives both the sound and the light.' },
           { label: 'Musicality guardrails', detail: 'Scale-quantized pitch: no wrong notes possible, only expressive ones. Constraint as the source of range, not its limit.' },
-          { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture — each fix traced to a specific stumble.' },
+          { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture. Each fix traced to a specific stumble.' },
           { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
         ],
         footer: '> instrument & code: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
@@ -345,9 +345,9 @@ export const PROJECTS: Project[] = [
     id: 'ethereal-path',
     title: 'Ethereal Path',
     kind: 'game',
-    tagline: 'Off-axis descent steered by head & hand movement — the body is the controller',
+    tagline: 'Off-axis descent steered by head & hand movement: the body is the controller',
     blurb:
-      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam — all tracking on-device, nothing leaves the machine. Raymarched GLSL, no frameworks. Built as a physical reset for people who sit too long at screens, and a working study in movement-driven visuals: the same system that lets a performer's body drive the image.",
+      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. All tracking on-device, nothing leaves the machine. Raymarched GLSL, no frameworks. Built as a physical reset for people who sit too long at screens, and a working study in movement-driven visuals: the same system that lets a performer's body drive the image.",
     tools: ['WebGL2 / GLSL raymarching', 'MediaPipe body tracking', 'Web Audio'],
     skills: ['creative-web', 'body-tracking', 'algorithmic-systems', 'perception-media', 'interactive-installations'],
     image: workEtherealPath,
@@ -364,9 +364,9 @@ export const PROJECTS: Project[] = [
     id: 'stereolove',
     title: 'Stereolove',
     kind: 'game',
-    tagline: 'Head-coupled op-art — the screen becomes an unstable optical volume',
+    tagline: 'Head-coupled op-art: the screen becomes an unstable optical volume',
     blurb:
-      "The browser estimates the viewer's head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass — op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
+      "The browser estimates the viewer's head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass: op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
     tools: ['Web', 'MediaPipe face & hand tracking'],
     skills: ['creative-web', 'body-tracking', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',

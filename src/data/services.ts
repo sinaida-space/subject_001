@@ -1,4 +1,4 @@
-// ── Single source of truth for service copy — consumed by ServicesTerminal
+// ── Single source of truth for service copy, consumed by ServicesTerminal
 // (homepage) and Collaborate (/collaborate). Edit once, both surfaces update. ──
 
 export interface RecordPart {
@@ -10,7 +10,7 @@ export interface Service {
   code: string;
   title: string;
   description: string;
-  /** one-line proof of work — a brief mention plus the linked project name */
+  /** one-line proof of work: a brief mention plus the linked project name */
   record: RecordPart[];
   brief: string;
 }
@@ -32,7 +32,7 @@ export const SERVICES: Service[] = [
     code: 'theater',
     title: 'For theater & dance',
     description:
-      'Responsive scenography: real-time systems that follow the performers’ bodies and the sound — developed with the creative team from first concept onward.',
+      'Responsive scenography: real-time systems that follow the performers’ bodies and the sound, developed with the creative team from first concept onward.',
     record: [
       { text: 'Built for ' },
       { text: 'Aether Currents', href: '/work/aether-currents' },
