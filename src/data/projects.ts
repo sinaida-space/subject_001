@@ -140,7 +140,7 @@ export const PROJECTS: Project[] = [
           label: 'All nine, rendered',
           video: '13gl94oG4WU',
           caption:
-            'No audio: the songs are the label’s masters, rights unclear for redistribution. This is the visual system running clean, not the room mix.',
+            'No audio: the songs are the label’s masters, rights unclear for redistribution. This is the visual system running clean, without the room mix.',
         },
         { label: 'Live at Sklad №3', video: 'bDDAXRlz5FQ' },
         {
@@ -295,7 +295,7 @@ export const PROJECTS: Project[] = [
     caseStudy: {
       kindLabel: 'Instrument',
       intro: [
-        'Sinaida and Kamil Yegelev, the Belgrade musician known as Telefm, built AETHER CURRENTS on one shared conviction: AI-era tools should amplify creativity, not substitute it. The source of all the fun is the human. Our little glitches and flaws make the world beautiful, and however stellar the technology gets, the human needs to stay in the loop.',
+        'Sinaida and Kamil Yegelev, the Belgrade musician known as Telefm, built AETHER CURRENTS on one shared conviction: AI-era tools exist to amplify human creativity. The source of all the fun is the human. Our little glitches and flaws make the world beautiful, and however stellar the technology gets, the human needs to stay in the loop.',
         'Movement is the signal. On-device hand tracking drives a granular synthesis engine as one direct path: position becomes pitch, a pinch shapes the grain, the distance between the hands opens the space, a fist freezes the sound mid-air. Pitch is quantized to a scale, so a trembling hand can never play a wrong note, only an expressive one. The visuals are the sound signal, seen. Nothing leaves the device to feed an algorithm, and a curious player can download their music and take it further.',
         'AETHER CURRENTS is a live medium in a browser tab that turns algorithmic tools into an extension of the physical body, translating movement into sonic and visual currents. It is versioned like any serious system, each release shaped by watching real people play.',
       ],
@@ -303,7 +303,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '0',
         heading: 'Bytes that leave the device',
-        body: 'No camera frame, no audio, no account. The privacy model was a design constraint from day one, not a policy added at the end.',
+        body: 'No camera frame, no audio, no account. The privacy model was a design constraint from day one, built into the architecture before anything else.',
       },
       media: [
         {
@@ -318,7 +318,7 @@ export const PROJECTS: Project[] = [
           { label: 'The conviction', detail: 'A practice instrument, born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
           { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. A vocabulary that already lives in the body.' },
           { label: 'Signal engineering', detail: 'Camera → on-device tracking at 40Hz → granular engine → WebGL. One signal drives both the sound and the light.' },
-          { label: 'Musicality guardrails', detail: 'Scale-quantized pitch: no wrong notes possible, only expressive ones. Constraint as the source of range, not its limit.' },
+          { label: 'Musicality guardrails', detail: 'Scale-quantized pitch: no wrong notes possible, only expressive ones. Constraint as the source of range.' },
           { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture. Each fix traced to a specific stumble.' },
           { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
         ],
