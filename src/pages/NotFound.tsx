@@ -38,19 +38,22 @@ function useGlitch(text: string, active: boolean) {
 function useTyper(text: string, speed: number, delay: number) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let i = 0;
-    const start = setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       const tick = () => {
         i++;
         setDisplayed(text.slice(0, i));
         if (i >= text.length) { setDone(true); return; }
-        setTimeout(tick, speed * (0.6 + Math.random() * 0.8));
+        timeoutRef.current = setTimeout(tick, speed * (0.6 + Math.random() * 0.8));
       };
-      setTimeout(tick, 0);
+      timeoutRef.current = setTimeout(tick, 0);
     }, delay);
-    return () => clearTimeout(start);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [text, speed, delay]);
 
   return { displayed, done };
@@ -168,7 +171,7 @@ export default function NotFound() {
   useNoIndex();
 
   const line1 = useTyper('> ERROR_CODE: 404', 6, 300);
-  const line2 = useTyper('> SIGNAL_LOST — navigating the void', 6, 300 + 18 * 6 + 120);
+  const line2 = useTyper('> SIGNAL_LOST: navigating the void', 6, 300 + 18 * 6 + 120);
   const line3 = useTyper('> awaiting_redirect.exe', 8, 300 + 18 * 6 + 120 + 37 * 6 + 200);
 
   useEffect(() => {
@@ -203,7 +206,7 @@ export default function NotFound() {
           className="font-mono uppercase mb-6 tracking-widest text-xs"
           style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em' }}
         >
-          SINAIDA_OS v3.1.1 — NAVIGATION ERROR
+          SINAIDA_OS v3.1.1: NAVIGATION ERROR
         </div>
 
         <h1
@@ -225,7 +228,7 @@ export default function NotFound() {
 
         <div className="mt-2 mb-8" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
           <span className="font-mono" style={{ fontSize: '1.375rem', letterSpacing: '0.12em' }}>
-            — lost in the void.
+            Lost in the void.
           </span>
         </div>
 

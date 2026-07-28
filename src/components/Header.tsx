@@ -215,7 +215,7 @@ export default function Header() {
             border: 'none',
             padding: 0,
             cursor: 'pointer',
-            color: mode === 'lite' ? 'hsl(var(--foreground) / 0.5)' : 'hsl(var(--foreground) / 0.45)',
+            color: 'hsl(var(--primary-legible))',
             opacity: menuOpen ? 1 : 0,
             transition: mode === 'lite' ? 'none' : 'opacity 0.35s ease',
           }}
@@ -224,7 +224,7 @@ export default function Header() {
           View: <span style={{ color: 'hsl(var(--primary-legible))' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
         </button>
 
-        <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 20, color: mode === 'lite' ? 'hsl(var(--foreground) / 0.65)' : 'hsl(var(--foreground) / 0.5)', letterSpacing: '0.15em' }}>
+        <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 20, color: 'hsl(var(--primary-legible))', letterSpacing: '0.15em' }}>
           sin.ai.da · Prague
         </div>
       </div>
