@@ -347,7 +347,7 @@ export const PROJECTS: Project[] = [
     kind: 'game',
     tagline: 'Off-axis descent steered by head & hand movement: the body is the controller',
     blurb:
-      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. All tracking on-device, nothing leaves the machine. Raymarched GLSL, no frameworks. Built as a physical reset for people who sit too long at screens, and a working study in movement-driven visuals: the same system that lets a performer's body drive the image.",
+      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. All tracking on-device, nothing leaves the machine. Raymarched GLSL, no frameworks. Built as a physical reset for people who sit too long at screens, and a working study in movement-driven visuals: the same system that lets a performer’s body drive the image.",
     tools: ['WebGL2 / GLSL raymarching', 'MediaPipe body tracking', 'Web Audio'],
     skills: ['creative-web', 'body-tracking', 'algorithmic-systems', 'perception-media', 'interactive-installations'],
     image: workEtherealPath,
@@ -366,7 +366,7 @@ export const PROJECTS: Project[] = [
     kind: 'game',
     tagline: 'Head-coupled op-art: the screen becomes an unstable optical volume',
     blurb:
-      "The browser estimates the viewer's head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass: op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
+      "The browser estimates the viewer’s head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass: op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
     tools: ['Web', 'MediaPipe face & hand tracking'],
     skills: ['creative-web', 'body-tracking', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
