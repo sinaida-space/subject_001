@@ -173,8 +173,14 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // time. Desktop ignores this entirely (stays at the CSS clamp height).
   const [mobileHeight, setMobileHeight] = useState<number | null>(null);
   // The instrument reveals itself only after the first real drag: the control
-  // panel mounts, and a one-time "you found it" window appears.
-  const [synthReady, setSynthReady] = useState(false);
+  // panel mounts, and a one-time "you found it" window appears. `synth` is a
+  // module-level singleton that outlives this component, so a remount (e.g.
+  // navigating away and back) must seed from its already-unlocked state
+  // instead of waiting on the one-shot onUnlock callback, which only ever
+  // fires once per page session — otherwise the panel never returns after
+  // the first unlock. The unlock card itself stays one-time: it should not
+  // reappear just because the component remounted.
+  const [synthReady, setSynthReady] = useState(() => synth.isUnlocked());
   const [showUnlockCard, setShowUnlockCard] = useState(false);
   // Gates the fixed audio control panel: true once a meaningful chunk of the
   // graph is in view (roughly "a couple of stars visible"), not just a sliver
