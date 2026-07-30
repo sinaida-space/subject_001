@@ -2,22 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Self-hosted VT323 — avoids sending visitor IPs to Google Fonts' CDN
+/* Self-hosted Geist Pixel — avoids sending visitor IPs to Google Fonts' CDN
    on every page load (previously fired before cookie consent). */
 @font-face {
-  font-family: 'VT323';
+  font-family: 'Geist Pixel';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/vt323-latin.woff2') format('woff2');
+  src: url('/fonts/geist-pixel-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'VT323';
+  font-family: 'Geist Pixel';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/vt323-latin-ext.woff2') format('woff2');
+  src: url('/fonts/geist-pixel-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
@@ -85,9 +85,9 @@
     /* Metrically-close system fallbacks so `font-display: swap` (set on the
        Google Fonts link in index.html) doesn't cause a visible text reflow
        once the webfont swaps in. */
-    --font-display: 'VT323', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --font-mono: 'VT323', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
-    --font-clinical: 'VT323', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+    --font-display: 'Geist Pixel', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'Geist Pixel', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+    --font-clinical: 'Geist Pixel', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
     --scanline-opacity: 0.04;
     --glitch-intensity: 0;
@@ -855,26 +855,22 @@
   animation: tag-launch-squash 0.45s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-/* VT323 is a thin pixel font that reads noticeably smaller than its px
-   value suggests, on any screen. The named scale (text-sm, text-5xl, ...) is
-   redefined wholesale in tailwind.config.ts at Tailwind's defaults x1.25
-   with a 20px floor. Tailwind emits arbitrary values like text-[13px]
-   verbatim and the config cannot reach them, so the same transform is
-   applied to them here: anything landing under 20px is clamped to 20px (the
-   readable floor for this face on a phone), everything above keeps the
-   designed hierarchy, scaled. !important is needed only because these
-   utilities already sit at maximum specificity for their own class. */
+/* Geist Pixel reads fuller than the previous pixel face at the same px
+   (measured cap-height ratio ~0.72 vs ~0.56, see tailwind.config.ts), so
+   unlike that face this one needs no upscaling, only a floor. The named
+   scale (text-sm, text-5xl, ...) is redefined in tailwind.config.ts at
+   Tailwind's stock defaults with a 16px floor. Tailwind emits arbitrary
+   values like text-[13px] verbatim and the config cannot reach them, so
+   the same floor is applied here: anything under 16px is clamped to 16px
+   (the readable minimum for this face on a phone); 17px and up are left
+   at their declared value, no scaling. !important is needed only because
+   these utilities already sit at maximum specificity for their own class. */
 .text-\[9px\],
 .text-\[10px\],
 .text-\[11px\],
 .text-\[12px\],
 .text-\[13px\],
 .text-\[14px\],
-.text-\[15px\],
-.text-\[16px\] {
-  font-size: 20px !important;
+.text-\[15px\] {
+  font-size: 16px !important;
 }
-
-.text-\[17px\] { font-size: 21px !important; }
-.text-\[20px\] { font-size: 25px !important; }
-.text-\[28px\] { font-size: 35px !important; }
