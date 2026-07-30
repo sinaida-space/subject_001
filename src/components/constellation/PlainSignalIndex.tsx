@@ -76,7 +76,7 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
         <span className="font-display text-lg uppercase text-foreground transition-colors group-hover:text-accent">
           {project.title}
         </span>
-        <span className="ml-3 font-mono text-[13px] text-foreground/60">{project.tagline}</span>
+        <span className="ml-3 font-mono text-[13px] normal-case text-foreground/60">{project.tagline}</span>
       </span>
       {project.badges && (
         <span className="hidden shrink-0 gap-1.5 md:flex">
@@ -142,7 +142,7 @@ function ExperienceRow({ previewEnabled, onPreview }: ExperienceRowProps) {
         <span className="font-display text-lg text-foreground transition-colors group-hover:text-accent">
           {EXPERIENCES_ENTRY.label}
         </span>
-        <span className="ml-3 font-mono text-[13px] text-foreground/60">{EXPERIENCES_ENTRY.tagline}</span>
+        <span className="ml-3 font-mono text-[13px] normal-case text-foreground/60">{EXPERIENCES_ENTRY.tagline}</span>
       </span>
       <span className="shrink-0 font-mono text-[11px] text-foreground/30 transition-opacity group-hover:opacity-70">▸</span>
     </Link>

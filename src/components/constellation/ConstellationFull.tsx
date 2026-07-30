@@ -575,7 +575,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       }
       if (alpha <= 0.02) continue;
       ctx.font = `${fontWeight} ${fs}px 'Geist Pixel', monospace`;
-      const label = n.label.toUpperCase();
+      const label = n.kind === 'project' ? n.label.toUpperCase() : n.label;
       const tw = ctx.measureText(label).width;
 
       const lh = labelBoxH(fs);
