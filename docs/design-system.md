@@ -210,3 +210,81 @@ route:
   `react-day-picker`, `react-hook-form`, `react-resizable-panels`,
   `recharts`, `sonner`, `vaul`, `zod`. Verified with `npm run build` and
   `vitest run` after the prune — both clean.
+
+## 2026-07-30 — Typography: VT323 → Geist Pixel
+
+Replaced VT323 with Google's Geist Pixel, self-hosted the exact same way
+VT323 was: two `.woff2` files in `public/fonts/`, loaded via `@font-face` in
+`src/index.css`, no runtime call to Google Fonts' CDN. That's a privacy
+choice, not a performance one — a CDN `<link>` fires before the cookie
+banner is dismissed, sending the visitor's IP to Google on every page load.
+
+**Scope**: weight 400 only, `latin` + `latin-ext` subsets, matching VT323's
+scope exactly. No Cyrillic subset — the site carries zero Cyrillic UI text.
+No additional weights.
+
+**Wired to three CSS custom properties** (`src/index.css`, `:root`), each
+with a metrically-close system fallback stack so `font-display: swap`
+doesn't cause a visible reflow once the webfont loads in:
+
+- `--font-display`: `'Geist Pixel', system-ui, -apple-system, 'Segoe UI', sans-serif`
+- `--font-mono`: `'Geist Pixel', ui-monospace, 'SFMono-Regular', 'Menlo', monospace`
+- `--font-clinical`: `'Geist Pixel', ui-monospace, 'SFMono-Regular', 'Menlo', monospace`
+
+**Size-scale compensation, recalibrated, not copied**: VT323's named
+Tailwind scale (`tailwind.config.ts`, `extend.fontSize`) had been redefined
+at Tailwind's stock defaults × 1.25 with a 20px floor, because VT323 reads
+noticeably smaller than its declared px value. Geist Pixel does not have
+that problem — it runs the other way. Measured with
+`ctx.measureText('H').actualBoundingBoxAscent` at a shared 100px reference:
+VT323's cap-height is 56px (ratio 0.56), Geist Pixel's is 72.2px (ratio
+0.722) — Geist Pixel already renders about 29% fuller than VT323 at an
+identical declared size, comfortably past the 1.25× boost VT323 needed to
+read "right." So the × 1.25 multiplier is dropped entirely: `fontSize` in
+`tailwind.config.ts` is now Tailwind's untouched stock scale. The mobile
+floor dropped from 20px to 16px in step with the same ratio
+(20 × 0.56⁄0.722 ≈ 15.5, rounded to 16). The matching arbitrary-value
+overrides in `src/index.css` (`.text-[9px]` … `.text-[15px]`) clamp to the
+same 16px floor; `text-[16px]` and above are left at their literal value —
+no scaling needed above the floor.
+
+Confirmed at mobile (375px) and desktop (1280px) widths on the Constellation
+section (both the canvas-drawn `ConstellationFull.tsx` labels and the
+SVG-drawn `ConstellationLite.tsx` labels) — proportionate, no
+tiny/overflowing text.
+
+**The homepage hero needed a second, separate fix.** `HeroSection.tsx`
+doesn't use the named Tailwind scale above — it has its own hand-tuned
+`clamp()` values (`text-[clamp(...)]`), sized by measured fit against the
+live headline text and its container, not by px-reads-right judgment. That
+tuning is font-specific and the recalibration above didn't reach it: at
+first pass the hero overflowed and force-wrapped mid-word
+("KRIVCHE-NKO", "WO-RLDS") at both breakpoints, because the headline is
+built letter-by-letter (`Letters`, one `<span>` per glyph, for the
+scramble/drift animation) — which defeats the browser's normal
+space-based line wrap. The two-line mobile layout was never really
+"wrapping at words"; it was character-count wrapping that happened to
+land on a space, because VT323's narrower glyphs made the arithmetic work
+out. Geist Pixel's wider glyphs broke that coincidence.
+
+Fixed by measuring actual rendered glyph widths (`getBoundingClientRect()`
+on the live spans, not `canvas.measureText()` — isolated per-letter spans
+get no kerning, so a whole-string canvas measurement undercounts) against
+the real container width at 320px, 375px, 768px, and 1280px, then solving
+for the largest font-size that keeps every intended line inside its
+container. Both `clamp()` regimes in `HeroSection.tsx` (below-md and
+md-and-up) were rederived from that measurement, including the ceiling —
+which had to become a fit constraint too: Geist Pixel is wide enough that
+the old 6.3rem ceiling would have overflowed the `max-w-7xl` container on
+very wide screens, something VT323's narrower glyphs never triggered.
+**If the hero copy or the face changes again, redo this measurement — it
+doesn't generalize from a ratio.**
+
+**Files touched**: `src/index.css` (`@font-face` blocks + the three CSS
+vars + the arbitrary-value overrides), `tailwind.config.ts` (`fontFamily`
++ `fontSize`), `index.html` (preload `<link>`), `ConstellationFull.tsx`
+(canvas 2D context `ctx.font` string — canvas ignores `@font-face` unless
+the family string matches literally), `ConstellationLite.tsx` (SVG
+`fontFamily` prop), `HeroSection.tsx` (both headline `clamp()` regimes).
+`public/fonts/vt323-latin.woff2` and `vt323-latin-ext.woff2` deleted;
+replaced by `geist-pixel-latin.woff2` and `geist-pixel-latin-ext.woff2`.

@@ -283,9 +283,9 @@ export function computeLayout(
   // opened up past that on purpose so nodes read as separated rather than
   // merely non-overlapping.
   const sepX = Math.min(230, boxW * 0.24);
-  const sepY = 74;
+  const sepY = 82;
   const projSepX = 200;
-  const projSepY = 104;
+  const projSepY = 112;
   const skillPos = skills.map((s) => ({ n: s, p: pos.get(s.id)! }));
   const projPos = nodes.filter((n) => n.kind === 'project').map((n) => ({ n, p: pos.get(n.id)! }));
   for (let it = 0; it < 90; it++) {

@@ -13,35 +13,39 @@ export default {
   		}
   	},
   	extend: {
-  		// VT323 is a thin pixel face that reads a full tier smaller than its
-  		// px value suggests, so the whole named scale is redefined here at
-  		// Tailwind's default sizes x1.25, with a 20px floor. Overriding the
-  		// scale in config (rather than patching call sites) means every
-  		// text-sm / text-lg / text-5xl in the codebase moves together and
-  		// stays in proportion. Arbitrary values (text-[13px]) can't be
-  		// reached from here; those are remapped in src/index.css.
+  		// Geist Pixel is NOT undersized like the previous pixel face was:
+  		// measured cap-height at a common px size (canvas ctx.measureText,
+  		// 'H' at 100px) is 72.2px for Geist Pixel vs 56px for the old face
+  		// (ratio 0.722 vs 0.56). Geist already reads ~29% fuller at an
+  		// identical declared size than the old face did at its x1.25 boost.
+  		// So the boost is dropped entirely: this is Tailwind's stock default
+  		// scale, untouched, with only a 16px floor for mobile legibility
+  		// (down from the old 20px floor, scaled proportionally:
+  		// 20 * 0.56/0.722 = 15.5, rounded to 16).
+  		// Arbitrary values (text-[13px]) can't be reached from here; those
+  		// are remapped in src/index.css.
   		fontSize: {
-  			xs: ['20px', { lineHeight: '1.5' }],
-  			sm: ['20px', { lineHeight: '1.5' }],
-  			base: ['20px', { lineHeight: '1.6' }],
-  			lg: ['22.5px', { lineHeight: '1.55' }],
-  			xl: ['25px', { lineHeight: '1.5' }],
-  			'2xl': ['30px', { lineHeight: '1.4' }],
-  			'3xl': ['37.5px', { lineHeight: '1.3' }],
-  			'4xl': ['45px', { lineHeight: '1.2' }],
-  			'5xl': ['60px', { lineHeight: '1.1' }],
-  			'6xl': ['75px', { lineHeight: '1.05' }],
-  			'7xl': ['90px', { lineHeight: '1' }],
-  			'8xl': ['120px', { lineHeight: '1' }],
-  			'9xl': ['160px', { lineHeight: '1' }],
+  			xs: ['16px', { lineHeight: '1.5' }],
+  			sm: ['16px', { lineHeight: '1.5' }],
+  			base: ['16px', { lineHeight: '1.6' }],
+  			lg: ['18px', { lineHeight: '1.55' }],
+  			xl: ['20px', { lineHeight: '1.5' }],
+  			'2xl': ['24px', { lineHeight: '1.4' }],
+  			'3xl': ['30px', { lineHeight: '1.3' }],
+  			'4xl': ['36px', { lineHeight: '1.2' }],
+  			'5xl': ['48px', { lineHeight: '1.1' }],
+  			'6xl': ['60px', { lineHeight: '1.05' }],
+  			'7xl': ['72px', { lineHeight: '1' }],
+  			'8xl': ['96px', { lineHeight: '1' }],
+  			'9xl': ['128px', { lineHeight: '1' }],
   		},
   		fontFamily: {
   			display: [
-  				'VT323',
+  				'Geist Pixel',
   				'sans-serif'
   			],
   			mono: [
-  				'VT323',
+  				'Geist Pixel',
   				'ui-monospace',
   				'SFMono-Regular',
   				'Menlo',
@@ -52,11 +56,11 @@ export default {
   				'monospace'
   			],
   			clinical: [
-  				'VT323',
+  				'Geist Pixel',
   				'monospace'
   			],
   			sans: [
-  				'VT323',
+  				'Geist Pixel',
   				'ui-sans-serif',
   				'system-ui',
   				'sans-serif',
@@ -66,7 +70,7 @@ export default {
   				'Noto Color Emoji'
   			],
   			serif: [
-  				'VT323',
+  				'Geist Pixel',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
