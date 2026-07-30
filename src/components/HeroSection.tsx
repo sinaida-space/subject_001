@@ -164,7 +164,7 @@ export default function HeroSection() {
             glow, JS-state-driven — see comment above) plus the starfield
             tunnel dive (heroTunnelBus + ParticleField). */}
         <p
-          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(2.3rem,11.5vw,5.1875rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(1.4rem,7.6vw,5.1875rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
         >
@@ -195,16 +195,34 @@ export default function HeroSection() {
             can run wide; above md it must hold on a single line, so the vw
             factor is set by character count.
 
-            The site-wide x1.25 type bump reaches the upper bound of these
-            clamps only. The vw terms and the floors are both fit constraints
-            rather than size choices: scaling vw pushes the headline off the
-            single line it has to hold above md, and raising the mobile floor
-            above 11.5vw (~45px at 390px wide) makes the second line wrap a
-            single orphan character. The headline is the one thing on the page
-            that was never too small, so it keeps its measured fit and only
-            gains headroom on wide screens. */}
+            The vw terms are fit constraints, not size choices — scaling them
+            up pushes the headline off the single line it has to hold above
+            md, or forces a mid-word break below it.
+
+            These values are not a ratio-scaled guess: this text is wrapped
+            letter-by-letter (see Letters, above) with each glyph in its own
+            inline-block span, which defeats the browser's normal word-space
+            break opportunity — the two lines below md only look word-wrapped
+            because the line fills to exactly a space character; it's really
+            wrapping by character count. That means "recalibrate the old
+            multiplier" isn't enough - refitting after a face swap means
+            re-measuring actual rendered glyph widths for this exact string
+            against the actual container width, not eyeballing it. Measured
+            via getBoundingClientRect() on the rendered spans (not
+            canvas measureText, which applies kerning these isolated spans
+            don't get): at 375px viewport (311px content width) "SINAIDA
+            KRIVCHENKO " is the tightest line at ~30.7px max font before
+            overflow; at 1280px viewport (1172px content width) the full
+            single-line headline needs ~60.9px max. Both below-md and
+            above-md vw terms are set to roughly 93% of that measured ceiling
+            for antialiasing/hinting margin, and the floors/ceilings are
+            capped to the same fit constraint (unlike the old face, Geist
+            Pixel's width means the ceiling must also respect the max-w-7xl
+            container on very wide screens, or the headline overflows there
+            too). Re-derive with the same method if the copy or the face
+            changes again. */}
         <h1
-          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(2.3rem,11.5vw,5.1875rem)] md:text-[clamp(2.75rem,5.3vw,6.3rem)] cursor-none`}
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(1.4rem,7.6vw,5.1875rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
         >
