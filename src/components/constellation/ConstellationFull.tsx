@@ -574,7 +574,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         }
       }
       if (alpha <= 0.02) continue;
-      ctx.font = `${fontWeight} ${fs}px 'VT323', monospace`;
+      ctx.font = `${fontWeight} ${fs}px 'Geist Pixel', monospace`;
       const label = n.label.toUpperCase();
       const tw = ctx.measureText(label).width;
 
