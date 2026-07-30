@@ -144,7 +144,14 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                     fontFamily="'Geist Pixel', monospace"
                     fill={n.kind === 'project' ? OFF_WHITE : n.color}
                     opacity={Math.min(1, labelAlpha + 0.15)}
-                    style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
+                    style={{
+                      transition: 'opacity 0.25s',
+                      pointerEvents: 'none',
+                      // Overrides the #work section's blanket uppercase — only
+                      // project stars stay caps here, skills read in their
+                      // natural case (see ConstellationFull's matching split).
+                      textTransform: n.kind === 'project' ? 'uppercase' : 'none',
+                    }}
                   >
                     {n.label}
                   </text>
