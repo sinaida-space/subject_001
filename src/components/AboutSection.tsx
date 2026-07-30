@@ -43,7 +43,7 @@ function BioSignalLock() {
   const rows = [
     ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
     ['DRIFT', 'Ballet. General Electric IT Leadership Program. Generative systems.'],
-    ['CURRENT STATE', 'TouchDesigner visuals + audio-reactive stage systems.'],
+    ['FOCUS', 'TouchDesigner visuals + audio-reactive stage systems.'],
   ];
 
   useEffect(() => {
