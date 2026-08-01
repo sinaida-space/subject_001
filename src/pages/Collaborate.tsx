@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import ObfuscatedMailto from '@/components/ObfuscatedMailto';
+import DitheredThumb from '@/components/DitheredThumb';
 import { SERVICES } from '@/data/services';
 import { FEATURED_WORKS } from '@/data/projects';
 import Header from '@/components/Header';
@@ -176,7 +177,7 @@ export default function Collaborate() {
               <div key={project.id}>
                 {project.image && (
                   <Link to={`/work/${project.id}`} aria-label={`View case study: ${project.title}`}>
-                    <img
+                    <DitheredThumb
                       src={project.image}
                       alt={project.title}
                       loading="lazy"
