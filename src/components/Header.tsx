@@ -91,8 +91,12 @@ export default function Header() {
 
           <Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={scrollTop} />
 
+          {/* Contact is filtered out here because the bordered CONTACT button to
+              the right already owns that destination — two controls with the same
+              label made visitors stop to work out whether they differed
+              (audit 2026-08-02, F-005). The mobile menu below already did this. */}
           <nav className="hidden lg:flex items-center gap-8">
-            {NAV_ITEMS.map((item) => (
+            {NAV_ITEMS.filter((item) => item.label !== 'Contact').map((item) => (
               <a key={item.label} href={navHref(item.href)} className="clinical-label hover:text-primary-legible transition-colors duration-300 cursor-none">
                 {item.label}
               </a>

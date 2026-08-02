@@ -168,7 +168,12 @@ export default function HeroSection() {
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
         >
-          <span className="hero-layer hero-layer-base">
+          {/* The scramble writes noise into the DOM for the length of the reveal,
+              so assistive tech reading early got garbage (audit 2026-08-02, F-006).
+              Every visual layer is hidden from it and the true string is exposed
+              once, unanimated. */}
+          <span className="sr-only">{EYEBROW}</span>
+          <span className="hero-layer hero-layer-base" aria-hidden="true">
             <Letters text={nameDisplay} prefix="eb-n" />
             <Letters text=" | " prefix="eb-s" />
             <Letters text={roleDisplay} prefix="eb-r" />
@@ -226,7 +231,11 @@ export default function HeroSection() {
           onMouseEnter={enterTunnel}
           onMouseLeave={leaveTunnel}
         >
-          <span className="hero-layer hero-layer-base">
+          {/* Same reason as the eyebrow above (audit 2026-08-02, F-006): this is
+              the <h1>, so the scrambled frames were the page's accessible name
+              for the first ~860 ms. */}
+          <span className="sr-only">{`${LINE_A} ${LINE_B}`}</span>
+          <span className="hero-layer hero-layer-base" aria-hidden="true">
             <Letters text={headA} prefix="ha" />
             <br className="md:hidden" />
             <span className="neon-glow neon-glow-hero text-primary font-bold">
