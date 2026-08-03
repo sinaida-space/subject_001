@@ -79,52 +79,70 @@
     <meta name="twitter:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
     <meta name="twitter:image:alt" content="An ECG trace rendered in red particles against black, the sin.ai.da visual signature.">
 
-    <script type="application/ld+json">
+    <!-- One JSON-LD graph per page, generated at build time by
+         scripts/prerender-routes.mjs. The id="ld-graph" attribute is the hook
+         that script replaces against, so it must stay.
+
+         The block below is the dev-server placeholder and the shape the build
+         overwrites: WebSite + Person + WebPage, connected by @id. On a work
+         page the build adds a BreadcrumbList and the CreativeWork for that
+         specific work; on "/" it adds the ItemList of selected works.
+
+         This used to be two independent blocks: a Person, and a CreativeWork
+         for The Eyes Chico. Because every route is a clone of this file, that
+         second block travelled to every other case page and declared each of
+         them to be The Eyes Chico. Per-route generation is what fixed it —
+         hand-editing here cannot, so add nothing to this block that is not
+         true of every page. -->
+    <script type="application/ld+json" id="ld-graph">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Sinaida Krivchenko",
-      "jobTitle": "New media artist",
-      "description": "Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.",
-      "url": "https://sinaida.eu/",
-
-      "sameAs": [
-        "https://www.instagram.com/sin.ai.da/",
-        "https://www.linkedin.com/in/sinaida",
-        "https://www.behance.net/sinaida"
-      ],
-      "knowsAbout": ["TouchDesigner", "GLSL", "Projection Mapping", "Interactive Installations", "Audio-Reactive Visuals", "Stage Visuals", "Creative Direction", "Digital Art"],
-      "alumniOf": {
-        "@type": "Organization",
-        "name": "Bauman Moscow State Technical University, General Electric IT Leadership Program"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Prague",
-        "addressCountry": "CZ"
-      }
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "CreativeWork",
-      "name": "The Eyes Chico",
-      "url": "https://sinaida.eu/work/the-eyes-chico",
-      "sameAs": "https://the-eyes-chico.sinaida.eu/",
-      "dateCreated": "2026-07",
-      "description": "An acrylic painting by Alisa Feer translated into an interactive field: a soul-shaped figure crossing a field of eyes and poppies, meeting fifty questions about selfhood. Exists as a live hand-tracked web experience and as a projection installation available for its first public showing.",
-      "creator": [
+      "@graph": [
         {
-          "@type": "Person",
-          "name": "Alisa Feer",
-          "url": "https://uvaliss.ru/"
+          "@type": "WebSite",
+          "@id": "https://sinaida.eu/#website",
+          "url": "https://sinaida.eu/",
+          "name": "Sinaida Krivchenko",
+          "alternateName": "sin.ai.da",
+          "inLanguage": "en",
+          "publisher": { "@id": "https://sinaida.eu/#person" }
         },
         {
           "@type": "Person",
+          "@id": "https://sinaida.eu/#person",
           "name": "Sinaida Krivchenko",
-          "url": "https://sinaida.eu/"
+          "alternateName": "sin.ai.da",
+          "jobTitle": "New media artist",
+          "description": "Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.",
+          "url": "https://sinaida.eu/",
+          "image": "https://sinaida.eu/og-cover-1200x630.jpg",
+          "sameAs": [
+            "https://www.instagram.com/sin.ai.da/",
+            "https://www.linkedin.com/in/sinaida",
+            "https://www.behance.net/sinaida",
+            "https://github.com/sinaida-space"
+          ],
+          "knowsAbout": ["TouchDesigner", "GLSL", "Projection Mapping", "Interactive Installations", "Audio-Reactive Visuals", "Stage Visuals", "Creative Direction", "Digital Art"],
+          "alumniOf": {
+            "@type": "Organization",
+            "name": "Bauman Moscow State Technical University, General Electric IT Leadership Program"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Prague",
+            "addressCountry": "CZ"
+          }
+        },
+        {
+          "@type": ["WebPage", "ProfilePage"],
+          "@id": "https://sinaida.eu/#webpage",
+          "url": "https://sinaida.eu/",
+          "name": "Sinaida Krivchenko | New media artist · Interactive projections & stage visuals · Prague",
+          "isPartOf": { "@id": "https://sinaida.eu/#website" },
+          "about": { "@id": "https://sinaida.eu/#person" },
+          "mainEntity": { "@id": "https://sinaida.eu/#person" },
+          "primaryImageOfPage": { "@type": "ImageObject", "url": "https://sinaida.eu/og-cover-1200x630.jpg" },
+          "inLanguage": "en"
         }
       ]
     }
@@ -135,8 +153,17 @@
   <body>
     <div id="root"></div>
 
-    <!-- SEO: Structured content for crawlers. This site uses React, so the following provides readable content for search engines and AI agents that do not execute JavaScript. -->
-    <noscript>
+    <!-- SEO: Structured content for crawlers. This site uses React, so the
+         following provides readable content for search engines and AI agents
+         that do not execute JavaScript.
+
+         The id="page-fallback" attribute is the hook scripts/prerender-routes.mjs
+         replaces against, so it must stay. This copy is the homepage's own
+         fallback and is left alone by the build; every other route gets its own
+         content generated from src/data/projects.ts. Before that, every route
+         shipped this same homepage text, so a crawler reading
+         /work/redkie-ptitsy/ without JS saw nothing of that case study. -->
+    <noscript id="page-fallback">
       <main>
         <h1>Sinaida Krivchenko | New media artist</h1>
         <p>Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Background in biomedical engineering (MSc) and corporate IT leadership across four countries (General Electric). Now creating visual worlds for stages, exhibitions, and cultural institutions.</p>

@@ -14,7 +14,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Full history, because scripts/build-sitemap.mjs dates every sitemap
+      # entry from `git log` over the files behind that route. The default
+      # shallow clone has one commit, so almost every route would come out
+      # with no <lastmod> at all.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v5
         with:
@@ -26,11 +32,13 @@ jobs:
       # `npm run build` already materializes every SPA route as a real static
       # page (scripts/prerender-routes.mjs, chained after `vite build`): it
       # clones dist/index.html per route and rewrites that route's <title>,
-      # description, canonical, and og:*/twitter:* tags, so search engines and
-      # social crawlers (which don't execute JS) see each page's own metadata
-      # instead of the homepage's. Route data for /work/<slug>/ comes straight
-      # from src/data/projects.ts, so a new case study is picked up
-      # automatically — nothing to update here when one is added.
+      # description, canonical, og:*/twitter:* tags, JSON-LD graph and
+      # <noscript> body, so search engines and answer engines (which don't
+      # execute JS) see each page's own metadata and its own content instead of
+      # the homepage's. scripts/build-sitemap.mjs then writes dist/sitemap.xml
+      # with a git-derived lastmod per route. Route data for /work/<slug>/
+      # comes straight from src/data/projects.ts, so a new case study is picked
+      # up automatically — nothing to update here when one is added.
       - name: Build
         run: npm run build
 
