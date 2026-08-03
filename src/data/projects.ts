@@ -56,6 +56,14 @@ export interface CaseStudy {
   method?: CaseMethod;
   /** attribution lines, rendered as a credits block */
   credits?: string[];
+  /**
+   * The same collaborators as `credits`, machine-readable: this feeds the
+   * `contributor` array in the page's JSON-LD (scripts/lib/structured-data.mjs)
+   * and nothing on screen. `credits` stays prose because it is prose; a parser
+   * should not have to guess which half of "Concept & painting: Alisa Feer" is
+   * the name. Sinaida is always the `creator` and is never repeated here.
+   */
+  contributors?: { name: string; url?: string; type?: 'Person' | 'Organization' | 'MusicGroup' }[];
   /** external links rendered on the case page (project.links stays popup-only) */
   links?: ProjectLink[];
   /** closing conversion block; page appends "Get in touch <suffix>" */
@@ -162,6 +170,9 @@ export const PROJECTS: Project[] = [
         ],
         footer: '> full-set run · Sklad №3, Moscow · 26 March 2026',
       },
+      contributors: [
+        { name: 'Redkie Ptitsy', url: 'https://band.link/redkieptitsy', type: 'MusicGroup' },
+      ],
       order: {
         heading: 'What a festival can order',
         body:
@@ -225,6 +236,7 @@ export const PROJECTS: Project[] = [
         ],
         footer: '> concept & painting: Alisa Feer · interactive design & code: Sinaida Krivchenko',
       },
+      contributors: [{ name: 'Alisa Feer', url: 'https://uvaliss.ru/', type: 'Person' }],
       credits: [
         'Concept & painting: Alisa Feer (Uvaliss) · uvaliss.ru · @uvaliss',
         'Interactive design & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
@@ -326,6 +338,7 @@ export const PROJECTS: Project[] = [
         ],
         footer: '> instrument & code: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
       },
+      contributors: [{ name: 'Kamil Yegelev (Telefm)', url: 'https://telefm.bandcamp.com/', type: 'Person' }],
       credits: [
         'Instrument & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
         'Music & collaboration: Kamil Yegelev (Telefm) · telefm.bandcamp.com',
