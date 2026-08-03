@@ -77,15 +77,83 @@ function useHeroWhisper(active: boolean, pool: string[]) {
 
 // Per-letter spans so the hover effect (drift + heartbeat glow + ghost
 // flash, see .hero-ltr/.hero-glow-active in index.css) can animate each
-// character independently. A plain ' ' (not nbsp) so word-wrap still works.
-function Letters({ text, prefix }: { text: string; prefix: string }) {
+// character independently.
+//
+// Those spans are inline-blocks, and an inline-block is a break opportunity,
+// so emitting them as one flat run let the browser break the line between any
+// two characters — the eyebrow read "SINAIDA KRIVCHENKO | NE" / "W MEDIA
+// ARTIST" at ~676px wide. Words are therefore grouped in a nowrap wrapper
+// (.hero-word) and the spaces between them left as the only break points,
+// which is the wrapping the layout was always written against.
+//
+// Do not "simplify" this back to a flat [...text].map(): the mid-word break
+// returns immediately, and only at the handful of widths where a line happens
+// to fill mid-word, so it survives a casual look at one viewport.
+const DRIFT_VARIANTS = ['a', 'b', 'c', 'd'];
+
+// `indexOffset` keeps the drift variant and the stagger continuous when one
+// visual line is emitted as several Letters calls (the eyebrow is three: name,
+// separator, role). Without it each call would restart the 4-path cycle at
+// 'a', which is not what the original :nth-child counting did.
+function Letters({ text, prefix, indexOffset = 0 }: { text: string; prefix: string; indexOffset?: number }) {
+  // Split on whitespace but keep it: the separators are rendered, just not as
+  // part of any word.
+  const parts = text.split(/(\s+)/).filter((part) => part !== '');
+  let charIndex = indexOffset;
+
   return (
     <>
-      {[...text].map((ch, i) => (
-        <span key={`${prefix}-${i}`} className="hero-ltr" style={{ animationDelay: `${(i * 0.05).toFixed(2)}s` }}>
-          {ch}
-        </span>
-      ))}
+      {parts.map((part, p) => {
+        const start = charIndex;
+        charIndex += part.length;
+
+        if (/^\s+$/.test(part)) {
+          return (
+            <span key={`${prefix}-s-${p}`} className="hero-space">
+              {part}
+            </span>
+          );
+        }
+
+        return (
+          <span key={`${prefix}-w-${p}`} className="hero-word">
+            {[...part].map((ch, i) => (
+              <span
+                key={`${prefix}-${start + i}`}
+                // Variant comes from the position in the whole run, not from
+                // :nth-child, which .hero-word would otherwise restart per word.
+                className={`hero-ltr hero-ltr-${DRIFT_VARIANTS[(start + i) % DRIFT_VARIANTS.length]}`}
+                style={{ animationDelay: `${((start + i) * 0.05).toFixed(2)}s` }}
+              >
+                {ch}
+              </span>
+            ))}
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
+// One eyebrow layer. Below md the line splits in two, so the " | " separator
+// is dropped and an explicit break stands in its place: a pipe left hanging at
+// the end of the first line reads as a typo, not as punctuation. Above md the
+// line holds as one and the separator returns. Same md:hidden technique the
+// headline below already uses for its own two-line regime.
+//
+// The offsets keep the drift cycle running continuously across the three
+// Letters calls, as if the whole eyebrow were one run — which, above md, it is.
+const SEPARATOR = ' | ';
+
+function EyebrowLayer({ name, role, prefix }: { name: string; role: string; prefix: string }) {
+  return (
+    <>
+      <Letters text={name} prefix={`${prefix}-n`} />
+      <span className="hidden md:inline">
+        <Letters text={SEPARATOR} prefix={`${prefix}-s`} indexOffset={name.length} />
+      </span>
+      <br className="md:hidden" />
+      <Letters text={role} prefix={`${prefix}-r`} indexOffset={name.length + SEPARATOR.length} />
     </>
   );
 }
@@ -174,19 +242,13 @@ export default function HeroSection() {
               once, unanimated. */}
           <span className="sr-only">{EYEBROW}</span>
           <span className="hero-layer hero-layer-base" aria-hidden="true">
-            <Letters text={nameDisplay} prefix="eb-n" />
-            <Letters text=" | " prefix="eb-s" />
-            <Letters text={roleDisplay} prefix="eb-r" />
+            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="eb" />
           </span>
           <span className="hero-layer hero-ghost hero-ghost-red" aria-hidden="true">
-            <Letters text={nameDisplay} prefix="ebgr-n" />
-            <Letters text=" | " prefix="ebgr-s" />
-            <Letters text={roleDisplay} prefix="ebgr-r" />
+            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="ebgr" />
           </span>
           <span className="hero-layer hero-ghost hero-ghost-white" aria-hidden="true">
-            <Letters text={nameDisplay} prefix="ebgw-n" />
-            <Letters text=" | " prefix="ebgw-s" />
-            <Letters text={roleDisplay} prefix="ebgw-r" />
+            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="ebgw" />
           </span>
         </p>
       </div>

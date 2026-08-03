@@ -312,6 +312,28 @@
     will-change: transform;
   }
 
+  /* Each glyph above is its own inline-block so the hover drift can animate
+     characters independently — and an inline-block is a line-break
+     opportunity, so a bare run of them lets the browser break between ANY two
+     characters. That is how the eyebrow rendered as "SINAIDA KRIVCHENKO | NE"
+     / "W MEDIA ARTIST" at ~676px wide: nothing in the markup said a word was
+     a unit, so the line simply filled to the pixel and broke.
+
+     .hero-word restores the break rule the design assumes: words are atomic,
+     the spaces between them are the only place a line may break. Anything
+     rendering .hero-ltr runs must group words this way (see Letters in
+     HeroSection.tsx). */
+  .hero-word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /* The space between two words: kept literal (the glyph spans do their own
+     spacing) but still breakable, which plain `pre` would forbid. */
+  .hero-space {
+    white-space: pre-wrap;
+  }
+
   @keyframes hero-drift-v5-a { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(4px,0,10px); } }
   @keyframes hero-drift-v5-b { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(-5px,0,-12px); } }
   @keyframes hero-drift-v5-c { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(6px,0,14px); } }
@@ -320,9 +342,15 @@
   .hero-glow-active .hero-ltr {
     animation: hero-drift-v5-a 6.2s ease-in-out infinite;
   }
-  .hero-glow-active .hero-ltr:nth-child(4n+2) { animation-name: hero-drift-v5-b; }
-  .hero-glow-active .hero-ltr:nth-child(4n+3) { animation-name: hero-drift-v5-c; }
-  .hero-glow-active .hero-ltr:nth-child(4n+4) { animation-name: hero-drift-v5-d; }
+  /* Which of the four drift paths a letter takes. This used to be
+     :nth-child(4n+2..4), which counted glyphs among their siblings — once
+     .hero-word groups them, that counter restarts at every word and the
+     cycle breaks up. The variant is now stamped on from the letter's index
+     within the whole run (see Letters in HeroSection.tsx), so the pattern
+     stays continuous across a line no matter how it is grouped. */
+  .hero-glow-active .hero-ltr-b { animation-name: hero-drift-v5-b; }
+  .hero-glow-active .hero-ltr-c { animation-name: hero-drift-v5-c; }
+  .hero-glow-active .hero-ltr-d { animation-name: hero-drift-v5-d; }
 
   @keyframes hero-beat-glow {
     0%, 6%, 100% { filter: drop-shadow(0 0 0px transparent); }
