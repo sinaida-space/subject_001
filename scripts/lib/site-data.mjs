@@ -311,6 +311,26 @@ export function buildRoutes() {
     },
   };
 
+  const statement = {
+    path: 'statement',
+    kind: 'page',
+    title: `Statement | ${AUTHOR_NAME}`,
+    description:
+      'Why she builds responsive visual systems: a language that needs no translation, engineering structure and ballet listening, and the audience that completes the work.',
+    canonical: `${SITE_URL}/statement/`,
+    breadcrumbLabel: 'Statement',
+    indexable: true,
+    priority: '0.8',
+    sources: ['src/pages/Statement.tsx'],
+    fallback: {
+      heading: 'Sinaida Krivchenko',
+      paragraphs: [
+        'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
+        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band Redkie Ptitsy, nine projections, one per song, and The Eyes Chico, a room filled with red light where you steer a soul across a field of poppies.',
+      ],
+    },
+  };
+
   const privacy = {
     path: 'privacy',
     kind: 'page',
@@ -351,5 +371,14 @@ export function buildRoutes() {
     work,
   }));
 
-  return [home, collaborate, experiences, privacy, legacyRedirect('booking'), legacyRedirect('press'), ...workRoutes];
+  return [
+    home,
+    collaborate,
+    experiences,
+    statement,
+    privacy,
+    legacyRedirect('booking'),
+    legacyRedirect('press'),
+    ...workRoutes,
+  ];
 }
