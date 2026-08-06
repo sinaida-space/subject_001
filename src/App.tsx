@@ -8,6 +8,7 @@ import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Collaborate = lazy(() => import("./pages/Collaborate"));
 const Experiences = lazy(() => import("./pages/Experiences"));
+const Statement = lazy(() => import("./pages/Statement"));
 const WorkCase = lazy(() => import("./pages/WorkCase"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/collaborate" element={<Collaborate />} />
           <Route path="/experiences" element={<Experiences />} />
+          <Route path="/statement" element={<Statement />} />
           {/* Old routes live in shared links and search results — keep redirecting */}
           <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
           <Route path="/press" element={<Navigate to="/collaborate" replace />} />
