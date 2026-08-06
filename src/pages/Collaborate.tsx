@@ -19,8 +19,6 @@ const PROCESS_STEPS = [
   { code: '05', label: 'Show', detail: 'Delivered turnkey, or operated live.' },
 ];
 
-const TECH_BASICS = ['TouchDesigner', 'GLSL / real-time shaders', 'Audio-reactive systems', 'Generative AI visuals'];
-
 // Third-person boilerplate, written to be copy-pasted verbatim into program
 // booklets and press. Facts only: no availability, timeline, or client claims
 // beyond the two real credits.
@@ -201,15 +199,6 @@ export default function Collaborate() {
           <p className="font-mono text-[12px] mb-8 text-foreground/60">
             Click a still for the case study.
           </p>
-
-          <ul className="font-mono text-[13px] space-y-2 text-foreground/75">
-            {TECH_BASICS.map((item) => (
-              <li key={item}>
-                <span className="text-primary-legible">{'> '}</span>
-                {item}
-              </li>
-            ))}
-          </ul>
         </section>
 
         {/* Contact */}
