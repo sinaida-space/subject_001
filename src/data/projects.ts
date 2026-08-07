@@ -4,6 +4,7 @@
 
 import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
 import workEyesChico from '@/assets/work-eyes-chico.jpg';
+import eyesChicoPainting from '@/assets/work-eyes-chico-painting.jpg';
 import workSubmerged from '@/assets/work-submerged.jpg';
 import workAetherCurrents from '@/assets/work-aether-currents.jpg';
 import workEtherealPath from '@/assets/work-ethereal-path.jpg';
@@ -54,8 +55,12 @@ export interface CaseStudy {
   /** labeled video sections, in order */
   media?: CaseMedia[];
   method?: CaseMethod;
+  /** original artwork the piece translates, shown as a labeled figure with a gallery-style caption */
+  painting?: { image: string; title: string; attribution: string };
   /** attribution lines, rendered as a credits block */
   credits?: string[];
+  /** structured collaborator credits (role, name, statement link, one-line bio), rendered instead of `credits` when present */
+  creditsPeople?: { role: string; name: string; url: string; bio: string }[];
   /**
    * The same collaborators as `credits`, machine-readable: this feeds the
    * `contributor` array in the page's JSON-LD (scripts/lib/structured-data.mjs)
@@ -234,12 +239,27 @@ export const PROJECTS: Project[] = [
           { label: 'Web experience', detail: 'Live in any browser; optional hand tracking runs on-device, palm to steer, fist to dive, pinch to pick.' },
           { label: 'Installation', detail: 'A room lit red, one laptop, one projector: the same field at the scale of a wall.' },
         ],
-        footer: '> concept & painting: Alisa Feer · interactive design & code: Sinaida Krivchenko',
+        footer: '> concept, interactive design & code: Sinaida Krivchenko · painting: Alisa Feer',
+      },
+      painting: {
+        image: eyesChicoPainting,
+        title: 'The Eyes, Chico',
+        attribution: 'Alisa Feer. Acrylic on paper, A4, 2026, St. Petersburg.',
       },
       contributors: [{ name: 'Alisa Feer', url: 'https://uvaliss.ru/', type: 'Person' }],
-      credits: [
-        'Concept & painting: Alisa Feer (Uvaliss) · uvaliss.ru · @uvaliss',
-        'Interactive design & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+      creditsPeople: [
+        {
+          role: 'Concept, interactive design & code',
+          name: 'Sinaida Krivchenko',
+          url: 'https://sinaida.eu/statement/',
+          bio: 'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
+        },
+        {
+          role: 'Painting',
+          name: 'Alisa Feer',
+          url: 'https://uvaliss.ru/ascv',
+          bio: 'Alisa Feer is a visual artist from St Petersburg exploring themes of darkness and light. Her work has been shown at the Russian Museum, St Petersburg (2026, "Intuition of Space: Epiphany").',
+        },
       ],
       links: [
         { label: 'Alisa Feer', url: 'https://uvaliss.ru/' },
