@@ -13,6 +13,30 @@ import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
+// Turns bare https:// URLs inside a credit line into clickable links,
+// displayed without the protocol/trailing slash for readability.
+function linkifyCredit(text: string) {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g);
+  return parts.flatMap((part, i) => {
+    if (!/^https?:\/\//.test(part)) return [part];
+    // strip trailing sentence punctuation caught by the greedy match
+    const trailing = part.match(/[.,;:]+$/)?.[0] ?? '';
+    const url = trailing ? part.slice(0, -trailing.length) : part;
+    return [
+      <a
+        key={i}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-accent underline decoration-accent/40 underline-offset-2 transition-opacity hover:opacity-70"
+      >
+        {url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+      </a>,
+      trailing,
+    ];
+  });
+}
+
 // Case pages are fully data-driven from `project.caseStudy` (src/data/projects.ts).
 // Projects without a caseStudy have no case page: the route 404s.
 export default function WorkCase() {
@@ -162,6 +186,26 @@ export default function WorkCase() {
               </p>
             ))}
 
+            {/* ── Original painting the piece translates ── */}
+            {cs.painting && (
+              <div className="mt-10">
+                <div className="clinical-label mb-3 text-foreground/65">Original painting</div>
+                <img
+                  src={cs.painting.image}
+                  alt={cs.painting.title}
+                  loading="lazy"
+                  className="w-full max-w-[420px] object-cover"
+                  style={{ border: '1px solid hsl(var(--graphite))' }}
+                />
+                <p className="mt-3 max-w-[62ch] font-mono text-[13px] italic text-foreground/70">
+                  {cs.painting.title}
+                </p>
+                <p className="mt-1 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
+                  {cs.painting.attribution}
+                </p>
+              </div>
+            )}
+
             {/* ── Big-number stat card ── */}
             {cs.stat && (
               <div
@@ -206,15 +250,41 @@ export default function WorkCase() {
             )}
 
             {/* ── Credits ── */}
-            {cs.credits && (
+            {cs.creditsPeople ? (
               <div className="mt-10">
                 <div className="clinical-label mb-3 text-foreground/65">Credits</div>
-                {cs.credits.map((c) => (
-                  <p key={c} className="font-mono text-[13px] leading-relaxed text-foreground/70">
-                    {c}
-                  </p>
-                ))}
+                <div className="flex flex-col gap-5">
+                  {cs.creditsPeople.map((p) => (
+                    <div key={p.name}>
+                      <p className="font-mono text-[13px] leading-relaxed text-foreground/70">
+                        <strong className="font-semibold text-foreground/85">{p.role}:</strong>{' '}
+                        <a
+                          href={p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-accent underline decoration-accent/40 underline-offset-2 transition-opacity hover:opacity-70"
+                        >
+                          {p.name}
+                        </a>
+                      </p>
+                      <p className="mt-1 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
+                        {p.bio}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
+            ) : (
+              cs.credits && (
+                <div className="mt-10">
+                  <div className="clinical-label mb-3 text-foreground/65">Credits</div>
+                  {cs.credits.map((c) => (
+                    <p key={c} className="font-mono text-[13px] leading-relaxed text-foreground/70">
+                      {linkifyCredit(c)}
+                    </p>
+                  ))}
+                </div>
+              )
             )}
 
             {/* ── Case links ── */}
