@@ -163,7 +163,8 @@ export default function Collaborate() {
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-3">Press kit</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            For programmers, promoters, and journalists: boilerplate and stills, ready to paste.
+            For programmers, promoters, and journalists: boilerplate and stills ready to
+            paste, plus the artist CV as a PDF.
           </p>
 
           <div className="font-mono text-[14px] leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
@@ -199,6 +200,13 @@ export default function Collaborate() {
           <p className="font-mono text-[12px] mb-8 text-foreground/60">
             Click a still for the case study.
           </p>
+          <a
+            href="/files/sinaida-krivchenko-cv.pdf"
+            download
+            className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+          >
+            Artist CV (PDF) ↓
+          </a>
         </section>
 
         {/* Contact */}

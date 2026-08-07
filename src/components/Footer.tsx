@@ -75,6 +75,9 @@ export default function Footer() {
                 <a href="/collaborate" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Work with me
                 </a>
+                <a href="/files/sinaida-krivchenko-cv.pdf" download className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                  CV (PDF)
+                </a>
                 <a href="/privacy" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Privacy Policy
                 </a>
