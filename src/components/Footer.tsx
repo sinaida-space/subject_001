@@ -78,6 +78,9 @@ export default function Footer() {
                 <a href="/privacy" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Privacy Policy
                 </a>
+                <a href="/licensing" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                  Licensing
+                </a>
                 <button
                   type="button"
                   onClick={() => toggle()}

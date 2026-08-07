@@ -6,6 +6,7 @@ import WebMcpTools from "@/components/WebMcpTools";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const Licensing = lazy(() => import("./pages/Licensing"));
 const Collaborate = lazy(() => import("./pages/Collaborate"));
 const Experiences = lazy(() => import("./pages/Experiences"));
 const Statement = lazy(() => import("./pages/Statement"));
@@ -51,6 +52,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/licensing" element={<Licensing />} />
+          <Route path="/license" element={<Navigate to="/licensing" replace />} />
           <Route path="/collaborate" element={<Collaborate />} />
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/statement" element={<Statement />} />

@@ -1,37 +1,37 @@
-Creative Commons Attribution 4.0 International (CC BY 4.0)
-
 Copyright (c) 2026 Sinaida Krivchenko (https://sinaida.eu)
 
-This work (code and content in this repository) is licensed under the
-Creative Commons Attribution 4.0 International License.
+ALL RIGHTS RESERVED.
 
-You are free to:
+This repository holds the source, design and written content of sinaida.eu.
+It is public so the work can be read. It is not open source, and no license
+to use, copy, modify, publish or distribute any part of it is granted.
 
-  - Share — copy and redistribute the material in any medium or format
-  - Adapt — remix, transform, and build upon the material
+This applies in particular to the biography, artist statement, project
+descriptions and case study texts in src/data/ and src/pages/, and to every
+image, video still and photograph in the repository. Those are written and
+made by Sinaida Krivchenko.
 
-  for any purpose, even commercially.
+WHAT IS PERMITTED WITHOUT ASKING
 
-Under the following terms:
+  Reading the code, and learning from it.
 
-  - Attribution — You must give appropriate credit to Sinaida Krivchenko,
-    provide a link to https://sinaida.eu, and indicate if changes were
-    made. You may do so in any reasonable manner, but not in any way
-    that suggests the licensor endorses you or your use.
+  Press and education: journalists, curators, students and researchers may
+  reproduce stills and quoted text in articles, reviews, catalogues and
+  academic writing, with credit to Sinaida Krivchenko and a link to
+  https://sinaida.eu. Advertising is commercial use and is not covered.
 
-No additional restrictions — You may not apply legal or technological
-measures that legally restrict others from doing anything the license
-permits.
+THIRD-PARTY CODE AND FONTS
 
-Notices:
+  This repository depends on open source libraries and fonts that keep
+  their own licenses. See THIRD-PARTY.md.
 
-  You do not have to comply with the license for elements of the
-  material in the public domain or where your use is permitted by an
-  applicable exception or limitation.
+THE PROJECTS THEMSELVES
 
-  No warranties are given. The license may not give you all of the
-  permissions necessary for your intended use. For example, other
-  rights such as publicity, privacy, or moral rights may limit how
-  you use the material.
+  The artworks documented on this site are licensed individually, and most
+  of their source code is open under Apache 2.0. See
+  https://sinaida.eu/licensing and the repositories at
+  https://github.com/sinaida-space
 
-Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
+ASKING
+
+  https://sinaida.eu/collaborate — most answers are yes.
