@@ -172,12 +172,24 @@ const Statement = () => {
           </div>
         </section>
 
-        <Link
-          to="/collaborate"
-          className="clinical-label text-primary-legible hover:text-accent transition-colors inline-block"
-        >
-          Work with me →
-        </Link>
+        {/* Both endings of the page sit in one row: where to go next, and the
+            record to take away. Same clinical-label treatment, so neither reads
+            as the primary action over the other. */}
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+          <Link
+            to="/collaborate"
+            className="clinical-label text-primary-legible hover:text-accent transition-colors inline-block"
+          >
+            Work with me →
+          </Link>
+          <a
+            href="/files/sinaida-krivchenko-cv.pdf"
+            download
+            className="clinical-label text-primary-legible hover:text-accent transition-colors inline-block"
+          >
+            Artist CV (PDF) ↓
+          </a>
+        </div>
       </main>
       <Footer />
     </div>
