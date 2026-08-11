@@ -55,6 +55,7 @@ export default function Footer() {
                   { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
                   { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
                   { label: 'GitHub', url: 'https://github.com/sinaida-space' },
+                  { label: 'Patreon', url: 'https://www.patreon.com/cw/theswansarenotwhattheyseem' },
                   { label: 'Behance', url: 'https://www.behance.net/sinaida' },
                   { label: 'Medium', url: 'https://medium.com/@idacooper' },
                   { label: 'Spotify', url: 'https://open.spotify.com/user/1u4ol8qogt04u4476e4xba8g8?si=9ed0a53d14934618' },
