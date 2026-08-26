@@ -249,14 +249,19 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
         boxShadow: '0 0 40px rgba(204,20,20,0.3)',
         background: 'hsl(var(--background))',
         padding: '0',
+        width: SIZE,
+        maxWidth: '100vw',
+        boxSizing: 'border-box',
       }}>
         {/* Header */}
         <div style={{
           borderBottom: '1px solid hsl(var(--graphite))',
           padding: '8px 12px',
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'space-between',
           alignItems: 'center',
+          gap: '4px',
         }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: '#CC1414', letterSpacing: '2px' }}>
             SNAKE.EXE // SCORE: {score}
@@ -285,7 +290,9 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           borderTop: '1px solid hsl(var(--graphite))',
           padding: '6px 12px',
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'space-between',
+          gap: '4px',
         }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--gunmetal))' }}>
             ↑ ↓ ← → or WASD
