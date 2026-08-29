@@ -287,13 +287,18 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        {/* Canvas */}
-        <canvas
-          ref={canvasRef}
-          width={SIZE}
-          height={SIZE}
-          style={{ display: 'block', cursor: 'none' }}
-        />
+        {/* Canvas — inset from the panel frame with the same padding as the
+            arrow-button block below, so the grid never rides over the red
+            border. The drawing buffer stays SIZE×SIZE; CSS scales it to the
+            padded width. */}
+        <div style={{ padding: '8px 12px 12px' }}>
+          <canvas
+            ref={canvasRef}
+            width={SIZE}
+            height={SIZE}
+            style={{ display: 'block', width: '100%', height: 'auto', cursor: 'none' }}
+          />
+        </div>
 
         {/* Footer controls hint */}
         <div style={{
@@ -313,7 +318,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Arrow buttons for touch devices */}
-        <div style={{ padding: '8px 12px 12px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px', width: SIZE }}>
+        <div style={{ padding: '8px 12px 12px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
           <div />
           <button onClick={() => setDir('UP')} style={btnStyle}>↑</button>
           <div />
