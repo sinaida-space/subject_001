@@ -1,1 +1,0 @@
-import{r as a,g as f,j as o}from"./index-DbntnEZw.js";function d({src:e,alt:l,className:s,loading:n="lazy"}){const[u,t]=a.useState(null);return a.useEffect(()=>{let r=!1;return t(null),f(e).then(i=>{r||t(i)}),()=>{r=!0}},[e]),o.jsx("img",{src:u??e,alt:l,loading:n,className:s,draggable:!1})}export{d as D};
