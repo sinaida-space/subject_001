@@ -787,6 +787,12 @@
     opacity: 0.55;
   }
 
+  /* Snake easter egg open: its backdrop-filter blur would pull this layer's
+     grain into the frosted glass and wash out the panel's border. Hide it. */
+  :root[data-snake-open] .crt-overlay {
+    display: none;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .crt-overlay {
       animation: crt-flicker 5.4s steps(1, end) infinite;

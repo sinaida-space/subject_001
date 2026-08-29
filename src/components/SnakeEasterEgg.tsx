@@ -238,6 +238,16 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     return () => { if (tickRef.current) clearTimeout(tickRef.current); };
   }, [draw]);
 
+  // ── Suppress the starfield CRT overlay while open ────────────────────────────
+  // The modal's backdrop-filter blur samples the CRT grain/scanlines behind it,
+  // which muddies the panel's 1px border against the frosted glass. The overlay
+  // has no job here — the modal already blacks out the field — so drop it for
+  // the duration (see :root[data-snake-open] .crt-overlay in index.css).
+  useEffect(() => {
+    document.documentElement.setAttribute('data-snake-open', '');
+    return () => document.documentElement.removeAttribute('data-snake-open');
+  }, []);
+
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
