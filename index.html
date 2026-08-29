@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- cd0000 — --sinaida-red. Browser chrome can't read CSS vars, so the
+    <!-- cd0000 is --sinaida-red. Browser chrome can't read CSS vars, so the
          literal has to stay, but it must stay the same literal as the token.
 
          Three tags, because one is not enough to actually tint iOS Safari:
@@ -57,16 +57,16 @@
          See docs/audits/sinaida-eu-audit-2026-07-24-b.md. -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>Sinaida Krivchenko | New media artist · Interactive projections & stage visuals · Prague</title>
-    <meta name="description" content="Sinaida Krivchenko is a Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Trained as a biomedical engineer.">
+    <title>Sinaida Krivchenko | New media artist · Interactive projections &amp; stage visuals · Prague</title>
+    <meta name="description" content="Sinaida Krivchenko is a Prague-based new media artist: real-time TouchDesigner and GLSL systems for stage visuals, projections, and audio-reactive performance.">
     <meta name="keywords" content="new media artist, interactive projections, stage visuals, TouchDesigner, GLSL, audio-reactive visuals, projection mapping, immersive installations, digital art, Prague, live performance, cultural institutions">
     <meta name="author" content="Sinaida Krivchenko">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://sinaida.eu/">
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Sinaida Krivchenko | New media artist · Interactive projections & stage visuals">
-    <meta property="og:description" content="Prague-based new media artist. Living visual systems for stages and physical spaces — TouchDesigner, GLSL, interactive projections, and audio-reactive visuals for live performance.">
+    <meta property="og:title" content="Sinaida Krivchenko | New media artist · Interactive projections &amp; stage visuals · Prague">
+    <meta property="og:description" content="Sinaida Krivchenko is a Prague-based new media artist: real-time TouchDesigner and GLSL systems for stage visuals, projections, and audio-reactive performance.">
     <meta property="og:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -74,26 +74,66 @@
     <meta property="og:url" content="https://sinaida.eu/">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Sinaida Krivchenko | New media artist · Interactive projections & stage visuals">
-    <meta name="twitter:description" content="Prague-based new media artist. Living visual systems for stages and physical spaces — TouchDesigner, GLSL, interactive projections, and audio-reactive visuals for live performance.">
+    <meta name="twitter:title" content="Sinaida Krivchenko | New media artist · Interactive projections &amp; stage visuals · Prague">
+    <meta name="twitter:description" content="Sinaida Krivchenko is a Prague-based new media artist: real-time TouchDesigner and GLSL systems for stage visuals, projections, and audio-reactive performance.">
     <meta name="twitter:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
     <meta name="twitter:image:alt" content="An ECG trace rendered in red particles against black, the sin.ai.da visual signature.">
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Sinaida Krivchenko",
-      "jobTitle": "New media artist",
-      "description": "Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.",
-      "url": "https://sinaida.eu/",
+    <!-- One JSON-LD graph per page, generated at build time by
+         scripts/prerender-routes.mjs. The id="ld-graph" attribute is the hook
+         that script replaces against, so it must stay.
 
+         The block below is the dev-server placeholder and the shape the build
+         overwrites: WebSite + Person + WebPage, connected by @id. On a work
+         page the build adds a BreadcrumbList and the CreativeWork for that
+         specific work; on "/" it adds the ItemList of selected works.
+
+         This used to be two independent blocks: a Person, and a CreativeWork
+         for The Eyes Chico. Because every route is a clone of this file, that
+         second block travelled to every other case page and declared each of
+         them to be The Eyes Chico. Per-route generation is what fixed it —
+         hand-editing here cannot, so add nothing to this block that is not
+         true of every page. -->
+    <script type="application/ld+json" id="ld-graph">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://sinaida.eu/#website",
+      "url": "https://sinaida.eu/",
+      "name": "Sinaida Krivchenko",
+      "alternateName": "sin.ai.da",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://sinaida.eu/#person"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://sinaida.eu/#person",
+      "name": "Sinaida Krivchenko",
+      "alternateName": "sin.ai.da",
+      "jobTitle": "New media artist",
+      "description": "Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.",
+      "url": "https://sinaida.eu/",
+      "image": "https://sinaida.eu/og-cover-1200x630.jpg",
       "sameAs": [
         "https://www.instagram.com/sin.ai.da/",
         "https://www.linkedin.com/in/sinaida",
-        "https://www.behance.net/sinaida"
+        "https://www.behance.net/sinaida",
+        "https://github.com/sinaida-space"
       ],
-      "knowsAbout": ["TouchDesigner", "GLSL", "Projection Mapping", "Interactive Installations", "Audio-Reactive Visuals", "Stage Visuals", "Creative Direction", "Digital Art"],
+      "knowsAbout": [
+        "TouchDesigner",
+        "GLSL",
+        "Projection Mapping",
+        "Interactive Installations",
+        "Audio-Reactive Visuals",
+        "Stage Visuals",
+        "Creative Direction",
+        "Digital Art"
+      ],
       "alumniOf": {
         "@type": "Organization",
         "name": "Bauman Moscow State Technical University, General Electric IT Leadership Program"
@@ -103,63 +143,114 @@
         "addressLocality": "Prague",
         "addressCountry": "CZ"
       }
-    }
-    </script>
-
-    <script type="application/ld+json">
+    },
     {
-      "@context": "https://schema.org",
-      "@type": "CreativeWork",
-      "name": "The Eyes Chico",
-      "url": "https://sinaida.eu/work/the-eyes-chico",
-      "sameAs": "https://the-eyes-chico.sinaida.eu/",
-      "dateCreated": "2026-07",
-      "description": "An acrylic painting by Alisa Feer translated into an interactive field: a soul-shaped figure crossing a field of eyes and poppies, meeting fifty questions about selfhood. Exists as a live hand-tracked web experience and as a projection installation available for its first public showing.",
-      "creator": [
+      "@type": [
+        "WebPage",
+        "ProfilePage"
+      ],
+      "@id": "https://sinaida.eu/#webpage",
+      "url": "https://sinaida.eu/",
+      "name": "Sinaida Krivchenko | New media artist · Interactive projections & stage visuals · Prague",
+      "description": "Sinaida Krivchenko is a Prague-based new media artist: real-time TouchDesigner and GLSL systems for stage visuals, projections, and audio-reactive performance.",
+      "isPartOf": {
+        "@id": "https://sinaida.eu/#website"
+      },
+      "about": {
+        "@id": "https://sinaida.eu/#person"
+      },
+      "mainEntity": {
+        "@id": "https://sinaida.eu/#person"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://sinaida.eu/og-cover-1200x630.jpg"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://sinaida.eu/#works",
+      "name": "Selected work",
+      "itemListElement": [
         {
-          "@type": "Person",
-          "name": "Alisa Feer",
-          "url": "https://uvaliss.ru/"
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "CreativeWork",
+            "@id": "https://sinaida.eu/work/redkie-ptitsy/#work",
+            "name": "Redkie Ptitsy: Live Concert Visuals",
+            "description": "Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song",
+            "url": "https://sinaida.eu/work/redkie-ptitsy/"
+          }
         },
         {
-          "@type": "Person",
-          "name": "Sinaida Krivchenko",
-          "url": "https://sinaida.eu/"
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "CreativeWork",
+            "@id": "https://sinaida.eu/work/the-eyes-chico/#work",
+            "name": "The Eyes Chico",
+            "description": "Acrylic painting turned playable web experience & projection installation · with Alisa Feer",
+            "url": "https://sinaida.eu/work/the-eyes-chico/"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@type": "CreativeWork",
+            "@id": "https://sinaida.eu/work/aether-currents/#work",
+            "name": "Aether Currents",
+            "description": "Browser instrument played with bare hands · with Telefm",
+            "url": "https://sinaida.eu/work/aether-currents/"
+          }
         }
       ]
     }
+  ]
+}
     </script>
 
-    <link rel="preload" href="/fonts/vt323-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <script type="module" crossorigin src="/assets/index-COglDmk6.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D_gDlmZd.css">
+    <link rel="preload" href="/fonts/geist-pixel-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <script type="module" crossorigin src="/assets/index-DH-FZbpN.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CJCTx9FN.css">
   </head>
   <body>
     <div id="root"></div>
 
-    <!-- SEO: Structured content for crawlers. This site uses React — the following provides readable content for search engines and AI agents that do not execute JavaScript. -->
-    <noscript>
+    <!-- SEO: Structured content for crawlers. This site uses React, so the
+         following provides readable content for search engines and AI agents
+         that do not execute JavaScript.
+
+         The id="page-fallback" attribute is the hook scripts/prerender-routes.mjs
+         replaces against, so it must stay. This copy is the homepage's own
+         fallback and is left alone by the build; every other route gets its own
+         content generated from src/data/projects.ts. Before that, every route
+         shipped this same homepage text, so a crawler reading
+         /work/redkie-ptitsy/ without JS saw nothing of that case study. -->
+    <noscript id="page-fallback">
       <main>
-        <h1>Sinaida Krivchenko — New media artist</h1>
-        <p>Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Background in biomedical engineering (MSc) and corporate IT leadership across four countries (General Electric). Now creating visual worlds for stages, exhibitions, and cultural institutions.</p>
+        <h1>Sinaida Krivchenko | New media artist</h1>
+        <p>Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Background in biomedical engineering (MSc) and corporate IT leadership across four countries (General Electric). Now creating visual worlds for stages, exhibitions, and cultural institutions.</p>
 
         <h2>Services</h2>
         <ul>
-          <li>Generative AI visual direction — campaign imagery, key art, and production visuals directed to the specific aesthetic of each project</li>
-          <li>Stage and projection design — real-time generative environments for live performance using TouchDesigner</li>
-          <li>Creative direction for cultural institutions — visual identity, digital infrastructure, and audience strategy</li>
-          <li>Immersive installation design — interactive and responsive visual systems for exhibitions and events</li>
-          <li>Digital content and social campaigns — cinematic short-form content for arts organisations</li>
+          <li>Generative AI visual direction: campaign imagery, key art, and production visuals directed to the specific aesthetic of each project</li>
+          <li>Stage and projection design: real-time generative environments for live performance using TouchDesigner</li>
+          <li>Creative direction for cultural institutions: visual identity, digital infrastructure, and audience strategy</li>
+          <li>Immersive installation design: interactive and responsive visual systems for exhibitions and events</li>
+          <li>Digital content and social campaigns: cinematic short-form content for arts organisations</li>
         </ul>
 
         <h2>Selected Work</h2>
         <ul>
-          <li><a href="/work/redkie-ptitsy">Redkie Ptitsy — Live Concert Visuals</a> — 9 audio-reactive projections, one per song, live at Sklad №3, Moscow, 26 March 2026</li>
-          <li><a href="/work/the-eyes-chico">The Eyes Chico</a> — acrylic painting by Alisa Feer turned playable web experience and immersive projection installation, live at the-eyes-chico.sinaida.eu</li>
-          <li>Ethereal Path — off-axis WebGL descent steered by head and hand movement; the body is the controller</li>
-          <li>Stereolove — head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume</li>
-          <li>Submerged Realities — projection mapping study, AI-generated aesthetics mapped onto fluid surfaces</li>
-          <li>Mahler — The Orchestrator — a multi-model orchestrator for Claude, maximizing ROI on tokens</li>
+          <li><a href="/work/redkie-ptitsy">Redkie Ptitsy: Live Concert Visuals</a>, 9 audio-reactive projections, one per song, live at Sklad №3, Moscow, 26 March 2026</li>
+          <li><a href="/work/the-eyes-chico">The Eyes Chico</a>: acrylic painting by Alisa Feer turned playable web experience and immersive projection installation, live at the-eyes-chico.sinaida.eu</li>
+          <li>Ethereal Path: off-axis WebGL descent steered by head and hand movement; the body is the controller</li>
+          <li>Stereolove, head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume</li>
+          <li>Submerged Realities: projection mapping study, AI-generated aesthetics mapped onto fluid surfaces</li>
+          <li>Mahler: The Orchestrator, a multi-model orchestrator for Claude, maximizing ROI on tokens</li>
         </ul>
 
         <h2>Capabilities</h2>

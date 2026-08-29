@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- cd0000 — --sinaida-red. Browser chrome can't read CSS vars, so the
+    <!-- cd0000 is --sinaida-red. Browser chrome can't read CSS vars, so the
          literal has to stay, but it must stay the same literal as the token.
 
          Three tags, because one is not enough to actually tint iOS Safari:
@@ -57,7 +57,7 @@
          See docs/audits/sinaida-eu-audit-2026-07-24-b.md. -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>Redkie Ptitsy — Live Concert Visuals — Case Study | sin.ai.da</title>
+    <title>Redkie Ptitsy: Live Concert Visuals · Case Study | sin.ai.da</title>
     <meta name="description" content="Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song. Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the…">
     <meta name="keywords" content="new media artist, interactive projections, stage visuals, TouchDesigner, GLSL, audio-reactive visuals, projection mapping, immersive installations, digital art, Prague, live performance, cultural institutions">
     <meta name="author" content="Sinaida Krivchenko">
@@ -65,7 +65,7 @@
     <link rel="canonical" href="https://sinaida.eu/work/redkie-ptitsy/">
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Redkie Ptitsy — Live Concert Visuals — Case Study | sin.ai.da">
+    <meta property="og:title" content="Redkie Ptitsy: Live Concert Visuals · Case Study | sin.ai.da">
     <meta property="og:description" content="Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song. Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the…">
     <meta property="og:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
     <meta property="og:image:width" content="1200">
@@ -74,26 +74,66 @@
     <meta property="og:url" content="https://sinaida.eu/work/redkie-ptitsy/">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Redkie Ptitsy — Live Concert Visuals — Case Study | sin.ai.da">
+    <meta name="twitter:title" content="Redkie Ptitsy: Live Concert Visuals · Case Study | sin.ai.da">
     <meta name="twitter:description" content="Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song. Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the…">
     <meta name="twitter:image" content="https://sinaida.eu/og-cover-1200x630.jpg">
     <meta name="twitter:image:alt" content="An ECG trace rendered in red particles against black, the sin.ai.da visual signature.">
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Sinaida Krivchenko",
-      "jobTitle": "New media artist",
-      "description": "Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.",
-      "url": "https://sinaida.eu/",
+    <!-- One JSON-LD graph per page, generated at build time by
+         scripts/prerender-routes.mjs. The id="ld-graph" attribute is the hook
+         that script replaces against, so it must stay.
 
+         The block below is the dev-server placeholder and the shape the build
+         overwrites: WebSite + Person + WebPage, connected by @id. On a work
+         page the build adds a BreadcrumbList and the CreativeWork for that
+         specific work; on "/" it adds the ItemList of selected works.
+
+         This used to be two independent blocks: a Person, and a CreativeWork
+         for The Eyes Chico. Because every route is a clone of this file, that
+         second block travelled to every other case page and declared each of
+         them to be The Eyes Chico. Per-route generation is what fixed it —
+         hand-editing here cannot, so add nothing to this block that is not
+         true of every page. -->
+    <script type="application/ld+json" id="ld-graph">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://sinaida.eu/#website",
+      "url": "https://sinaida.eu/",
+      "name": "Sinaida Krivchenko",
+      "alternateName": "sin.ai.da",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://sinaida.eu/#person"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://sinaida.eu/#person",
+      "name": "Sinaida Krivchenko",
+      "alternateName": "sin.ai.da",
+      "jobTitle": "New media artist",
+      "description": "Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.",
+      "url": "https://sinaida.eu/",
+      "image": "https://sinaida.eu/og-cover-1200x630.jpg",
       "sameAs": [
         "https://www.instagram.com/sin.ai.da/",
         "https://www.linkedin.com/in/sinaida",
-        "https://www.behance.net/sinaida"
+        "https://www.behance.net/sinaida",
+        "https://github.com/sinaida-space"
       ],
-      "knowsAbout": ["TouchDesigner", "GLSL", "Projection Mapping", "Interactive Installations", "Audio-Reactive Visuals", "Stage Visuals", "Creative Direction", "Digital Art"],
+      "knowsAbout": [
+        "TouchDesigner",
+        "GLSL",
+        "Projection Mapping",
+        "Interactive Installations",
+        "Audio-Reactive Visuals",
+        "Stage Visuals",
+        "Creative Direction",
+        "Digital Art"
+      ],
       "alumniOf": {
         "@type": "Organization",
         "name": "Bauman Moscow State Technical University, General Electric IT Leadership Program"
@@ -103,72 +143,116 @@
         "addressLocality": "Prague",
         "addressCountry": "CZ"
       }
-    }
-    </script>
-
-    <script type="application/ld+json">
+    },
     {
-      "@context": "https://schema.org",
-      "@type": "CreativeWork",
-      "name": "The Eyes Chico",
-      "url": "https://sinaida.eu/work/the-eyes-chico",
-      "sameAs": "https://the-eyes-chico.sinaida.eu/",
-      "dateCreated": "2026-07",
-      "description": "An acrylic painting by Alisa Feer translated into an interactive field: a soul-shaped figure crossing a field of eyes and poppies, meeting fifty questions about selfhood. Exists as a live hand-tracked web experience and as a projection installation available for its first public showing.",
-      "creator": [
+      "@type": "WebPage",
+      "@id": "https://sinaida.eu/work/redkie-ptitsy/#webpage",
+      "url": "https://sinaida.eu/work/redkie-ptitsy/",
+      "name": "Redkie Ptitsy: Live Concert Visuals · Case Study | sin.ai.da",
+      "description": "Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song. Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the…",
+      "isPartOf": {
+        "@id": "https://sinaida.eu/#website"
+      },
+      "about": {
+        "@id": "https://sinaida.eu/work/redkie-ptitsy/#work"
+      },
+      "mainEntity": {
+        "@id": "https://sinaida.eu/work/redkie-ptitsy/#work"
+      },
+      "breadcrumb": {
+        "@id": "https://sinaida.eu/work/redkie-ptitsy/#breadcrumb"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://sinaida.eu/og-cover-1200x630.jpg"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://sinaida.eu/work/redkie-ptitsy/#breadcrumb",
+      "itemListElement": [
         {
-          "@type": "Person",
-          "name": "Alisa Feer",
-          "url": "https://uvaliss.ru/"
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://sinaida.eu/"
         },
         {
-          "@type": "Person",
-          "name": "Sinaida Krivchenko",
-          "url": "https://sinaida.eu/"
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Redkie Ptitsy: Live Concert Visuals",
+          "item": "https://sinaida.eu/work/redkie-ptitsy/"
         }
       ]
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "https://sinaida.eu/work/redkie-ptitsy/#work",
+      "name": "Redkie Ptitsy: Live Concert Visuals",
+      "headline": "Redkie Ptitsy",
+      "description": "Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine unique audio-reactive projections, one crafted for each song, ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.",
+      "abstract": "Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song",
+      "url": "https://sinaida.eu/work/redkie-ptitsy/",
+      "genre": "Stage",
+      "keywords": "TouchDesigner, Audio analysis, Live signal chain",
+      "creator": {
+        "@id": "https://sinaida.eu/#person"
+      },
+      "author": {
+        "@id": "https://sinaida.eu/#person"
+      },
+      "contributor": [
+        {
+          "@type": "MusicGroup",
+          "name": "Redkie Ptitsy",
+          "url": "https://band.link/redkieptitsy"
+        }
+      ],
+      "isPartOf": {
+        "@id": "https://sinaida.eu/#website"
+      },
+      "mainEntityOfPage": {
+        "@id": "https://sinaida.eu/work/redkie-ptitsy/#webpage"
+      },
+      "inLanguage": "en"
     }
+  ]
+}
     </script>
 
-    <link rel="preload" href="/fonts/vt323-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <script type="module" crossorigin src="/assets/index-COglDmk6.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D_gDlmZd.css">
+    <link rel="preload" href="/fonts/geist-pixel-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <script type="module" crossorigin src="/assets/index-DH-FZbpN.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CJCTx9FN.css">
   </head>
   <body>
     <div id="root"></div>
 
-    <!-- SEO: Structured content for crawlers. This site uses React — the following provides readable content for search engines and AI agents that do not execute JavaScript. -->
-    <noscript>
+    <!-- SEO: Structured content for crawlers. This site uses React, so the
+         following provides readable content for search engines and AI agents
+         that do not execute JavaScript.
+
+         The id="page-fallback" attribute is the hook scripts/prerender-routes.mjs
+         replaces against, so it must stay. This copy is the homepage's own
+         fallback and is left alone by the build; every other route gets its own
+         content generated from src/data/projects.ts. Before that, every route
+         shipped this same homepage text, so a crawler reading
+         /work/redkie-ptitsy/ without JS saw nothing of that case study. -->
+    <noscript id="page-fallback">
       <main>
-        <h1>Sinaida Krivchenko — New media artist</h1>
-        <p>Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Background in biomedical engineering (MSc) and corporate IT leadership across four countries (General Electric). Now creating visual worlds for stages, exhibitions, and cultural institutions.</p>
-
-        <h2>Services</h2>
-        <ul>
-          <li>Generative AI visual direction — campaign imagery, key art, and production visuals directed to the specific aesthetic of each project</li>
-          <li>Stage and projection design — real-time generative environments for live performance using TouchDesigner</li>
-          <li>Creative direction for cultural institutions — visual identity, digital infrastructure, and audience strategy</li>
-          <li>Immersive installation design — interactive and responsive visual systems for exhibitions and events</li>
-          <li>Digital content and social campaigns — cinematic short-form content for arts organisations</li>
-        </ul>
-
-        <h2>Selected Work</h2>
-        <ul>
-          <li><a href="/work/redkie-ptitsy">Redkie Ptitsy — Live Concert Visuals</a> — 9 audio-reactive projections, one per song, live at Sklad №3, Moscow, 26 March 2026</li>
-          <li><a href="/work/the-eyes-chico">The Eyes Chico</a> — acrylic painting by Alisa Feer turned playable web experience and immersive projection installation, live at the-eyes-chico.sinaida.eu</li>
-          <li>Ethereal Path — off-axis WebGL descent steered by head and hand movement; the body is the controller</li>
-          <li>Stereolove — head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume</li>
-          <li>Submerged Realities — projection mapping study, AI-generated aesthetics mapped onto fluid surfaces</li>
-          <li>Mahler — The Orchestrator — a multi-model orchestrator for Claude, maximizing ROI on tokens</li>
-        </ul>
-
-        <h2>Capabilities</h2>
-        <p>TouchDesigner, Midjourney, Generative AI Systems, Real-time audio-reactive visuals, Procedural animation, AI-assisted visual pipelines, Post-production and color grading, Creative technology strategy, Visual narrative development, Biomedical engineering (MSc), Systems design thinking, Algorithmic visual systems, Creative web development.</p>
-
-        <h2>Contact</h2>
-        <p>Based in Prague, working globally. Available for immersive installations, creative direction, release assets, stage visuals, exhibition design, and generative art commissions.</p>
-        <p>Instagram: instagram.com/sin.ai.da</p>
-        <p>LinkedIn: linkedin.com/in/sinaida</p>
+        <nav aria-label="Breadcrumb">
+          <a href="/">Home</a> › Redkie Ptitsy: Live Concert Visuals
+        </nav>
+        <h1>Redkie Ptitsy: Live Concert Visuals</h1>
+        <p>Live at Sklad №3, Moscow · 26 March 2026 · 9 projections, one per song</p>
+        <p>Performed live on 26 March 2026 at Sklad №3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine unique audio-reactive projections, one crafted for each song, ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.</p>
+        <h2>Audio-reactive projections, one per song: 9</h2>
+        <p>A full-set backdrop: each song in the set got its own real-time TouchDesigner system, built to listen to the live mix and respond in the room. No two songs share a look.</p>
+        <h2>Built with</h2>
+        <p>TouchDesigner, Audio analysis, Live signal chain</p>
+        <h2>What a festival can order</h2>
+        <p>Book the same signal chain for your stage: live audio in, real-time TouchDesigner per song, projected on the night, built for your show.</p>
+        <p><a href="/collaborate/">Work with Sinaida Krivchenko</a></p>
       </main>
     </noscript>
 
