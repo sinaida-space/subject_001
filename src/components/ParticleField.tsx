@@ -510,24 +510,36 @@ function Particles({ subtle = false }: ParticleFieldProps) {
 
 export default function ParticleField({ subtle = false }: ParticleFieldProps) {
   return (
-    <div className="fixed inset-0 z-0" style={{ filter: 'blur(0.5px)' }}>
-      <Canvas
-        camera={{ position: [0, 0, 7], fov: 60 }}
-        gl={{ antialias: false, alpha: true }}
-        style={{ background: 'transparent' }}
-        dpr={[1, 1.5]}
-      >
-        <ForceViewportSize />
-        <Particles subtle={subtle} />
-        <EffectComposer>
-          <Bloom
-            intensity={subtle ? 1.1 : 2.2}
-            luminanceThreshold={0.02}
-            luminanceSmoothing={0.9}
-            mipmapBlur
-          />
-        </EffectComposer>
-      </Canvas>
-    </div>
+    <>
+      <div className="fixed inset-0 z-0" style={{ filter: 'blur(0.5px)' }}>
+        <Canvas
+          camera={{ position: [0, 0, 7], fov: 60 }}
+          gl={{ antialias: false, alpha: true }}
+          style={{ background: 'transparent' }}
+          dpr={[1, 1.5]}
+        >
+          <ForceViewportSize />
+          <Particles subtle={subtle} />
+          <EffectComposer>
+            <Bloom
+              intensity={subtle ? 1.1 : 2.2}
+              luminanceThreshold={0.02}
+              luminanceSmoothing={0.9}
+              mipmapBlur
+            />
+          </EffectComposer>
+        </Canvas>
+      </div>
+      {/* CRT/VHS pass over the star field — scanlines, vignette, grain, and a
+          slow flicker. Ported from the Soulstice backdrop. A deliberately
+          constant, low-amplitude layer (the sanctioned exception to the motion
+          law); the flicker is frozen under prefers-reduced-motion. Sits outside
+          the blur wrapper on its own z-0 sibling so it paints crisply above the
+          canvas but still behind content. */}
+      <div
+        className={`crt-overlay${subtle ? ' crt-subtle' : ''}`}
+        aria-hidden="true"
+      />
+    </>
   );
 }
