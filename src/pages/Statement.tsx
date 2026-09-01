@@ -17,12 +17,11 @@ const LEDE =
 // flipping everything at once. Order here is the order it sweeps.
 const PARAGRAPHS = [
   'Every language I learned well enough to be fluent in still had a territorial border around it. A body moving in a room has never needed that permission, and neither has light or sound. And no room makes sense if there is nobody in it. What I want out of a piece is a shared memory, something a group of strangers can carry out of a space together, having arrived at it without a common vocabulary.',
-  'My background in engineering gave me a fascination with systems; ballet taught me to listen to bodies, spaces and other people. I build the rules, and the audience completes the work. A force I write makes particles fall and the whole causal chain stays in my hands, until somebody walks in and it stops resolving the way I planned. The small glitches are where that shows, and they are the reason the whole thing reads as living.',
+  'My background in engineering gave me a fascination with systems; ballet taught me to listen to bodies, spaces and other people. I build the structure, and the audience completes the work. The small glitches are where that shows, and they are the reason the whole thing reads as living.',
 ];
 
 const CLOSING = [
-  'The machine can do almost all of this alone. The person standing in front of it is the reason any of it ever happens. We are still a biological species and we still need each other, and we are losing the thread to other people and to ourselves at the same speed. My work is here to put humans back in a room with other humans, and to give them something that only opens if they move.',
-  'If a machine can generate a thousand images while you sleep, what were we valuing in a picture all along? If a system returns something nobody specified, whose work is it? When a projection answers your movement, are you the audience or the instrument?',
+  'The machines can do almost all of this alone. The person standing in front of it is the reason any of it ever happens.',
 ];
 
 const BODY_CLASS = 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87]';
