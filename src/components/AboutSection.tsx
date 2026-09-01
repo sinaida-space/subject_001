@@ -213,12 +213,13 @@ function PhotoBlock() {
       </div>
       <span className="block font-mono mt-2" style={{ fontSize: 20, color: 'hsl(var(--accent))', opacity: 0.8, letterSpacing: '0.3em' }}>
         SINAIDA
+        <span style={{ fontSize: 12, color: 'hsl(var(--foreground) / 0.4)', letterSpacing: '0.04em', marginLeft: 8 }}>(she/her)</span>
       </span>
       <span className="block font-mono mt-1" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.6)', letterSpacing: '0.1em' }}>
         NEW MEDIA ARTIST
       </span>
-      <span className="block font-mono mt-3" style={{ fontSize: 20, color: 'hsl(var(--foreground) / 0.55)', letterSpacing: '0.02em' }}>
-        Photo by Roland Gaedtgens from Zhembrovskyy performance
+      <span className="block font-mono mt-4" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.32)', letterSpacing: '0.02em' }}>
+        Photo: Roland Gaedtgens · Zhembrovskyy
       </span>
     </div>
   );
