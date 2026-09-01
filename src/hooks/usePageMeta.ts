@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 // Every previous value is restored on unmount so navigating away (e.g. back
 // to "/") doesn't leave a stale title/description/canonical behind.
 
-export const SITE_NAME = 'sin.ai.da';
+export const SITE_NAME = 'Sinaida Krivchenko';
 
 interface PageMetaOptions {
   title: string;

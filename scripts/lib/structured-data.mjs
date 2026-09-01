@@ -23,7 +23,7 @@
 // date here would be a guess dressed as a fact. Freshness is signalled through
 // sitemap lastmod instead, where being file-derived is the expected contract.
 
-import { SITE_URL, SITE_NAME, AUTHOR_NAME, WEBSITE_ID, PERSON_ID } from './site-data.mjs';
+import { SITE_URL, AUTHOR_NAME, WEBSITE_ID, PERSON_ID } from './site-data.mjs';
 
 const OG_IMAGE = `${SITE_URL}/og-cover-1200x630.jpg`;
 
@@ -31,7 +31,6 @@ const PERSON_NODE = {
   '@type': 'Person',
   '@id': PERSON_ID,
   name: AUTHOR_NAME,
-  alternateName: 'sin.ai.da',
   jobTitle: 'New media artist',
   description:
     'Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.',
@@ -69,7 +68,6 @@ const WEBSITE_NODE = {
   '@id': WEBSITE_ID,
   url: `${SITE_URL}/`,
   name: AUTHOR_NAME,
-  alternateName: SITE_NAME,
   inLanguage: 'en',
   publisher: { '@id': PERSON_ID },
 };

@@ -148,7 +148,7 @@ export default function Logo({
 
   const name = (
     <span className="font-display text-lg font-light tracking-widest text-foreground uppercase">
-      sin<span className="text-primary">.</span>ai<span className="text-primary">.</span>da
+      sinaida
     </span>
   );
 

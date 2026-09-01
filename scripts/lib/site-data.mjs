@@ -25,7 +25,7 @@ export const DIST_DIR = join(REPO_ROOT, 'dist');
 const PROJECTS_FILE = join(REPO_ROOT, 'src', 'data', 'projects.ts');
 
 export const SITE_URL = 'https://sinaida.eu';
-export const SITE_NAME = 'sin.ai.da';
+export const SITE_NAME = 'Sinaida Krivchenko';
 export const AUTHOR_NAME = 'Sinaida Krivchenko';
 
 /** Stable JSON-LD node ids. Everything else in a graph points at these. */

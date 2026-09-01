@@ -292,7 +292,7 @@ export default function NotFound() {
             className="font-mono text-xs uppercase tracking-widest"
             style={{ color: 'hsl(var(--foreground) / 0.2)', letterSpacing: '0.25em' }}
           >
-            sin.ai.da · prague · {new Date().getFullYear()}
+            sinaida · prague · {new Date().getFullYear()}
           </div>
         </div>
       </div>

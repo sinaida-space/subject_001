@@ -229,7 +229,7 @@ export default function Header() {
         </button>
 
         <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 20, color: 'hsl(var(--primary-legible))', letterSpacing: '0.15em' }}>
-          sin.ai.da · Prague
+          sinaida · Prague
         </div>
       </div>
     </>
