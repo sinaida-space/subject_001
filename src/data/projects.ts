@@ -404,7 +404,7 @@ export const PROJECTS: Project[] = [
       "The browser estimates the viewer’s head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass: op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
     tools: ['Web', 'MediaPipe face & hand tracking'],
     skills: ['creative-web', 'body-tracking', 'perception-media', 'human-ai', 'concept-design', 'interactive-installations'],
-    url: 'https://sinaida-space.github.io/stereolove/?v=768a0af',
+    url: 'https://sinaida-space.github.io/stereolove/',
     video: 'jQy4Kk70hxM',
     image: workStereolove,
     links: [
