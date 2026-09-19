@@ -9,7 +9,7 @@ export type Category = 'tech' | 'direction' | 'strategy' | 'research' | 'analyti
 // Single source of truth for the constellation's off-white — canvas/SVG fill
 // attributes here can't resolve CSS custom properties, so this is the one
 // place the literal lives; everything else (ConstellationFull/Lite) imports
-// it instead of re-typing the hex. See docs/design-system.md.
+// it instead of re-typing the hex. See private/docs/design-system.md.
 export const OFF_WHITE = '#f2efe9';
 
 // A single red→off-white ramp, not a rainbow — categories read by
