@@ -23,7 +23,7 @@
 
 @layer base {
   :root {
-    /* Void — see docs/design-system.md */
+    /* Void — see private/docs/design-system.md */
     --background: 0 0% 2%;
     --foreground: 0 0% 88%;
 
@@ -34,7 +34,7 @@
     --popover-foreground: 0 0% 88%;
 
     /* cd0000 — THE single brand red. Every other red token/hardcoded value
-       in the codebase should point back to this one. See docs/design-system.md. */
+       in the codebase should point back to this one. See private/docs/design-system.md. */
     --sinaida-red: 0 100% 40%;
 
     --primary: var(--sinaida-red);
@@ -70,12 +70,12 @@
 
     --neon-magenta: 320 100% 55%;
     --neon-glow: var(--sinaida-red);
-    /* Cathode — was --clinical, same value. See docs/design-system.md. */
+    /* Cathode — was --clinical, same value. See private/docs/design-system.md. */
     --cathode: 180 15% 70%;
     --particle-white: 40 67% 96%;
     --bloom-cyan: 0 100% 49%;
 
-    /* Gray scale — Graphite → Haze. See docs/design-system.md. */
+    /* Gray scale — Graphite → Haze. See private/docs/design-system.md. */
     --graphite: 0 0% 15%;
     --gunmetal: 0 0% 30%;
     --slate: 0 0% 45%;
@@ -108,7 +108,7 @@
      HSL tokens everything else already renders through, so it doesn't need
      a parallel set of components. */
   html[data-mode="lite"] {
-    /* Chalk — see docs/design-system.md */
+    /* Chalk — see private/docs/design-system.md */
     --background: 0 0% 96%;
     --foreground: 0 0% 8%;
     --card: 0 0% 96%;
@@ -124,7 +124,7 @@
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 15%;
     /* Deliberately not the brand red: lite mode is a flat black-and-white
-       read mode with no color and no motion by design. See docs/design-system.md. */
+       read mode with no color and no motion by design. See private/docs/design-system.md. */
     --accent: 0 0% 8%;
     --accent-foreground: 0 0% 100%;
     --border: 0 0% 85%;
