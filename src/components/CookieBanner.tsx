@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { notifyCookieBannerAcknowledged } from '@/lib/cookieBannerVisibility';
+import { notifyCookieBannerAcknowledged, notifyCookieBannerAway } from '@/lib/cookieBannerVisibility';
 
 // Bump this when the Privacy Policy's substance changes, so an acknowledgement
 // recorded against an older disclosure can be told apart from one against the
@@ -25,6 +25,21 @@ export function resetStorageNotice() {
 
 const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
+  // The notice is informational (no choice is asked, nothing non-essential is
+  // stored), so scrolling is enough to move it out of the way.
+  const [away, setAway] = useState(false);
+
+  useEffect(() => {
+    if (!isVisible || away) return;
+    const onScroll = () => {
+      if (window.scrollY > 24) {
+        setAway(true);
+        notifyCookieBannerAway();
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isVisible, away]);
 
   useEffect(() => {
     try {
@@ -67,7 +82,7 @@ const CookieBanner = () => {
     <div
       role="region"
       aria-label="Cookie notice"
-      className="notice-surface fixed bottom-0 left-0 right-0 z-50 py-4"
+      className={`notice-surface fixed bottom-0 left-0 right-0 z-50 py-4${away ? ' notice-surface--away' : ''}`}
     >
       {/* Same container and gutter as Footer.tsx, so the notice's text starts
           on the site's own left edge instead of a narrower one of its own. */}
