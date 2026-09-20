@@ -63,6 +63,15 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           </span>
         </button>
       )}
+      {/* The poster is ours, the player is YouTube's. Small, translucent, laid
+          over the bottom of the preview so it reads as part of the frame and
+          not as page copy; it lets clicks through to the play button. Gone once
+          the player is up. */}
+      {!playing && (
+        <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-1.5 pt-5 text-right font-mono text-[8px] leading-tight text-white/55">
+          Pressing play leaves sinaida.eu. The video is played by YouTube (Google), which may set its own cookies.
+        </p>
+      )}
     </div>
   );
 }

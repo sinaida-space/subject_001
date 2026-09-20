@@ -115,7 +115,7 @@ export const DARIA_PROJECTS: ExperienceProject[] = [
 export const SINAIDA_VIDEOS: ExperienceVideo[] = [
   {
     id: 'bDDAXRlz5FQ',
-    title: 'Redkie Ptitsy, live at Sklad №3',
+    title: 'Redkie Ptitsy, live at Sklad No. 3',
     caseHref: '/work/redkie-ptitsy',
     caption: 'A commissioned real-time interactive system for a live concert in Moscow: nine audio-reactive projections, one per song, listening to the mix straight from the desk.',
   },

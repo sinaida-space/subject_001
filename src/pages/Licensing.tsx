@@ -231,7 +231,7 @@ const Licensing = () => {
           <H2>Live and commissioned work</H2>
           <p className="text-muted-foreground">
             Stage visuals and installations made for other people carry rights that are
-            not&nbsp;mine. Documentation of the Redkie Ptitsy set at Sklad&nbsp;№3
+            not&nbsp;mine. Documentation of the Redkie Ptitsy set at Sklad&nbsp;No.&nbsp;3
             contains the band&rsquo;s music and their performance, and any use of that
             footage needs their permission as well as&nbsp;mine. The same holds for
             client and venue work generally.
