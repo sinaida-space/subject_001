@@ -95,17 +95,26 @@ const DRIFT_VARIANTS = ['a', 'b', 'c', 'd'];
 // visual line is emitted as several Letters calls (the eyebrow is three: name,
 // separator, role). Without it each call would restart the 4-path cycle at
 // 'a', which is not what the original :nth-child counting did.
-function Letters({ text, prefix, indexOffset = 0 }: { text: string; prefix: string; indexOffset?: number }) {
+//
+// `settled` is the string the reveal ends on. The scramble swaps in noise glyphs
+// of different widths (the face is proportional), which used to re-wrap the
+// line dozens of times a second (CLS 0.29). While a glyph is still noise, its
+// settled character stays in the layout invisibly and the noise is drawn on top.
+function Letters({ text, settled = text, prefix, indexOffset = 0 }: { text: string; settled?: string; prefix: string; indexOffset?: number }) {
   // Split on whitespace but keep it: the separators are rendered, just not as
   // part of any word.
-  const parts = text.split(/(\s+)/).filter((part) => part !== '');
+  const chars = [...text];
+  const parts = settled.split(/(\s+)/).filter((part) => part !== '');
   let charIndex = indexOffset;
+  let local = 0; // position inside `text`, without indexOffset
 
   return (
     <>
       {parts.map((part, p) => {
         const start = charIndex;
+        const localStart = local;
         charIndex += part.length;
+        local += part.length;
 
         if (/^\s+$/.test(part)) {
           return (
@@ -125,7 +134,12 @@ function Letters({ text, prefix, indexOffset = 0 }: { text: string; prefix: stri
                 className={`hero-ltr hero-ltr-${DRIFT_VARIANTS[(start + i) % DRIFT_VARIANTS.length]}`}
                 style={{ animationDelay: `${((start + i) * 0.05).toFixed(2)}s` }}
               >
-                {ch}
+                {chars[localStart + i] === ch ? ch : (
+                  <>
+                    <span className="hero-sizer">{ch}</span>
+                    <span className="hero-noise">{chars[localStart + i]}</span>
+                  </>
+                )}
               </span>
             ))}
           </span>
@@ -146,14 +160,16 @@ function Letters({ text, prefix, indexOffset = 0 }: { text: string; prefix: stri
 const SEPARATOR = ' | ';
 
 function EyebrowLayer({ name, role, prefix }: { name: string; role: string; prefix: string }) {
+  const settledName = EYEBROW.slice(0, NAME.length);
+  const settledRole = EYEBROW.slice(NAME.length + SEPARATOR.length);
   return (
     <>
-      <Letters text={name} prefix={`${prefix}-n`} />
+      <Letters text={name} settled={settledName} prefix={`${prefix}-n`} />
       <span className="hidden md:inline">
         <Letters text={SEPARATOR} prefix={`${prefix}-s`} indexOffset={name.length} />
       </span>
       <br className="md:hidden" />
-      <Letters text={role} prefix={`${prefix}-r`} indexOffset={name.length + SEPARATOR.length} />
+      <Letters text={role} settled={settledRole} prefix={`${prefix}-r`} indexOffset={name.length + SEPARATOR.length} />
     </>
   );
 }
@@ -298,21 +314,21 @@ export default function HeroSection() {
               for the first ~860 ms. */}
           <span className="sr-only">{`${LINE_A} ${LINE_B}`}</span>
           <span className="hero-layer hero-layer-base" aria-hidden="true">
-            <Letters text={headA} prefix="ha" />
+            <Letters text={headA} settled={LINE_A} prefix="ha" />
             <br className="md:hidden" />
             <span className="neon-glow neon-glow-hero text-primary font-bold">
-              <Letters text={headB} prefix="hb" />
+              <Letters text={headB} settled={LINE_B} prefix="hb" />
             </span>
           </span>
           <span className="hero-layer hero-ghost hero-ghost-red" aria-hidden="true">
-            <Letters text={headA} prefix="hagr" />
+            <Letters text={headA} settled={LINE_A} prefix="hagr" />
             <br className="md:hidden" />
-            <Letters text={headB} prefix="hbgr" />
+            <Letters text={headB} settled={LINE_B} prefix="hbgr" />
           </span>
           <span className="hero-layer hero-ghost hero-ghost-white" aria-hidden="true">
-            <Letters text={headA} prefix="hagw" />
+            <Letters text={headA} settled={LINE_A} prefix="hagw" />
             <br className="md:hidden" />
-            <Letters text={headB} prefix="hbgw" />
+            <Letters text={headB} settled={LINE_B} prefix="hbgw" />
           </span>
         </h1>
       </div>

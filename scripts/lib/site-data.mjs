@@ -268,7 +268,7 @@ export function buildRoutes() {
     kind: 'page',
     title: `Work with me | ${AUTHOR_NAME}`,
     description:
-      'She takes commissions for stage and projection design, immersive installations, and generative AI visual direction, based in Prague and touring for installs.',
+      'She takes commissions for audio-reactive concert visuals, interactive web, theater and dance scenography, and installations for venues, brands and institutions, based in Prague and touring for installs.',
     canonical: `${SITE_URL}/collaborate/`,
     breadcrumbLabel: 'Work with me',
     indexable: true,
@@ -277,7 +277,7 @@ export function buildRoutes() {
     fallback: {
       heading: 'Work with me',
       paragraphs: [
-        'Sinaida Krivchenko takes commissions for stage and projection design, audio-reactive concert visuals, interactive and immersive installations, generative AI visual direction, and creative direction for cultural institutions. Based in Prague, travelling for installs.',
+        'Sinaida Krivchenko takes commissions for audio-reactive concert visuals, interactive web, theater and dance scenography, and installations for venues, brands and institutions. Based in Prague, travelling for installs.',
       ],
       lists: [
         {

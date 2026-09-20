@@ -89,7 +89,7 @@ export default function Footer() {
                   type="button"
                   onClick={() => toggle()}
                   className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none"
-                  aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
+                  aria-label={`View: ${mode === 'full' ? 'Full' : 'Light'}. Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
                 >
                   View: <span className="text-primary-legible">{mode === 'full' ? 'Full' : 'Light'}</span>
                 </button>
