@@ -960,32 +960,3 @@
 .text-\[15px\] {
   font-size: 16px !important;
 }
-
-/* Browser toolbar tint. Safari 15 to 18 and Chrome for Android read the
-   theme-color meta tag. Safari 26 ignores it and samples `position: fixed`
-   elements hugging the viewport edge, so the two strips live in index.html.
-   Rendered (not display:none) but kept behind the page, Apple browsers only. */
-.browser-tint {
-  position: fixed;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background-color: #cd0000;
-  visibility: hidden;
-  pointer-events: none;
-  z-index: -2;
-}
-
-@supports (font: -apple-system-body) {
-  .browser-tint {
-    visibility: visible;
-  }
-}
-
-.browser-tint--top {
-  top: 0;
-}
-
-.browser-tint--bottom {
-  bottom: 0;
-}
