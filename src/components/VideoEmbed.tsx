@@ -23,10 +23,14 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
   const [playing, setPlaying] = useState(false);
   return (
     <div
-      className="relative w-full overflow-hidden border border-foreground/10 bg-black mx-auto"
+      className="mx-auto w-full"
+      style={maxHeightVh ? { width: `min(100%, calc(${maxHeightVh}vh * 16 / 9))` } : undefined}
+    >
+    <div
+      className="relative w-full overflow-hidden border border-foreground/10 bg-black"
       style={
         maxHeightVh
-          ? { aspectRatio: '16 / 9', maxHeight: `${maxHeightVh}vh`, width: `min(100%, calc(${maxHeightVh}vh * 16 / 9))` }
+          ? { aspectRatio: '16 / 9', maxHeight: `${maxHeightVh}vh` }
           : { aspectRatio: '16 / 9' }
       }
     >
@@ -63,6 +67,12 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           </span>
         </button>
       )}
+    </div>
+    {/* The poster is ours, the player is YouTube's. Said plainly under every
+        preview so pressing play is an informed step out of this site. */}
+    <p className="mt-2 font-mono text-[11px] leading-snug text-foreground/60">
+      Pressing play leaves sinaida.eu. The video is played by YouTube (Google), which may set its own cookies.
+    </p>
     </div>
   );
 }
