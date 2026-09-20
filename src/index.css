@@ -747,6 +747,27 @@
   /* Lite mode inverts to a white page, where a red bloom would be wrong and a
      backdrop blur costs GPU on exactly the devices lite exists to protect.
      --accent resolves to near-black here, so this stays a plain soft shadow. */
+  /* Slides down and fades once the visitor scrolls (CookieBanner.tsx).
+     visibility flips after the slide so the hidden notice leaves the tab order
+     and the accessibility tree. Lite mode already strips transitions sitewide,
+     so there it simply disappears. */
+  .notice-surface {
+    transition: transform 0.35s ease, opacity 0.35s ease, visibility 0s;
+  }
+  .notice-surface--away {
+    transform: translateY(100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.35s ease, opacity 0.35s ease, visibility 0s linear 0.35s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .notice-surface,
+    .notice-surface--away {
+      transition: none;
+    }
+  }
+
   html[data-mode="lite"] .notice-surface {
     background: hsl(var(--card) / 0.96);
     -webkit-backdrop-filter: none;
