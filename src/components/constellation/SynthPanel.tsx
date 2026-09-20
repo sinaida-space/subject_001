@@ -92,7 +92,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, vis
               className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 hover:text-primary"
               aria-label="Close"
             >
-              [ x ]
+              <span aria-hidden="true">[X]</span>
             </button>
           </div>
           <div className="space-y-3 px-4 py-3">

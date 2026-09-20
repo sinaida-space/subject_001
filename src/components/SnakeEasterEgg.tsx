@@ -277,13 +277,14 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
             SNAKE.EXE // SCORE: {score}
           </span>
           <button
+            aria-label="Close"
             onClick={onClose}
             style={{
               fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--slate))',
               background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px'
             }}
           >
-            [ ESC ]
+            <span aria-hidden="true">[X]</span>
           </button>
         </div>
 
