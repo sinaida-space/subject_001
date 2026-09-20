@@ -176,7 +176,7 @@ function Readout({ project }: { project: Project }) {
               <button
                 type="button"
                 onClick={() => setEssayOpen(false)}
-                style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px', whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '12px' }}
               >
                 [ CLOSE ]
               </button>
@@ -263,13 +263,13 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
         aria-label={`${project.title}: project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', lineHeight: 1.15, minWidth: 0, color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
             {headerLabel}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px' }}
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px', whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '12px' }}
           >
             [ CLOSE ]
           </button>

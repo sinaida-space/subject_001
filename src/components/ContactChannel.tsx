@@ -109,7 +109,7 @@ export default function ContactChannel() {
             </div>
 
             {/* CTA — one bold action, two plain links (not competing for attention) */}
-            <div className="flex flex-wrap items-center gap-6 mt-10 mb-12">
+            <div className="flex flex-col items-start gap-5 md:flex-row md:flex-wrap md:items-center md:gap-6 mt-10 mb-12">
               <ObfuscatedMailto
                 label="EMAIL ME ↗"
                 className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
