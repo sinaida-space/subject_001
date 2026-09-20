@@ -175,10 +175,11 @@ function Readout({ project }: { project: Project }) {
               </span>
               <button
                 type="button"
+                aria-label="Close"
                 onClick={() => setEssayOpen(false)}
                 style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px', whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '12px' }}
               >
-                [ CLOSE ]
+                <span aria-hidden="true">[X]</span>
               </button>
             </div>
             <div className="max-h-[75vh] overflow-y-auto p-5 md:p-6">
@@ -236,7 +237,19 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
     };
   }, [onClose]);
 
-  const headerLabel = project.title.toUpperCase();
+  // Titles carry non-breaking spaces so they never split in the body; the
+  // titlebar has to be free to wrap by word next to the close button.
+  const headerLabel = project.title.toUpperCase().replace(/\u00a0/g, ' ');
+  // Long titles read as two balanced lines on phones (SUBMERGED / REALITIES):
+  // break at the space nearest the middle. From md up the line stays whole.
+  const splitAt = (() => {
+    if (headerLabel.length <= 16) return -1;
+    let best = -1;
+    for (let i = 0; i < headerLabel.length; i++) {
+      if (headerLabel[i] === ' ' && (best < 0 || Math.abs(i - headerLabel.length / 2) < Math.abs(best - headerLabel.length / 2))) best = i;
+    }
+    return best;
+  })();
 
   // Portalled to <body> — the Constellation section this opens from sets its
   // own `relative z-10` stacking context, which otherwise trapped this
@@ -264,14 +277,22 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', lineHeight: 1.15, minWidth: 0, color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
-            {headerLabel}
+            {splitAt < 0 ? headerLabel : (
+              <>
+                {headerLabel.slice(0, splitAt)}
+                <br className="md:hidden" />
+                <span className="hidden md:inline"> </span>
+                {headerLabel.slice(splitAt + 1)}
+              </>
+            )}
           </span>
           <button
             type="button"
+            aria-label="Close"
             onClick={onClose}
             style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px', whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '12px' }}
           >
-            [ CLOSE ]
+            <span aria-hidden="true">[X]</span>
           </button>
         </div>
         <div className="max-h-[80vh] overflow-y-auto">
