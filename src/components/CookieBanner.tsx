@@ -31,14 +31,17 @@ const CookieBanner = () => {
 
   useEffect(() => {
     if (!isVisible || away) return;
+    // Capture phase, on document: also catches a scroll inside a nested
+    // scroller, and reads every place a mobile browser may report the offset.
     const onScroll = () => {
-      if (window.scrollY > 24) {
+      const y = window.scrollY || document.scrollingElement?.scrollTop || document.body.scrollTop || 0;
+      if (y > 24) {
         setAway(true);
         notifyCookieBannerAway();
       }
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    return () => document.removeEventListener('scroll', onScroll, true);
   }, [isVisible, away]);
 
   useEffect(() => {
