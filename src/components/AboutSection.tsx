@@ -153,7 +153,7 @@ function PhotoBlock() {
   };
 
   return (
-    <div style={{ width: 260, flexShrink: 0 }} className="mx-auto md:mx-0">
+    <div style={{ flexShrink: 0 }} className="w-[260px] md:w-[220px] lg:w-[260px] mx-auto md:mx-0">
       <div
         onMouseEnter={handleMouseEnter}
         className="photo-frame-wrapper"
@@ -235,8 +235,8 @@ export default function AboutSection() {
             <div className="section-divider mb-16" />
           </DustReveal>
         </Suspense>
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-          <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          <div className="lg:w-[280px] shrink-0 lg:sticky lg:top-[15vh] lg:self-start">
             <Reveal delay={0}>
               {/* h2/p (not div) — matches Services' and Body of Work's own
                   eyebrow+caption markup, so all four sections' labels pick up
@@ -260,7 +260,7 @@ export default function AboutSection() {
                 <span className="text-primary font-bold"> Digital second.</span>
               </h2>
             </Reveal>
-            <div className="flex flex-col md:flex-row items-start gap-12">
+            <div className="flex flex-col md:flex-row items-start gap-12 md:gap-8 lg:gap-12">
               <Reveal delay={150}>
                 <PhotoBlock />
               </Reveal>

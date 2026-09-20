@@ -542,11 +542,19 @@
 
   @media (min-width: 768px) {
     .bio-row {
-      grid-template-columns: 140px 20px 1fr;
+      grid-template-columns: 120px 16px 1fr;
     }
 
     .bio-row > :nth-child(2) {
       display: block;
+    }
+  }
+
+  /* Desktop: the label column is back beside the content, so the leader
+     column gets its full width again. */
+  @media (min-width: 1024px) {
+    .bio-row {
+      grid-template-columns: 140px 20px 1fr;
     }
   }
 
