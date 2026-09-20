@@ -78,15 +78,24 @@ export function RenderModeProvider({ children }: { children: ReactNode }) {
       mode,
       overridden,
       toggle: () => {
-        setMode((m) => {
-          const next: RenderMode = m === 'full' ? 'lite' : 'full';
-          try {
-            localStorage.setItem(STORAGE_KEY, next);
-          } catch {
-            /* ignore */
-          }
-          return next;
-        });
+        const next: RenderMode = mode === 'full' ? 'lite' : 'full';
+        let stored = true;
+        try {
+          localStorage.setItem(STORAGE_KEY, next);
+        } catch {
+          stored = false;
+        }
+        // Lite paints a light page, full a dark one. iOS Safari samples the
+        // colour behind its toolbars once per page load and does not re-sample
+        // when the page recolours, so switching lite to full left a white strip
+        // under the bottom bar. A reload lets it sample the new ground. The
+        // choice is already persisted, so the page comes back in the new mode.
+        // Without storage a reload would drop the choice, so switch in place.
+        if (stored) {
+          window.location.reload();
+          return;
+        }
+        setMode(next);
         setOverridden(true);
       },
     }),
