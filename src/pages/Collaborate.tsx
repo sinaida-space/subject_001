@@ -57,7 +57,7 @@ export default function Collaborate() {
   usePageMeta({
     title: 'Work with me | Sinaida Krivchenko',
     description:
-      'She takes commissions for stage and projection design, immersive installations, and generative AI visual direction, based in Prague and touring for installs.',
+      'She takes commissions for audio-reactive concert visuals, interactive web, theater and dance scenography, and installations for venues, brands and institutions, based in Prague and touring for installs.',
     canonical: 'https://sinaida.eu/collaborate/',
   });
 
@@ -203,7 +203,7 @@ export default function Collaborate() {
           <a
             href="/files/sinaida-krivchenko-cv.pdf"
             download
-            className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+            className="font-mono text-[12px] uppercase tracking-[0.12em] text-primary-legible transition-opacity hover:opacity-70"
           >
             Artist CV (PDF) ↓
           </a>

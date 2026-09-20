@@ -6,11 +6,10 @@ Sinaida Krivchenko is a Prague-based new media artist building living visual sys
 
 ## Services
 
-- Stage and projection design — real-time generative environments for live performance, built in TouchDesigner and GLSL
-- Audio-reactive concert visuals — full visual sets for live music, one look per song, driven live by the sound
-- Interactive and immersive installations — body- and gesture-tracked visual systems (MediaPipe, WebGL) for exhibitions and physical spaces
-- Generative AI visual direction — campaign imagery, key art, and production visuals directed to the specific aesthetic of each project
-- Creative direction for cultural institutions — visual identity, digital infrastructure, and audience strategy
+- Audio-reactive concert visuals — one system per song, listening to the live mix, delivered as a turnkey show or operated live
+- Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound
+- Theater and dance scenography — real-time systems that follow the performers' bodies and the sound, developed with the creative team
+- Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in
 
 ## Selected Work
 

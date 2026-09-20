@@ -28,7 +28,7 @@ function linkifyCredit(text: string) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent underline decoration-accent/40 underline-offset-2 transition-opacity hover:opacity-70"
+        className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70"
       >
         {url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
       </a>,
@@ -262,7 +262,7 @@ export default function WorkCase() {
                           href={p.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-accent underline decoration-accent/40 underline-offset-2 transition-opacity hover:opacity-70"
+                          className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70"
                         >
                           {p.name}
                         </a>
@@ -296,7 +296,7 @@ export default function WorkCase() {
                     href={l.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono text-[12px] uppercase tracking-[0.12em] text-accent transition-opacity hover:opacity-70"
+                    className="font-mono text-[12px] uppercase tracking-[0.12em] text-primary-legible transition-opacity hover:opacity-70"
                   >
                     {l.label} ↗
                   </a>
@@ -311,7 +311,7 @@ export default function WorkCase() {
               </h2>
               <p className="mt-4 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/85">
                 {cs.order.body}{' '}
-                <a href="https://sinaida.eu/collaborate/" className="text-accent transition-opacity hover:opacity-70">
+                <a href="https://sinaida.eu/collaborate/" className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70">
                   Get in touch
                 </a>{' '}
                 {cs.order.suffix}
