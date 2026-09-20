@@ -989,3 +989,36 @@
 .browser-tint--bottom {
   bottom: 0;
 }
+
+/* Phones in Safari: solid red bands above and below the page. Safari 26 tints
+   its toolbars from what hugs the viewport edge, and the 4px strips behind the
+   page were not enough on a real phone. Same fix as Infinite Voidsong: the
+   bands sit over the content, the parts off-screen keep them hugging the edge.
+   The fixed header is pushed below the top band; body padding keeps the first
+   and last lines clear of both. */
+@media (max-width: 768px) and (hover: none) {
+  @supports (font: -apple-system-body) {
+    .browser-tint {
+      z-index: 80;
+    }
+
+    .browser-tint--top {
+      top: -160px;
+      height: calc(160px + 28px);
+    }
+
+    .browser-tint--bottom {
+      bottom: -160px;
+      height: calc(160px + 56px);
+    }
+
+    body {
+      padding-top: 28px;
+      padding-bottom: 56px;
+    }
+
+    header.fixed.top-0 {
+      top: 28px;
+    }
+  }
+}
