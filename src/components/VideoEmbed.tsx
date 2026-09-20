@@ -23,14 +23,10 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
   const [playing, setPlaying] = useState(false);
   return (
     <div
-      className="mx-auto w-full"
-      style={maxHeightVh ? { width: `min(100%, calc(${maxHeightVh}vh * 16 / 9))` } : undefined}
-    >
-    <div
-      className="relative w-full overflow-hidden border border-foreground/10 bg-black"
+      className="relative w-full overflow-hidden border border-foreground/10 bg-black mx-auto"
       style={
         maxHeightVh
-          ? { aspectRatio: '16 / 9', maxHeight: `${maxHeightVh}vh` }
+          ? { aspectRatio: '16 / 9', maxHeight: `${maxHeightVh}vh`, width: `min(100%, calc(${maxHeightVh}vh * 16 / 9))` }
           : { aspectRatio: '16 / 9' }
       }
     >
@@ -67,12 +63,15 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           </span>
         </button>
       )}
-    </div>
-    {/* The poster is ours, the player is YouTube's. Said plainly under every
-        preview so pressing play is an informed step out of this site. */}
-    <p className="mt-2 font-mono text-[11px] leading-snug text-foreground/60">
-      Pressing play leaves sinaida.eu. The video is played by YouTube (Google), which may set its own cookies.
-    </p>
+      {/* The poster is ours, the player is YouTube's. Small, translucent, laid
+          over the bottom of the preview so it reads as part of the frame and
+          not as page copy; it lets clicks through to the play button. Gone once
+          the player is up. */}
+      {!playing && (
+        <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-2 pt-6 font-mono text-[10px] leading-snug text-white/55">
+          Pressing play leaves sinaida.eu. The video is played by YouTube (Google), which may set its own cookies.
+        </p>
+      )}
     </div>
   );
 }
