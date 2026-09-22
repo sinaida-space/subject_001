@@ -171,13 +171,13 @@ function PhotoBlock() {
             <source
               type="image/webp"
               srcSet="/sinaida-photo-600.webp 600w, /sinaida-photo-1200.webp 1200w"
-              sizes="(max-width: 768px) 90vw, 320px"
+              sizes="(max-width: 1023px) 90vw, 320px"
             />
             <img
               ref={imgRef}
               src="/sinaida-photo-600.jpg"
               srcSet="/sinaida-photo-600.jpg 600w, /sinaida-photo-1200.jpg 1200w"
-              sizes="(max-width: 768px) 90vw, 320px"
+              sizes="(max-width: 1023px) 90vw, 320px"
               alt="Sinaida Krivchenko"
               width={600}
               height={600}
