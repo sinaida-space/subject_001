@@ -13,6 +13,10 @@ export default {
   		}
   	},
   	extend: {
+  		// Tablets (portrait up to 1023px) get the phone layout: md starts where lg does.
+  		screens: {
+  			md: '1024px'
+  		},
   		// Geist Pixel is NOT undersized like the previous pixel face was:
   		// measured cap-height at a common px size (canvas ctx.measureText,
   		// 'H' at 100px) is 72.2px for Geist Pixel vs 56px for the old face
