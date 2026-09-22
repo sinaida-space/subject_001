@@ -53,6 +53,7 @@ export default function Footer() {
               <div className="space-y-3.5">
                 {[
                   { label: 'Instagram', url: 'https://www.instagram.com/sin.ai.da/' },
+                  { label: 'YouTube', url: 'https://www.youtube.com/@theSwansAreNotWhatTheySeem' },
                   { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sinaida' },
                   { label: 'GitHub', url: 'https://github.com/sinaida-space' },
                   { label: 'Patreon', url: 'https://www.patreon.com/cw/theswansarenotwhattheyseem' },
