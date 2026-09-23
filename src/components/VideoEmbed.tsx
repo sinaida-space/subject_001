@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import DitheredThumb from '@/components/DitheredThumb';
 
 interface VideoEmbedProps {
   id: string;
@@ -46,14 +47,13 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           className="group absolute inset-0 flex items-center justify-center"
           aria-label={`Play ${title}`}
         >
-          <img
+          {/* Dithered in the site palette, the same pass the preview cards use. */}
+          <DitheredThumb
             src={`/video-posters/${id}.jpg`}
             alt=""
             width={480}
-            height={360}
+            height={270}
             className="absolute inset-0 h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-90"
-            loading="lazy"
-            decoding="async"
           />
           <span
             className="relative flex h-14 w-14 items-center justify-center rounded-full border border-primary/70 bg-black/50 backdrop-blur-sm transition-transform group-hover:scale-110"

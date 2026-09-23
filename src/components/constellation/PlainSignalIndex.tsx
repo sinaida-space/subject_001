@@ -7,13 +7,14 @@ import DitherPreview from './DitherPreview';
 // The "lights up" reading of the Signal Map: every project, grouped plainly
 // by kind, semantic headings throughout: legible to a screen reader, a
 // search crawler, and a producer skimming on a slow connection.
-const KIND_ORDER: ProjectKind[] = ['stage', 'installation', 'conceptual', 'game', 'tool'];
+const KIND_ORDER: ProjectKind[] = ['stage', 'installation', 'conceptual', 'game', 'tool', 'tutorial'];
 const KIND_LABEL: Record<ProjectKind, string> = {
   stage: 'Stage',
   installation: 'Installation',
   conceptual: 'Conceptual',
-  game: 'Perception research · camera-tracked',
+  game: 'Interactive web',
   tool: 'Tools',
+  tutorial: 'Tutorials',
 };
 
 interface RowProps {
@@ -103,7 +104,7 @@ export default function PlainSignalIndex() {
   return (
     <div className="w-full" style={{ minHeight: 'clamp(420px, 60vh, 720px)' }}>
       {KIND_ORDER.map((kind) => {
-        const items = PROJECTS.filter((p) => p.kind === kind && !p.background);
+        const items = PROJECTS.filter((p) => p.kind === kind && (!p.background || p.listed));
         const kindSection =
           items.length === 0 ? null : (
             <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">

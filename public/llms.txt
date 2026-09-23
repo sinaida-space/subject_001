@@ -17,12 +17,12 @@ Sinaida Krivchenko is a Prague-based new media artist building living visual sys
 - The Eyes Chico (https://sinaida.eu/work/the-eyes-chico) — acrylic painting by Alisa Feer turned playable web experience and immersive projection installation (on-device MediaPipe hand tracking), live at https://the-eyes-chico.sinaida.eu/ — installation form available for its first public showing
 - Ethereal Path (https://sinaida-space.github.io/ethereal-path/) — off-axis WebGL descent steered by head and hand movement; the body is the controller
 - Stereolove (https://sinaida-space.github.io/stereolove/) — head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume
-- Submerged Realities — projection mapping study, AI-generated aesthetics mapped onto fluid surfaces
-- Mahler — The Orchestrator (https://github.com/sinaida-space/mahler-the-orchestrator) — multi-model orchestrator for Claude
+- Infinite Voidsong (https://infinite-voidsong.vercel.app/) — endless generated soundscapes for focused work, with rest built into the session; Web Audio, WebGL, offline, no tracking
+- Storm Glass (https://youtu.be/hwFttiCKbrU) — TouchDesigner tutorial: a thunderstorm behind rainy glass, audio onsets fire the lightning, drops refract the sky through GLSL
 
 ## Skills
 
-TouchDesigner, Generative AI Systems, Real-time audio-reactive visuals, Body & gesture tracking (MediaPipe), Projection mapping, GLSL / WebGL, Procedural animation, AI-assisted visual pipelines, Post-production, Color grading, Creative direction, Visual narrative development, Biomedical engineering MSc, Systems design thinking, Algorithmic visual systems, Creative web development.
+TouchDesigner, Generative AI Systems, Real-time audio-reactive visuals, Body & gesture tracking (MediaPipe), GLSL / WebGL, Procedural animation, AI-assisted visual pipelines, Post-production, Color grading, Creative direction, Visual narrative development, Biomedical engineering MSc, Systems design thinking, Algorithmic visual systems, Creative web development.
 
 ## Easter eggs
 
