@@ -45,6 +45,10 @@
        must keep using --primary/--sinaida-red — do not replace those.
        Confirmed 5.14:1. */
     --primary-legible: 0 100% 52%;
+    /* Molecule dividers (MoleculeBreak): star-cluster atoms that sit barely
+       above the starfield. Grey carbon, muted-red oxygen/nitrogen/sulfur. */
+    --molecule-atom: 0 0% 47%;
+    --molecule-hetero: 0 60% 37%;
     /* One step brighter still — hover state for a --primary-legible link
        (e.g. the cookie notice, see .notice-surface a:hover). Was a bare
        #ff6b6b with no token backing it. */
@@ -119,6 +123,9 @@
     --primary: var(--sinaida-red);
     --primary-foreground: 0 0% 100%;
     --primary-legible: var(--sinaida-red);
+    /* Lighter than the ink on Chalk, so the molecules stay a whisper. */
+    --molecule-atom: 0 0% 69%;
+    --molecule-hetero: 0 45% 64%;
     --secondary: 0 0% 95%;
     --secondary-foreground: 0 0% 8%;
     --muted: 0 0% 94%;
@@ -981,3 +988,15 @@
 .text-\[15px\] {
   font-size: 16px !important;
 }
+
+/* MoleculeBreak / StarMolecule: the same slow 4s breath the old section
+   node had, on the whole molecule. Opacity only, compositor-cheap. */
+@keyframes molecule-breath {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.molecule-breath { animation: molecule-breath 4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .molecule-breath { animation: none; opacity: 0.8; }
+}
+html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.8; }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { useScrambleReveal } from '@/hooks/useScrambleReveal';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
+import { MoleculeNote } from '@/components/MoleculeBreak';
 
 const NAME = 'SINAIDA KRIVCHENKO';
 const ROLE = 'NEW MEDIA ARTIST';
@@ -225,10 +226,24 @@ export default function HeroSection() {
   const glowClass = `hero-glow${glowing ? ' hero-glow-active' : ''}`;
   const whisper = useHeroWhisper(glowing, WHISPER_QUESTIONS);
 
+  // Noradrenaline, the skipped beat, hangs in the void as a faint star
+  // cluster. It flares, an impulse running along its bonds, just before each
+  // whisper question surfaces: on the hover/hold that starts the whisper, and
+  // again each time a question evaporates while the hover continues (the next
+  // one arrives 2s later, about as long as the flare).
+  const [flare, setFlare] = useState(0);
+  const prevWhisper = useRef({ glowing: false, visible: false });
+  useEffect(() => {
+    const prev = prevWhisper.current;
+    if ((glowing && !prev.glowing) || (glowing && prev.visible && !whisper.visible)) setFlare((k) => k + 1);
+    prevWhisper.current = { glowing, visible: whisper.visible };
+  }, [glowing, whisper.visible]);
+  const [smallHero] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-[6vh] md:pb-[8vh]"
+      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-10"
       onTouchStart={holdTunnel}
       onTouchEnd={releaseTunnel}
       onTouchCancel={releaseTunnel}
@@ -269,9 +284,15 @@ export default function HeroSection() {
         </p>
       </div>
 
-      {/* The void between the two anchors is the composition. Nothing goes
-          here: the starfield reads as depth only if it is given the room. */}
-      <div className="flex-1" aria-hidden="true" />
+      {/* The void between the two anchors is the composition. The only thing
+          in it is noradrenaline, drawn out of the same stars, off to the side
+          of where the whisper surfaces. Short viewports have almost no void,
+          so it steps aside there rather than sit on the headline. */}
+      <div className="relative flex-1">
+        <div className="absolute right-[34%] md:right-[26%] top-1/2 -translate-y-1/2 [@media(max-height:620px)]:hidden">
+          <MoleculeNote id="noradrenaline" width={smallHero ? 150 : 220} height={smallHero ? 60 : 90} pulse={flare} />
+        </div>
+      </div>
 
       <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl mb-6 md:mb-10">
         {/* Two sizing regimes: below md the headline breaks into two lines and
