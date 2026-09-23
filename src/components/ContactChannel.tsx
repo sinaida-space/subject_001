@@ -43,7 +43,7 @@ const PARA_2 =
 
 export default function ContactChannel() {
   return (
-    <section id="contact" className="relative z-10 py-24 overflow-hidden">
+    <section id="contact" className="relative z-10 py-16 md:py-20 overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* LEFT COLUMN */}

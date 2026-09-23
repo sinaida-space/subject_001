@@ -35,7 +35,7 @@ export default function Constellation() {
   const openProject = openId ? projectById(openId) : undefined;
 
   return (
-    <section ref={sectionRef} id="work" className="relative z-10 py-24">
+    <section ref={sectionRef} id="work" className="relative z-10 py-16 md:py-20">
       <div className="container mx-auto max-w-7xl px-6">
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* LEFT COLUMN — label + legend */}

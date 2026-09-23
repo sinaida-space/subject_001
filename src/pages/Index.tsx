@@ -7,12 +7,13 @@ import Constellation from '@/components/constellation/Constellation';
 import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
-import SectionBreak from '@/components/SectionBreak';
+import MoleculeBreak, { SectionBand } from '@/components/MoleculeBreak';
 import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
+const DustReveal = lazy(() => import('@/components/DustReveal'));
 
 const Index = () => {
   const { mode } = useRenderMode();
@@ -58,12 +59,23 @@ const Index = () => {
       <main id="main-content" tabIndex={-1}>
         {/* WHY — who she is, human first */}
         <HeroSection />
+        {/* The red horizon: where the cover ends and the content begins. */}
+        <SectionBand>
+          <div className="container mx-auto px-6 max-w-7xl">
+            <Suspense fallback={<div className="section-divider" />}>
+              <DustReveal>
+                <div className="section-divider" />
+              </DustReveal>
+            </Suspense>
+          </div>
+        </SectionBand>
         <AboutSection />
-        <SectionBreak />
+        <MoleculeBreak id="dopamine" />
         {/* HOW + WHAT — skills and every project, one living Signal Map */}
         <Constellation />
-        <SectionBreak />
+        <MoleculeBreak id="serotonin" />
         <ServicesTerminal />
+        <MoleculeBreak id="oxytocin" />
         <ContactChannel />
       </main>
 
