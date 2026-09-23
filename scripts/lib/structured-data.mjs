@@ -33,7 +33,7 @@ const PERSON_NODE = {
   name: AUTHOR_NAME,
   jobTitle: 'New media artist',
   description:
-    'Prague-based new media artist building living visual systems for stages and physical spaces: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.',
+    'Prague-based new media artist building living visual systems for stage and screen: real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance and cultural institutions.',
   url: `${SITE_URL}/`,
   image: OG_IMAGE,
   sameAs: [

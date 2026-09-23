@@ -228,7 +228,7 @@ function PhotoBlock() {
 // ── Main ─────────────────────────────────────────────────────
 export default function AboutSection() {
   return (
-    <section id="about" className="relative z-10 py-24">
+    <section id="about" className="relative z-10 pt-10 pb-24">
       <div className="container mx-auto px-6 max-w-7xl">
         <Suspense fallback={<div className="section-divider mb-16" />}>
           <DustReveal>
@@ -260,7 +260,7 @@ export default function AboutSection() {
                 <span className="text-primary font-bold"> Digital second.</span>
               </h2>
             </Reveal>
-            <div className="flex flex-col md:flex-row items-start gap-12">
+            <div className="flex flex-col xl:flex-row items-start gap-12">
               <Reveal delay={150}>
                 <PhotoBlock />
               </Reveal>

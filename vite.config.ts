@@ -10,7 +10,9 @@ export default defineConfig(({ mode }) => ({
     port: Number(process.env.PORT) || 8080,
     hmr: { overlay: false },
   },
-  build: { sourcemap: true },
+  // No maps in production: dist/ is deployed as-is, so any .map file would be
+  // public. Run `vite build --sourcemap` locally when a map is needed.
+  build: { sourcemap: false },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },

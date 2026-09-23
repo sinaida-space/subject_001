@@ -7,7 +7,7 @@ const NAME = 'SINAIDA KRIVCHENKO';
 const ROLE = 'NEW MEDIA ARTIST';
 const EYEBROW = `${NAME} | ${ROLE}`;
 const LINE_A = 'VISUAL WORLDS FOR ';
-const LINE_B = 'PHYSICAL SPACES';
+const LINE_B = 'STAGE & SCREEN';
 
 // Asked one at a time during a sustained hover/hold — see useHeroWhisper.
 const WHISPER_QUESTIONS = [
@@ -228,7 +228,7 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-[18vh] md:pb-[20vh]"
+      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-[6vh] md:pb-[8vh]"
       onTouchStart={holdTunnel}
       onTouchEnd={releaseTunnel}
       onTouchCancel={releaseTunnel}
@@ -312,7 +312,7 @@ export default function HeroSection() {
           {/* Same reason as the eyebrow above (audit 2026-08-02, F-006): this is
               the <h1>, so the scrambled frames were the page's accessible name
               for the first ~860 ms. */}
-          <span className="sr-only">{`${LINE_A} ${LINE_B}`}</span>
+          <span className="sr-only">{`${LINE_A}${LINE_B}`}</span>
           <span className="hero-layer hero-layer-base" aria-hidden="true">
             <Letters text={headA} settled={LINE_A} prefix="ha" />
             <br className="md:hidden" />

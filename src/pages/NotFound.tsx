@@ -187,7 +187,7 @@ export default function NotFound() {
     <div
       id="main-content"
       tabIndex={-1}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative h-[100dvh] flex flex-col items-center justify-center overflow-hidden"
       style={{ background: 'hsl(var(--background))' }}
     >
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
@@ -203,8 +203,8 @@ export default function NotFound() {
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-2xl">
 
         <div
-          className="font-mono uppercase mb-6 tracking-widest text-xs"
-          style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em' }}
+          className="font-mono uppercase tracking-widest text-xs [@media(max-height:480px)]:hidden"
+          style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em', marginBottom: 'min(1.5rem, 2.5dvh)' }}
         >
           SINAIDA_OS v3.1.1: NAVIGATION ERROR
         </div>
@@ -212,7 +212,9 @@ export default function NotFound() {
         <h1
           className="font-mono select-none"
           style={{
-            fontSize: 'clamp(10rem, 22vw, 22.5rem)',
+            // Sized by both axes so the whole page, ECG included, fits one screen
+            // on short landscape viewports without scrolling.
+            fontSize: 'min(22vw, 30dvh, 22.5rem)',
             lineHeight: 1,
             color: 'transparent',
             WebkitTextStroke: '1.5px hsl(var(--sinaida-red))',
@@ -223,18 +225,27 @@ export default function NotFound() {
             transition: glitchActive ? 'none' : 'text-shadow 0.3s ease',
           }}
         >
-          {glitched404}
+          <button
+            type="button"
+            onClick={() => setSnakeOpen(true)}
+            aria-label="404"
+            title="[ ??? ]"
+            className="focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4"
+            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit', letterSpacing: 'inherit', cursor: 'pointer' }}
+          >
+            {glitched404}
+          </button>
         </h1>
 
-        <div className="mt-2 mb-8" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
+        <div style={{ color: 'hsl(var(--foreground) / 0.6)', margin: '0.5rem 0 min(2rem, 3.5dvh)' }}>
           <span className="font-mono" style={{ fontSize: '1.375rem', letterSpacing: '0.12em' }}>
             Lost in the void.
           </span>
         </div>
 
         <div
-          className="font-mono text-left w-full mb-10 space-y-1"
-          style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: '1.25rem' }}
+          className="font-mono text-left w-full space-y-1 [@media(max-height:480px)]:hidden"
+          style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: 'clamp(0.95rem, 2.4dvh, 1.25rem)', marginBottom: 'min(2.5rem, 4dvh)' }}
         >
           <div>{line1.displayed}{!line1.done && <span className="animate-terminal-cursor">█</span>}</div>
           {line1.done && <div>{line2.displayed}{!line2.done && <span className="animate-terminal-cursor">█</span>}</div>}
@@ -244,7 +255,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           <a
             href="/"
-            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 flex items-center justify-center transition-all duration-200"
+            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 [@media(max-height:480px)]:py-2 px-6 flex items-center justify-center transition-all duration-200"
             style={{
               border: '1px solid hsl(var(--sinaida-red))',
               color: 'hsl(var(--primary-legible))',
@@ -265,7 +276,7 @@ export default function NotFound() {
             href="https://open.spotify.com/playlist/2Hs1OUJppCUNZRxZh5bppa"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 px-6 flex items-center justify-center transition-all duration-200"
+            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 [@media(max-height:480px)]:py-2 px-6 flex items-center justify-center transition-all duration-200"
             style={{
               border: '1px solid hsl(var(--foreground) / 0.25)',
               color: 'hsl(var(--foreground) / 0.6)',
@@ -286,10 +297,10 @@ export default function NotFound() {
           </a>
         </div>
 
-        <div className="mt-16 mb-4 flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-4" style={{ marginTop: 'min(4rem, 5dvh)' }}>
           <PulsingECG onClick={() => setSnakeOpen(true)} />
           <div
-            className="font-mono text-xs uppercase tracking-widest"
+            className="font-mono text-xs uppercase tracking-widest [@media(max-height:480px)]:hidden"
             style={{ color: 'hsl(var(--foreground) / 0.2)', letterSpacing: '0.25em' }}
           >
             sinaida · prague · {new Date().getFullYear()}
