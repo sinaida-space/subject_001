@@ -1,7 +1,7 @@
 {
   "name": "Sinaida Krivchenko",
   "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, working globally.",
-  "bio": "Sinaida Krivchenko is a Prague-based new media artist building living visual systems for stages and physical spaces — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University), with prior careers in IT leadership at General Electric and creative direction for cultural institutions in Amsterdam. Works with performing-arts organisations, musicians, festivals, and cultural institutions.",
+  "bio": "Sinaida Krivchenko is a Prague-based new media artist building living visual systems for stage and screen — real-time TouchDesigner and GLSL work, interactive projections, and audio-reactive visuals for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University), with prior careers in IT leadership at General Electric and creative direction for cultural institutions in Amsterdam. Works with performing-arts organisations, musicians, festivals, and cultural institutions.",
   "services": [
     "Audio-reactive concert visuals — one system per song, listening to the live mix, delivered as a turnkey show or operated live",
     "Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound",

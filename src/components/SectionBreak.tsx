@@ -3,7 +3,7 @@
 // signal at rest. Purely decorative; hidden from assistive tech.
 export default function SectionBreak() {
   return (
-    <div className="flex select-none flex-col items-center py-16 md:py-24" aria-hidden>
+    <div className="flex select-none flex-col items-center py-8 md:py-12" aria-hidden>
       <span
         className="block w-px"
         style={{ height: 56, background: 'linear-gradient(to bottom, transparent, hsl(var(--border)))' }}
