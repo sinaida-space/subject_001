@@ -16,7 +16,7 @@
 // Grace first: the sequencer starts silent (play is opt-in via the panel),
 // master volume is deliberately low, and stopping is always one obvious tap.
 
-export type VoiceKind = 'stage' | 'installation' | 'conceptual' | 'game' | 'tool';
+export type VoiceKind = 'stage' | 'installation' | 'conceptual' | 'game' | 'tool' | 'tutorial';
 
 export interface Voice {
   id: string;
@@ -340,7 +340,7 @@ class ConstellationSynth {
         case 'game':
           this.hat(time, vel * 0.8);
           break;
-        default: // conceptual + tool → 808 bass
+        default: // conceptual, tool, tutorial → 808 bass
           this.bass(time, v.y01, vel);
       }
     }

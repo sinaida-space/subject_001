@@ -12,6 +12,7 @@ const KIND_LABEL: Record<ProjectKind, string> = {
   conceptual: 'Conceptual',
   game: 'Interactive',
   tool: 'Tool',
+  tutorial: 'Tutorial',
 };
 
 // Internal case-study pages, keyed by project id — every project with a

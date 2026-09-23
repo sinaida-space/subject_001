@@ -37,19 +37,22 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  * site's black/red palette. Cached — the actual canvas work runs at most
  * once per src for the lifetime of the page.
  */
-export async function getDitheredPreview(src: string): Promise<string | null> {
-  const cached = cache.get(src);
+export async function getDitheredPreview(
+  src: string,
+  w = PREVIEW_SIZE,
+  h = PREVIEW_SIZE,
+): Promise<string | null> {
+  const key = `${src}|${w}x${h}`;
+  const cached = cache.get(key);
   if (cached) return cached;
 
-  const pending = inflight.get(src);
+  const pending = inflight.get(key);
   if (pending) return pending;
 
   const promise = (async () => {
     try {
       const img = await loadImage(src);
       const canvas = document.createElement('canvas');
-      const w = PREVIEW_SIZE;
-      const h = PREVIEW_SIZE;
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
@@ -85,17 +88,17 @@ export async function getDitheredPreview(src: string): Promise<string | null> {
 
       ctx.putImageData(imageData, 0, 0);
       const dataUrl = canvas.toDataURL('image/png');
-      cache.set(src, dataUrl);
+      cache.set(key, dataUrl);
       return dataUrl;
     } catch {
       // Tainted canvas (remote/CORS image) or load failure — no preview,
       // no crash.
       return null;
     } finally {
-      inflight.delete(src);
+      inflight.delete(key);
     }
   })();
 
-  inflight.set(src, promise);
+  inflight.set(key, promise);
   return promise;
 }

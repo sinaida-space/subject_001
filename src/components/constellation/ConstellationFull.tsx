@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { buildGraph, buildAdjacency, type GraphNode, OFF_WHITE } from '@/data/graph';
+import { buildGraph, buildAdjacency, type GraphNode, type Category, CATEGORY_COLORS, CATEGORY_LABEL, SKILL_LINKS, OFF_WHITE } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 import { synth, type VoiceKind } from '@/lib/constellationSynth';
@@ -10,6 +10,7 @@ interface RNode {
   id: string;
   label: string;
   kind: 'project' | 'skill';
+  category: Category;
   color: string;
   weight: number;
   project?: GraphNode['project'];
@@ -92,6 +93,66 @@ const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer
 // site's 20px floor, skills are the vocabulary hanging off them and hold at
 // 16px. That gap is what makes the graph read as a hierarchy at a glance
 // instead of as one flat wall of words.
+// Dev-only layout recorder: every star dropped by drag is saved as a fraction
+// of the canvas (fx, fy) to localStorage and mirrored on
+// window.__constellationPins, so a hand-arranged composition can be copied
+// back into layout.ts. No on-screen panel; the synth panel's reset clears it.
+// Stripped from production builds.
+const DEV_LAYOUT = import.meta.env.DEV;
+const DEV_PINS_KEY = 'constellation-dev-pins';
+type DevPins = Record<string, { fx: number; fy: number; kind: string }>;
+function readDevPins(): DevPins {
+  try {
+    return JSON.parse(localStorage.getItem(DEV_PINS_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+function writeDevPins(pins: DevPins) {
+  try {
+    localStorage.setItem(DEV_PINS_KEY, JSON.stringify(pins));
+  } catch {
+    /* ignore */
+  }
+  (window as unknown as { __constellationPins: DevPins }).__constellationPins = pins;
+}
+
+// Constellation figures: within each category, the skill stars are joined by
+// a minimum spanning tree over their home positions, so every category reads
+// as one figure with the fewest, shortest strokes. Recomputed on layout.
+function buildFigures(nodes: RNode[]): { a: RNode; b: RNode; cat: Category }[] {
+  const byCat = new Map<Category, RNode[]>();
+  nodes.forEach((n) => {
+    if (n.kind !== 'skill') return;
+    if (!byCat.has(n.category)) byCat.set(n.category, []);
+    byCat.get(n.category)!.push(n);
+  });
+  const out: { a: RNode; b: RNode; cat: Category }[] = [];
+  byCat.forEach((group, cat) => {
+    const inTree = [group[0]];
+    const rest = group.slice(1);
+    while (rest.length) {
+      let best = { d: Infinity, i: 0, from: inTree[0] };
+      rest.forEach((r, i) =>
+        inTree.forEach((t) => {
+          const d = Math.hypot(r.hx - t.hx, r.hy - t.hy);
+          if (d < best.d) best = { d, i, from: t };
+        }),
+      );
+      const [next] = rest.splice(best.i, 1);
+      out.push({ a: best.from, b: next, cat });
+      inTree.push(next);
+    }
+  });
+  SKILL_LINKS.forEach(([ia, ib]) => {
+    const a = nodes.find((n) => n.id === ia);
+    const b = nodes.find((n) => n.id === ib);
+    if (a && b) out.push({ a, b, cat: a.category });
+  });
+  return out;
+}
+const CATEGORIES = Object.keys(CATEGORY_LABEL) as Category[];
+
 const LABEL_SCALE = 1.25;
 const PROJECT_LABEL_MIN = 20;
 const SKILL_LABEL_MIN = 16;
@@ -162,6 +223,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // the synth reads. The spring physics still pull toward the pinned point, so
   // the drop keeps its rubbery wobble. Reset (panel ■) clears this.
   const pinnedRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  const figuresRef = useRef<{ a: RNode; b: RNode; cat: Category }[]>([]);
   // One-second full-graph bloom on every drop: ramps to 1 on trigger, eases
   // back to 0. Purely user-action-driven (a drop), so motion-law compliant.
   const shineRef = useRef(0);
@@ -231,6 +293,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         id: n.id,
         label: n.label,
         kind: n.kind,
+        category: n.category,
         color: n.color,
         weight: n.weight,
         project: n.project,
@@ -246,6 +309,18 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         r,
       };
     });
+    figuresRef.current = buildFigures(nodesRef.current);
+    if (DEV_LAYOUT) {
+      const saved = readDevPins();
+      writeDevPins(saved);
+      for (const n of nodesRef.current) {
+        const p = saved[n.id];
+        if (!p) continue;
+        pinnedRef.current.set(n.id, { x: p.fx * w, y: p.fy * h });
+        n.x = p.fx * w;
+        n.y = p.fy * h;
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mobileHeight]);
 
@@ -472,6 +547,20 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     }
     ctx.globalAlpha = 1;
 
+    const activeNode = active ? nodes.find((n) => n.id === active) : undefined;
+    const activeCat = activeNode?.kind === 'skill' ? activeNode.category : null;
+    // ── constellation figures: dashed strokes joining each category's skills ──
+    ctx.setLineDash([2, 5]);
+    ctx.lineWidth = 1;
+    for (const f of figuresRef.current) {
+      ctx.strokeStyle = hexA(CATEGORY_COLORS[f.cat], f.cat === activeCat || f.a.category === activeCat || f.b.category === activeCat ? 0.55 : 0.2);
+      ctx.beginPath();
+      ctx.moveTo(f.a.x, f.a.y);
+      ctx.lineTo(f.b.x, f.b.y);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
     // ── node glows (additive) — static size, no time-driven pulsing ──
     for (const n of nodes) {
       const isActive = n.id === active;
@@ -538,6 +627,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     for (const n of nodes) {
       drawn.push({ x1: n.x - n.r - 5, y1: n.y - n.r - 5, x2: n.x + n.r + 5, y2: n.y + n.r + 5 });
     }
+    // Touch screens only: a narrow desktop window still has hover to reveal
+    // context, so it keeps every project name.
+    const narrowView = IS_COARSE;
     labelBoxesRef.current.clear(); // rebuilt below from what's actually drawn this frame
     for (const n of nodes) {
       const isActive = n.id === active;
@@ -548,6 +640,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const fontWeight = n.kind === 'skill' ? 500 : 400;
 
       if (n.kind === 'project') {
+        // Touch screens: the map reads as skills only. A project's name appears
+        // once a tap selects it or one of the skills it is wired to.
+        if (narrowView && !isActive && !isNeighbor) continue;
         // Projects are the product — flagships read first, background works
         // stay legible but clearly recede.
         const bg = !!n.project?.background;
@@ -562,14 +657,14 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         }
       } else {
         // Skills tier below projects: accent skills (the signals a producer
-        // scans for) hold a bright baseline; the rest are quiet texture until
-        // hover pulls their cluster forward.
-        fs = labelSize(isActive ? 16 : isNeighbor ? 15 : n.accent ? 14.5 : 13, SKILL_LABEL_MIN);
+        // scans for) hold a bright baseline; the rest are smaller and quieter
+        // until hover pulls their cluster forward.
+        fs = isActive || isNeighbor || n.accent ? labelSize(isActive ? 16 : isNeighbor ? 15 : 14.5, SKILL_LABEL_MIN) : 13;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.28;
+          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.2;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
-          alpha = n.accent ? 0.95 : 0.75;
+          alpha = n.accent ? 0.95 : 0.45;
           useCategoryColor = false; // neutral warm-gray at rest
         }
       }
@@ -664,6 +759,48 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       ctx.shadowBlur = 0;
     }
     ctx.textAlign = 'left';
+
+    // Constellation names: spaced caps just outside each figure's arc. Placed
+    // after the node labels and stepped further outward until clear of every
+    // star and label, so a name never sits between its own stars and labels.
+    ctx.font = `400 12px 'Geist Pixel', monospace`;
+    ctx.textAlign = 'center';
+    for (const cat of CATEGORIES) {
+      const members = nodes.filter((n) => n.kind === 'skill' && n.category === cat);
+      if (!members.length) continue;
+      // Centroid of the arc, pushed outward from the canvas centre so the
+      // name sits on the outer side of its own figure, away from projects.
+      const gx = members.reduce((acc, n) => acc + n.x, 0) / members.length;
+      const gy = members.reduce((acc, n) => acc + n.y, 0) / members.length;
+      // Measured past the outermost star of the arc along that direction, so
+      // the name never lands between its own stars on a tall phone canvas.
+      const dl = Math.hypot(gx - w / 2, gy - h / 2) || 1;
+      const ux = (gx - w / 2) / dl;
+      const uy = (gy - h / 2) / dl;
+      const reach = Math.max(...members.map((n) => (n.x - gx) * ux + (n.y - gy) * uy));
+      const push = Math.max(0, reach) + 44;
+      const mx = gx + ux * push;
+      const my = Math.max(16, Math.min(gy + uy * push, h - 16));
+      const name = CATEGORY_LABEL[cat].toUpperCase().split('').join(' ');
+      const tw = ctx.measureText(name).width;
+      let best = { x: mx, y: my, o: Infinity };
+      for (const step of [0, 26, 52, 78, 104, 130]) {
+        const x = Math.max(tw / 2 + 6, Math.min(mx + ux * step, w - tw / 2 - 6));
+        const y = Math.max(12, Math.min(my + uy * step, h - 12));
+        let o = 0;
+        for (const d of drawn) {
+          const ix = Math.min(x + tw / 2, d.x2) - Math.max(x - tw / 2, d.x1);
+          const iy = Math.min(y + 9, d.y2) - Math.max(y - 9, d.y1);
+          if (ix > 0 && iy > 0) o += ix * iy;
+        }
+        if (o < best.o) best = { x, y, o };
+        if (o === 0) break;
+      }
+      ctx.fillStyle = hexA(CATEGORY_COLORS[cat], cat === activeCat ? 0.95 : 0.5);
+      ctx.fillText(name, best.x, best.y);
+      drawn.push({ x1: best.x - tw / 2 - 4, y1: best.y - 12, x2: best.x + tw / 2 + 4, y2: best.y + 12 });
+    }
+
 
     // ── Playhead: while the sequencer runs, a thin ECG-red line sweeps the map
     // left→right (x = time in the bar). Reading the synth clock, not a local
@@ -937,6 +1074,14 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       // pulses down the star's edges, and unlock the instrument the first time.
       synth.endDrone();
       pinnedRef.current.set(node.id, { x: node.x, y: node.y });
+      if (DEV_LAYOUT) {
+        const { w, h } = sizeRef.current;
+        const next = {
+          ...readDevPins(),
+          [node.id]: { fx: +(node.x / w).toFixed(4), fy: +(node.y / h).toFixed(4), kind: node.kind },
+        };
+        writeDevPins(next);
+      }
       shineRef.current = 1;
       GEDGES.forEach((ge, i) => {
         if (ge.a === node.id || ge.b === node.id) pulsesRef.current.push({ edge: i, t: 0 });
@@ -983,6 +1128,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // home layout (keeps the wobble on the way). Sound keeps playing if it was.
   const resetStars = useCallback(() => {
     pinnedRef.current.clear();
+    if (DEV_LAYOUT) {
+      writeDevPins({});
+    }
     shineRef.current = Math.max(shineRef.current, 0.6);
     lastInputRef.current = performance.now();
     start();

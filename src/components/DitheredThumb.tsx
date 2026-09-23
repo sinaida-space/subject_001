@@ -11,21 +11,24 @@ interface DitheredThumbProps {
   alt: string;
   className?: string;
   loading?: 'lazy' | 'eager';
+  /** dither canvas size; defaults to the square hover-preview size */
+  width?: number;
+  height?: number;
 }
 
-export default function DitheredThumb({ src, alt, className, loading = 'lazy' }: DitheredThumbProps) {
+export default function DitheredThumb({ src, alt, className, loading = 'lazy', width, height }: DitheredThumbProps) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setDataUrl(null);
-    getDitheredPreview(src).then((url) => {
+    getDitheredPreview(src, width, height).then((url) => {
       if (!cancelled) setDataUrl(url);
     });
     return () => {
       cancelled = true;
     };
-  }, [src]);
+  }, [src, width, height]);
 
   return <img src={dataUrl ?? src} alt={alt} loading={loading} className={className} draggable={false} />;
 }

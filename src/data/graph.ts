@@ -4,7 +4,11 @@
 
 import { PROJECTS, type Project } from './projects';
 
-export type Category = 'tech' | 'direction' | 'strategy' | 'research' | 'analytical';
+// Four constellations: what drives the image (sound, body), what renders it
+// (code), and where it meets people (space). A skill earns a star only if a
+// buyer could hire for it directly; umbrella words that fit every work are
+// left out. Drawn on the map as faint figure lines with a spaced name.
+export type Category = 'sound' | 'body' | 'code' | 'space';
 
 // Single source of truth for the constellation's off-white — canvas/SVG fill
 // attributes here can't resolve CSS custom properties, so this is the one
@@ -13,22 +17,19 @@ export type Category = 'tech' | 'direction' | 'strategy' | 'research' | 'analyti
 export const OFF_WHITE = '#f2efe9';
 
 // A single red→off-white ramp, not a rainbow — categories read by
-// lightness/saturation, matching the site's black-and-red signature instead
-// of the old per-category hue-wheel palette.
+// lightness/saturation, matching the site's black-and-red signature.
 export const CATEGORY_COLORS: Record<Category, string> = {
-  direction: '#cd0000', // creative direction — sinaida-red, the core signature
-  tech: '#ff5c5c', // creative technology — bright red
-  strategy: '#c9433f', // strategy & systems — muted red
-  analytical: '#b38080', // technical & analytical — dusty red-grey
-  research: OFF_WHITE, // research interests — off-white
+  space: '#cd0000', // sinaida-red, the core signature
+  sound: '#ff5c5c',
+  body: '#e8736b',
+  code: '#d9a6a0',
 };
 
 export const CATEGORY_LABEL: Record<Category, string> = {
-  tech: 'Creative Technology',
-  direction: 'Creative Direction',
-  strategy: 'Strategy & Systems',
-  research: 'Research',
-  analytical: 'Technical & Analytical',
+  sound: 'Sound',
+  body: 'Body',
+  code: 'Code',
+  space: 'Space',
 };
 
 export interface Skill {
@@ -39,34 +40,30 @@ export interface Skill {
   accent?: boolean;
 }
 
+// Two tiers. The accent skills are the buyer-facing names, labeled bright at
+// rest. Every other skill is labeled too, smaller and quieter.
 export const SKILLS: Skill[] = [
-  // tech
-  { id: 'touchdesigner', label: 'TouchDesigner', category: 'tech', accent: true },
-  { id: 'audio-reactive', label: 'Real-time audio-reactive', category: 'tech' },
-  { id: 'projection-mapping', label: 'Projection mapping', category: 'tech' },
-  { id: 'generative-ai', label: 'Generative AI systems', category: 'tech' },
-  { id: 'davinci', label: 'Editing and color grading', category: 'tech' },
-  { id: 'creative-web', label: 'Creative web technology', category: 'tech' },
-  { id: 'interactive-installations', label: 'Interactive installations', category: 'tech', accent: true },
-  { id: 'body-tracking', label: 'Body & gesture tracking', category: 'tech', accent: true },
-  // direction
-  { id: 'creative-direction', label: 'Creative direction', category: 'direction' },
-  { id: 'visual-narrative', label: 'Visual narrative', category: 'direction' },
-  { id: 'concept-design', label: 'Concept design', category: 'direction' },
-  { id: 'event-design', label: 'Event experience design', category: 'direction' },
-  // strategy
-  { id: 'tech-strategy', label: 'Creative technology strategy', category: 'strategy' },
-  { id: 'interdisciplinary', label: 'Interdisciplinary leadership', category: 'strategy' },
-  { id: 'experience-design', label: 'Digital experience design', category: 'strategy', accent: true },
-  // research
-  { id: 'computational-aesthetics', label: 'Computational aesthetics', category: 'research' },
-  { id: 'human-ai', label: 'Human–AI collaboration', category: 'research' },
-  { id: 'perception-media', label: 'Perception & generative media', category: 'research' },
-  // analytical
-  { id: 'algorithmic-systems', label: 'Algorithmic visual systems', category: 'analytical' },
-  { id: 'system-architecture', label: 'System architecture', category: 'analytical' },
-  { id: 'data-workflows', label: 'Data-driven workflows', category: 'analytical' },
-  { id: 'ai-orchestration', label: 'AI orchestration', category: 'analytical' },
+  // sound: music and noise drive the image
+  { id: 'audio-reactive', label: 'Audio-reactive visuals', category: 'sound', accent: true },
+  { id: 'generative-sound', label: 'Generative sound', category: 'sound' },
+  // body: the viewer is the controller, and the viewer's senses are the subject
+  { id: 'body-tracking', label: 'Body & gesture tracking', category: 'body', accent: true },
+  { id: 'head-coupled', label: 'Anamorphic & off-axis illusion', category: 'body' },
+  { id: 'perception-media', label: 'Perception research', category: 'body' },
+  // code: how the image is rendered
+  { id: 'touchdesigner', label: 'TouchDesigner', category: 'code', accent: true },
+  { id: 'creative-web', label: 'WebGL & shaders', category: 'code', accent: true },
+  { id: 'algorithmic-systems', label: 'Generative visuals', category: 'code' },
+  // space: where it meets people
+  { id: 'event-design', label: 'Live concert visuals', category: 'space', accent: true },
+  { id: 'interactive-installations', label: 'Interactive installations', category: 'space', accent: true },
+];
+
+// Extra dashed strokes between skills of different constellations, for pairs
+// that belong together in practice (drawn like the in-constellation figures).
+export const SKILL_LINKS: [string, string][] = [
+  ['touchdesigner', 'audio-reactive'],
+  ['event-design', 'audio-reactive'],
 ];
 
 export const skillById = (id: string): Skill | undefined => SKILLS.find((s) => s.id === id);

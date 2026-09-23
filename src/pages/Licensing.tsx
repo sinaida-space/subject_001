@@ -27,13 +27,8 @@ type Row = {
   external?: boolean;
 };
 
+// Alphabetical by project name, ignoring a leading "The".
 const ROWS: Row[] = [
-  {
-    project: 'Mahler',
-    code: 'Apache 2.0',
-    artwork: 'No artwork',
-    repo: 'https://github.com/sinaida-space/mahler-the-orchestrator',
-  },
   {
     project: 'Aether Currents',
     code: 'AGPL 3.0',
@@ -47,16 +42,22 @@ const ROWS: Row[] = [
     repo: 'https://github.com/sinaida-space/ethereal-path',
   },
   {
-    project: 'Stereolove',
-    code: 'Apache 2.0',
-    artwork: 'CC BY-NC-ND 4.0',
-    repo: 'https://github.com/sinaida-space/stereolove',
-  },
-  {
     project: 'The Eyes, Chico',
     code: 'Apache 2.0',
     artwork: 'All rights reserved',
     repo: 'https://github.com/sinaida-space/the-eyes-chico',
+  },
+  {
+    project: 'Infinite Voidsong',
+    code: 'Apache 2.0',
+    artwork: 'Sound CC0 1.0',
+    repo: 'https://github.com/sinaida-space/infinite-voidsong',
+  },
+  {
+    project: 'Mahler',
+    code: 'Apache 2.0',
+    artwork: 'No artwork',
+    repo: 'https://github.com/sinaida-space/mahler-the-orchestrator',
   },
   {
     project: 'Redkie Ptitsy',
@@ -64,6 +65,18 @@ const ROWS: Row[] = [
     artwork: 'All rights reserved',
     repo: '/work/redkie-ptitsy',
     external: false,
+  },
+  {
+    project: 'Stereolove',
+    code: 'Apache 2.0',
+    artwork: 'CC BY-NC-ND 4.0',
+    repo: 'https://github.com/sinaida-space/stereolove',
+  },
+  {
+    project: 'Storm Glass',
+    code: 'Project files for Patreon members',
+    artwork: 'All rights reserved',
+    repo: 'https://youtu.be/hwFttiCKbrU',
   },
   {
     project: 'Submerged Realities',
