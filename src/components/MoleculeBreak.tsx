@@ -30,6 +30,9 @@ export function MoleculeNote({
 }: { id: MoleculeId; width: number; height: number; pulse?: number; pulseHold?: number }) {
   const [flare, setFlare] = useState({ key: 0, hold: CLICK_HOLD });
   const [caption, setCaption] = useState(false);
+  // Desktop hover (mouse only, per the motion law) and keyboard focus light
+  // the figure; touch gets the full flare on tap instead.
+  const [lit, setLit] = useState(false);
   const timer = useRef<number>();
   useEffect(() => () => clearTimeout(timer.current), []);
   useEffect(() => {
@@ -48,13 +51,17 @@ export function MoleculeNote({
       <button
         type="button"
         onClick={onClick}
+        onPointerEnter={(e) => { if (e.pointerType === 'mouse') setLit(true); }}
+        onPointerLeave={() => setLit(false)}
+        onFocus={() => setLit(true)}
+        onBlur={() => setLit(false)}
         // the hero treats a held touch as its tunnel gesture; a tap here is not that
         onTouchStart={(e) => e.stopPropagation()}
         aria-label={`${id} molecule`}
         className="block rounded-sm focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4"
         style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
       >
-        <StarMolecule id={id} width={width} height={height} flareKey={flare.key} hold={flare.hold} />
+        <StarMolecule id={id} width={width} height={height} flareKey={flare.key} hold={flare.hold} highlight={lit} />
       </button>
       <p
         aria-hidden={!caption}

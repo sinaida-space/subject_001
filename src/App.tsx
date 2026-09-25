@@ -1,17 +1,19 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useLayoutEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import WebMcpTools from "@/components/WebMcpTools";
+import RouteEnhancer from "@/components/RouteEnhancer";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
+import { routeChunks } from "@/lib/routeChunks";
 
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const Licensing = lazy(() => import("./pages/Licensing"));
-const Collaborate = lazy(() => import("./pages/Collaborate"));
-const Experiences = lazy(() => import("./pages/Experiences"));
-const Statement = lazy(() => import("./pages/Statement"));
-const WorkCase = lazy(() => import("./pages/WorkCase"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const PrivacyPolicy = lazy(routeChunks.privacy);
+const Licensing = lazy(routeChunks.licensing);
+const Collaborate = lazy(routeChunks.collaborate);
+const Experiences = lazy(routeChunks.experiences);
+const Statement = lazy(routeChunks.statement);
+const WorkCase = lazy(routeChunks.work);
+const NotFound = lazy(routeChunks.notFound);
 
 const RouteFallback = () => (
   <div className="min-h-screen bg-background" aria-hidden="true" />
@@ -30,7 +32,9 @@ const SiteCursor = () => {
 // hash navigation (Index handles its own #section scrolling).
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => {
+  // Layout effect, so the reset lands before paint and inside a view
+  // transition's update (see RouteEnhancer) rather than after the snapshot.
+  useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
@@ -46,6 +50,7 @@ const App = () => (
         Skip to content
       </a>
       <ScrollToTop />
+      <RouteEnhancer />
       <SiteCursor />
       <WebMcpTools />
       <Suspense fallback={<RouteFallback />}>

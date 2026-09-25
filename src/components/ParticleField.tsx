@@ -1,4 +1,4 @@
-import { useRef, useMemo, useCallback, useEffect } from 'react';
+import { useRef, useMemo, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
@@ -8,10 +8,54 @@ import { heroTunnelBus } from '@/lib/heroTunnelBus';
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
 
+// The canvas renders on demand (frameloop="demand"): once the field has
+// settled and nothing is driving it, no frames are drawn at all, so a page
+// left open at rest costs no GPU. After a long idle the next frame's delta
+// can be seconds long, which would blow up the spring integration, so it is
+// clamped to this.
+const MAX_DELTA = 1 / 30;
+
+// Performance watchdog. The render-mode heuristic only reads device specs,
+// so a many-core laptop with a weak GPU still gets full mode. For a short
+// window after the first frame the field renders continuously and measures
+// real frame times; if the median misses the budget it steps down a tier.
+// The tier lives in sessionStorage, so the next page in the same visit
+// starts at the right level instead of stuttering again. It is deliberately
+// not persisted beyond the session: a busy moment is not a device trait.
+type PerfTier = 'high' | 'reduced' | 'off';
+const PERF_KEY = 'sinaida:perf-tier';
+const PROBE_WARMUP_FRAMES = 20;
+const PROBE_FRAMES = 90;
+const FRAME_BUDGET = 1 / 45;
+
+function readTier(): PerfTier {
+  try {
+    const v = sessionStorage.getItem(PERF_KEY);
+    return v === 'reduced' || v === 'off' ? v : 'high';
+  } catch {
+    return 'high';
+  }
+}
+
+function writeTier(tier: PerfTier) {
+  try {
+    sessionStorage.setItem(PERF_KEY, tier);
+  } catch {
+    // Storage blocked: the step-down still applies to this page.
+  }
+}
+
 interface ParticleFieldProps {
   /** Renders a dimmer, sparser field for content-heavy pages (case studies):
    * half the stars, half the luminosity of the homepage's field. */
   subtle?: boolean;
+}
+
+interface ParticlesProps extends ParticleFieldProps {
+  /** Called once, after the first frame has actually been drawn. */
+  onFirstFrame: () => void;
+  /** Called with the median frame time once the probe window closes. */
+  onProbe: ((medianDelta: number) => void) | null;
 }
 
 // Disney's "ease + follow-through": a critically-under-damped spring pulls
@@ -66,7 +110,7 @@ const trailFragmentShader = `
 // suspenders: drive the renderer/camera size ourselves from the actual
 // window dimensions, independent of whatever R3F's own observer is doing.
 function ForceViewportSize() {
-  const { gl, camera, size } = useThree();
+  const { gl, camera, size, invalidate } = useThree();
 
   useEffect(() => {
     const resize = () => {
@@ -77,6 +121,7 @@ function ForceViewportSize() {
         (camera as THREE.PerspectiveCamera).aspect = w / h;
         camera.updateProjectionMatrix();
       }
+      invalidate();
     };
     resize();
     window.addEventListener('resize', resize);
@@ -97,7 +142,7 @@ function ForceViewportSize() {
   return null;
 }
 
-function Particles({ subtle = false }: ParticleFieldProps) {
+function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const particleCount = subtle ? Math.round(PARTICLE_COUNT / 2) : PARTICLE_COUNT;
   const trailCount = subtle ? Math.round(TRAIL_COUNT / 2) : TRAIL_COUNT;
   const meshRef = useRef<THREE.Points>(null);
@@ -120,10 +165,18 @@ function Particles({ subtle = false }: ParticleFieldProps) {
   const tunnelTargetRef = useRef(0);
   const tunnelAmountRef = useRef(0);
   const tunnelHoldStartRef = useRef<number | null>(null);
-  const { viewport } = useThree();
+  const { viewport, invalidate } = useThree();
+  const firstFrameRef = useRef(false);
+  const probeRef = useRef<number[] | null>(null);
+
+  useEffect(() => {
+    probeRef.current = onProbe ? [] : null;
+    if (onProbe) invalidate();
+  }, [onProbe, invalidate]);
 
   useEffect(() => {
     const unsub = heroTunnelBus.subscribe((active) => {
+      invalidate();
       tunnelTargetRef.current = active ? 1 : 0;
       if (active) {
         if (tunnelHoldStartRef.current === null) tunnelHoldStartRef.current = performance.now();
@@ -220,14 +273,16 @@ function Particles({ subtle = false }: ParticleFieldProps) {
     mouseRef.current.y = ny;
     mouseRef.current.active = true;
     activityRef.current = Math.min(1, activityRef.current + mouseRef.current.speed * 8);
-  }, []);
+    invalidate();
+  }, [invalidate]);
 
   const handleScroll = useCallback(() => {
     const prev = scrollRef.current;
     scrollRef.current = window.scrollY;
     scrollDirRef.current = scrollRef.current > prev ? -1 : 1;
     activityRef.current = Math.min(1, activityRef.current + Math.min(Math.abs(scrollRef.current - prev) * 0.01, 0.6));
-  }, []);
+    invalidate();
+  }, [invalidate]);
 
   useEffect(() => {
     window.addEventListener('pointermove', handlePointerMove);
@@ -238,9 +293,27 @@ function Particles({ subtle = false }: ParticleFieldProps) {
     };
   }, [handlePointerMove, handleScroll]);
 
-  useFrame((_, delta) => {
+  useFrame((_, rawDelta) => {
     if (!meshRef.current) return;
+    const delta = Math.min(rawDelta, MAX_DELTA);
     timeRef.current += delta;
+
+    if (!firstFrameRef.current) {
+      firstFrameRef.current = true;
+      onFirstFrame();
+    }
+
+    // Probe: raw (unclamped) deltas, skipping the first frames where
+    // shader warm-up and texture upload still skew the numbers.
+    const probe = probeRef.current;
+    if (probe && onProbe) {
+      probe.push(rawDelta);
+      if (probe.length >= PROBE_WARMUP_FRAMES + PROBE_FRAMES) {
+        const sample = probe.slice(PROBE_WARMUP_FRAMES).sort((a, b) => a - b);
+        probeRef.current = null;
+        onProbe(sample[Math.floor(sample.length / 2)]);
+      }
+    }
     const geo = meshRef.current.geometry;
     const posAttr = geo.getAttribute('position');
     const posArray = posAttr.array as Float32Array;
@@ -471,7 +544,45 @@ function Particles({ subtle = false }: ParticleFieldProps) {
 
     posAttr.needsUpdate = true;
     mouseRef.current.active = false;
+    // Speed is only written on pointermove, so without this it would hold
+    // its last value once the cursor stops and the trail would keep
+    // spawning steam under a still cursor. Decays to rest in ~0.3s.
+    mouseRef.current.speed = THREE.MathUtils.damp(mouseRef.current.speed, 0, 12, delta);
+    if (mouseRef.current.speed < 0.001) mouseRef.current.speed = 0;
+
+    // Keep drawing while anything is still moving (activity, springs, live
+    // trail puffs, parallax catching up, the tunnel easing) or while the
+    // probe is sampling. Otherwise stop: the next input event invalidates.
+    let moving = isActive || tunneling || tunnelTargetRef.current === 1
+      || probeRef.current !== null
+      || Math.abs(parallaxRef.current - screens) > 0.0005;
+    if (!moving) {
+      const ages = trailAgesRef.current;
+      for (let i = 0; i < trailCount && !moving; i++) if (ages[i] <= 1.0) moving = true;
+    }
+    if (!moving) {
+      const vel = starVelocitiesRef.current;
+      for (let i = 0; i < vel.length && !moving; i++) if (Math.abs(vel[i]) > 0.0005) moving = true;
+    }
+    if (moving) invalidate();
   });
+
+  // GL points are squares. With bloom they read as soft stars, but on a
+  // high-DPI phone the canvas is upscaled (dpr capped at 1.5) and in the
+  // reduced tier there is no bloom, so they showed as little blocks. A
+  // radial sprite makes each star round and soft on every tier.
+  const starSprite = useMemo(() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const ctx = c.getContext('2d')!;
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.35, 'rgba(255,255,255,0.85)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }, []);
 
   const trailMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
@@ -492,7 +603,7 @@ function Particles({ subtle = false }: ParticleFieldProps) {
           <bufferAttribute attach="attributes-color" count={particleCount} array={colors} itemSize={3} />
           <bufferAttribute attach="attributes-size" count={particleCount} array={sizes} itemSize={1} />
         </bufferGeometry>
-        <pointsMaterial size={0.026} vertexColors transparent opacity={subtle ? 0.31 : 0.62} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+        <pointsMaterial map={starSprite} size={0.04} vertexColors transparent opacity={subtle ? 0.5 : 1} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
 
       {/* Trail particles — dreamy expanding steam */}
@@ -508,26 +619,84 @@ function Particles({ subtle = false }: ParticleFieldProps) {
   );
 }
 
+// Compiles every material in the scene before the first real frame, so the
+// shader compile stall happens while the canvas is still hidden instead of
+// as a visible hitch once the stars are on screen. Mounted after the scene
+// content, so its layout effect runs once the points exist.
+function PrecompileScene() {
+  const { gl, scene, camera } = useThree();
+  useLayoutEffect(() => {
+    gl.compile(scene, camera);
+  }, [gl, scene, camera]);
+  return null;
+}
+
 export default function ParticleField({ subtle = false }: ParticleFieldProps) {
+  const [tier, setTier] = useState<PerfTier>(readTier);
+  // Hidden until the first frame is drawn, then shown with a straight cut:
+  // no fade, since it is not driven by the visitor (motion law).
+  const [visible, setVisible] = useState(false);
+  // Probe once per tier: after a step down, measure again, so a device that
+  // is still too slow without bloom drops the field altogether.
+  const [probing, setProbing] = useState(() => readTier() !== 'off');
+
+  const tierRef = useRef(tier);
+  tierRef.current = tier;
+
+  const onProbe = useCallback((median: number) => {
+    if (median <= FRAME_BUDGET) {
+      setProbing(false);
+      return;
+    }
+    const next: PerfTier = tierRef.current === 'high' ? 'reduced' : 'off';
+    writeTier(next);
+    console.info(
+      `[sinaida] star field stepped down to "${next}" (median frame ${(median * 1000).toFixed(1)}ms)`,
+    );
+    setTier(next);
+    // Stay probing after 'reduced': Particles restarts its sample window
+    // when it receives a fresh onProbe callback.
+    setProbing(next === 'reduced');
+  }, []);
+
+  // A distinct function identity per tier, so Particles sees a new callback
+  // after a step down and opens a fresh probe window.
+  const onProbeReduced = useCallback((median: number) => onProbe(median), [onProbe]);
+
+  if (tier === 'off') return null;
+
+  const reduced = tier === 'reduced';
+
   return (
     <>
-      <div className="fixed inset-0 z-0" style={{ filter: 'blur(0.5px)' }}>
+      <div
+        className="fixed inset-0 z-0"
+        style={{ filter: 'blur(0.5px)', visibility: visible ? 'visible' : 'hidden' }}
+      >
         <Canvas
+          frameloop="demand"
           camera={{ position: [0, 0, 7], fov: 60 }}
-          gl={{ antialias: false, alpha: true }}
+          gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
           style={{ background: 'transparent' }}
-          dpr={[1, 1.5]}
+          dpr={reduced ? 1 : [1, 1.5]}
         >
           <ForceViewportSize />
-          <Particles subtle={subtle} />
-          <EffectComposer>
-            <Bloom
-              intensity={subtle ? 1.1 : 2.2}
-              luminanceThreshold={0.02}
-              luminanceSmoothing={0.9}
-              mipmapBlur
-            />
-          </EffectComposer>
+          <Particles
+            subtle={subtle}
+            onFirstFrame={() => setVisible(true)}
+            onProbe={probing ? (reduced ? onProbeReduced : onProbe) : null}
+          />
+          {!reduced && (
+            <EffectComposer>
+              <Bloom
+                intensity={subtle ? 1.1 : 2.2}
+                luminanceThreshold={0.02}
+                luminanceSmoothing={0.9}
+                mipmapBlur
+              />
+            </EffectComposer>
+          )}
+          <PrecompileScene />
         </Canvas>
       </div>
       {/* CRT/VHS pass over the star field — scanlines, vignette, grain, and a

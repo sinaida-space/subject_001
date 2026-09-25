@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/inject-seo.mjs && node scripts/prerender-routes.mjs && node scripts/build-sitemap.mjs",
+    "build": "vite build && node scripts/inject-seo.mjs && node scripts/prerender-routes.mjs && node scripts/build-sitemap.mjs && vite build --ssr src/entry-shell.tsx --outDir dist-shell --emptyOutDir && node scripts/prerender-shell.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -21,7 +21,6 @@
     "@types/three": "^0.160.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^11.0.0",
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

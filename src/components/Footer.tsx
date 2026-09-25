@@ -103,7 +103,7 @@ export default function Footer() {
 
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <span className="font-mono uppercase text-[12px] tracking-[0.15em] text-foreground/60">
-            © {new Date().getFullYear()} Sinaida Krivchenko · Prague, CZ
+            © {new Date().getFullYear()} Sinaida Krivchenko{'\u00A0'}· Prague,{'\u00A0'}CZ
           </span>
           <span className="font-mono uppercase text-[12px] tracking-[0.15em] italic text-foreground/60">
             Are we more than the data we leave behind?

@@ -2,43 +2,15 @@
 // Lite is not a fallback page — it's the same page without the expensive layers
 // (WebGL starfield, canvas constellation, heavy motion). Detection runs once at
 // first paint (<5ms, no benchmark). A manual footer toggle overrides and persists.
+// The decision itself lives in resolveRenderMode, which also runs as an inline
+// <head> script in the built HTML (see scripts/prerender-shell.mjs).
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { resolveRenderMode } from '@/lib/resolveRenderMode';
 
 export type RenderMode = 'lite' | 'full';
 
 const STORAGE_KEY = 'sinaida:render-mode';
-
-/** Heuristic capability check. Conservative: anything marginal → lite. */
-function detectMode(): RenderMode {
-  if (typeof window === 'undefined') return 'lite';
-
-  // Respect explicit user intent first.
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return 'lite';
-
-  const nav = navigator as Navigator & {
-    connection?: { saveData?: boolean; effectiveType?: string };
-    deviceMemory?: number;
-  };
-
-  const conn = nav.connection;
-  if (conn?.saveData) return 'lite';
-  if (conn?.effectiveType && ['slow-2g', '2g'].includes(conn.effectiveType)) return 'lite';
-
-  if (typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4) return 'lite';
-  if (typeof nav.hardwareConcurrency === 'number' && nav.hardwareConcurrency <= 4) return 'lite';
-
-  // No WebGL → no full scene.
-  try {
-    const c = document.createElement('canvas');
-    const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-    if (!gl) return 'lite';
-  } catch {
-    return 'lite';
-  }
-
-  return 'full';
-}
 
 function readStored(): RenderMode | null {
   try {
@@ -58,14 +30,15 @@ interface Ctx {
 
 const RenderModeContext = createContext<Ctx>({ mode: 'full', overridden: false, toggle: () => {} });
 
-export function RenderModeProvider({ children }: { children: ReactNode }) {
-  // Start from the stored override if present, else detect.
-  const [mode, setMode] = useState<RenderMode>(() => readStored() ?? detectMode());
+export function RenderModeProvider({ children, initialMode }: { children: ReactNode; initialMode?: RenderMode }) {
+  // Start from the stored override if present, else detect. initialMode is
+  // only passed by the build-time static render (src/entry-shell.tsx).
+  const [mode, setMode] = useState<RenderMode>(() => initialMode ?? resolveRenderMode());
   const [overridden, setOverridden] = useState<boolean>(() => readStored() !== null);
 
   useEffect(() => {
     // Re-detect once on mount in case the first render was SSR-safe default.
-    if (!overridden) setMode(detectMode());
+    if (!overridden) setMode(resolveRenderMode());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

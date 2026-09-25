@@ -3,6 +3,7 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 import { useScrambleReveal } from '@/hooks/useScrambleReveal';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
 import { MoleculeNote } from '@/components/MoleculeBreak';
+import { heroShellWasVisible } from '@/lib/staticShell';
 
 const NAME = 'SINAIDA KRIVCHENKO';
 const ROLE = 'NEW MEDIA ARTIST';
@@ -181,10 +182,12 @@ export default function HeroSection() {
   const lite = mode !== 'full';
 
   // Lite mode also covers prefers-reduced-motion, so the scramble is skipped
-  // there and both lines paint solid.
-  const eyebrow = useScrambleReveal(EYEBROW, { duration: 520, disabled: lite });
-  const headA = useScrambleReveal(LINE_A, { delay: 260, duration: 760, disabled: lite });
-  const headB = useScrambleReveal(LINE_B, { delay: 420, duration: 860, disabled: lite });
+  // there and both lines paint solid. It is also skipped when the static
+  // shell already showed the settled text (slow load, see staticShell.ts).
+  const settled = lite || heroShellWasVisible;
+  const eyebrow = useScrambleReveal(EYEBROW, { duration: 520, disabled: settled });
+  const headA = useScrambleReveal(LINE_A, { delay: 260, duration: 760, disabled: settled });
+  const headB = useScrambleReveal(LINE_B, { delay: 420, duration: 860, disabled: settled });
 
   // Scramble preserves string length/positions throughout the reveal, so
   // slicing at the fixed prefix boundary is safe even mid-animation.

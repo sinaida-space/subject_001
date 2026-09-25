@@ -16,6 +16,8 @@ interface Edge { ax: number; ay: number; bx: number; by: number; depth: number; 
 const STEP = 140;    // ms between impulse generations
 const TRAVEL = 320;  // ms for an impulse to cross one bond
 const RAMP = 300, FADE = 900;
+const HIGHLIGHT = 0.75; // hover/focus brightness, below a full click flare
+const HOVER_IN = 900, HOVER_OUT = 1400; // ms
 
 function rng(seed: number) {
   let s = seed;
@@ -55,12 +57,22 @@ function build(id: MoleculeId, W: number, H: number) {
 const token = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 export default function StarMolecule({
-  id, width, height, flareKey = 0, breathe = true, hold = 4500,
-}: { id: MoleculeId; width: number; height: number; flareKey?: number; breathe?: boolean; hold?: number }) {
+  id, width, height, flareKey = 0, breathe = true, hold = 4500, highlight = false,
+}: { id: MoleculeId; width: number; height: number; flareKey?: number; breathe?: boolean; hold?: number; highlight?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const { mode } = useRenderMode();
   const geo = useMemo(() => build(id, width, height), [id, width, height]);
   const drawRef = useRef<(boost: number, elapsed: number) => void>(() => {});
+  // Resting frame: plain stars, or, while hovered or focused, the figure
+  // lit (bonds drawn, atoms bright) with no impulse travelling. A flare
+  // settles back to this frame instead of to plain stars.
+  const restBoost = highlight ? HIGHLIGHT : 0;
+  const restRef = useRef(restBoost);
+  restRef.current = restBoost;
+  const flaringRef = useRef(false);
+  // The resting level actually on screen, so a hover eases from wherever
+  // the last one left off.
+  const shownRestRef = useRef(restBoost);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -115,36 +127,71 @@ export default function StarMolecule({
       }
       ctx.globalCompositeOperation = 'source-over';
     };
-    drawRef.current(0, 0);
+    drawRef.current(restRef.current, -1e6);
   }, [geo, mode, width, height]);
+
+  // Hover in and out as a slow cosine ease: a breath of light, not a switch.
+  // Lite and reduced motion set the level at once.
+  useEffect(() => {
+    if (flaringRef.current) return; // the flare settles onto restRef itself
+    const from = shownRestRef.current;
+    const to = restBoost;
+    const still = mode !== 'full' || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still || from === to) {
+      shownRestRef.current = to;
+      drawRef.current(to, -1e6);
+      return;
+    }
+    const duration = to > from ? HOVER_IN : HOVER_OUT;
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - t0) / duration);
+      const v = from + (to - from) * (0.5 - 0.5 * Math.cos(Math.PI * t));
+      shownRestRef.current = v;
+      drawRef.current(v, -1e6);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [restBoost, mode]);
 
   useEffect(() => {
     if (!flareKey) return;
     const still = mode !== 'full' || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const rest = () => {
+      flaringRef.current = false;
+      shownRestRef.current = restRef.current;
+      drawRef.current(restRef.current, -1e6);
+    };
+    flaringRef.current = true;
     if (still) {
       drawRef.current(1, -1e6);
-      const t = window.setTimeout(() => drawRef.current(0, 0), hold);
-      return () => { clearTimeout(t); drawRef.current(0, 0); };
+      const t = window.setTimeout(rest, hold);
+      return () => { clearTimeout(t); rest(); };
     }
     let raf = 0;
     const total = Math.max(hold, geo.wave + FADE);
     const t0 = performance.now();
     const tick = (now: number) => {
       const el = now - t0;
-      if (el >= total) { drawRef.current(0, 0); return; }
-      drawRef.current(Math.min(1, el / RAMP, (total - el) / FADE), el);
+      if (el >= total) { rest(); return; }
+      // Fades down to the resting frame, not below it, while still hovered.
+      drawRef.current(Math.max(Math.min(1, el / RAMP, (total - el) / FADE), restRef.current), el);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(raf); drawRef.current(0, 0); };
+    return () => { cancelAnimationFrame(raf); rest(); };
   }, [flareKey, geo, mode, hold]);
 
   return (
     <canvas
       ref={ref}
       aria-hidden="true"
+      // The breath holds where it is while lit (paused, not removed, so
+      // the opacity never jumps).
       className={breathe ? 'molecule-breath block' : 'block'}
-      style={{ width, height }}
+      style={{ width, height, animationPlayState: highlight ? 'paused' : undefined }}
     />
   );
 }
