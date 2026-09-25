@@ -165,6 +165,11 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const tunnelTargetRef = useRef(0);
   const tunnelAmountRef = useRef(0);
   const tunnelHoldStartRef = useRef<number | null>(null);
+  // Motion law: the stream only flies while the pointer is actually moving
+  // over the hero. Each pointermove refills this to 1; it decays to 0 within
+  // ~0.5s of stillness, and the dive's travel is scaled by it, so a cursor
+  // resting on the name freezes the stars in place instead of streaming.
+  const tunnelDriveRef = useRef(0);
   const { viewport, invalidate } = useThree();
   const firstFrameRef = useRef(false);
   const probeRef = useRef<number[] | null>(null);
@@ -261,6 +266,10 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const tunnelTravelRef = useRef(new Float32Array(particleCount).fill(0));
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
+    if (tunnelTargetRef.current === 1) {
+      tunnelDriveRef.current = 1;
+      invalidate();
+    }
     if (e.pointerType && e.pointerType !== 'mouse') return;
     const nx = (e.clientX / window.innerWidth) * 2 - 1;
     const ny = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -349,6 +358,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
       ? (performance.now() - tunnelHoldStartRef.current) / 1000
       : 0;
     const tunnelHoldMult = 1 + Math.min(tunnelHoldSeconds / 4.5, 2.2);
+    const tunnelDrive = tunnelDriveRef.current;
 
     // === TRAIL: Dreamy expanding steam ===
     if (trailRef.current) {
@@ -480,8 +490,8 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
         // outward factor below rather than handing a large depth offset to
         // the fixed-stiffness settle spring once tunneling flips off.
         const travel = tunnelTravelRef.current;
-        if (tunnelTargetRef.current === 1) {
-          const speed = (3.2 + Math.abs(bz) * 0.4) * tunnelHoldMult;
+        if (tunnelTargetRef.current === 1 && tunnelDrive > 0) {
+          const speed = (3.2 + Math.abs(bz) * 0.4) * tunnelHoldMult * tunnelDrive;
           travel[i] += speed * delta;
         }
         const z = bz + travel[i] * tunnelAmt;
@@ -553,7 +563,12 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     // Keep drawing while anything is still moving (activity, springs, live
     // trail puffs, parallax catching up, the tunnel easing) or while the
     // probe is sampling. Otherwise stop: the next input event invalidates.
-    let moving = isActive || tunneling || tunnelTargetRef.current === 1
+    tunnelDriveRef.current = THREE.MathUtils.damp(tunnelDriveRef.current, 0, 8, delta);
+    if (tunnelDriveRef.current < 0.001) tunnelDriveRef.current = 0;
+    if (tunnelTargetRef.current === 0) tunnelDriveRef.current = 0;
+
+    let moving = isActive || tunnelDrive > 0
+      || Math.abs(tunnelAmountRef.current - tunnelTargetRef.current) > 0.001
       || probeRef.current !== null
       || Math.abs(parallaxRef.current - screens) > 0.0005;
     if (!moving) {
