@@ -9,16 +9,17 @@ import { chunkForPath } from '@/lib/routeChunks';
 // 1. Prefetch: hovering or focusing an in-app link starts loading that
 //    route's chunk, so by the time the click lands the page is ready.
 // 2. Transition: clicking an in-app link to another page swaps it inside
-//    document.startViewTransition, a short cross-fade. It is triggered by
-//    the visitor's click, so it sits within the motion law, and it is
-//    skipped under prefers-reduced-motion and in browsers without the API.
+//    document.startViewTransition as a raster scan (styles in index.css).
+//    It is triggered by the visitor's click, so it sits within the motion
+//    law. Skipped under prefers-reduced-motion and in browsers without the
+//    API.
 //
 // Only paths chunkForPath recognises are touched, and only plain left
 // clicks: modifier clicks, target/download links, other origins and
 // same-page hash jumps keep their native behaviour.
 
 type ViewTransitionDocument = Document & {
-  startViewTransition?: (update: () => void) => unknown;
+  startViewTransition?: (update: () => void) => { finished: Promise<void> };
 };
 
 function internalLink(target: EventTarget | null): HTMLAnchorElement | null {
@@ -68,9 +69,16 @@ export default function RouteEnhancer() {
       Promise.resolve(chunkForPath(a.pathname)?.())
         .catch(() => undefined)
         .then(() => {
-          doc.startViewTransition!(() => {
+          // The beam only exists in the new state, so it enters the
+          // transition as its own layer above both page snapshots.
+          const beam = document.createElement('div');
+          beam.className = 'raster-beam';
+          beam.setAttribute('aria-hidden', 'true');
+          const vt = doc.startViewTransition!(() => {
             flushSync(() => navigate(to));
+            document.body.appendChild(beam);
           });
+          vt.finished.finally(() => beam.remove());
         });
     };
     document.addEventListener('click', onClick, true);

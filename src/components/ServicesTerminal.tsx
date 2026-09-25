@@ -15,7 +15,12 @@ function ServiceBlock({ service }: { service: Service }) {
       </p>
       <p className="font-mono text-[13px] leading-relaxed mt-2" style={{ color: 'hsl(var(--foreground) / 0.60)' }}>
         {service.record.map((part, i) =>
-          part.href ? (
+          part.href && /^https?:/.test(part.href) ? (
+            // Works without a case page link straight to the live piece.
+            <a key={i} href={part.href} target="_blank" rel="noopener noreferrer" className="underline hover:text-accent transition-colors">
+              {part.text}
+            </a>
+          ) : part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
               {part.text}
             </Link>

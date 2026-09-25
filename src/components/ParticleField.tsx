@@ -567,6 +567,23 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     if (moving) invalidate();
   });
 
+  // GL points are squares. With bloom they read as soft stars, but on a
+  // high-DPI phone the canvas is upscaled (dpr capped at 1.5) and in the
+  // reduced tier there is no bloom, so they showed as little blocks. A
+  // radial sprite makes each star round and soft on every tier.
+  const starSprite = useMemo(() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const ctx = c.getContext('2d')!;
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.35, 'rgba(255,255,255,0.85)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }, []);
+
   const trailMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       vertexShader: trailVertexShader,
@@ -586,7 +603,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
           <bufferAttribute attach="attributes-color" count={particleCount} array={colors} itemSize={3} />
           <bufferAttribute attach="attributes-size" count={particleCount} array={sizes} itemSize={1} />
         </bufferGeometry>
-        <pointsMaterial size={0.026} vertexColors transparent opacity={subtle ? 0.31 : 0.62} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+        <pointsMaterial map={starSprite} size={0.04} vertexColors transparent opacity={subtle ? 0.5 : 1} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
 
       {/* Trail particles — dreamy expanding steam */}
