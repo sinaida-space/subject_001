@@ -2,14 +2,14 @@
 // Consumed by: the Constellation graph, Selected Works rows, Experiments list,
 // and (via the SEO script / llms.txt) the static content layer.
 
-import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.jpg';
-import workEyesChico from '@/assets/work-eyes-chico.jpg';
+import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.webp';
+import workEyesChico from '@/assets/work-eyes-chico.webp';
 import eyesChicoPainting from '@/assets/work-eyes-chico-painting.jpg';
-import workAetherCurrents from '@/assets/work-aether-currents.jpg';
-import workEtherealPath from '@/assets/work-ethereal-path.jpg';
-import workStereolove from '@/assets/work-stereolove.jpg';
-import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.jpg';
-import workStormGlass from '@/assets/work-storm-glass.jpg';
+import workAetherCurrents from '@/assets/work-aether-currents.webp';
+import workEtherealPath from '@/assets/work-ethereal-path.webp';
+import workStereolove from '@/assets/work-stereolove.webp';
+import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.webp';
+import workStormGlass from '@/assets/work-storm-glass.webp';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals

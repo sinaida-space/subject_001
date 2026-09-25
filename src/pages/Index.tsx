@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
@@ -18,6 +18,25 @@ const Index = () => {
   const { mode } = useRenderMode();
   const full = mode === 'full';
   const { hash } = useLocation();
+
+  // The star field pulls in three.js (the largest chunk on the site). Mount
+  // it once the browser is idle after first paint, so parsing it never
+  // competes with the headline becoming readable. The timeout caps the wait
+  // on a page that never goes idle.
+  const [fieldReady, setFieldReady] = useState(false);
+  useEffect(() => {
+    if (!full) return;
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(() => setFieldReady(true), { timeout: 1200 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(() => setFieldReady(true), 200);
+    return () => window.clearTimeout(id);
+  }, [full]);
 
   // Arriving from another page via a Header/Footer nav link (/#work etc.) —
   // scroll to the section once it's mounted.
@@ -45,7 +64,7 @@ const Index = () => {
           failure isn't the kind of durable preference that override is meant
           to capture. (The custom cursor now mounts once at the App level,
           shared across every route, not duplicated per page.) */}
-      {full && (
+      {full && fieldReady && (
         <ErrorBoundary fallback={null} onError={(e) => console.error('ParticleField crashed:', e)}>
           <Suspense fallback={null}>
             <ParticleField />
