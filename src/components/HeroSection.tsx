@@ -210,22 +210,57 @@ export default function HeroSection() {
   // tunnel's own hover-held duration.
   const [glowing, setGlowing] = useState(false);
   const enterTunnel = () => { if (canHover()) { heroTunnelBus.setActive(true); setGlowing(true); } };
-  const leaveTunnel = () => { if (canHover()) { heroTunnelBus.setActive(false); setGlowing(false); } };
-  // Touch has no hover state to key off, so the same effect runs for as long
-  // as a tap is held anywhere on the hero — full mode only (lite skips it
-  // entirely, same as everywhere else heavy motion is gated). Desktop
-  // pointers no-op here since canHover() is true there and the enter/leave
-  // handlers above already own it.
-  const holdTunnel = () => {
-    if (lite || canHover()) return;
-    heroTunnelBus.setActive(true);
-    setGlowing(true);
+  // Releasing never checks canHover(): a resize or media change between
+  // enter and leave must not leave the stream stuck on.
+  const stopTunnel = () => { heroTunnelBus.setActive(false); setGlowing(false); };
+  // Touch has no hover state, so the easter egg keys off a genuine long
+  // press on the hero. A plain touch that scrolls the page past the hero
+  // must not start the stream: the press only arms after LONG_PRESS_MS
+  // without the finger travelling, and any movement cancels it. Full mode
+  // only (lite skips it, same as all heavy motion). Desktop pointers no-op
+  // here since the enter/leave handlers above own them.
+  const LONG_PRESS_MS = 450;
+  const pressRef = useRef<{ timer: number; x: number; y: number } | null>(null);
+  const clearPress = () => {
+    if (pressRef.current) window.clearTimeout(pressRef.current.timer);
+    pressRef.current = null;
+  };
+  const holdTunnel = (e: React.TouchEvent) => {
+    if (lite || canHover() || e.touches.length !== 1) return;
+    clearPress();
+    const t = e.touches[0];
+    pressRef.current = {
+      x: t.clientX,
+      y: t.clientY,
+      timer: window.setTimeout(() => {
+        heroTunnelBus.setActive(true);
+        setGlowing(true);
+      }, LONG_PRESS_MS),
+    };
+  };
+  const moveTunnel = (e: React.TouchEvent) => {
+    const p = pressRef.current;
+    if (!p || glowing) return;
+    const t = e.touches[0];
+    if (!t || Math.hypot(t.clientX - p.x, t.clientY - p.y) > 10) clearPress();
   };
   const releaseTunnel = () => {
-    if (lite || canHover()) return;
-    heroTunnelBus.setActive(false);
-    setGlowing(false);
+    clearPress();
+    if (glowing) stopTunnel();
   };
+  // Safety net: leaving the tab or the window always ends the easter egg,
+  // so the stream can never keep flying with nobody interacting.
+  useEffect(() => {
+    const off = () => { clearPress(); heroTunnelBus.setActive(false); setGlowing(false); };
+    const onVis = () => { if (document.hidden) off(); };
+    window.addEventListener('blur', off);
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      off();
+      window.removeEventListener('blur', off);
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, []);
   const glowClass = `hero-glow${glowing ? ' hero-glow-active' : ''}`;
   const whisper = useHeroWhisper(glowing, WHISPER_QUESTIONS);
 
@@ -248,6 +283,7 @@ export default function HeroSection() {
       ref={sectionRef}
       className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-10"
       onTouchStart={holdTunnel}
+      onTouchMove={moveTunnel}
       onTouchEnd={releaseTunnel}
       onTouchCancel={releaseTunnel}
     >
@@ -268,7 +304,7 @@ export default function HeroSection() {
         <p
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(1.4rem,7.6vw,5.1875rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
-          onMouseLeave={leaveTunnel}
+          onMouseLeave={stopTunnel}
         >
           {/* The scramble writes noise into the DOM for the length of the reveal,
               so assistive tech reading early got garbage (audit 2026-08-02, F-006).
@@ -331,7 +367,7 @@ export default function HeroSection() {
         <h1
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(1.4rem,7.6vw,5.1875rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
-          onMouseLeave={leaveTunnel}
+          onMouseLeave={stopTunnel}
         >
           {/* Same reason as the eyebrow above (audit 2026-08-02, F-006): this is
               the <h1>, so the scrambled frames were the page's accessible name
