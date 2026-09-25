@@ -37,7 +37,7 @@ export default function ServicesTerminal() {
   return (
     <section
       ref={sectionRef}
-      id="services" className="relative z-10 py-24"
+      id="services" className="relative z-10 py-16 md:py-20"
     >
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">

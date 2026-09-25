@@ -1,8 +1,7 @@
-import { useRef, useState, useEffect, lazy, Suspense } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import { scrambleText } from '@/lib/scramble';
 
-const DustReveal = lazy(() => import('@/components/DustReveal'));
 
 // ── Stagger fade-in helper ───────────────────────────────────
 function Reveal({ delay = 0, children }: { delay?: number; children: React.ReactNode }) {
@@ -228,13 +227,8 @@ function PhotoBlock() {
 // ── Main ─────────────────────────────────────────────────────
 export default function AboutSection() {
   return (
-    <section id="about" className="relative z-10 pt-10 pb-24">
+    <section id="about" className="relative z-10 py-16 md:py-20">
       <div className="container mx-auto px-6 max-w-7xl">
-        <Suspense fallback={<div className="section-divider mb-16" />}>
-          <DustReveal>
-            <div className="section-divider mb-16" />
-          </DustReveal>
-        </Suspense>
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           <div className="md:w-[280px] shrink-0 md:sticky md:top-[15vh] md:self-start">
             <Reveal delay={0}>
