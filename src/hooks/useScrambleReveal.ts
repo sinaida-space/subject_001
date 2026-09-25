@@ -22,7 +22,11 @@ export function useScrambleReveal(
   text: string,
   { delay = 0, duration = 720, disabled = false, chars = SCRAMBLE_CHARS_LIGHT }: Options = {}
 ) {
-  const [display, setDisplay] = useState(() => (disabled ? text : scrambleText(text, 1, chars)));
+  // The build-time static render (no window) paints the settled text: it is
+  // what the static shell shows before the app takes over.
+  const [display, setDisplay] = useState(() =>
+    disabled || typeof window === 'undefined' ? text : scrambleText(text, 1, chars),
+  );
   const doneRef = useRef(disabled);
 
   useEffect(() => {

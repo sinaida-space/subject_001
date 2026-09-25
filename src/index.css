@@ -1008,3 +1008,15 @@
   .molecule-breath { animation: none; opacity: 0.8; }
 }
 html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.8; }
+
+/* Static shell (scripts/prerender-shell.mjs): the prerendered hero stays
+   hidden for its first 400ms. A fast load replaces it with the live hero in
+   that window, so the decode reveal plays; a slow load shows the settled
+   text instead of an empty screen. Lite mode drops all animation, so there
+   the text shows at once. */
+@keyframes shell-hold {
+  from, to { visibility: hidden; }
+}
+.shell-hold {
+  animation: shell-hold 400ms step-end;
+}

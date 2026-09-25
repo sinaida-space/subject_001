@@ -33,3 +33,5 @@ website_sources/
 .agents/
 .claude/launch.json
 private/
+
+dist-shell

@@ -1,4 +1,6 @@
 import { createRoot } from "react-dom/client";
+// Must be evaluated before render: it reads the static shell React replaces.
+import "./lib/staticShell";
 import App from "./App.tsx";
 import "./index.css";
 
