@@ -21,6 +21,7 @@ const CASE_PAGES: Record<string, string> = {
   'redkie-ptitsy': '/work/redkie-ptitsy',
   'the-eyes-chico': '/work/the-eyes-chico',
   'aether-currents': '/work/aether-currents',
+  'conspace-rooms': '/work/conspace-rooms',
 };
 
 function projectLinks(project: Project) {

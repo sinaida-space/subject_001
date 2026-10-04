@@ -228,6 +228,21 @@ export default function WorkCase() {
               </div>
             )}
 
+            {/* ── Headed story sections — long cases stay scannable ── */}
+            {cs.sections?.map((s) => (
+              <section key={s.heading} className="mt-10">
+                <h2 className="clinical-label mb-3 text-foreground/65">{s.heading}</h2>
+                {s.paragraphs.map((p) => (
+                  <p
+                    key={p.slice(0, 32)}
+                    className="max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 [&:not(:first-of-type)]:mt-6"
+                  >
+                    {p}
+                  </p>
+                ))}
+              </section>
+            ))}
+
             {/* ── Labeled media sections (lazy YouTube embeds) ── */}
             {cs.media?.map((m) => (
               <div key={m.video} className="mt-10">

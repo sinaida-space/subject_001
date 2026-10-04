@@ -54,6 +54,8 @@ export interface CaseStudy {
   heroCta?: ProjectLink;
   /** big-number stat card */
   stat?: { value: string; heading: string; body: string };
+  /** headed story sections after the stat card, for long cases that need to stay scannable */
+  sections?: { heading: string; paragraphs: string[] }[];
   /** labeled video sections, in order */
   media?: CaseMedia[];
   method?: CaseMethod;
@@ -296,6 +298,98 @@ export const PROJECTS: Project[] = [
     weight: 1.2,
     // One Alisa Feer work per list: The Eyes Chico holds the Installation row.
     unlisted: true,
+    caseStudy: {
+      kindLabel: 'Installation',
+      intro: [
+        'A labyrinth of half-lit rooms where a painter’s cycle meets two artists’ memories of their grandparents. Eighteen works from the SOULS cycle by UVALISS hang in corridors that the browser builds anew for every visit, so no two visitors walk the same one. It opens from a link on a laptop or a phone, and in a gallery visitors steer it with their bare\u00A0hands.',
+        'A collaboration with UVALISS (Alisa Feer, uvaliss.ru).',
+      ],
+      heroCta: { label: 'Walk the labyrinth', url: 'https://conspace-rooms.vercel.app/?lang=en' },
+      stat: {
+        value: '18',
+        heading: 'Works in a labyrinth that is never the same twice',
+        body: 'There is no map and no signage. Candles show the way, and a rose in the corner grows with every work the visitor\u00A0meets.',
+      },
+      sections: [
+        {
+          heading: 'Where it began',
+          paragraphs: [
+            'SOULS is a cycle Alisa created for her Master of Visual Arts at the Institute of Visual Arts. Her graduation needed a film, and the two artists spent weeks talking through its visual language. Sinaida made digital material for the set: audio-reactive generations in TouchDesigner and a series of AI\u00A0images.',
+            'A few weeks later they were talking about the viral Backrooms film and asked a simple question: what if the works hung inside a labyrinth? The first version did exactly that. It was a set of gloomy rooms with paintings in them, and not much\u00A0more.',
+          ],
+        },
+        {
+          heading: 'A shared nostalgia',
+          paragraphs: [
+            'While preparing the film, Alisa had told many stories about her grandmother. They stayed with Sinaida. She never had the chance to say a proper goodbye to her own grandparents, and, as in Alisa’s life, they were the people who meant the most to her. The project started as a space for Alisa’s work and grew into a memory the two artists\u00A0share.',
+            'Finding references became a family exercise. Alisa asked her mother to dig out photographs of the wallpaper they once had at home. Sinaida searched for the old tea kettles, toys and wall rugs that filled flats of that time. Some objects in the rooms come from open libraries, some are drawn entirely in code, and some are\u00A0images.',
+          ],
+        },
+        {
+          heading: 'Three states of the soul',
+          paragraphs: [
+            'The rooms follow the arc of the SOULS cycle, from trauma toward accepting oneself. Fear is a hospital: green oil paint under whitewash, humming tubes, beds and drip stands left behind. Memory is a grandmother’s flat: rosette wallpaper, parquet, warm lampshades, a television left on in an empty room, gramophone records playing as if from the next flat. Acceptance is pale, and its walls dissolve into lace and\u00A0light.',
+          ],
+        },
+        {
+          heading: 'The questions',
+          paragraphs: [
+            'Sinaida loves deep conversations and strange questions, and many of her projects carry them. Here they rise from candle smoke and wait on the final card. They ask how we look at our own fears, how we see our past, and what we allow ourselves to hope\u00A0for.',
+            'So CONSPACE ROOMS has two lives. For Alisa it is a visual exploration of her cycle. For everyone else it is a walk into the subconscious, with time to think about how the past shaped the present and how it still lets us dare to\u00A0dream.',
+          ],
+        },
+      ],
+      media: [
+        {
+          label: 'The projection, in progress',
+          video: 'oSWzQ4ds8BI',
+          caption: 'The labyrinth at wall scale, recorded while the gallery mode was being built.',
+        },
+        {
+          label: 'Where it began: the SOULS film',
+          video: '6tKyAH1_fWs',
+          caption: 'Alisa’s graduation film, with audio-reactive TouchDesigner generations and AI images by Sinaida.',
+        },
+      ],
+      method: {
+        trace: '> build_decisions.trace() // six reasons',
+        stages: [
+          { label: 'Any browser', detail: 'Paintings usually wait in rooms people have to travel to. This one opens from a link, on a laptop or a phone, with nothing to install.' },
+          { label: 'Made in code', detail: 'Walls, light and most of the furniture are generated on the spot. The piece stays light on an ordinary connection and rebuilds itself for every visit.' },
+          { label: 'Living sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The only recordings are Alisa’s voice at seven of the works.' },
+          { label: 'A steady walk', detail: 'A stutter breaks the spell. The target is 60 fps on an average laptop; every passage between rooms was measured frame by frame, and phones get a lighter version automatically.' },
+          { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
+          { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it.' },
+        ],
+        footer: '> concept, experience design & code: Sinaida Krivchenko · SOULS: UVALISS',
+      },
+      contributors: [{ name: 'Alisa Feer (UVALISS)', url: 'https://uvaliss.ru/', type: 'Person' }],
+      creditsPeople: [
+        {
+          role: 'Idea with UVALISS; experience design, code, sound & AI imagery',
+          name: 'Sinaida Krivchenko',
+          url: 'https://sinaida.eu/statement/',
+          bio: 'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
+        },
+        {
+          role: 'SOULS artworks & voice',
+          name: 'UVALISS (Alisa Feer)',
+          url: 'https://uvaliss.ru/',
+          bio: 'Alisa Feer is a visual artist from St Petersburg exploring themes of darkness and light, childhood and dreams. Her work has been shown at the Russian Museum, St Petersburg (2026, “Intuition of Space: Epiphany”).',
+        },
+      ],
+      links: [
+        { label: 'UVALISS', url: 'https://uvaliss.ru/' },
+        { label: 'The SOULS cycle', url: 'https://uvaliss.ru/souls' },
+        { label: 'Gallery rider', url: 'https://conspace-rooms.vercel.app/rider.html?lang=en' },
+      ],
+      order: {
+        heading: 'What a space can commission',
+        body:
+          'A gallery mode turns the labyrinth into an installation with a projector or a screen, a webcam and speakers. A face in front of the camera starts the walk, the visitor steers with their hands, and once they step away the labyrinth resets into a new one for the next person. The rider is ready in English and Russian.',
+        suffix: 'to bring it into a room.',
+      },
+    },
   },
 
   {
