@@ -104,7 +104,7 @@ export default function PlainSignalIndex() {
   return (
     <div className="w-full" style={{ minHeight: 'clamp(420px, 60vh, 720px)' }}>
       {KIND_ORDER.map((kind) => {
-        const items = PROJECTS.filter((p) => p.kind === kind && (!p.background || p.listed));
+        const items = PROJECTS.filter((p) => p.kind === kind && !p.unlisted && (!p.background || p.listed));
         const kindSection =
           items.length === 0 ? null : (
             <section key={kind} aria-labelledby={`plain-signal-${kind}`} className="mb-12 last:mb-0">
