@@ -302,7 +302,7 @@ export const PROJECTS: Project[] = [
       kindLabel: 'Installation',
       intro: [
         'A labyrinth of half-lit rooms where a painter’s cycle meets two artists’ memories of their grandparents. Eighteen works from the SOULS cycle by UVALISS hang in corridors that the browser builds anew for every visit, so no two visitors walk the same one. It opens from a link on a laptop or a phone, and in a gallery visitors steer it with their bare\u00A0hands.',
-        'A collaboration with UVALISS (Alisa Feer, uvaliss.ru).',
+        'A collaboration with UVALISS (Alisa Feer, https://uvaliss.ru/).',
       ],
       heroCta: { label: 'Walk the labyrinth', url: 'https://conspace-rooms.vercel.app/?lang=en' },
       stat: {

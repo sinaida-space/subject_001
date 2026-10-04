@@ -20,7 +20,7 @@ function linkifyCredit(text: string) {
   return parts.flatMap((part, i) => {
     if (!/^https?:\/\//.test(part)) return [part];
     // strip trailing sentence punctuation caught by the greedy match
-    const trailing = part.match(/[.,;:]+$/)?.[0] ?? '';
+    const trailing = part.match(/[.,;:)]+$/)?.[0] ?? '';
     const url = trailing ? part.slice(0, -trailing.length) : part;
     return [
       <a
@@ -182,7 +182,7 @@ export default function WorkCase() {
                 key={p.slice(0, 32)}
                 className="mt-0 max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 first:mt-0 [&:not(:first-child)]:mt-6"
               >
-                {p}
+                {linkifyCredit(p)}
               </p>
             ))}
 
@@ -237,7 +237,7 @@ export default function WorkCase() {
                     key={p.slice(0, 32)}
                     className="max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 [&:not(:first-of-type)]:mt-6"
                   >
-                    {p}
+                    {linkifyCredit(p)}
                   </p>
                 ))}
               </section>
