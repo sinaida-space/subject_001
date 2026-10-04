@@ -36,6 +36,12 @@ const ROWS: Row[] = [
     repo: 'https://github.com/sinaida-space/aether-currents',
   },
   {
+    project: 'CONSPACE ROOMS',
+    code: 'Apache 2.0',
+    artwork: 'CC BY-NC-ND 4.0',
+    repo: 'https://github.com/sinaida-space/conspace-rooms',
+  },
+  {
     project: 'Ethereal Path',
     code: 'Apache 2.0',
     artwork: 'CC BY-NC-ND 4.0',

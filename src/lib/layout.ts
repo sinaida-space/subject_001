@@ -42,6 +42,31 @@ interface Options {
 // projects that share constellations land between neighbouring arcs.
 const RING_ORDER: Category[] = ['sound', 'code', 'body', 'space'];
 
+// Hand-placed composition, arranged by dragging in dev (see the layout
+// recorder in ConstellationFull) and copied here as fractions of the canvas.
+// Applied on canvases at least PIN_MIN_WIDTH wide; narrower ones keep the
+// automatic layout. Stars missing here (audio-reactive) are laid out as usual.
+const PIN_MIN_WIDTH = 640;
+const PINS: Record<string, [number, number]> = {
+  'the-eyes-chico': [0.1778, 0.6014],
+  'ethereal-path': [0.5853, 0.7428],
+  'stereolove': [0.4979, 0.6259],
+  'conspace-rooms': [0.3057, 0.6678],
+  'generative-sound': [0.4338, 0.3915],
+  'redkie-ptitsy': [0.6408, 0.204],
+  'infinite-voidsong': [0.4251, 0.191],
+  'storm-glass': [0.7234, 0.2753],
+  'touchdesigner': [0.4775, 0.3274],
+  'creative-web': [0.5296, 0.5404],
+  'aether-currents': [0.8358, 0.4836],
+  'perception-media': [0.2573, 0.7232],
+  'head-coupled': [0.3836, 0.8029],
+  'body-tracking': [0.588, 0.8489],
+  'algorithmic-systems': [0.8524, 0.6987],
+  'interactive-installations': [0.1695, 0.4435],
+  'event-design': [0.1288, 0.273],
+};
+
 export function computeLayout(
   nodes: GraphNode[],
   edges: GraphEdge[],
@@ -136,6 +161,16 @@ export function computeLayout(
   }
   projPts.forEach(({ n, p }) => pos.set(n.id, p));
 
+  // ── 3. Hand-placed pins override the automatic positions ──
+  const pinned = new Set<string>();
+  if (width >= PIN_MIN_WIDTH) {
+    for (const [id, [fx, fy]] of Object.entries(PINS)) {
+      if (!pos.has(id)) continue;
+      pos.set(id, { x: fx * width, y: fy * height });
+      pinned.add(id);
+    }
+  }
+
   // ── 4. Collision pass: skills untangle (projects stay anchored) ──
   // Labels are wide and short, so "personal space" is an ellipse: generous
   // horizontally, tighter vertically. Accent skills are heavier — they hold
@@ -170,8 +205,8 @@ export function computeLayout(
           const ux = (dx / d) * push;
           const uy = (dy / d) * push;
           // heavier node (accent) moves less
-          const wa = A.n.accent ? 0.35 : 1;
-          const wb = B.n.accent ? 0.35 : 1;
+          const wa = pinned.has(A.n.id) ? 0 : A.n.accent ? 0.35 : 1;
+          const wb = pinned.has(B.n.id) ? 0 : B.n.accent ? 0.35 : 1;
           A.p.x += ux * 16 * wa;
           A.p.y += uy * 16 * wa;
           B.p.x -= ux * 16 * wb;
@@ -180,6 +215,7 @@ export function computeLayout(
       }
       // keep clear of project stars (their labels sit beside them)
       const S = skillPos[i];
+      if (pinned.has(S.n.id)) continue;
       for (const P of projPos) {
         const dx = S.p.x - P.p.x;
         const dy = S.p.y - P.p.y;
