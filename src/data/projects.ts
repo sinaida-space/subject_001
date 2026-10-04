@@ -109,6 +109,8 @@ export interface Project {
   background?: boolean;
   /** list a background work in the plain index anyway; the star stays dim */
   listed?: boolean;
+  /** bright star in the constellation, but left out of the plain index */
+  unlisted?: boolean;
   /** full written piece behind the project, opens as a text popup */
   essay?: {
     contentWarning?: string;
@@ -292,6 +294,8 @@ export const PROJECTS: Project[] = [
     ],
     badges: ['camera', 'sound'],
     weight: 1.2,
+    // One Alisa Feer work per list: The Eyes Chico holds the Installation row.
+    unlisted: true,
   },
 
   {
@@ -394,6 +398,7 @@ export const PROJECTS: Project[] = [
     badges: ['camera'],
     weight: 0.7,
     background: true,
+    listed: true,
   },
 
   {
