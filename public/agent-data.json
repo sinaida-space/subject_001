@@ -39,6 +39,13 @@
       "url": "https://sinaida.eu/work/aether-currents"
     },
     {
+      "id": "conspace-rooms",
+      "title": "CONSPACE ROOMS",
+      "kind": "installation",
+      "tagline": "Walk-through labyrinth of eighteen paintings, in the browser or as a gesture-controlled projection, with UVALISS",
+      "url": "https://conspace-rooms.vercel.app/"
+    },
+    {
       "id": "ethereal-path",
       "title": "Ethereal Path",
       "kind": "game",

@@ -10,6 +10,7 @@ import workEtherealPath from '@/assets/work-ethereal-path.webp';
 import workStereolove from '@/assets/work-stereolove.webp';
 import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.webp';
 import workStormGlass from '@/assets/work-storm-glass.webp';
+import workConspaceRooms from '@/assets/work-conspace-rooms.webp';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
@@ -274,6 +275,26 @@ export const PROJECTS: Project[] = [
   },
 
   {
+    id: 'conspace-rooms',
+    title: 'CONSPACE ROOMS',
+    kind: 'installation',
+    tagline: 'Walk-through labyrinth of eighteen paintings, in the browser or as a gesture-controlled projection · with UVALISS',
+    blurb:
+      'A walk-through web installation made with UVALISS (Alisa Feer). Eighteen works from her SOULS series hang in a labyrinth of half-lit rooms that the browser builds as you walk: hospital corridors, a grandmother\u2019s flat, pale rooms dissolving into light. The music is generated as you go, and nothing about the visitor is\u00A0kept.',
+    tools: ['Three.js', 'Generative Web Audio', 'On-device hand tracking'],
+    skills: ['interactive-installations', 'body-tracking', 'creative-web', 'generative-sound'],
+    url: 'https://conspace-rooms.vercel.app/',
+    video: 'oSWzQ4ds8BI',
+    image: workConspaceRooms,
+    links: [
+      { label: 'Visit the experience', url: 'https://conspace-rooms.vercel.app/' },
+      { label: 'GitHub', url: 'https://github.com/sinaida-space/conspace-rooms' },
+    ],
+    badges: ['camera', 'sound'],
+    weight: 1.2,
+  },
+
+  {
     id: 'aether-currents',
     title: 'Aether Currents',
     kind: 'game',
@@ -371,7 +392,8 @@ export const PROJECTS: Project[] = [
       { label: 'GitHub', url: 'https://github.com/sinaida-space/ethereal-path' },
     ],
     badges: ['camera'],
-    weight: 1.1,
+    weight: 0.7,
+    background: true,
   },
 
   {
@@ -411,9 +433,7 @@ export const PROJECTS: Project[] = [
       { label: 'GitHub', url: 'https://github.com/sinaida-space/infinite-voidsong' },
     ],
     badges: ['sound'],
-    weight: 0.7,
-    background: true,
-    listed: true,
+    weight: 0.9,
   },
   {
     id: 'storm-glass',

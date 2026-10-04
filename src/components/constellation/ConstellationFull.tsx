@@ -49,12 +49,13 @@ GEDGES.forEach((e, i) => {
   if (HERO_PROJECT_IDS.has(e.a) || HERO_PROJECT_IDS.has(e.b)) HERO_EDGES.add(i);
 });
 
-// Neutral warm-gray for skill labels at rest — kills the "rainbow dashboard" look.
+// Neutral warm grays for skill labels — kills the "rainbow dashboard" look.
 // The category color returns only as a hover/active response (see label drawing).
 // Hex (not rgba) so per-tier alpha can be applied via hexA at draw time.
-// Was '#f0efe9' (one-character drift from OFF_WHITE) — now the same constant
-// everything else in the constellation uses.
-const SKILL_LABEL_REST = OFF_WHITE;
+// Skills read in grays so projects (off-white) stay the brightest layer:
+// accent skills a light gray, the rest a darker one.
+const SKILL_GRAY_ACCENT = '#a19d97';
+const SKILL_GRAY = '#6d6a66';
 
 // ── Pre-baked radial glow sprite, one per colour (additive bloom, no shader) ──
 const glowCache = new Map<string, HTMLCanvasElement>();
@@ -653,7 +654,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
           // Hero labels recede toward the regular baseline as heroFadeRef fades,
           // so the whole "first highlight" (edges + label brightness) recedes
           // together rather than just the connecting lines dimming alone.
-          alpha = n.accent ? 0.85 + 0.15 * heroFadeRef.current : bg ? 0.6 : 0.85;
+          alpha = n.accent ? 0.85 + 0.15 * heroFadeRef.current : bg ? 0.45 : 0.92;
         }
       } else {
         // Skills tier below projects: accent skills (the signals a producer
@@ -664,8 +665,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
           alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.2;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
-          alpha = n.accent ? 0.95 : 0.45;
-          useCategoryColor = false; // neutral warm-gray at rest
+          alpha = 1;
+          useCategoryColor = false; // gray at rest, by importance
         }
       }
       if (alpha <= 0.02) continue;
@@ -749,7 +750,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       let color: string;
       if (n.kind === 'project') color = hexA(OFF_WHITE, alpha);
       else if (useCategoryColor) color = hexA(n.color, alpha);
-      else color = hexA(SKILL_LABEL_REST, alpha);
+      else color = hexA(n.accent ? SKILL_GRAY_ACCENT : SKILL_GRAY, alpha);
       ctx.fillStyle = color;
       if (isActive) {
         ctx.shadowColor = n.color;
