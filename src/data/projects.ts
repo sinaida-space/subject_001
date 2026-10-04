@@ -315,7 +315,7 @@ export const PROJECTS: Project[] = [
           heading: 'Where it began',
           paragraphs: [
             'SOULS is a cycle Alisa created for her Master of Visual Arts at the Institute of Visual Arts. Her graduation needed a film, and the two artists spent weeks talking through its visual language. Sinaida made digital material for the set: audio-reactive generations in TouchDesigner and a series of AI\u00A0images.',
-            'A few weeks later they were talking about the viral Backrooms film and asked a simple question: what if the works hung inside a labyrinth? The first version did exactly that. It was a set of gloomy rooms with paintings in them, and not much\u00A0more.',
+            'A few weeks later Sinaida asked a simple question: what if the works hung inside a labyrinth? The two artists sat down together to work out how it could be done. The first version was a set of gloomy rooms with paintings in them, and not much\u00A0more.',
           ],
         },
         {
@@ -361,12 +361,12 @@ export const PROJECTS: Project[] = [
           { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
           { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it.' },
         ],
-        footer: '> concept, experience design & code: Sinaida Krivchenko · SOULS: UVALISS',
+        footer: '> idea, design & code: Sinaida Krivchenko · SOULS: UVALISS',
       },
       contributors: [{ name: 'Alisa Feer (UVALISS)', url: 'https://uvaliss.ru/', type: 'Person' }],
       creditsPeople: [
         {
-          role: 'Idea with UVALISS; experience design, code, sound & AI imagery',
+          role: 'Idea, design & code',
           name: 'Sinaida Krivchenko',
           url: 'https://sinaida.eu/statement/',
           bio: 'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
