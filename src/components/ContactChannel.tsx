@@ -37,7 +37,7 @@ function SignalBars() {
 // to ServicesTerminal/HeroSection in Task 4): this section's content must not
 // be gated behind a character-by-character reveal.
 const PARA_1 =
-  'Particularly interested in working with musicians, touring productions, cultural foundations, and forward-thinking brands exploring the intersection of technology and live performance. If your project lives in the space between engineering and emotion, let\'s talk.';
+  'Interested in working with musicians, touring productions, cultural foundations and brands that bring technology into live performance. Send the show, the space or the idea, and let\'s talk.';
 const PARA_2 =
   'Immersive installations  ·  Creative direction\nStage visuals  ·  Exhibition design\nGenerative art commissions\n──────────────────────────\nBased in Prague. Working globally.';
 

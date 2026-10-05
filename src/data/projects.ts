@@ -134,7 +134,7 @@ export const PROJECTS: Project[] = [
     kind: 'stage',
     tagline: 'Live at Sklad No. 3, Moscow · 26 March 2026 · 9 projections, one per song',
     blurb:
-      'Performed live on 26 March 2026 at Sklad No. 3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine unique audio-reactive projections, one crafted for each song, ran in real time behind the band all night, built as TouchDesigner systems that listen to the live mix and paint the room in response. This is the service festivals and touring productions book.',
+      'Performed live on 26 March 2026 at Sklad No. 3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine audio-reactive projections, one for each song, ran in real time behind the band all night. Each one is a TouchDesigner system that listens to the live mix. Festivals and touring productions can book the same setup.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: ['event-design', 'audio-reactive', 'touchdesigner', 'algorithmic-systems'],
     image: workRedkiePtitsy,
@@ -151,7 +151,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '9',
         heading: 'Audio-reactive projections, one per song',
-        body: 'A full-set backdrop: each song in the set got its own real-time TouchDesigner system, built to listen to the live mix and respond in the room. No two songs share a look.',
+        body: 'A full-set backdrop: each song in the set got its own real-time TouchDesigner system, built to listen to the live mix and respond in the room.',
       },
       media: [
         {
@@ -173,7 +173,7 @@ export const PROJECTS: Project[] = [
         stages: [
           { label: 'Live audio in', detail: 'Feed from the desk: the live mix enters as raw signal.' },
           { label: 'CHOP analysis', detail: 'Bands, beats and envelopes extracted in real time.' },
-          { label: 'Per-song patch ×9', detail: 'One visual system per song. No two share a look.' },
+          { label: 'Per-song patch ×9', detail: 'One visual system per song, each with its own look.' },
           { label: 'Projection', detail: 'Light in the room, responding all night.' },
         ],
         footer: '> full-set run · Sklad No. 3, Moscow · 26 March 2026',
@@ -197,7 +197,7 @@ export const PROJECTS: Project[] = [
     kind: 'installation',
     tagline: 'Acrylic painting turned playable web experience & projection installation · with Alisa Feer',
     blurb:
-      'A collaboration with artist Alisa Feer: her acrylic painting is the origin of the piece, translated into a living digital scene that exists as an immersive projection installation and as a web experience controlled by bare hands, with on-device camera tracking. Pigment holds still; code refuses to. The experience is designed for solo viewers to engage in self-discovery.',
+      'A collaboration with artist Alisa Feer. Her acrylic painting became a digital field that exists twice: as a projection installation and as a web experience you steer with your hands through the camera, tracked on-device. It is made for one viewer at a time and asks questions about selfhood.',
     tools: ['Web', 'MediaPipe hand tracking', 'Acrylic on canvas'],
     skills: ['interactive-installations', 'body-tracking', 'perception-media'],
     url: 'https://the-eyes-chico.sinaida.eu/',
@@ -217,7 +217,7 @@ export const PROJECTS: Project[] = [
       kindLabel: 'Installation',
       intro: [
         'It began as a conversation between two artists, each searching for her own way forward. Alisa Feer painted the first answer: a lit figure standing in a field of eyes, all the judging gazes that can throw a person off her own path, held still in acrylic on a single A4 sheet.',
-        'Sinaida translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way, all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface deliberately recalls old computers, slowing a person down enough to actually look. Pigment holds still; code refuses to.',
+        'Sinaida translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way, all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface recalls old computers, which slows a person down enough to look.',
         'The work exists twice. As a web experience it is finished and live, playable now in any browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Everything runs on-device; nothing is recorded. As an installation it is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026.',
       ],
       heroCta: { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
@@ -272,7 +272,7 @@ export const PROJECTS: Project[] = [
       order: {
         heading: 'What a space can commission',
         body:
-          'The installation is ready for its first public room, and the full tech rider fits five lines: a room that can be darkened, red ambient light, one laptop running the web experience, one projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands, or brief an adaptation for their space. The field scales.',
+          'The installation is ready for its first public room, and the full tech rider fits five lines: a room that can be darkened, red ambient light, one laptop running the web experience, one projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands, or brief an adaptation for their space.',
         suffix: 'to book its first room.',
       },
     },
@@ -336,7 +336,7 @@ export const PROJECTS: Project[] = [
           heading: 'The questions',
           paragraphs: [
             'Sinaida loves deep conversations and strange questions, and many of her projects carry them. Here they rise from candle smoke and wait on the final card. They ask how we look at our own fears, how we see our past, and what we allow ourselves to hope\u00A0for.',
-            'So CONSPACE ROOMS has two lives. For Alisa it is a visual exploration of her cycle. For everyone else it is a walk into the subconscious, with time to think about how the past shaped the present and how it still lets us dare to\u00A0dream.',
+            'So CONSPACE ROOMS has two lives. For Alisa it is a visual exploration of her cycle. For everyone else it is a slow walk through fear, memory and acceptance, with time to think about how the past shaped the present.',
           ],
         },
       ],
@@ -400,7 +400,7 @@ export const PROJECTS: Project[] = [
     kind: 'game',
     tagline: 'Browser instrument played with bare hands · with Telefm',
     blurb:
-      'Sinaida built AETHER CURRENTS with Kamil Yegelev, known as Telefm, a musician in Belgrade, over a shared conviction that AI-era tools do not have to flatten performance into a prompt. AETHER CURRENTS is a live medium that turns algorithmic tools into a dynamic extension of the physical body, translating movement into sonic and visual currents.',
+      'Sinaida built AETHER CURRENTS with Kamil Yegelev, known as Telefm, a musician in Belgrade. It is a browser instrument: a camera reads your hands, and their movement drives granular sound and light in real time.',
     tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
     skills: ['body-tracking', 'audio-reactive', 'generative-sound', 'creative-web', 'algorithmic-systems', 'perception-media'],
     url: 'https://aether-currents.sinaida.eu/',
@@ -416,10 +416,9 @@ export const PROJECTS: Project[] = [
     weight: 1.2,
     essay: {
       paragraphs: [
-        'Aether Currents is a way to feel music on your fingertips. Open it, show it your camera, and your hands become the interface. The right hand moves through position and pitch. A pinch shapes grain size. The left hand’s height sets density. Pull your hands apart and the filter opens, the space widens. Close into a fist and the sound freezes, held mid-air like a breath. There is no keyboard, no mouse, no MIDI controller between you and the sound. It is pure proprioception, translated.',
-        'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of "move only your upper body." A body trained inside constraints does not lose freedom; it finds a different one. Aether Currents offers six gestures and a granular synthesis engine underneath, and inside that small vocabulary the range is enormous. The instrument does not know what you will play. Neither does its maker, most nights.',
-        'Sinaida built it with Kamil Yegelev, known as Telefm, a musician in Belgrade, over a shared conviction that AI-era tools do not have to flatten performance into a prompt. Somewhere between a biomedical engineer’s instinct for signal and a dancer’s instinct for gesture there is an instrument that responds in real time, on-device, with no server watching, no cloud in between. Sub-hundred-millisecond latency was never a vanity metric. It is the difference between playing an instrument and issuing a command to one. The visuals on screen are the same signal, seen: what your hands do to the audio, the light does back to you, and the loop closes somewhere between the camera and your own sense of where your hands are in space.',
-        'What is it, finally? A granular synthesizer wearing a computer vision system. A dance studio carried in a browser tab. Either way, the stage did not disappear when Sinaida stopped dancing. It moved into the space between a hand and a webcam, and it is asking to be played.',
+        'Aether Currents is a way to feel music on your fingertips. Open it, show it your camera, and your hands become the interface. The right hand moves through position and pitch. A pinch shapes grain size. The left hand’s height sets density. Pull your hands apart and the filter opens, the space widens. Close into a fist and the sound freezes mid-air. There is no keyboard, no mouse and no MIDI controller between you and the sound, only your own sense of where your hands are.',
+        'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of "move only your upper body." Ballet trains a body inside strict rules. Aether Currents has rules too: six gestures over a granular synthesis engine, with plenty of room to play inside them. The instrument does not know what you will play, and often its maker does not either.',
+        'Sinaida built it with Kamil Yegelev, known as Telefm, a musician in Belgrade. Everything runs on the device, with no server and no cloud. Sound follows movement in under a hundred milliseconds, which is fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
       ],
       credits: [
         'Instrument & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
@@ -429,30 +428,30 @@ export const PROJECTS: Project[] = [
     caseStudy: {
       kindLabel: 'Interactive web',
       intro: [
-        'Sinaida and Kamil Yegelev, the Belgrade musician known as Telefm, built AETHER CURRENTS on one shared conviction: AI-era tools exist to amplify human creativity. The source of all the fun is the human. Our little glitches and flaws make the world beautiful, and however stellar the technology gets, the human needs to stay in the loop.',
-        'Movement is the signal. On-device hand tracking drives a granular synthesis engine as one direct path: position becomes pitch, a pinch shapes the grain, the distance between the hands opens the space, a fist freezes the sound mid-air. Pitch is quantized to a scale, so a trembling hand can never play a wrong note, only an expressive one. The visuals are the sound signal, seen. Nothing leaves the device to feed an algorithm, and a curious player can download their music and take it further.',
-        'AETHER CURRENTS is a live medium in a browser tab that turns algorithmic tools into an extension of the physical body, translating movement into sonic and visual currents. It is versioned like any serious system, each release shaped by watching real people play.',
+        'Sinaida and Kamil Yegelev, the Belgrade musician known as Telefm, built AETHER CURRENTS on one shared belief: tools made with AI should amplify human creativity. The fun comes from the person playing, glitches and flaws included, so the human stays in the loop.',
+        'Movement is the signal. On-device hand tracking drives a granular synthesis engine as one direct path: position becomes pitch, a pinch shapes the grain, the distance between the hands opens the space, a fist freezes the sound mid-air. Pitch is quantized to a scale, so a trembling hand still plays in key. The visuals show the same signal as the sound. Nothing leaves the device, and a player can download their music and take it further.',
+        'AETHER CURRENTS runs in a browser tab. It is released in versions, and each release comes from watching real people play.',
       ],
       heroCta: { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
       stat: {
         value: '0',
         heading: 'Bytes that leave the device',
-        body: 'No camera frame, no audio, no account. The privacy model was a design constraint from day one, built into the architecture before anything else.',
+        body: 'No camera frame, no audio, no account. Privacy was decided first, before any other part of the architecture.',
       },
       media: [
         {
           label: 'The instrument, played',
           video: 'fxrrSxvKp9Q',
-          caption: 'Bare hands over a webcam: granular sound and light answering in real time, entirely on-device.',
+          caption: 'Two hands over a webcam play granular sound, and the light follows.',
         },
       ],
       method: {
         trace: '> idea_pipeline.trace() // gesture → grain',
         stages: [
-          { label: 'The conviction', detail: 'A practice instrument, born between a dancer’s instinct for gesture and a biomedical engineer’s instinct for signal.' },
-          { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. A vocabulary that already lives in the body.' },
+          { label: 'The conviction', detail: 'A practice instrument, built from a dancer’s training in gesture and an engineer’s training in signal.' },
+          { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. All of them are movements the body already knows.' },
           { label: 'Signal engineering', detail: 'Camera → on-device tracking at 40Hz → granular engine → WebGL. One signal drives both the sound and the light.' },
-          { label: 'Musicality guardrails', detail: 'Scale-quantized pitch: no wrong notes possible, only expressive ones. Constraint as the source of range.' },
+          { label: 'Musicality guardrails', detail: 'Pitch is quantized to a scale, so every note stays in key.' },
           { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture. Each fix traced to a specific stumble.' },
           { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
         ],

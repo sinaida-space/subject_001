@@ -280,7 +280,7 @@ export default function AboutSection() {
                     <span style={{ color: 'hsl(var(--primary-legible))' }}> · </span>
                     {'REACH: Global'}
                     <span style={{ color: 'hsl(var(--primary-legible))' }}> · </span>
-                    {'AVAILABLE: Projects between engineering and emotion'}
+                    {'AVAILABLE: Commissions for stages and spaces'}
                   </div>
                 </Reveal>
               </div>
