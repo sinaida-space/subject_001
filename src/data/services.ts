@@ -73,9 +73,11 @@ export const SERVICES: Service[] = [
     description:
       'Immersive installations and generative visual identities, adapted to the space they run in.',
     record: [
-      { text: 'Prototyped as a projection installation for ' },
+      { text: 'Prototyped as interactive projections for ' },
       { text: `The${NBSP}Eyes${NBSP}Chico`, href: '/work/the-eyes-chico' },
-      { text: `, Prague${NBSP}2026. The web form is finished and${NBSP}live.` },
+      { text: ' and ' },
+      { text: `CONSPACE${NBSP}ROOMS`, href: '/work/conspace-rooms' },
+      { text: `, Prague${NBSP}2026. Both web forms are finished and${NBSP}live.` },
     ],
     brief: 'Brief to show: send the space (photos/plans) and the occasion.',
   },
