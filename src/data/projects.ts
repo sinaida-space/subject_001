@@ -209,10 +209,10 @@ export const PROJECTS: Project[] = [
       { label: 'GitHub', url: 'https://github.com/sinaida-space/the-eyes-chico' },
     ],
     badges: ['camera'],
-    featured: true,
-    hero: true,
     weight: 1.3,
     image: workEyesChico,
+    // One Alisa Feer work per list: CONSPACE ROOMS holds the Installation row.
+    unlisted: true,
     caseStudy: {
       kindLabel: 'Installation',
       intro: [
@@ -292,12 +292,13 @@ export const PROJECTS: Project[] = [
     image: workConspaceRooms,
     links: [
       { label: 'Visit the experience', url: 'https://conspace-rooms.vercel.app/' },
+      { label: 'Project sheet (PDF)', url: '/files/conspace-rooms-project-sheet.pdf' },
       { label: 'GitHub', url: 'https://github.com/sinaida-space/conspace-rooms' },
     ],
     badges: ['camera', 'sound'],
-    weight: 1.2,
-    // One Alisa Feer work per list: The Eyes Chico holds the Installation row.
-    unlisted: true,
+    featured: true,
+    hero: true,
+    weight: 1.3,
     caseStudy: {
       kindLabel: 'Installation',
       intro: [
@@ -382,6 +383,7 @@ export const PROJECTS: Project[] = [
         { label: 'UVALISS', url: 'https://uvaliss.ru/' },
         { label: 'The SOULS cycle', url: 'https://uvaliss.ru/souls' },
         { label: 'Gallery rider', url: 'https://conspace-rooms.vercel.app/rider.html?lang=en' },
+        { label: 'Project sheet (PDF)', url: '/files/conspace-rooms-project-sheet.pdf' },
       ],
       order: {
         heading: 'What a space can commission',

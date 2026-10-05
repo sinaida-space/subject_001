@@ -121,13 +121,13 @@ const Statement = () => {
               delayMs={400}
             />
             <Link
-              to="/work/the-eyes-chico"
+              to="/work/conspace-rooms"
               className="text-primary-legible hover:text-accent transition-colors"
             >
-              The Eyes Chico
+              CONSPACE ROOMS
             </Link>
             <ScrambleText
-              text=" started as a conversation with a fellow artist and became a room filled with red light, where you steer a soul across a field of poppies and explore questions about yourself."
+              text={" started as a question to a fellow artist: what if her paintings hung inside a\u00A0labyrinth? Now eighteen of them wait in\u00A0half-lit rooms that you walk with bare hands, from a\u00A0hospital corridor to\u00A0a\u00A0grandmother’s flat."}
               runId={runId}
               delayMs={460}
             />

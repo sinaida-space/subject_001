@@ -326,7 +326,7 @@ export function buildRoutes() {
       heading: 'Sinaida Krivchenko',
       paragraphs: [
         'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
-        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band Redkie Ptitsy, nine projections, one per song, and The Eyes Chico, a room filled with red light where you steer a soul across a field of poppies.',
+        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band Redkie Ptitsy, nine projections, one per song, and CONSPACE ROOMS, a labyrinth of eighteen paintings that you walk with bare hands, from a hospital corridor to a grandmother’s flat.',
       ],
     },
   };
