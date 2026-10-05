@@ -123,7 +123,7 @@ export const SINAIDA_VIDEOS: ExperienceVideo[] = [
     id: 'oSWzQ4ds8BI',
     title: 'CONSPACE ROOMS',
     caseHref: '/work/conspace-rooms',
-    caption: 'Eighteen paintings in a labyrinth of half-lit rooms, prototyped as a gesture-controlled projection: bare hands steer the walk, in real time, on-device.',
+    caption: 'Eighteen paintings in a labyrinth of half-lit rooms, prototyped as a projection. The camera reads the visitor’s hands to steer.',
   },
 ];
 
@@ -153,8 +153,8 @@ export const EXPERIENCES_SECTIONS: {
   problem: {
     heading: 'The problem',
     paragraphs: [
-      'A stand built without its interactive content in mind ends up with that content squeezed onto whatever surface is left over: a screen mounted where a wall happened to be flat, a sensor added after the electrical plan was already fixed. Fixing this after the fact costs more than designing for it upfront, and it shows on the floor as interaction that feels stapled on rather than native to the space.',
-      'Trade-show and festival production schedules are tight. A single team briefed once, instead of two vendors coordinating through a client, is a timeline advantage as much as a design one.',
+      'A stand built without its interactive content in mind ends up with that content squeezed onto whatever surface is left over: a screen mounted where a wall happened to be flat, a sensor added after the electrical plan was already fixed. Fixing this later costs more than designing for it at the start, and visitors can see it: the interaction looks added on.',
+      'Trade-show and festival production schedules are tight. One team briefed once saves time compared with two vendors coordinating through a client.',
     ],
   },
   beforeAfter: {
@@ -164,7 +164,7 @@ export const EXPERIENCES_SECTIONS: {
   clientBenefit: {
     heading: 'What the client gets',
     paragraphs: [
-      'One point of contact for both the structure and the interactive layer. One integrated timeline instead of two vendors to coordinate. Content that reads as part of the architecture, built for the specific surfaces and sightlines of the space rather than adapted to them afterward.',
+      'One point of contact for both the structure and the interactive layer. One timeline. Content designed from the first sketch for the specific surfaces and sightlines of the space.',
     ],
   },
   goal: {
@@ -242,7 +242,7 @@ export const EXPERIENCES_SECTIONS: {
   market: {
     heading: 'Market',
     paragraphs: [
-      'Interactive technology in exhibition and event spaces is still early in adoption compared to broadcast or gaming. Booth designers rarely have in-house real-time system capability. Motion and AV studios rarely have spatial or structural design capability. That gap is the space this team is built to work in.',
+      'Interactive technology in exhibition and event spaces is still early in adoption compared to broadcast or gaming. Booth designers rarely have in-house real-time system capability. Motion and AV studios rarely have spatial or structural design capability. This team covers both.',
     ],
   },
   businessModel: {

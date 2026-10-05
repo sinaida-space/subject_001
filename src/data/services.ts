@@ -43,7 +43,7 @@ export const SERVICES: Service[] = [
     code: 'web',
     title: 'For interactive web',
     description:
-      'Sites and components that move, react, and watch. Real-time WebGL and shaders, camera and gesture control running on-device, generative sound. Delivered as a finished site, or as a single component handed to a team that already has developers.',
+      'Sites and components that respond to the visitor. Real-time WebGL and shaders, camera and gesture control running on-device, generative sound. Delivered as a finished site, or as a single component handed to a team that already has developers.',
     record: [
       { text: 'Every interactive piece on this site was built this way, including ' },
       { text: `Aether${NBSP}Currents`, href: '/work/aether-currents' },
