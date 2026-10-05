@@ -1,0 +1,108 @@
+# CV content. Build: npm run cv
+# [square brackets] mark accent words (sinaidaRed). Use a real U+00A0 where words must not break.
+
+doc:
+  type: cv
+  ground: chalk
+  body_size: 11
+  lang: en-GB
+  title: Sinaida Krivchenko · New media artist · CV
+  author: Sinaida Krivchenko
+  subject: Curriculum vitae, interactive projection and real-time systems
+  keywords: [new media art, TouchDesigner, interactive projection, GLSL, real-time, Prague]
+  output: set by build_cv.py
+  dither: floyd
+  dither_dpi: 300
+
+hero:
+  lines: [Sinaida, Krivchenko]
+  role: New media artist
+  size: 72
+  role_size: 48
+
+sections:
+  - track: main
+    heading: Statement
+    body: |
+      Every [language] I learned well enough to be fluent in still had a territorial border around it.
+
+      A [body] moving in a room has never needed that permission, and neither has [light] or [sound].
+
+      And no [room] makes sense if there is nobody in it.
+
+      What I want out of a piece is a shared memory, something a group of strangers can carry out of a space [together], having arrived at it without a common vocabulary.
+
+      My background in [engineering] gave me a fascination with systems; [ballet] taught me to listen to bodies, spaces and other people.
+
+      I build the [structure], and the audience completes the work.
+
+      The [machines] can do almost all of this alone.
+
+      The [person] standing in front of it is the reason any of it ever happens.
+
+  - track: left
+    heading: Where next
+    body: |
+      The problem I keep returning to is one every cultural venue shares: an audience spends the evening in one room, most of it looking at a phone.
+
+      I address it with experiences that answer bodies and sound in real time, so a group of strangers leaves with something they made together without needing a shared language first.
+
+      I am looking for galleries, festivals and venues that want a room people take part in. My installations need one laptop and a projector, and they travel easily.
+
+  - track: right
+    heading: Selected skills
+    columns: 2
+    body: |
+      TouchDesigner
+      Real-time audio-reactive visuals
+      Body and hand tracking
+      Projection mapping
+      Interactive installation
+      Live concert visuals
+      GLSL shaders
+      Three.js and WebGL
+      Generative sound
+      Privacy-first, on-device tracking
+      IT project management, GE
+      Biomedical engineering, MSc
+
+  - track: right
+    heading: Background
+    body: |
+      Before working under my own name I spent years in the Amsterdam cultural sector, running the visual identity and producing ballet experiences for live audiences of up to 500 people.
+
+      I trained as a biomedical engineer, with an MSc in Biomedical Engineering from Bauman Moscow State Technical University.
+
+  - track: left
+    heading: Contacts
+    fields:
+      - {label: "Website", value: "sinaida.eu", url: "https://sinaida.eu/"}
+      - {label: "Instagram", value: "@sin.ai.da", url: "https://www.instagram.com/sin.ai.da/"}
+      - {label: "Email", value: "gallant_mod5v@icloud.com", url: "mailto:gallant_mod5v@icloud.com"}
+      - {label: "Phone", value: "+420 727 887 979"}
+      - {label: "WhatsApp", value: "wa.me/420727887979", url: "https://wa.me/420727887979"}
+      - {label: "Based in", value: "Prague, CZ"}
+
+cards:
+  - image: images/CURRENTS.png
+    dithered: true
+    title: Aether Currents
+    url: https://sinaida.eu/work/aether-currents
+    body: An instrument played with bare hands. A camera reads your fingers and the field answers, so the body is the whole controller.
+    meta: Web tool · 2026
+
+  - image: images/CONSPACE.png
+    dithered: true
+    title: CONSPACE ROOMS
+    url: https://sinaida.eu/work/conspace-rooms
+    body: A labyrinth for eighteen paintings from the SOULS cycle by UVALISS. Candles lead the way, and the rooms change with every visit.
+    meta: Interactive projection · 2026
+
+  - image: images/PTITSY.png
+    dithered: true
+    title: Redkie Ptitsy
+    url: https://sinaida.eu/work/redkie-ptitsy
+    body: "Live visuals for the band Redkie Ptitsy: nine projections, one per song, built in TouchDesigner."
+    meta: Sklad No. 3, Moscow · 2026
+
+footer: Sinaida Krivchenko | October 2026 | new media artist, Prague
