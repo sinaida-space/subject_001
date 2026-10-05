@@ -326,7 +326,7 @@ export function buildRoutes() {
       heading: 'Sinaida Krivchenko',
       paragraphs: [
         'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
-        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band Redkie Ptitsy, nine projections, one per song, and CONSPACE ROOMS, a labyrinth of eighteen paintings that you walk with bare hands, from a hospital corridor to a grandmother’s flat.',
+        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band Redkie Ptitsy, nine projections, one per song, and CONSPACE ROOMS, which started as a question to a fellow artist: what if her paintings hung inside a labyrinth? Now eighteen of them do, and candles lead the way.',
       ],
     },
   };

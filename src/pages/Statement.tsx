@@ -127,7 +127,7 @@ const Statement = () => {
               CONSPACE ROOMS
             </Link>
             <ScrambleText
-              text={" started as a question to a fellow artist: what if her paintings hung inside a\u00A0labyrinth? Now eighteen of them wait in\u00A0half-lit rooms that you walk with bare hands, from a\u00A0hospital corridor to\u00A0a\u00A0grandmother’s flat."}
+              text={" started as a question to a fellow artist: what if her paintings hung inside a\u00A0labyrinth? Now eighteen of them do, and candles lead the\u00A0way."}
               runId={runId}
               delayMs={460}
             />
