@@ -47,7 +47,7 @@ BACK_X, BACK_TOP, BACK_BOTTOM, BACK_W = 244, 673, 760, 214
 CARD_W = 103
 FOOTER_RIGHT, FOOTER_Y = 578.97, 831.4
 
-SHORT = r"(?:a|an|the|in|of|to|at|by|on|I|A)"
+SHORT = r"(?:a|an|the|in|of|to|at|by|on|and|I|A)"
 
 overflow = []
 
