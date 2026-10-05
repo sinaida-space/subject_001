@@ -120,10 +120,10 @@ export const SINAIDA_VIDEOS: ExperienceVideo[] = [
     caption: 'A commissioned real-time interactive system for a live concert in Moscow: nine audio-reactive projections, one per song, listening to the mix straight from the desk.',
   },
   {
-    id: 'dvNl1G2fVLM',
-    title: 'The Eyes Chico',
-    caseHref: '/work/the-eyes-chico',
-    caption: 'A painting translated into a navigable field, prototyped as a projection installation: a raised palm steers the scene, in real time, on-device.',
+    id: 'oSWzQ4ds8BI',
+    title: 'CONSPACE ROOMS',
+    caseHref: '/work/conspace-rooms',
+    caption: 'Eighteen paintings in a labyrinth of half-lit rooms, prototyped as a gesture-controlled projection: bare hands steer the walk, in real time, on-device.',
   },
 ];
 
@@ -201,7 +201,7 @@ export const EXPERIENCES_SECTIONS: {
         { text: 'Daria has designed and built exhibition stands and pavilions for clients including Invest Saudi at MIPIM Cannes 2025 (a 600 m² two-floor pavilion) and New Murabba at Smart City Expo World Congress in Barcelona (a 154 m² booth built around a 360° LED cube). Sinaida has delivered a commissioned real-time interactive system for ' },
         { text: 'Redkie Ptitsy', href: '/work/redkie-ptitsy' },
         { text: ' in Moscow, and a prototyped installation for ' },
-        { text: 'The Eyes Chico', href: '/work/the-eyes-chico' },
+        { text: 'CONSPACE ROOMS', href: '/work/conspace-rooms' },
         { text: '. The team brings both records to the same brief: structural delivery at full exhibition scale, and real-time interactive systems that hold up in front of an audience.' },
       ],
     ],
