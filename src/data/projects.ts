@@ -174,7 +174,7 @@ export const PROJECTS: Project[] = [
           { label: 'Live audio in', detail: 'Feed from the desk: the live mix enters as raw signal.' },
           { label: 'CHOP analysis', detail: 'Bands, beats and envelopes extracted in real time.' },
           { label: 'Per-song patch ×9', detail: 'One visual system per song, each with its own look.' },
-          { label: 'Projection', detail: 'Light in the room, responding all night.' },
+          { label: 'Projection', detail: 'Projected behind the band for the whole set.' },
         ],
         footer: '> full-set run · Sklad No. 3, Moscow · 26 March 2026',
       },
@@ -184,7 +184,7 @@ export const PROJECTS: Project[] = [
       order: {
         heading: 'What a festival can order',
         body:
-          'Book the same signal chain for your stage: live audio in, real-time TouchDesigner per song, projected on the night, built for your show.',
+          'Book the same setup for your stage: one real-time TouchDesigner system per song, listening to your live mix.',
         suffix: 'to brief a show.',
       },
     },
@@ -357,8 +357,8 @@ export const PROJECTS: Project[] = [
         stages: [
           { label: 'Any browser', detail: 'Paintings usually wait in rooms people have to travel to. This one opens from a link, on a laptop or a phone, with nothing to install.' },
           { label: 'Made in code', detail: 'Walls, light and most of the furniture are generated on the spot. The piece stays light on an ordinary connection and rebuilds itself for every visit.' },
-          { label: 'Living sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The only recordings are Alisa’s voice at seven of the works.' },
-          { label: 'A steady walk', detail: 'A stutter breaks the spell. The target is 60 fps on an average laptop; every passage between rooms was measured frame by frame, and phones get a lighter version automatically.' },
+          { label: 'Generated sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The only recordings are Alisa’s voice at seven of the works.' },
+          { label: 'A steady walk', detail: 'The target is 60 fps on an average laptop; every passage between rooms was measured frame by frame, and phones get a lighter version automatically.' },
           { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
           { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it.' },
         ],
