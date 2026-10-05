@@ -51,20 +51,13 @@ sections:
 
   - track: right
     heading: Selected skills
-    columns: 2
     body: |
       TouchDesigner
       Real-time audio-reactive visuals
       Body and hand tracking
       Projection mapping
       Interactive installation
-      Live concert visuals
-      Gallery and touring riders
-      On-site setup and live operation
-      Remote installation support
-      Privacy by design, GDPR
-      Accessible modes: captions, calm
-      Work in English and Russian
+      Live event visuals
 
   - track: right
     heading: Background

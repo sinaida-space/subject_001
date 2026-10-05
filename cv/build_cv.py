@@ -135,9 +135,10 @@ def build_current(spec):
     flow(page, font, paragraphs(section(spec, "where next")["body"]),
          WHERE_COLS, WHERE_TOP, WHERE_BOTTOM, WHERE_W, "where next")
 
-    skills = [s for s in section(spec, "selected skills")["body"].splitlines() if s.strip()]
-    half = (len(skills) + 1) // 2
-    for ci, chunk in enumerate([skills[:half], skills[half:]]):
+    sk = section(spec, "selected skills")
+    skills = [s for s in sk["body"].splitlines() if s.strip()]
+    per = -(-len(skills) // sk.get("columns", 1))
+    for ci, chunk in enumerate(skills[i:i + per] for i in range(0, len(skills), per)):
         for i, s in enumerate(chunk):
             if font.text_length(s, BODY) > SKILL_W:
                 overflow.append("skill '%s' too wide" % s)
