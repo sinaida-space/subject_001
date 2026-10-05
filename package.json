@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "cv": "python3 cv/build_cv.py"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
