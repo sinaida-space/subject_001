@@ -17,7 +17,7 @@ const LEDE =
 // flipping everything at once. Order here is the order it sweeps.
 const PARAGRAPHS = [
   'Every language I learned well enough to be fluent in still had a territorial border around it. A body moving in a room has never needed that permission, and neither has light or sound. And no room makes sense if there is nobody in it. What I want out of a piece is a shared memory, something a group of strangers can carry out of a space together, having arrived at it without a common vocabulary.',
-  'My background in engineering gave me a fascination with systems; ballet taught me to listen to bodies, spaces and other people. I build the structure, and the audience completes the work. The small glitches are where that shows, and they are the reason the whole thing reads as living.',
+  'My background in engineering gave me a fascination with systems; ballet taught me to listen to bodies, spaces and other people. I build the structure, and the audience completes the work.',
 ];
 
 const CLOSING = [
