@@ -175,7 +175,7 @@ export default function Experiences() {
         </div>
         <h1 className="font-display text-7xl md:text-8xl uppercase font-light mb-4">
           {EXPERIENCES_META.headlineLead}{' '}
-          <span className="text-primary font-bold">{EXPERIENCES_META.headlineAccent}</span>
+          <span className="font-bold">{EXPERIENCES_META.headlineAccent}</span>
         </h1>
         {/* One paragraph, hard-broken so each sentence starts its own line. */}
         <p className="font-mono text-[15px] leading-[1.8] mb-4 text-foreground/[0.87]">

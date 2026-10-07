@@ -86,7 +86,7 @@ const Statement = () => {
           className="block w-full text-left bg-transparent border-0 p-0 mb-6 cursor-none"
         >
           <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase font-light leading-[1.05]">
-            Sinaida <span className="text-primary font-bold">Krivchenko</span>
+            Sinaida <span className="font-bold">Krivchenko</span>
           </h1>
         </button>
 

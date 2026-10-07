@@ -83,7 +83,7 @@ export default function Collaborate() {
           Collaborate
         </div>
         <h1 className="font-display text-7xl md:text-8xl uppercase font-light mb-4">
-          Work with <span className="text-primary font-bold">me</span>
+          Work with <span className="font-bold">me</span>
         </h1>
         <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
           Human first. Digital second. I build living visual systems for stages, concerts, and
