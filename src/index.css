@@ -355,6 +355,13 @@
   .hero-space {
     white-space: pre-wrap;
   }
+  /* A glued run (HeroSection HeadlineRuns) never breaks inside itself. */
+  .hero-glue {
+    white-space: nowrap;
+  }
+  .hero-glue .hero-space {
+    white-space: nowrap;
+  }
 
   @keyframes hero-drift-v5-a { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(4px,0,10px); } }
   @keyframes hero-drift-v5-b { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(-5px,0,-12px); } }

@@ -102,6 +102,33 @@ const DRIFT_VARIANTS = ['a', 'b', 'c', 'd'];
 // of different widths (the face is proportional), which used to re-wrap the
 // line dozens of times a second (CLS 0.29). While a glyph is still noise, its
 // settled character stays in the layout invisibly and the noise is drawn on top.
+// Headline line breaks: "FOR" must never end a line, and "&" must never end
+// one either. "FOR STAGE" and "& SCREEN" are each one unbreakable run, so the
+// only break points are after WORLDS and after STAGE. On phones the break
+// after WORLDS is forced. All three layers share this so they stay aligned.
+const SPLIT_A = LINE_A.indexOf('FOR');
+const SPLIT_B = LINE_B.indexOf('&');
+
+function HeadlineRuns({ a, b, prefix, red = false }: { a: string; b: string; prefix: string; red?: boolean }) {
+  const redClass = red ? 'neon-glow neon-glow-hero text-primary font-bold' : undefined;
+  return (
+    <>
+      <Letters text={a.slice(0, SPLIT_A)} settled={LINE_A.slice(0, SPLIT_A)} prefix={`${prefix}-a1`} />
+      <br className="md:hidden" />
+      <span className="hero-glue">
+        <Letters text={a.slice(SPLIT_A)} settled={LINE_A.slice(SPLIT_A)} prefix={`${prefix}-a2`} indexOffset={SPLIT_A} />
+        <span className={redClass}>
+          <Letters text={b.slice(0, SPLIT_B - 1)} settled={LINE_B.slice(0, SPLIT_B - 1)} prefix={`${prefix}-b1`} />
+        </span>
+      </span>
+      <Letters text={b.slice(SPLIT_B - 1, SPLIT_B)} settled=" " prefix={`${prefix}-bs`} indexOffset={SPLIT_B - 1} />
+      <span className={`hero-glue ${redClass ?? ''}`}>
+        <Letters text={b.slice(SPLIT_B)} settled={LINE_B.slice(SPLIT_B)} prefix={`${prefix}-b2`} indexOffset={SPLIT_B} />
+      </span>
+    </>
+  );
+}
+
 function Letters({ text, settled = text, prefix, indexOffset = 0 }: { text: string; settled?: string; prefix: string; indexOffset?: number }) {
   // Split on whitespace but keep it: the separators are rendered, just not as
   // part of any word.
@@ -374,21 +401,13 @@ export default function HeroSection() {
               for the first ~860 ms. */}
           <span className="sr-only">{`${LINE_A}${LINE_B}`}</span>
           <span className="hero-layer hero-layer-base" aria-hidden="true">
-            <Letters text={headA} settled={LINE_A} prefix="ha" />
-            <br className="md:hidden" />
-            <span className="neon-glow neon-glow-hero text-primary font-bold">
-              <Letters text={headB} settled={LINE_B} prefix="hb" />
-            </span>
+            <HeadlineRuns a={headA} b={headB} prefix="h" red />
           </span>
           <span className="hero-layer hero-ghost hero-ghost-red" aria-hidden="true">
-            <Letters text={headA} settled={LINE_A} prefix="hagr" />
-            <br className="md:hidden" />
-            <Letters text={headB} settled={LINE_B} prefix="hbgr" />
+            <HeadlineRuns a={headA} b={headB} prefix="hgr" />
           </span>
           <span className="hero-layer hero-ghost hero-ghost-white" aria-hidden="true">
-            <Letters text={headA} settled={LINE_A} prefix="hagw" />
-            <br className="md:hidden" />
-            <Letters text={headB} settled={LINE_B} prefix="hbgw" />
+            <HeadlineRuns a={headA} b={headB} prefix="hgw" />
           </span>
         </h1>
       </div>
