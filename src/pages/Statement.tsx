@@ -82,7 +82,7 @@ const Statement = () => {
           onMouseEnter={interactive ? trigger : undefined}
           onClick={trigger}
           onFocus={interactive ? trigger : undefined}
-          aria-label="Replay the statement reveal"
+          aria-label="Sinaida Krivchenko: replay the statement reveal"
           className="block w-full text-left bg-transparent border-0 p-0 mb-6 cursor-none"
         >
           <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase font-light leading-[1.05]">
@@ -111,7 +111,7 @@ const Statement = () => {
             />
             <Link
               to="/work/redkie-ptitsy"
-              className="text-primary-legible hover:text-accent transition-colors"
+              className="text-primary-legible underline decoration-1 underline-offset-4 hover:text-accent transition-colors"
             >
               Redkie Ptitsy
             </Link>
@@ -122,7 +122,7 @@ const Statement = () => {
             />
             <Link
               to="/work/conspace-rooms"
-              className="text-primary-legible hover:text-accent transition-colors"
+              className="text-primary-legible underline decoration-1 underline-offset-4 hover:text-accent transition-colors"
             >
               CONSPACE ROOMS
             </Link>

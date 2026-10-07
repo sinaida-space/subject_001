@@ -174,14 +174,8 @@ export default function NotFound() {
   const line2 = useTyper('> SIGNAL_LOST: navigating the void', 6, 300 + 18 * 6 + 120);
   const line3 = useTyper('> awaiting_redirect.exe', 8, 300 + 18 * 6 + 120 + 37 * 6 + 200);
 
-  useEffect(() => {
-    console.error('404:', location.pathname);
-    const loop = setInterval(() => {
-      setGlitchActive(true);
-      setTimeout(() => setGlitchActive(false), 400);
-    }, 3500);
-    return () => clearInterval(loop);
-  }, [location.pathname]);
+  // Motion law: the 404 glitches only while the visitor points at it.
+  useEffect(() => setGlitchActive(false), [location.pathname]);
 
   return (
     <div
@@ -228,6 +222,8 @@ export default function NotFound() {
           <button
             type="button"
             onClick={() => setSnakeOpen(true)}
+            onPointerEnter={(e) => e.pointerType === 'mouse' && setGlitchActive(true)}
+            onPointerLeave={() => setGlitchActive(false)}
             aria-label="404"
             title="[ ??? ]"
             className="focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4"

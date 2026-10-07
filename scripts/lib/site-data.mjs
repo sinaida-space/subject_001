@@ -347,6 +347,25 @@ export function buildRoutes() {
     },
   };
 
+  const licensing = {
+    path: 'licensing',
+    kind: 'page',
+    title: `Licensing | ${AUTHOR_NAME}`,
+    description:
+      'What you may reuse from this website and from each project, what you may not, and who to ask when the answer is no.',
+    canonical: `${SITE_URL}/licensing/`,
+    breadcrumbLabel: 'Licensing',
+    indexable: true,
+    priority: '0.3',
+    sources: ['src/pages/Licensing.tsx'],
+    fallback: {
+      heading: 'Licensing',
+      paragraphs: [
+        'What you may reuse from this website and from each project, what you may not, and who to ask when the answer is no.',
+      ],
+    },
+  };
+
   // Legacy redirect stubs: the SPA sends /booking/ and /press/ visitors on to
   // /collaborate/, so their static shells reuse collaborate's copy and point
   // search engines at the real destination instead of indexing the redirect.
@@ -377,6 +396,9 @@ export function buildRoutes() {
     experiences,
     statement,
     privacy,
+    licensing,
+    // /license is the SPA's alias for /licensing; same shell, not indexed.
+    { ...licensing, path: 'license', robots: 'noindex, follow', indexable: false },
     legacyRedirect('booking'),
     legacyRedirect('press'),
     ...workRoutes,

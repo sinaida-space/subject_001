@@ -43,10 +43,20 @@ function htmlFiles(dir) {
 }
 
 function mustReplace(html, from, to, label, file) {
-  if (!html.includes(from) && !(from instanceof RegExp && from.test(html))) {
+  if (from instanceof RegExp ? !from.test(html) : !html.includes(from)) {
     throw new Error(`prerender-shell: ${label} not found in ${file}`);
   }
   return html.replace(from, () => to);
+}
+
+// 404.html starts as a copy of the homepage, so its head still claims to be
+// the homepage. Give it its own title, keep it out of the index, and drop the
+// canonical and og:url that would point crawlers back at /.
+function notFoundHead(html) {
+  let out = mustReplace(html, /<title>[^<]*<\/title>/, '<title>Page not found | Sinaida Krivchenko</title>', 'title', '404.html');
+  out = mustReplace(out, /<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex, follow">', 'robots meta', '404.html');
+  out = mustReplace(out, /\s*<link rel="canonical" href="[^"]*">/, '', 'canonical', '404.html');
+  return out.replace(/\s*<meta property="og:url" content="[^"]*">/, '');
 }
 
 let pages = 0;
@@ -61,7 +71,7 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
     // GitHub Pages serves 404.html for any unknown path, and the app then
     // renders NotFound there. It gets the boot script but not the hero, or
     // every broken link would flash the homepage first.
-    writeFileSync(join(DIST, '404.html'), html);
+    writeFileSync(join(DIST, '404.html'), notFoundHead(html));
     html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderShell()}</div>`, 'empty #root', file);
   }
 
