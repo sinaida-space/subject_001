@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -41,9 +41,9 @@ export default function Footer() {
                   { label: 'Services', href: '#services' },
                   { label: 'Contact', href: '#contact' },
                 ].map((item) => (
-                  <a key={item.label} href={navHref(item.href)} className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                  <Link key={item.label} to={navHref(item.href)} className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                     {item.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -71,21 +71,21 @@ export default function Footer() {
             <div>
               <div className="clinical-label mb-5 text-primary-legible">More</div>
               <div className="space-y-3.5">
-                <a href="/statement" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                <Link to="/statement" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Statement
-                </a>
-                <a href="/collaborate" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                </Link>
+                <Link to="/collaborate" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Work with me
-                </a>
+                </Link>
                 <a href="/files/sinaida-krivchenko-cv.pdf" download className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   CV (PDF)
                 </a>
-                <a href="/privacy" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                <Link to="/privacy" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Privacy Policy
-                </a>
-                <a href="/licensing" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
+                </Link>
+                <Link to="/licensing" className="block font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground cursor-none">
                   Licensing
-                </a>
+                </Link>
                 <button
                   type="button"
                   onClick={() => toggle()}
