@@ -11,6 +11,7 @@ import MoleculeBreak, { SectionBand } from '@/components/MoleculeBreak';
 import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 const DustReveal = lazy(() => import('@/components/DustReveal'));
@@ -19,6 +20,16 @@ const Index = () => {
   const { mode } = useRenderMode();
   const full = mode === 'full';
   const { hash } = useLocation();
+
+  // Same strings as the home route in scripts/lib/site-data.mjs. Needed for
+  // visitors who land on another page first: arriving here client-side would
+  // otherwise keep that page's title.
+  usePageMeta({
+    title: 'Sinaida Krivchenko | New media artist · Interactive projections & stage visuals · Prague',
+    description:
+      'Sinaida Krivchenko is a Prague-based new media artist: real-time TouchDesigner and GLSL systems for stage visuals, projections, and audio-reactive performance.',
+    canonical: 'https://sinaida.eu/',
+  });
 
   // The star field pulls in three.js (the largest chunk on the site). Mount
   // it once the browser is idle after first paint, so parsing it never

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { projectById } from '@/data/projects';
+import { projectById, PROJECTS } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
 import DisplacementImage from '@/components/DisplacementImage';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
@@ -59,6 +59,13 @@ export default function WorkCase() {
   if (!project || !cs) return <NotFound />;
 
   const intro = cs.intro ?? (project.blurb ? [project.blurb] : []);
+
+  // Case pages form a loop, in PROJECTS order, so a reader who reaches the
+  // end of one case always has somewhere to go besides back.
+  const cases = PROJECTS.filter((p) => p.caseStudy);
+  const at = cases.findIndex((p) => p.id === project.id);
+  const prev = cases[(at - 1 + cases.length) % cases.length];
+  const next = cases[(at + 1) % cases.length];
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -332,6 +339,18 @@ export default function WorkCase() {
                 {cs.order.suffix}
               </p>
             </div>
+
+            {/* ── Case loop ── */}
+            {cases.length > 1 && (
+              <nav aria-label="More case studies" className="mt-14 flex flex-wrap justify-between gap-6" style={{ borderTop: '1px solid hsl(var(--graphite))', paddingTop: '24px' }}>
+                <Link to={`/work/${prev.id}`} className="clinical-label text-primary-legible transition-colors hover:text-accent">
+                  ← {prev.title}
+                </Link>
+                <Link to={`/work/${next.id}`} className="clinical-label text-primary-legible transition-colors hover:text-accent">
+                  {next.title} →
+                </Link>
+              </nav>
+            )}
           </div>
         </div>
       </main>

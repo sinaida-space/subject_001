@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -39,6 +39,7 @@ export default function Header() {
   const [snakeOpen, setSnakeOpen] = useState(false);
   const { mode, toggle } = useRenderMode();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const onHome = pathname === '/';
   const navHref = (hash: string) => (onHome ? hash : `/${hash}`);
 
@@ -63,12 +64,18 @@ export default function Header() {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     setMenuOpen(false);
-    if (!onHome) return; // let the <a> navigate home, hash-scroll handled there
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // new tab/window: let the browser have it
     e.preventDefault();
+    if (!onHome) {
+      // Client-side route home; Index scrolls to the hash once it mounts,
+      // so leaving a case page is a route transition instead of a reload.
+      navigate(`/${href}`);
+      return;
+    }
     setTimeout(() => {
       const el = document.querySelector(href);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 300);
+    }, menuOpen ? 300 : 0); // wait for the mobile menu to fade out first
   };
 
   const contactEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -97,7 +104,7 @@ export default function Header() {
               (audit 2026-08-02, F-005). The mobile menu below already did this. */}
           <nav className="hidden lg:flex items-center gap-8">
             {NAV_ITEMS.filter((item) => item.label !== 'Contact').map((item) => (
-              <a key={item.label} href={navHref(item.href)} className="clinical-label hover:text-primary-legible transition-colors duration-300 cursor-none">
+              <a key={item.label} href={navHref(item.href)} onClick={(e) => handleNavClick(e, item.href)} className="clinical-label hover:text-primary-legible transition-colors duration-300 cursor-none">
                 {item.label}
               </a>
             ))}
@@ -116,6 +123,7 @@ export default function Header() {
             </button>
             <a
               href={navHref('#contact')}
+              onClick={(e) => handleNavClick(e, '#contact')}
               className="font-mono text-[12px] uppercase tracking-[0.15em] px-4 flex items-center h-9 transition-all duration-300 cursor-none"
               style={{ border: '1px solid hsl(var(--sinaida-red))', color: 'hsl(var(--primary-legible))', background: 'hsl(var(--sinaida-red) / 0.06)' }}
               onMouseEnter={contactEnter}
