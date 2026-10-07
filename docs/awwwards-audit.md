@@ -19,6 +19,17 @@ Weighted: 0.4 × 7.0 + 0.3 × 6.5 + 0.2 × 7.5 + 0.1 × 7.5 = **7.0**.
 
 Developer Award: blocked by mobile performance on the home page. CSSDA scores UX separately from UI and innovation; UX is the weak column. FWA rewards one bold interaction above polish; today there is no single moment a juror would screen-record.
 
+## Corrections after re-measuring
+
+Re-checked while fixing P0 (PR #116). Four findings below were wrong and are struck from the roadmap:
+
+- **Findings 3 and P0 item 2:** live mobile perf on `/` is 86 to 96 with TBT around 70 ms over two clean runs. The 50 and 2,950 ms came from Lighthouse runs competing for one machine. The black frame did not reproduce. LCP of 2.2 to 3.2 s remains, caused by the hero ASCII reveal holding the final paint; that is a design choice. Developer Award is no longer blocked by performance.
+- **Finding 4:** the second `h1` sits inside `<noscript>`; with JavaScript on there is one.
+- **Finding 5:** hero glyph layers are already `aria-hidden` with one `sr-only` string, and the About scramble is marked `aria-busy` while it runs. The noise came from reading raw page text, which no screen reader announces.
+- **Finding 8:** source maps are off on purpose to keep the source private (`vite.config.ts`).
+
+With these corrections usability rises to about 7.0 and the estimate to about **7.2**.
+
 ## Evidence
 
 Lighthouse, headless, live site. Full report and raw JSON were kept out of the repo.
