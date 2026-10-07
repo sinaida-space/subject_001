@@ -108,6 +108,15 @@
 }
 
 @layer base {
+  /* Keyboard focus: one red ring everywhere, so a tabbing visitor never loses
+     their place on Void. Components that draw their own ring keep it. */
+  :focus-visible {
+    outline: 1px solid hsl(var(--sinaida-red));
+    outline-offset: 3px;
+  }
+}
+
+@layer base {
   /* Lite mode — flat black-on-white read mode, no motion. Repaints the same
      HSL tokens everything else already renders through, so it doesn't need
      a parallel set of components. */
