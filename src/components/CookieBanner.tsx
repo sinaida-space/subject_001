@@ -85,12 +85,14 @@ const CookieBanner = () => {
     <div
       role="region"
       aria-label="Cookie notice"
-      className={`notice-surface fixed bottom-0 left-0 right-0 z-50 py-4${away ? ' notice-surface--away' : ''}`}
+      className={`notice-surface fixed bottom-0 left-0 right-0 z-50 py-2.5 sm:py-4${away ? ' notice-surface--away' : ''}`}
     >
       {/* Same container and gutter as Footer.tsx, so the notice's text starts
           on the site's own left edge instead of a narrower one of its own. */}
       <div className="container mx-auto px-6 max-w-7xl">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        {/* One row on phones too: stacked, the notice stood ~130px tall and
+            covered the hero's positioning line in the first screen. */}
+        <div className="flex flex-row items-center justify-between gap-4">
           <p className="font-clinical text-xs text-muted-foreground">
             No tracking cookies. Aggregate visit statistics only.{' '}
             <a

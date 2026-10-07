@@ -308,7 +308,9 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-10"
+      // pb-28 on phones: 100vh runs under the mobile browser toolbar and the
+      // cookie notice, which hid the positioning line in the first screen.
+      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-28 md:pb-10"
       onTouchStart={holdTunnel}
       onTouchMove={moveTunnel}
       onTouchEnd={releaseTunnel}
