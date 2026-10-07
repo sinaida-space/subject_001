@@ -251,7 +251,7 @@ export default function AboutSection() {
                   sitewide, a step below the hero. */}
               <h2 className="font-display text-4xl md:text-5xl uppercase font-light leading-[0.95] mb-10">
                 Human first.
-                <span className="font-bold"> Digital second.</span>
+                <span className="text-primary font-bold"> Digital second.</span>
               </h2>
             </Reveal>
             <div className="flex flex-col xl:flex-row items-start gap-12">
