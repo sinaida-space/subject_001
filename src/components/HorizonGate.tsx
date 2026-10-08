@@ -29,17 +29,17 @@ const smooth = (a: number, b: number, x: number) => {
 // The gate starts a few wheel ticks into the page and ends as About's top
 // reaches the upper eighth of the screen; p runs 0..1 in between.
 const SCROLL_START = 16; // css px: the first wheel tick already starts it
+const GATE_LENGTH = 460; // css px of scroll for the whole gate, no pauses
 const CELL = 3; // css px, the site's dither cell
 const MAX_PARTICLES = 24000;
 const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
 const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
-const FLASH_AT = 0.29; // the line fires
-const CATCH_UP_MS = 110; // how quickly the gate catches up with a wheel step
+const FLASH_AT = 0.28; // the line fires
 const LINE_MEET = 0.5; // the line rises to this height of the screen to meet the stars
-const LINE_HOLD: [number, number] = [0.24, 0.31]; // it holds there while it collects them
-const ABOUT_IN: [number, number] = [0.86, 0.95]; // About text takes over from the cells
+const LINE_HOLD: [number, number] = [0.26, 0.3]; // it holds there while it collects them
+const ABOUT_IN: [number, number] = [0.84, 0.96]; // About text takes over from the cells
 const PHOTO_IN: [number, number] = [0.9, 1.0]; // the portrait resolves last
 
 // ── shaders ───────────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ void main() {
   float x = smoothstep(uSpan.x - fall, uSpan.x + fall, p.x) * (1.0 - smoothstep(uSpan.y - fall, uSpan.y + fall, p.x));
   float split = uFlash * 7.0 * uDpr;     // the line opens into two and closes
   float d0 = p.y - uLine;
-  float i = tube(abs(d0), 0.8 * uDpr, 5.0 * uDpr) * (0.35 + 0.65 * uCharge) * (1.0 - uFlash)
+  float i = tube(abs(d0), 1.2 * uDpr, 5.0 * uDpr) * (0.35 + 0.65 * uCharge) * (1.0 - uFlash)
           + (tube(abs(d0 - split), 0.9 * uDpr, 7.0 * uDpr) + tube(abs(d0 + split), 0.9 * uDpr, 7.0 * uDpr)) * uFlash * 1.3;
   i *= x * max(uCharge, uFlash);
   vec3 col = mix(RED, RED_HOT, clamp(i, 0.0, 1.0)) * i;
@@ -120,7 +120,8 @@ void main() {
   float starSize = mix(1.2, 3.6, depth);
   // a few cells bloom: a bright core inside a soft halo
   float bloom = step(0.93, fract(rnd * 7.13));
-  gl_PointSize = mix(3.0, starSize, flight) * (1.0 + 3.0 * bloom) * uDpr;
+  // whole device pixels, so moving cells do not shimmer between pixel rows
+  gl_PointSize = max(1.0, floor(mix(3.0, starSize, flight) * (1.0 + 3.0 * bloom) * uDpr + 0.5));
 
   vec3 star = mix(vec3(0.95, 0.93, 0.9), vec3(0.85, 0.12, 0.2), step(0.8, rnd)) * mix(0.55, 1.0, depth);
   vec3 col = mix(aCol0, star, flight);
@@ -342,7 +343,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const src = sampleText(hero, skipHero, heroBox, true);
       const aboutBox = about.getBoundingClientRect();
       // only what can be on screen when the gate completes
-      const cap = new DOMRect(aboutBox.left, aboutBox.top, aboutBox.width, Math.min(aboutBox.height, linePage - sy + vh * 1.05 - aboutBox.top));
+      const cap = new DOMRect(aboutBox.left, aboutBox.top, aboutBox.width, Math.min(aboutBox.height, SCROLL_START + GATE_LENGTH - sy + vh * 1.05 - aboutBox.top));
       const skipAbout = (el: Element) => !!el.closest('.sr-only');
       // About's blocks may still wait for their scroll reveal, so no opacity check
       const text = sampleText(about, skipAbout, cap, false);
@@ -377,7 +378,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         // leave the hero top lines first; land on About top lines first, the portrait last
         const s1 = 0.005 + 0.03 * (s ? (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) : rand()) + 0.03 * r;
         const order01 = d ? (d.y - yMin) / Math.max(1, yMax - yMin) : rand();
-        const s2 = d?.kind === 1 ? 0.5 + 0.1 * r : d ? 0.31 + 0.34 * order01 + 0.04 * r : 0.31 + 0.25 * r;
+        const s2 = d?.kind === 1 ? 0.48 + 0.14 * r : d ? 0.29 + 0.4 * order01 + 0.05 * r : 0.29 + 0.3 * r;
         const o = i * STRIDE;
         arr.set([
           sx, syy, mx, linePage, dx, dy,
@@ -429,26 +430,20 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       canvas.style.visibility = on ? 'visible' : 'hidden';
     };
 
-    // A wheel moves the page in steps; the gate follows the scroll through a
-    // short damped catch-up so the line glides between steps instead of
-    // jumping. It only moves while catching up with the user's scroll.
-    let pShown = -1;
-    let lastT = 0;
-    const frame = (now: number) => {
+    const frame = () => {
       raf = 0;
       const vh = window.innerHeight;
       const h = horizon.getBoundingClientRect();
       const sy = window.scrollY;
-      const end = Math.max(SCROLL_START + 400, about.getBoundingClientRect().top + sy - vh * 0.12);
-      const target = clamp01((sy - SCROLL_START) / (end - SCROLL_START));
-      if (pShown < 0 || Math.abs(target - pShown) > 0.5) pShown = target; // a jump (reload, anchor link) lands at once
-      else pShown += (target - pShown) * (1 - Math.exp(-Math.min(64, now - lastT) / CATCH_UP_MS));
-      lastT = now;
-      if (Math.abs(target - pShown) > 1e-4) schedule();
-      else pShown = target;
-      const p = pShown;
+      // tied 1:1 to the scroll, never lagging behind it
+      const p = clamp01((sy - SCROLL_START) / GATE_LENGTH);
       if (p <= 0 || p >= 1 || !built) {
         clearDom();
+        // past the gate the hero is gone for good while any of it is still on screen
+        if (p >= 1 && built && hero.getBoundingClientRect().bottom > 0) {
+          domActive = true;
+          hero.style.opacity = '0';
+        }
         show(false);
         return;
       }
