@@ -311,6 +311,8 @@ export default function ProjectDetail({
         const titleScale = lr.height / Math.max(tr.height, 1);
         // the contents come up in the work's own dialect once the screen lands
         const buildCanvas = buildRef.current;
+        // after an open the cover is hidden; it must be laid out again to be measured
+        if (buildCanvas) buildCanvas.style.display = '';
         const cs0 = getComputedStyle(card);
         const build = buildCanvas
           ? createCardBuild(buildCanvas, project.dialect, cs0.backgroundColor, cs0.getPropertyValue('--sinaida-red') ? `hsl(${cs0.getPropertyValue('--sinaida-red').trim()})` : '#ff0a0a')

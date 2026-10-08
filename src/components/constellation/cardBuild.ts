@@ -6,9 +6,9 @@
 //
 //   crt     a TV finding signal: a hot line opens into a band, scanlines and
 //           an RGB split settle as the picture locks
-//   dither  a red ordered-dither front develops across the card, leaving
-//           the real content behind it
-//   ascii   rows print top to bottom through a glyph density ramp
+//   dither  a red ordered-dither front develops across the card from the
+//           image side, leaving the real content behind it
+//   ascii   the same dither front, printing top to bottom like a raster
 
 import type { Dialect } from '@/lib/diveBus';
 
@@ -27,7 +27,6 @@ const BAYER = (() => {
   return m.map((v) => (v + 0.5) / 64);
 })();
 
-const RAMP = '@%#*+=-:.';
 
 export interface CardBuild {
   draw(q: number): void;
@@ -37,14 +36,14 @@ export interface CardBuild {
 
 export function createCardBuild(canvas: HTMLCanvasElement, dialect: Dialect, cover: string, red: string): CardBuild {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
+  const w = Math.max(1, canvas.clientWidth);
+  const h = Math.max(1, canvas.clientHeight);
   canvas.width = Math.round(w * dpr);
   canvas.height = Math.round(h * dpr);
   const ctx = canvas.getContext('2d')!;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  if (dialect === 'dither') {
+  if (dialect !== 'crt') {
     // cells are rendered one pixel each into a small buffer, then scaled up
     // without smoothing: 1-bit cells at the cost of a single drawImage
     const CELL = 6;
@@ -62,8 +61,10 @@ export function createCardBuild(canvas: HTMLCanvasElement, dialect: Dialect, cov
     };
     const cv = rgb(cover);
     const rv = rgb(red);
-    // the front develops outward from the image side (left), slightly radial
+    // image works develop outward from the image side (left), slightly
+    // radial; code works develop top to bottom, like a raster printing
     const reach = Math.hypot(cols, rows * 1.4);
+    const raster = dialect === 'ascii';
     return {
       split: () => 0,
       draw(q) {
@@ -71,7 +72,7 @@ export function createCardBuild(canvas: HTMLCanvasElement, dialect: Dialect, cov
         for (let y = 0; y < rows; y++) {
           for (let x = 0; x < cols; x++) {
             const i = (y * cols + x) * 4;
-            const dist = Math.hypot(x, (y - rows / 2) * 1.4) / reach;
+            const dist = raster ? y / rows : Math.hypot(x, (y - rows / 2) * 1.4) / reach;
             const front = q * 1.3 - dist * 0.3; // where the develop has reached
             const t = BAYER[(y & 7) * 8 + (x & 7)];
             if (t < front - 0.09) {
@@ -87,50 +88,6 @@ export function createCardBuild(canvas: HTMLCanvasElement, dialect: Dialect, cov
         ctx.clearRect(0, 0, w, h);
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(buf, 0, 0, cols * CELL, rows * CELL);
-      },
-    };
-  }
-
-  if (dialect === 'ascii') {
-    const CW = 10;
-    const CH = 16;
-    const cols = Math.ceil(w / CW);
-    const rows = Math.ceil(h / CH);
-    const mono = getComputedStyle(canvas).getPropertyValue('--font-mono').trim() || 'monospace';
-    ctx.font = `${CH - 3}px ${mono}`;
-    ctx.textBaseline = 'top';
-    const hash = (x: number, y: number) => {
-      const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-      return s - Math.floor(s);
-    };
-    return {
-      split: () => 0,
-      draw(q) {
-        ctx.clearRect(0, 0, w, h);
-        for (let y = 0; y < rows; y++) {
-          // each row prints a little after the one above it
-          const local = q * 1.7 - (y / rows) * 0.7;
-          if (local >= 1) continue; // printed: the real line shows
-          const yy = y * CH;
-          if (local <= 0) {
-            ctx.fillStyle = cover;
-            ctx.fillRect(0, yy, w, CH);
-            continue;
-          }
-          for (let x = 0; x < cols; x++) {
-            // every cell walks the ramp from dense to sparse, a little out of step
-            const k = clamp01(local * 1.25 - hash(x, y) * 0.25);
-            if (k >= 1) continue;
-            ctx.fillStyle = cover;
-            ctx.fillRect(x * CW, yy, CW, CH);
-            if (k > 0) {
-              ctx.fillStyle = red;
-              ctx.globalAlpha = 1 - k * 0.6;
-              ctx.fillText(RAMP[Math.min(RAMP.length - 1, Math.floor(k * RAMP.length))], x * CW + 1, yy + 1);
-              ctx.globalAlpha = 1;
-            }
-          }
-        }
       },
     };
   }

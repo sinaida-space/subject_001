@@ -186,7 +186,7 @@ void main() {
   vec2 clip = screen / vec2(uCentre * 2.0) * 2.0 - 1.0;
   gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
   gl_PointSize = max(size, 1.0);
-  vColor = mix(aColor, mix(HOT, OFF_WHITE, aStar.z), 0.85);   // the site's palette, warmed by the lamp
+  vColor = mix(aColor, HOT, 0.6);   // the site's palette, warmed by the lamp; no white flare near the lens
   vAlpha = alpha * uStarAlpha;
 }`;
 
@@ -409,7 +409,7 @@ vec4 crt(vec2 p, float form) {
   float core = exp(-dy * dy / (2.0 * pow(1.2 * uDpr, 2.0)));
   float bloom = mix(5.0, 16.0, uLineGlow) * uDpr;
   float halo = exp(-dy * dy / (2.0 * bloom * bloom));
-  vec3 glow = (OFF_WHITE * core * uLineGlow + RED * halo * 0.9) * uLineGlow * flicker * lineForm + RED * blade;
+  vec3 glow = (vec3(1.0, 0.55, 0.5) * core * uLineGlow + RED * halo * 0.9) * uLineGlow * flicker * lineForm + RED * blade;
 
   col += glow;
   a = max(a, clamp(max(glow.r, max(glow.g, glow.b)), 0.0, 1.0));
@@ -537,12 +537,13 @@ void main() {
 
   // 3. lens glare while the lens is still in front of us: core + anamorphic streak
   vec2 dl = (p - uLens) / uDpr;
-  float glare = uLensGlow * (1.4 * exp(-dot(dl, dl) / (2.0 * 10.0 * 10.0))
+  float glare = uLensGlow * (0.6 * exp(-dot(dl, dl) / (2.0 * 10.0 * 10.0))
                             + 0.25 * exp(-length(dl) / 70.0)
                             + 0.35 * exp(-abs(dl.y) / 1.5) * exp(-abs(dl.x) / 260.0));
 
   float I = light + glare;
-  vec3 col = RED * min(I, 1.1) + OFF_WHITE * smoothstep(0.85, 2.2, I) * 0.85;
+  // hot light saturates to a deeper red, never to white: no flash on the click
+  vec3 col = RED * min(I, 1.0) + RED * 0.35 * smoothstep(1.0, 2.2, I);
   // ordered-dither quantisation: a projector beam in the site's pixel dialect
   col = floor(col * 9.0 + bayer4(gl_FragCoord.xy)) / 9.0;
   fragColor = vec4(col, 1.0);
