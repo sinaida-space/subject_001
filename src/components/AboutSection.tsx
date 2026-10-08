@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import { scrambleText } from '@/lib/scramble';
+import { useRenderMode } from '@/hooks/useRenderMode';
 
 
 // ── Stagger fade-in helper ───────────────────────────────────
@@ -37,6 +38,8 @@ function Reveal({ delay = 0, children }: { delay?: number; children: React.React
 function BioSignalLock() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const { mode } = useRenderMode();
+  const lite = mode === 'lite';
   const [locked, setLocked] = useState(false);
 
   const rows = [
@@ -59,7 +62,7 @@ function BioSignalLock() {
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || lite) return;
     let frame = 0;
     const interval = setInterval(() => {
       frame += 1;
@@ -69,7 +72,7 @@ function BioSignalLock() {
       }
     }, 55);
     return () => clearInterval(interval);
-  }, [visible]);
+  }, [visible, lite]);
 
   return (
     <div
@@ -92,7 +95,7 @@ function BioSignalLock() {
           50% { opacity: 0.75; }
         }
       `}</style>
-      {!locked && (
+      {!locked && !lite && (
         <div
           className="absolute left-0 right-0 h-10 pointer-events-none"
           style={{
@@ -104,7 +107,7 @@ function BioSignalLock() {
       )}
       <div className="space-y-3">
         {rows.map(([key, val], index) => {
-          const amount = locked ? 0 : Math.max(0.08, 0.38 - index * 0.08);
+          const amount = locked || lite ? 0 : Math.max(0.08, 0.38 - index * 0.08);
           return (
             <div
               key={key}
@@ -118,11 +121,11 @@ function BioSignalLock() {
                 transition: 'color 0.35s ease',
               }}
             >
-              <span style={{ color: locked ? 'hsl(var(--foreground) / 0.75)' : 'hsl(var(--primary-legible))', animation: locked ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
-                {locked ? key : scrambleText(key, amount)}
+              <span style={{ color: locked || lite ? 'hsl(var(--foreground) / 0.75)' : 'hsl(var(--primary-legible))', animation: locked || lite ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
+                {locked || lite ? key : scrambleText(key, amount)}
               </span>
               <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
-              <span>{locked ? val : scrambleText(val, amount)}</span>
+              <span>{locked || lite ? val : scrambleText(val, amount)}</span>
             </div>
           );
         })}
