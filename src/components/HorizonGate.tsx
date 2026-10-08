@@ -18,6 +18,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, type ReactNode } from 'react';
+import { createPortraitBuild, type PortraitBuild } from '@/components/portraitBuild';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -185,7 +186,8 @@ function shown(el: Element, root: Element) {
 // Draws every visible glyph under `root` into a canvas at its rendered place,
 // then reads it back on the 3 px grid. Coordinates come back in page px.
 // `blockOf` tags each cell with the block it was drawn from (drawn a second
-// time into an id canvas, block index in the red channel).
+// time into an id canvas). The index is spread over red and green in steps
+// of 16, so antialiased glyph edges cannot shift it to a neighbouring block.
 function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMRect, checkOpacity: boolean, blockOf?: (el: Element) => number): Cell[] {
   const w = Math.ceil(box.width), h = Math.ceil(box.height);
   if (w < 1 || h < 1) return [];
@@ -209,7 +211,8 @@ function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMR
     ctx.textBaseline = 'alphabetic';
     if (idCtx && blockOf) {
       idCtx.font = ctx.font;
-      idCtx.fillStyle = `rgb(${blockOf(el) + 1},0,0)`;
+      const id = blockOf(el) + 1;
+      idCtx.fillStyle = `rgb(${(id % 16) * 16},${Math.floor(id / 16) * 16},0)`;
     }
     const upper = cs.textTransform === 'uppercase';
     const text = n.data;
@@ -237,7 +240,7 @@ function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMR
     for (let x = x0 + 1; x < w; x += CELL) {
       const k = ((y | 0) * w + (x | 0)) * 4;
       if (data[k + 3] < 110) continue;
-      cells.push({ x: box.left + x, y: box.top + sy + y, r: data[k] / 255, g: data[k + 1] / 255, b: data[k + 2] / 255, blk: ids ? ids[k] - 1 : undefined });
+      cells.push({ x: box.left + x, y: box.top + sy + y, r: data[k] / 255, g: data[k + 1] / 255, b: data[k + 2] / 255, blk: ids ? Math.round(ids[k] / 16) + 16 * Math.round(ids[k + 1] / 16) - 1 : undefined });
     }
   }
   return cells;
@@ -341,13 +344,16 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     let dpr = 1;
     let linePage = 0;
     let blocks: HTMLElement[] = [];
+    let portrait: PortraitBuild | null = null;
+    const photoImg = about.querySelector<HTMLImageElement>('picture img');
+    const photoFrame = about.querySelector<HTMLElement>('.photo-frame-wrapper');
     let blockDone: number[] = [];
     let built = false;
     // the line's flight, screen px: from the bottom of the screen to the top,
     // part linear, part S-curve, so it is moving from the first scroll on
     // fast at first while it collects the hero, then smoothly slower, and it
     // lands on its own place above About exactly as the gate ends
-    const g = { y0: 0, end: 0, len: 600, flash: 0.24 };
+    const g = { y0: 0, end: 0, len: 600, flash: 0.24, photoA: 0.5, photoW: 0.25 };
     // (a cubic Hermite: leaves at ~2x the page's speed, docks at exactly the
     // page's speed, monotonic in between, so it never stops or turns back)
     const lineScreenAt = (q: number) => {
@@ -377,8 +383,6 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       // About hands over block by block: a heading, a paragraph, a row, the portrait
       blocks = Array.from(about.querySelectorAll<HTMLElement>('h2, p, span.block, div'))
         .filter((el) => el.closest('.photo-frame-wrapper') === null);
-      const frameEl = about.querySelector<HTMLElement>('.photo-frame-wrapper');
-      if (frameEl) blocks.push(frameEl);
       const blockOf = (el: Element) => {
         const b = el.closest('h2, p, span.block, div');
         const i = b ? blocks.indexOf(b as HTMLElement) : -1;
@@ -392,7 +396,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const rand = rng(120);
       let dst: (Cell & { kind: number })[] = [
         ...text.map((c) => ({ ...c, kind: 0 })),
-        ...face.map((c) => ({ ...c, kind: 1, blk: frameEl ? blocks.length - 1 : 254 })),
+        ...face.map((c) => ({ ...c, kind: 1, blk: 255 })),
       ];
       const budget = MAX_PARTICLES - Math.min(src.length, MAX_PARTICLES / 3);
       if (dst.length > budget) dst = dst.filter(() => rand() < budget / dst.length);
@@ -411,6 +415,10 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         return hi;
       };
 
+      // the portrait's build window: from when it scrolls in, done well before the end
+      const photoTop = pr ? pr.top + sy : 0, photoH = pr ? Math.max(1, pr.height) : 1;
+      g.photoA = pr ? Math.min(0.6, scrollsIn(photoTop) + 0.01) : 0.5;
+      g.photoW = Math.max(0.12, Math.min(0.3, 0.84 - g.photoA - FALL));
       const n = Math.max(src.length, dst.length);
       const STRIDE = 2 + 2 + 2 + 3 + 3 + 4 + 3;
       const s2s = new Float32Array(n);
@@ -433,7 +441,10 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         const s1 = s ? 0.005 + 0.03 * (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) + 0.03 * r : 0;
         // each letter is shed as it scrolls into view, so About is always
         // forming on screen; the portrait a beat later; never before pickup
-        const shed = d ? scrollsIn(d.y) + (d.kind === 1 ? 0.04 : 0) + 0.025 * r : 0.3 + 0.5 * r;
+        const shed = !d ? 0.3 + 0.5 * r
+          // stars rain onto the portrait top to bottom over its build window
+          : d.kind === 1 ? g.photoA + g.photoW * (0.8 * (d.y - photoTop) / photoH + 0.2 * r)
+          : scrollsIn(d.y) + 0.025 * r;
         const s2 = Math.max(0.03, s ? Math.max(shed, s1 + 0.12) : shed);
         const o = i * STRIDE;
         arr.set([
@@ -455,7 +466,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       for (let i = 0; i < n; i++) {
         const b = i < dst.length ? dst[i].blk : undefined;
         const done = b !== undefined && b < blocks.length ? blockDone[b] : 0.97;
-        arr[i * STRIDE + STRIDE - 1] = done + (i < dst.length && dst[i].kind === 1 ? 0.08 : 0.03) * arr[i * STRIDE + 15];
+        // portrait stars vanish as they land: the dither develops where they hit
+        arr[i * STRIDE + STRIDE - 1] = i < dst.length && dst[i].kind === 1 ? s2s[i] + FALL : done + 0.03 * arr[i * STRIDE + 15];
       }
       gl.bindVertexArray(ptVao);
       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -470,6 +482,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       }
       gl.bindVertexArray(null);
       g.flash = 0.24; // when the hero's stars have reached the line
+      const host = photoImg?.closest('picture')?.parentElement;
+      if (host && !portrait) portrait = createPortraitBuild(host, PHOTO_SRC);
       count = n;
       built = true;
     };
@@ -489,6 +503,9 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       domActive = false;
       hero.style.opacity = about.style.transform = horizon.style.opacity = '';
       blocks.forEach((el) => { el.style.opacity = ''; });
+      if (photoFrame) photoFrame.style.opacity = '';
+      if (photoImg) photoImg.style.opacity = '';
+      portrait?.draw(0, 1);
     };
 
     let raf = 0;
@@ -529,6 +546,14 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       blocks.forEach((el, i) => {
         if (blockDone[i] >= 0) el.style.opacity = smooth(blockDone[i], blockDone[i] + 0.04, p).toFixed(3);
       });
+      // the portrait: its frame appears as the first stars reach it, the site's
+      // dither develops under them, then resolves into the photo
+      const build = clamp01((p - g.photoA - FALL * 0.6) / g.photoW);
+      const resolveAt = Math.min(0.9, g.photoA + g.photoW + FALL);
+      const resolve = smooth(resolveAt, resolveAt + 0.08, p);
+      if (photoFrame) photoFrame.style.opacity = smooth(g.photoA, g.photoA + 0.03, p).toFixed(3);
+      if (photoImg) photoImg.style.opacity = resolve > 0 ? '1' : '0';
+      portrait?.draw(build, resolve);
 
       // always lit (it replaces the DOM line), charging up to the flash
       // always lit, charging as it sweeps the hero, firing once, fading out under the header
@@ -594,6 +619,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       gl.deleteBuffer(buf);
       gl.deleteProgram(lineProg);
       gl.deleteProgram(ptProg);
+      portrait?.destroy();
     };
   }, []);
 
