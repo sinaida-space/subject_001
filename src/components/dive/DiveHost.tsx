@@ -9,7 +9,6 @@ import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { diveBus, isDiveState, type Dialect, type DiveState } from '@/lib/diveBus';
 import { routeChunks } from '@/lib/routeChunks';
-import { projectById } from '@/data/projects';
 
 const loadOverlay = () => import('./DiveOverlay');
 const DiveOverlay = lazy(loadOverlay);
@@ -86,20 +85,6 @@ function locate(anchor: string): { x: number; y: number } | null {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 
-function DepthReadout({ pathname, search }: { pathname: string; search: string }) {
-  const slug = pathname.match(/^\/work\/([^/]+)\/?$/)?.[1];
-  const isCase = !!slug && !!projectById(slug)?.caseStudy;
-  if (pathname !== '/' && !isCase) return null;
-  const depth = !isCase ? 0 : new URLSearchParams(search).get('depth') === '2' ? 2 : 1;
-  return (
-    <div
-      className="pointer-events-none fixed bottom-4 right-4 z-30 font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/65"
-    >
-      Depth <span className="text-primary-legible">0{depth}</span> / 02
-    </div>
-  );
-}
-
 export default function DiveHost() {
   const { mode } = useRenderMode();
   const navigate = useNavigate();
@@ -172,7 +157,6 @@ export default function DiveHost() {
   if (mode !== 'full') return null;
   return (
     <>
-      <DepthReadout pathname={location.pathname} search={location.search} />
       {run && (
         <Suspense
           fallback={run.dir === 'out' ? <div className="fixed inset-0 z-[200] bg-background" aria-hidden="true" /> : null}
