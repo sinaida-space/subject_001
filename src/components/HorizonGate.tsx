@@ -37,7 +37,6 @@ const PHOTO_SRC = '/sinaida-photo-600.jpg';
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
 const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
 const FLASH_AT = 0.28; // the line fires
-const LINE_MEET = 0.5; // the line rises to this height of the screen to meet the stars
 const ABOUT_IN: [number, number] = [0.84, 0.96]; // About text takes over from the cells
 const PHOTO_IN: [number, number] = [0.9, 1.0]; // the portrait resolves last
 
@@ -452,13 +451,14 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       // screen carrying them; they peel off into About's letters behind it.
       // ...and after the flash it rises back into its own place above About,
       // so at the end it is the real line again, exactly where it sits.
-      // The line only ever travels with the scroll (up the screen): it runs
-      // ahead of its home by `lead`, which grows while it collects and then
-      // shrinks back to 0 slower than the page moves, so it never drops.
+      // The line always travels with the scroll and never stops while the
+      // page moves. It runs ahead of its home by `lead`: an S-curve up while
+      // it collects (up to ~2.3x the page's speed), an S-curve back while it
+      // scatters (never below ~0.45x). Both curves start and end flat, so its
+      // speed changes without a jolt and matches the page at either end.
       const home = h.top + h.height / 2;
-      const homeAtMeet = home + sy - (SCROLL_START + FLASH_AT * GATE_LENGTH);
-      const maxLead = Math.max(0, Math.min(homeAtMeet - vh * LINE_MEET, 0.9 * (1 - FLASH_AT) * GATE_LENGTH));
-      const lead = p < FLASH_AT ? maxLead * smooth(0, FLASH_AT, p) : maxLead * (1 - (p - FLASH_AT) / (1 - FLASH_AT));
+      const peak = Math.min(130, vh * 0.15);
+      const lead = peak * (p < FLASH_AT ? smooth(0, FLASH_AT, p) : 1 - smooth(FLASH_AT, 1, p));
       const lineY = home - lead;
 
       domActive = true;
