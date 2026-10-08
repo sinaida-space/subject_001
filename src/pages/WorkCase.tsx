@@ -71,7 +71,7 @@ export default function WorkCase() {
   const prev = cases[(at - 1 + cases.length) % cases.length];
   const next = cases[(at + 1) % cases.length];
 
-  return (
+  return (
     <div className="relative min-h-screen bg-background">
       {/* Same starfield as the homepage, dialed way down — a subtle sense of
           continuity behind a page that's mostly here to be read. */}
@@ -320,7 +320,7 @@ export default function WorkCase() {
             )}
 
             {/* ── Case links ── */}
-            {cs.links && cs.links.length > 0 && (
+            {cs.links && cs.links.length > 0 && (
               <div className="mt-8 flex flex-wrap gap-4">
                 {cs.links.map((l) => (
                   <a

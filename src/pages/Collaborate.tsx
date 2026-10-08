@@ -35,11 +35,11 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
       </p>
       <p className="font-mono text-[13px] leading-relaxed mt-2 text-foreground/60">
         {service.record.map((part, i) =>
-          part.href ? (
+          part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
               {part.text}
             </Link>
-          ) : (
+          ) : (
             <span key={i}>{part.text}</span>
           )
         )}
