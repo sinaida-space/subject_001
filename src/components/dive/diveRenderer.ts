@@ -923,7 +923,10 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
     render,
     dispose() {
       disposed = true;
-      // free everything, then drop the context itself: the canvas is gone after the dive
+      // free everything the dive allocated. The context itself is NOT forced
+      // lost: loseContext() on macOS Chrome blanks the whole window white for
+      // a frame or two (seen at the end of every dive). Clear it, shrink the
+      // drawing buffer to nothing, and let the browser collect it with the canvas.
       [starProg, wallProg, beamProg, blitProg].forEach((pr) => gl.deleteProgram(pr.p));
       buffers.forEach((b) => gl.deleteBuffer(b));
       gl.deleteVertexArray(starVAO);
@@ -932,7 +935,11 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       if (glyphTex) gl.deleteTexture(glyphTex);
       gl.deleteTexture(beamTex);
       gl.deleteFramebuffer(beamFBO);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      canvas.width = 1;
+      canvas.height = 1;
     },
   };
 }
