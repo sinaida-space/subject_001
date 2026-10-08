@@ -40,7 +40,6 @@ const ADJ = buildAdjacency(GEDGES);
 const HERO_PROJECT_IDS = new Set(GNODES.filter((n) => n.kind === 'project' && n.accent).map((n) => n.id));
 // Stable project order for the touch/scroll cycling below — same order the
 // graph is built in, not dependent on runtime layout.
-const PROJECT_NODE_IDS = GNODES.filter((n) => n.kind === 'project').map((n) => n.id);
 // Vertical space each project gets in the mobile top-down layout — tall
 // enough that a project's own skill cluster has real room to breathe.
 const MOBILE_BAND_HEIGHT = 640;
@@ -219,7 +218,6 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // settling; once everything is at rest it draws one final frame and stops — no
   // perpetual idle loop, nothing moves without a user action.
   const lastInputRef = useRef(0);
-  const lastTapRef = useRef<string | null>(null); // touch: id previewed by last tap
   // Stars dragged and dropped stay where you leave them (their "pinned"
   // position) instead of springing home — that arrangement is the composition
   // the synth reads. The spring physics still pull toward the pinned point, so
@@ -336,24 +334,33 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   const hitTest = useCallback((px: number, py: number, coarse = false): RNode | null => {
     let best: RNode | null = null;
     let bestD = Infinity;
-    const bonus = coarse ? 22 : 0;
     for (const n of nodesRef.current) {
       const dx = n.x - px;
       const dy = n.y - py;
       const d = Math.sqrt(dx * dx + dy * dy);
-      const pad = (n.kind === 'project' ? 16 : 12) + n.r + bonus;
+      const pad = coarse ? Math.max(44, n.r + 22) : (n.kind === 'project' ? 16 : 12) + n.r;
       if (d < pad && d < bestD) {
         bestD = d;
         best = n;
       }
     }
     if (best) return best;
+    // Touch: the whole label row is a target (a little taller and wider than the text).
+    const padY = coarse ? 6 : 0;
+    const padX = coarse ? 16 : 0;
+    let labelBest: RNode | null = null;
+    let labelD = Infinity;
     for (const n of nodesRef.current) {
       const box = labelBoxesRef.current.get(n.id);
-      if (box && px >= box.x1 && px <= box.x2 && py >= box.y1 && py <= box.y2) {
-        return n;
+      if (box && px >= box.x1 - padX && px <= box.x2 + padX && py >= box.y1 - padY && py <= box.y2 + padY) {
+        const cd = Math.abs(py - (box.y1 + box.y2) / 2);
+        if (cd < labelD) {
+          labelD = cd;
+          labelBest = n;
+        }
       }
     }
+    if (labelBest) return labelBest;
     return null;
   }, []);
 
@@ -399,27 +406,15 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   const updateScrollParallax = useCallback(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
-    const rect = wrap.getBoundingClientRect();
-    const vh = window.innerHeight || 1;
-    // progress 0..1 as the section travels through the viewport
-    const raw = (vh - rect.top) / (vh + rect.height);
-    const p = Math.max(0, Math.min(1, raw));
-    const range = 22; // small drift range in css px
+    // No scroll drift: stars at different depths moved apart while scrolling,
+    // which kept flipping label placements. A still map reads cleaner on a phone.
     parallaxRef.current.tx = 0;
-    parallaxRef.current.ty = (p - 0.5) * 2 * range;
-
-    // Scroll also cycles which project (and its connected skills) is
-    // highlighted — the mobile equivalent of desktop hover, since there's no
-    // hover on touch. Divides the section's scroll range evenly across every
-    // project in stable order.
-    if (PROJECT_NODE_IDS.length) {
-      const idx = Math.min(PROJECT_NODE_IDS.length - 1, Math.floor(p * PROJECT_NODE_IDS.length));
-      setActive(PROJECT_NODE_IDS[idx]);
-    }
+    parallaxRef.current.ty = 0;
 
     lastInputRef.current = performance.now();
     start();
-  }, [setActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── The frame ──
   const frame = useCallback(() => {
@@ -629,8 +624,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     for (const n of nodes) {
       drawn.push({ x1: n.x - n.r - 5, y1: n.y - n.r - 5, x2: n.x + n.r + 5, y2: n.y + n.r + 5 });
     }
-    // Touch screens only: a narrow desktop window still has hover to reveal
-    // context, so it keeps every project name.
+    // Touch screens: every name stays on, but at a smaller fixed size that
+    // never changes with the active highlight. Size-by-state made labels
+    // re-place themselves on every scroll step, so the names jumped around.
     const narrowView = IS_COARSE;
     labelBoxesRef.current.clear(); // rebuilt below from what's actually drawn this frame
     for (const n of nodes) {
@@ -642,15 +638,14 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const fontWeight = n.kind === 'skill' ? 500 : 400;
 
       if (n.kind === 'project') {
-        // Touch screens: the map reads as skills only. A project's name appears
-        // once a tap selects it or one of the skills it is wired to.
-        if (narrowView && !isActive && !isNeighbor) continue;
         // Projects are the product — flagships read first, background works
         // stay legible but clearly recede.
         const bg = !!n.project?.background;
-        fs = labelSize(isActive ? 17 : isNeighbor ? 15 : n.accent ? 16 : bg ? 12 : 14, PROJECT_LABEL_MIN);
+        fs = narrowView
+          ? n.accent ? 13 : bg ? 11 : 12
+          : labelSize(isActive ? 17 : isNeighbor ? 15 : n.accent ? 16 : bg ? 12 : 14, PROJECT_LABEL_MIN);
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.32;
+          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : narrowView ? 0.45 : 0.32;
         } else {
           // Hero labels recede toward the regular baseline as heroFadeRef fades,
           // so the whole "first highlight" (edges + label brightness) recedes
@@ -661,9 +656,11 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // Skills tier below projects: accent skills (the signals a producer
         // scans for) hold a bright baseline; the rest are smaller and quieter
         // until hover pulls their cluster forward.
-        fs = isActive || isNeighbor || n.accent ? labelSize(isActive ? 16 : isNeighbor ? 15 : 14.5, SKILL_LABEL_MIN) : 13;
+        fs = narrowView
+          ? 11
+          : isActive || isNeighbor || n.accent ? labelSize(isActive ? 16 : isNeighbor ? 15 : 14.5, SKILL_LABEL_MIN) : 13;
         if (active) {
-          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : 0.2;
+          alpha = isActive ? 1 : isNeighbor ? 0.95 : n.accent ? 0.55 : narrowView ? 0.4 : 0.2;
           useCategoryColor = isActive || !!isNeighbor;
         } else {
           alpha = 1;
@@ -1117,19 +1114,16 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       if (node && e.pointerType === 'mouse') {
         navigate(node);
       } else if (node) {
-        // touch: first tap on a node previews (active + tooltip);
-        // second tap on the SAME node opens it.
-        if (node.project && lastTapRef.current === node.id) {
+        // touch: every name is already on the map, so one tap on a work
+        // opens it; a skill tap just lights up its cluster.
+        if (node.project) {
           navigate(node);
-          lastTapRef.current = null;
         } else {
           setActive(node.id);
           showTooltip(node);
-          lastTapRef.current = node.id;
         }
       } else {
         // tapped empty space → dismiss
-        lastTapRef.current = null;
         setActive(null);
         setTooltip(null);
       }
@@ -1160,6 +1154,13 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     lastInputRef.current = performance.now();
     start();
   }, [start]);
+
+  const closeSynth = useCallback(() => {
+    resetStars();
+    synth.reset();
+    setSynthReady(false);
+    setShowUnlockCard(false);
+  }, [resetStars]);
 
   const onPointerLeave = () => {
     pointerRef.current.inside = false;
@@ -1220,6 +1221,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       {synthReady && (
         <SynthPanel
           onReset={resetStars}
+          onClose={closeSynth}
           showUnlockCard={showUnlockCard}
           onDismissCard={() => setShowUnlockCard(false)}
           visible={panelVisible}

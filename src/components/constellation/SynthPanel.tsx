@@ -9,6 +9,7 @@ import { isCookieBannerAcknowledged, subscribeCookieBannerAcknowledged } from '@
 
 interface Props {
   onReset: () => void;
+  onClose: () => void;
   showUnlockCard: boolean;
   onDismissCard: () => void;
   visible: boolean;
@@ -52,7 +53,7 @@ function Slider({
   );
 }
 
-export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, visible }: Props) {
+export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismissCard, visible }: Props) {
   const [state, setState] = useState<SynthState>(synth.getState());
   // Undismissed cookie notice sits fixed at the very bottom of the viewport
   // (z-50) — without this, this panel's own bottom-4 position lands right
@@ -101,7 +102,7 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, vis
             </p>
             <p className="text-[12px] leading-relaxed text-foreground/60">
               Project stars are drums and bass. Left/right sets when they fire, up/down sets their pitch. Skill stars
-              never sound; they bend the signal by where you leave them. Drag, drop, listen. ■ sends the stars home.
+              never sound; they bend the signal by where you leave them. Drag, drop, listen. [RESET] returns the stars to their places.
             </p>
             <button
               type="button"
@@ -168,10 +169,20 @@ export default function SynthPanel({ onReset, showUnlockCard, onDismissCard, vis
           type="button"
           onClick={onReset}
           className="border border-foreground/25 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
-          aria-label="Send stars home"
-          title="Send stars home"
+          aria-label="Reset stars to their places"
+          title="Reset stars to their places"
         >
-          ■ Home
+          [RESET]
+        </button>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="border border-foreground/25 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
+          aria-label="Close synth and restore everything"
+          title="Close synth and restore everything"
+        >
+          [CLOSE]
         </button>
       </div>
     </div>

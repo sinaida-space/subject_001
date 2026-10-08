@@ -57,7 +57,8 @@ class ConstellationSynth {
   private feedback: GainNode | null = null;
   private noiseBuf: AudioBuffer | null = null;
 
-  private state: SynthState = { playing: false, tempo: 96, tone: 0.5, volume: 0.28 };
+  private static readonly DEFAULTS: SynthState = { playing: false, tempo: 96, tone: 0.5, volume: 0.28 };
+  private state: SynthState = { ...ConstellationSynth.DEFAULTS };
   private listeners = new Set<Listener>();
   private unlockListeners = new Set<UnlockListener>();
   private unlocked = false;
@@ -263,6 +264,19 @@ class ConstellationSynth {
     this.state.playing = false;
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
+    this.emit();
+  }
+
+  /** Back to the as-found state: stopped, default knobs, unlock armed again. The AudioContext stays alive. */
+  reset() {
+    this.pause();
+    const d = ConstellationSynth.DEFAULTS;
+    this.state.tempo = d.tempo;
+    this.state.tone = d.tone;
+    this.state.volume = d.volume;
+    if (this.master && this.ctx) this.master.gain.setTargetAtTime(d.volume, this.ctx.currentTime, 0.03);
+    if (this.delay && this.ctx) this.delay.delayTime.setTargetAtTime((60 / d.tempo) * 0.75, this.ctx.currentTime, 0.05);
+    this.unlocked = false;
     this.emit();
   }
 
