@@ -3,7 +3,6 @@ import { buildGraph, buildAdjacency, type GraphNode, type Category, CATEGORY_COL
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 import { diveBus } from '@/lib/diveBus';
-import { useNavigate } from 'react-router-dom';
 import { synth, type VoiceKind } from '@/lib/constellationSynth';
 import SynthPanel from './SynthPanel';
 
@@ -171,7 +170,6 @@ interface Props {
 export default function ConstellationFull({ onActiveProject, onPointerPosition }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const routerNavigate = useNavigate();
   const rafRef = useRef<number | null>(null);
   const runningRef = useRef(false);
   const mountedRef = useRef(false);
@@ -1075,18 +1073,15 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     [],
   );
 
-  // A work with a case page opens with a dive (#119); one without keeps the
-  // detail popup. If no dive will run, the case route opens plainly.
+  // Every work opens with a dive (#119) that lands on its detail card; the
+  // card's own links lead on to the case page. No dive (lite, no host) opens
+  // the card plainly.
   const navigate = (node: RNode) => {
     const p = node.project;
     if (!p) return;
-    if (!p.caseStudy) {
-      constellationBus.focusWork(node.id);
-      return;
-    }
-    const to = `/work/${p.id}`;
-    const dived = diveBus.dive({ to, dialect: p.dialect, image: p.image, origin: nodeClientPoint(node), anchor: `node:${p.id}` });
-    if (!dived) routerNavigate(to);
+    const open = () => constellationBus.focusWork(node.id);
+    const dived = diveBus.dive({ land: open, dialect: p.dialect, image: p.image, origin: nodeClientPoint(node), anchor: `node:${p.id}` });
+    if (!dived) open();
   };
 
   const onPointerUp = (e: React.PointerEvent) => {

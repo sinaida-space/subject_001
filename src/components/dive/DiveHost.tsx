@@ -20,6 +20,7 @@ export interface DiveRun {
   dir: 'in' | 'out';
   mode: DiveMode;
   to?: string;
+  land?: () => void;
   dialect: Dialect;
   image?: string;
   origin?: { x: number; y: number };
@@ -113,7 +114,7 @@ export default function DiveHost() {
     const off = diveBus.setHandler((req) => {
       if (busy.current) return true; // one dive at a time; swallow the extra click
       busy.current = true;
-      if (req.to.startsWith('/work/')) routeChunks.work().catch(() => undefined);
+      if (req.to?.startsWith('/work/')) routeChunks.work().catch(() => undefined);
       setRun({ id: ++seq.current, dir: 'in', mode: pickMode(), ...req });
       return true;
     });
@@ -143,6 +144,11 @@ export default function DiveHost() {
 
   const arrive = useCallback(
     async (r: DiveRun) => {
+      if (r.land) {
+        r.land();
+        await frames(2);
+        return;
+      }
       if (!r.to) return;
       if (r.to.startsWith('/work/')) await routeChunks.work().catch(() => undefined);
       const state: DiveState = { dive: { dialect: r.dialect, image: r.image, anchor: r.anchor } };

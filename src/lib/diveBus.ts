@@ -7,7 +7,10 @@ export type Dialect = 'crt' | 'dither' | 'ascii';
 
 export interface DiveRequest {
   /** in-app path to land on, e.g. /work/redkie-ptitsy or /work/x?depth=2 */
-  to: string;
+  to?: string;
+  /** land without a route change: called under the final frame instead of
+   *  navigating (the constellation opens its detail card this way) */
+  land?: () => void;
   dialect: Dialect;
   /** key frame the projector throws onto the wall */
   image?: string;
@@ -20,7 +23,7 @@ export interface DiveRequest {
 
 /** What a dived-into history entry remembers (React Router location.state). */
 export interface DiveState {
-  dive: Omit<DiveRequest, 'to' | 'origin'>;
+  dive: Omit<DiveRequest, 'to' | 'origin' | 'land'>;
 }
 
 type Handler = (req: DiveRequest) => boolean;
