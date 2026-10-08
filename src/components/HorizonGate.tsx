@@ -27,7 +27,7 @@ const PHOTO_SRC = '/sinaida-photo-600.jpg';
 // Built in steps (#120), each one switchable on its own: the neon line and
 // its split, the dither veil over About, the portrait developing.
 const VEIL = true;
-const PORTRAIT = false;
+const PORTRAIT = true;
 
 const VERT = `#version 300 es
 void main() {
