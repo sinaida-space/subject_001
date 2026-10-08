@@ -35,10 +35,9 @@ const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
 const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
-const GATE_END = 0.17; // the gate ends when About's top reaches this height of the screen
+const GATE_END = 0.45; // the gate ends when About's top reaches this height of the screen
 const SHED_AT = 0.98; // a letter is shed by the line as it scrolls in at this height
 const FALL = 0.12; // p it takes a shed cell to fall into its letter
-const HAND_AT = 0.68; // above this height of the screen the dither is real text
 
 // ── shaders ───────────────────────────────────────────────────────────────
 
@@ -84,13 +83,12 @@ in vec2 aDst;     // page px: where it lands (About glyph / portrait, or a star)
 in vec3 aCol0;
 in vec3 aCol1;
 in vec4 aTime;    // s1 (leave), s2 (land), depth, rnd
-in vec2 aFlags;   // x: starts visible (hero cell), y: kind 0 lands on About, 1 photo, 2 stays a star
+in vec3 aFlags;   // x: starts visible (hero cell), y: kind 0 lands on About, 1 photo, 2 stays a star; z: hands over to the real block
 uniform float uP;
 uniform float uScroll;
 uniform float uDpr;
 uniform float uLine;  // the moving line, page px
 uniform vec2 uView;   // css px
-uniform float uHand;  // screen px: above it the real About has taken over
 uniform float uLift;  // css px: About rides this far up, right under the line
 out vec3 vCol;
 out float vAlpha;
@@ -122,7 +120,9 @@ void main() {
   // a few cells bloom: a bright core inside a soft halo
   float bloom = step(0.93, fract(rnd * 7.13));
   // whole device pixels, so moving cells do not shimmer between pixel rows
-  gl_PointSize = max(1.0, floor(mix(3.0, starSize, flight) * (1.0 + 3.0 * bloom) * uDpr + 0.5));
+  // landed, a cell is a hair smaller than its 3 px slot, so dither reads as dither
+  float cellPx = max(1.0, floor(3.0 * uDpr - 0.5));
+  gl_PointSize = max(1.0, floor(mix(cellPx, starSize * uDpr, flight) * (1.0 + 3.0 * bloom) + 0.5));
 
   vec3 star = mix(vec3(0.95, 0.93, 0.9), vec3(0.85, 0.12, 0.2), step(0.8, rnd)) * mix(0.55, 1.0, depth);
   vec3 col = mix(aCol0, star, flight);
@@ -135,9 +135,8 @@ void main() {
   // spare cells (no hero glyph behind them) appear as the line sheds them
   float alpha = aFlags.x > 0.5 ? step(rnd, (uP - ${HERO_OUT[0].toFixed(3)}) / ${(HERO_OUT[1] - HERO_OUT[0]).toFixed(3)} + 0.02)
                                : smoothstep(s2 - 0.02, s2 + 0.02, uP);
-  // and hand over to the real About cell by cell, the portrait last
-  // a landed cell gives way to the real text once it scrolls above the hand-over height
-  if (aFlags.y < 1.5) alpha *= 1.0 - step(0.999, t2) * step(pos.y - uScroll, uHand);
+  // its block is complete: it dissolves as the real block takes over
+  if (aFlags.y < 1.5) alpha *= 1.0 - step(aFlags.z, uP);
   else alpha *= 1.0 - smoothstep(0.78, 1.0, uP);
 
   vCol = col;
@@ -172,7 +171,7 @@ void main() {
 
 // ── sampling the DOM into cells ───────────────────────────────────────────
 
-interface Cell { x: number; y: number; r: number; g: number; b: number }
+interface Cell { x: number; y: number; r: number; g: number; b: number; blk?: number }
 
 // false when the element or an ancestor up to `root` is transparent (a
 // hidden caption, a footnote waiting for its click)
@@ -185,7 +184,9 @@ function shown(el: Element, root: Element) {
 
 // Draws every visible glyph under `root` into a canvas at its rendered place,
 // then reads it back on the 3 px grid. Coordinates come back in page px.
-function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMRect, checkOpacity: boolean): Cell[] {
+// `blockOf` tags each cell with the block it was drawn from (drawn a second
+// time into an id canvas, block index in the red channel).
+function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMRect, checkOpacity: boolean, blockOf?: (el: Element) => number): Cell[] {
   const w = Math.ceil(box.width), h = Math.ceil(box.height);
   if (w < 1 || h < 1) return [];
   const cv = document.createElement('canvas');
@@ -193,6 +194,9 @@ function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMR
   cv.height = h;
   const ctx = cv.getContext('2d', { willReadFrequently: true });
   if (!ctx) return [];
+  const idCv = blockOf ? document.createElement('canvas') : null;
+  const idCtx = idCv?.getContext('2d', { willReadFrequently: true }) ?? null;
+  if (idCv) { idCv.width = w; idCv.height = h; }
   const range = document.createRange();
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
@@ -203,6 +207,10 @@ function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMR
     ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
     ctx.fillStyle = cs.color;
     ctx.textBaseline = 'alphabetic';
+    if (idCtx && blockOf) {
+      idCtx.font = ctx.font;
+      idCtx.fillStyle = `rgb(${blockOf(el) + 1},0,0)`;
+    }
     const upper = cs.textTransform === 'uppercase';
     const text = n.data;
     for (let i = 0; i < text.length; i++) {
@@ -215,9 +223,11 @@ function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMR
       const m = ctx.measureText(ch);
       const base = r.top + (r.height + m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2;
       ctx.fillText(ch, r.left - box.left, base - box.top);
+      idCtx?.fillText(ch, r.left - box.left, base - box.top);
     }
   }
   const data = ctx.getImageData(0, 0, w, h).data;
+  const ids = idCtx?.getImageData(0, 0, w, h).data;
   const cells: Cell[] = [];
   const sy = window.scrollY;
   // the grid is aligned to the page, so cells land on the same lattice everywhere
@@ -227,7 +237,7 @@ function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMR
     for (let x = x0 + 1; x < w; x += CELL) {
       const k = ((y | 0) * w + (x | 0)) * 4;
       if (data[k + 3] < 110) continue;
-      cells.push({ x: box.left + x, y: box.top + sy + y, r: data[k] / 255, g: data[k + 1] / 255, b: data[k + 2] / 255 });
+      cells.push({ x: box.left + x, y: box.top + sy + y, r: data[k] / 255, g: data[k + 1] / 255, b: data[k + 2] / 255, blk: ids ? ids[k] - 1 : undefined });
     }
   }
   return cells;
@@ -258,7 +268,7 @@ function samplePhoto(img: HTMLImageElement, rect: DOMRect): Cell[] {
     for (let x = 1; x < w; x += CELL) {
       const k = (y * w + x) * 4;
       const lum = (0.299 * data[k] + 0.587 * data[k + 1] + 0.114 * data[k + 2]) / 255;
-      if (Math.min(1, Math.max(0, (lum - 0.22) * 1.9)) <= bayer8(x / CELL | 0, y / CELL | 0)) continue;
+      if (Math.min(1, Math.max(0, (lum - 0.25) * 1.6)) <= bayer8(x / CELL | 0, y / CELL | 0)) continue;
       cells.push({ x: rect.left + x, y: rect.top + sy + y, r: 1, g: 0.2, b: 0.17 });
     }
   }
@@ -317,7 +327,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     const L = (n: string) => gl.getUniformLocation(lineProg, n);
     const P = (n: string) => gl.getUniformLocation(ptProg, n);
     const lu = { res: L('uRes'), dpr: L('uDpr'), line: L('uLine'), span: L('uSpan'), charge: L('uCharge'), flash: L('uFlash') };
-    const pu = { p: P('uP'), scroll: P('uScroll'), dpr: P('uDpr'), line: P('uLine'), view: P('uView'), hand: P('uHand'), lift: P('uLift') };
+    const pu = { p: P('uP'), scroll: P('uScroll'), dpr: P('uDpr'), line: P('uLine'), view: P('uView'), lift: P('uLift') };
     const quadVao = gl.createVertexArray();
     const ptVao = gl.createVertexArray();
     const buf = gl.createBuffer();
@@ -330,6 +340,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
 
     let dpr = 1;
     let linePage = 0;
+    let blocks: HTMLElement[] = [];
+    let blockDone: number[] = [];
     let built = false;
     // the line's flight, screen px: from the bottom of the screen to the top,
     // part linear, part S-curve, so it is moving from the first scroll on
@@ -340,7 +352,10 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     // page's speed, monotonic in between, so it never stops or turns back)
     const lineScreenAt = (q: number) => {
       const d = g.end - g.y0;
-      const m0 = Math.max(3 * d, Math.min(0, 2.7 * d)), m1 = Math.max(3 * d, -g.len);
+      const m1 = Math.max(3 * d, -g.len);
+      // largest start speed that keeps the curve monotonic (Fritsch-Carlson)
+      const beta = d ? m1 / d : 0;
+      const m0 = d * Math.sqrt(Math.max(0, 9 - beta * beta)) * 0.97;
       const q2 = q * q, q3 = q2 * q;
       return (2 * q3 - 3 * q2 + 1) * g.y0 + (q3 - 2 * q2 + q) * m0 + (-2 * q3 + 3 * q2) * g.end + (q3 - q2) * m1;
     };
@@ -359,7 +374,17 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const cap = new DOMRect(aboutBox.left, aboutBox.top, aboutBox.width, Math.min(aboutBox.height, SCROLL_START + g.len - sy + vh * 1.05 - aboutBox.top));
       const skipAbout = (el: Element) => !!el.closest('.sr-only');
       // About's blocks may still wait for their scroll reveal, so no opacity check
-      const text = sampleText(about, skipAbout, cap, false);
+      // About hands over block by block: a heading, a paragraph, a row, the portrait
+      blocks = Array.from(about.querySelectorAll<HTMLElement>('h2, p, span.block, div'))
+        .filter((el) => el.closest('.photo-frame-wrapper') === null);
+      const frameEl = about.querySelector<HTMLElement>('.photo-frame-wrapper');
+      if (frameEl) blocks.push(frameEl);
+      const blockOf = (el: Element) => {
+        const b = el.closest('h2, p, span.block, div');
+        const i = b ? blocks.indexOf(b as HTMLElement) : -1;
+        return i < 0 ? 254 : i;
+      };
+      const text = sampleText(about, skipAbout, cap, false, blockOf);
       const img = about.querySelector<HTMLImageElement>('picture img');
       const pr = img?.getBoundingClientRect();
       const face = photo.complete && photo.naturalWidth && pr && pr.top < cap.bottom ? samplePhoto(photo, pr) : [];
@@ -367,7 +392,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const rand = rng(120);
       let dst: (Cell & { kind: number })[] = [
         ...text.map((c) => ({ ...c, kind: 0 })),
-        ...face.map((c) => ({ ...c, kind: 1 })),
+        ...face.map((c) => ({ ...c, kind: 1, blk: frameEl ? blocks.length - 1 : 254 })),
       ];
       const budget = MAX_PARTICLES - Math.min(src.length, MAX_PARTICLES / 3);
       if (dst.length > budget) dst = dst.filter(() => rand() < budget / dst.length);
@@ -387,7 +412,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       };
 
       const n = Math.max(src.length, dst.length);
-      const STRIDE = 2 + 2 + 2 + 3 + 3 + 4 + 2;
+      const STRIDE = 2 + 2 + 2 + 3 + 3 + 4 + 3;
+      const s2s = new Float32Array(n);
       const arr = new Float32Array(n * STRIDE);
       const spanL = hz.left, spanR = hz.right;
       // shuffle sources so each glyph scatters over the whole of About
@@ -415,13 +441,26 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
           s ? s.r : 0.9, s ? s.g : 0.9, s ? s.b : 0.88,
           d ? d.r : 0.9, d ? d.g : 0.9, d ? d.b : 0.88,
           s1, s2, depth, r,
-          s ? 1 : 0, d ? d.kind : 2,
+          s ? 1 : 0, d ? d.kind : 2, 0,
         ], o);
+        s2s[i] = s2;
+      }
+      // a block is done when its last cell has landed; then the real block
+      // takes over and its cells dissolve, cell by cell
+      blockDone = new Array(blocks.length).fill(-1);
+      for (let i = 0; i < dst.length; i++) {
+        const b = dst[i].blk;
+        if (b !== undefined && b < blocks.length) blockDone[b] = Math.max(blockDone[b], s2s[i] + FALL);
+      }
+      for (let i = 0; i < n; i++) {
+        const b = i < dst.length ? dst[i].blk : undefined;
+        const done = b !== undefined && b < blocks.length ? blockDone[b] : 0.97;
+        arr[i * STRIDE + STRIDE - 1] = done + (i < dst.length && dst[i].kind === 1 ? 0.08 : 0.03) * arr[i * STRIDE + 15];
       }
       gl.bindVertexArray(ptVao);
       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
-      const attrs: [string, number][] = [['aSrc', 2], ['aMid', 2], ['aDst', 2], ['aCol0', 3], ['aCol1', 3], ['aTime', 4], ['aFlags', 2]];
+      const attrs: [string, number][] = [['aSrc', 2], ['aMid', 2], ['aDst', 2], ['aCol0', 3], ['aCol1', 3], ['aTime', 4], ['aFlags', 3]];
       let off = 0;
       for (const [name, size] of attrs) {
         const loc = gl.getAttribLocation(ptProg, name);
@@ -448,7 +487,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     const clearDom = () => {
       if (!domActive) return;
       domActive = false;
-      hero.style.opacity = about.style.clipPath = about.style.transform = horizon.style.opacity = '';
+      hero.style.opacity = about.style.transform = horizon.style.opacity = '';
+      blocks.forEach((el) => { el.style.opacity = ''; });
     };
 
     let raf = 0;
@@ -478,9 +518,6 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       }
 
       const lineY = lineScreenAt(p);
-      // real About above the hand-over height, forming dither below it; at
-      // the very end the hand-over sweeps down so nothing is left as dither
-      const hand = vh * mix(HAND_AT, 1.05, smooth(0.9, 1, p));
 
       domActive = true;
       // the real line hands over to the drawn one and takes it back as it lands
@@ -489,8 +526,9 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       // About rides right under the line: lifted by exactly the line's lead
       const lift = Math.max(0, h.top + h.height / 2 - lineY);
       about.style.transform = `translateY(${(-lift).toFixed(1)}px)`;
-      const ab = about.getBoundingClientRect();
-      about.style.clipPath = `inset(0 0 ${Math.max(0, ab.bottom - hand).toFixed(1)}px 0)`;
+      blocks.forEach((el, i) => {
+        if (blockDone[i] >= 0) el.style.opacity = smooth(blockDone[i], blockDone[i] + 0.04, p).toFixed(3);
+      });
 
       // always lit (it replaces the DOM line), charging up to the flash
       // always lit, charging as it sweeps the hero, firing once, fading out under the header
@@ -517,7 +555,6 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       gl.uniform1f(pu.dpr, dpr);
       gl.uniform1f(pu.line, sy + lineY);
       gl.uniform2f(pu.view, window.innerWidth, vh);
-      gl.uniform1f(pu.hand, hand);
       gl.uniform1f(pu.lift, lift);
       gl.drawArrays(gl.POINTS, 0, count);
       show(true);
