@@ -735,6 +735,24 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
   // Built from the launching control. At rest the wall shows as a small
   // rect, offset away from the lens so the throw is visible; its aspect is
   // the viewport's, so at the end of the dolly it fills the frame exactly.
+  // the beam's four side planes (normals inward) plus front and back caps
+  const pyramid = (apex: V3, wallC: V3, half: [number, number], Da: number, Dw: number) => {
+    const corners = ([[-1, -1], [1, -1], [1, 1], [-1, 1]] as const).map(
+      ([sx, sy]): V3 => [wallC[0] + sx * half[0], wallC[1] + sy * half[1], Dw],
+    );
+    const planes = new Float32Array(24);
+    for (let e = 0; e < 4; e++) {
+      let n = cross(sub(corners[e], apex), sub(corners[(e + 1) % 4], apex));
+      const len = Math.hypot(...n);
+      n = n.map((v) => v / len) as V3;
+      if (dot3(n, sub(wallC, apex)) < 0) n = n.map((v) => -v) as V3;
+      planes.set([...n, -dot3(n, apex)], e * 4);
+    }
+    planes.set([0, 0, 1, -Da], 16); // in front of the lens
+    planes.set([0, 0, -1, Dw], 20); // not past the wall
+    return planes;
+  };
+
   const buildGeo = (origin: { x: number; y: number } | null) => {
     const c: [number, number] = [W / 2, H / 2];
     const f = Math.hypot(W, H) * 0.62;
@@ -758,44 +776,33 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
     const half: [number, number] = [(w0 / 2) * k, (h0 / 2) * k];
     const apex: V3 = [((A[0] - c[0]) * Da) / f, ((A[1] - c[1]) * Da) / f, Da];
 
-    // pyramid planes, normals pointing inward
-    const corners = ([[-1, -1], [1, -1], [1, 1], [-1, 1]] as const).map(
-      ([sx, sy]): V3 => [wallC[0] + sx * half[0], wallC[1] + sy * half[1], Dw],
-    );
-    const planes = new Float32Array(24);
-    for (let e = 0; e < 4; e++) {
-      let n = cross(sub(corners[e], apex), sub(corners[(e + 1) % 4], apex));
-      const len = Math.hypot(...n);
-      n = n.map((v) => v / len) as V3;
-      if (dot3(n, sub(wallC, apex)) < 0) n = n.map((v) => -v) as V3;
-      planes.set([...n, -dot3(n, apex)], e * 4);
-    }
-    planes.set([0, 0, 1, -Da], 16); // in front of the lens
-    planes.set([0, 0, -1, Dw], 20); // not past the wall
-    return { c, f, Dw, Da, wallC, half, apex, planes, zEnd: Dw * (1 - w0 / W) };
+    return { c, f, Dw, Da, wallC, half, apex, planes: pyramid(apex, wallC, half, Da, Dw), grownBy: W / w0 };
+
   };
   let geo = buildGeo(null);
 
-  // camera and projected wall for a progress value
-  const rigAt = (p: number, B: Beat) => {
+  // Projected wall for a progress value. The camera never moves, so the
+  // lens stays pinned on the star: the beam appears there and the wall at its
+  // far end opens up to the card's size (the full frame by p = 1).
+  const rigAt = (p: number) => {
     const g = geo;
-    // straight push-in: the camera never swings sideways onto the beam axis
-    const cam: V3 = [0, g.wallC[1] * B.dollyXY, g.zEnd * B.dollyZ]; // wallC is centred in x; y only nudges under the header
-    const s = g.f / (g.Dw - cam[2]);
-    const hw = g.half[0] * s, hh = g.half[1] * s;
-    const rcx = g.c[0] + (g.wallC[0] - cam[0]) * s, rcy = g.c[1] + (g.wallC[1] - cam[1]) * s;
+    const cam: V3 = [0, 0, 0];
+    const grow = 1 + (g.grownBy - 1) * smooth(0.12, 0.6, p);
+    const half: [number, number] = [g.half[0] * grow, g.half[1] * grow];
+    const s = g.f / g.Dw;
+    const hw = half[0] * s, hh = half[1] * s;
+    const rcx = g.c[0] + g.wallC[0] * s, rcy = g.c[1] + g.wallC[1] * s;
     const rect: [number, number, number, number] = p >= 1 ? [0, 0, W, H] : [rcx - hw, rcy - hh, 2 * hw, 2 * hh];
-    const rel = sub(g.apex, cam);
-    const lensOn = rel[2] > 1;
-    const lens: [number, number] = lensOn ? [g.c[0] + (rel[0] * g.f) / rel[2], g.c[1] + (rel[1] * g.f) / rel[2]] : [-1e4, -1e4];
-    return { cam, rect, centre: [rcx, rcy] as [number, number], lens, lensOn };
+    const lens: [number, number] = [g.c[0] + (g.apex[0] * g.f) / g.apex[2], g.c[1] + (g.apex[1] * g.f) / g.apex[2]];
+    const planes = pyramid(g.apex, g.wallC, half, g.Da, g.Dw);
+    return { cam, rect, centre: [rcx, rcy] as [number, number], lens, lensOn: true, half, planes };
   };
 
   // Everything below is a function of p and dissolve only (the shader clock
   // is derived from p too), so the reverse dive plays the very same frames.
   const render = (p: number, dissolve = 0) => {
     const B = beat(p);
-    const R = rigAt(p, B);
+    const R = rigAt(p);
     const U = D.at(p);
     const clock = (p * DUR_IN) / 1000;
     // image-locked cells: they magnify with the wall, softened so the small wall stays legible
@@ -868,7 +875,7 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       gl.uniform3f(u.uCam, ...R.cam);
       gl.uniform1f(u.uWallZ, geo.Dw);
       gl.uniform1f(u.uDpr, dpr);
-      gl.uniform4fv(u.uPlanes, geo.planes);
+      gl.uniform4fv(u.uPlanes, R.planes);
       gl.uniform1f(u.uSoft, geo.Dw * 0.015);
       gl.uniform1f(u.uBeam, B.beam);
       gl.uniform1f(u.uStarAlpha, starAlpha);
@@ -890,8 +897,8 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       gl.uniform3f(u.uCam, ...R.cam);
       gl.uniform3f(u.uApex, ...geo.apex);
       gl.uniform3f(u.uWallCentre, ...geo.wallC);
-      gl.uniform2f(u.uWallHalf, ...geo.half);
-      gl.uniform4fv(u.uPlanes, geo.planes);
+      gl.uniform2f(u.uWallHalf, ...R.half);
+      gl.uniform4fv(u.uPlanes, R.planes);
       gl.uniform1f(u.uBeam, B.beam);
       gl.uniform1f(u.uThrow, B.throw);
       gl.uniform2f(u.uLens, ...R.lens);
