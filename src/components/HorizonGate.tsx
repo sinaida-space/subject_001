@@ -20,6 +20,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 const smooth = (a: number, b: number, x: number) => {
   const t = clamp01((x - a) / (b - a));
   return t * t * (3 - 2 * t);
@@ -34,7 +35,9 @@ const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
 const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
-const FLASH_AT = 0.38; // the line fires
+const FLASH_AT = 0.29; // the line fires
+const LINE_MEET = 0.5; // the line rises to this height of the screen to meet the stars
+const LINE_HOLD: [number, number] = [0.24, 0.31]; // it holds there while it collects them
 const ABOUT_IN: [number, number] = [0.86, 0.95]; // About text takes over from the cells
 const PHOTO_IN: [number, number] = [0.9, 1.0]; // the portrait resolves last
 
@@ -77,7 +80,7 @@ void main() {
 
 const PT_VS = `#version 300 es
 in vec2 aSrc;     // page px: where the cell starts (hero glyph or a galaxy star)
-in vec2 aMid;     // page px: where it crosses the horizon line
+in vec2 aMid;     // page px: x is where it meets the line (y follows the moving line)
 in vec2 aDst;     // page px: where it lands (About glyph / portrait, or a star)
 in vec3 aCol0;
 in vec3 aCol1;
@@ -86,7 +89,7 @@ in vec2 aFlags;   // x: starts visible (hero cell), y: kind 0 lands on About, 1 
 uniform float uP;
 uniform float uScroll;
 uniform float uDpr;
-uniform float uLine;  // page px
+uniform float uLine;  // the moving line, page px
 uniform vec2 uView;   // css px
 out vec3 vCol;
 out float vAlpha;
@@ -101,7 +104,7 @@ void main() {
   float t2 = smoothstep(s2, s2 + 0.2, uP);
 
   // fall into the line, accelerating like something pulled in
-  vec2 a = mix(aSrc, aMid, t1 * t1);
+  vec2 a = mix(aSrc, vec2(aMid.x, uLine), t1 * t1);
   a.x += sin(t1 * 3.14159) * (rnd - 0.5) * 70.0;
   // and out of it, easing into place
   float land = 1.0 - pow(1.0 - t2, 3.0);
@@ -373,7 +376,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         // leave the hero top lines first; land on About top lines first, the portrait last
         const s1 = 0.005 + 0.03 * (s ? (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) : rand()) + 0.03 * r;
         const order01 = d ? (d.y - yMin) / Math.max(1, yMax - yMin) : rand();
-        const s2 = d?.kind === 1 ? 0.52 + 0.1 * r : d ? 0.4 + 0.26 * order01 + 0.04 * r : 0.4 + 0.2 * r;
+        const s2 = d?.kind === 1 ? 0.5 + 0.1 * r : d ? 0.31 + 0.34 * order01 + 0.04 * r : 0.31 + 0.25 * r;
         const o = i * STRIDE;
         arr.set([
           sx, syy, mx, linePage, dx, dy,
@@ -413,7 +416,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     const clearDom = () => {
       if (!domActive) return;
       domActive = false;
-      hero.style.opacity = about.style.opacity = '';
+      hero.style.opacity = about.style.opacity = horizon.style.opacity = '';
       if (frameEl) frameEl.style.opacity = '';
     };
 
@@ -429,7 +432,6 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       raf = 0;
       const vh = window.innerHeight;
       const h = horizon.getBoundingClientRect();
-      const lineY = h.top + h.height / 2;
       const sy = window.scrollY;
       const end = Math.max(SCROLL_START + 400, about.getBoundingClientRect().top + sy - vh * 0.12);
       const p = clamp01((sy - SCROLL_START) / (end - SCROLL_START));
@@ -439,12 +441,21 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         return;
       }
 
+      // The line leaves its place under the hero and rises to meet the stars
+      // as they dissolve, holds while it collects them, then rides down the
+      // screen carrying them; they peel off into About's letters behind it.
+      const lineY = p < LINE_HOLD[1]
+        ? mix(h.top + h.height / 2, vh * LINE_MEET, smooth(0, LINE_HOLD[0], p))
+        : mix(vh * LINE_MEET, vh * 0.96, clamp01((p - LINE_HOLD[1]) / (0.95 - LINE_HOLD[1])));
+
       domActive = true;
+      horizon.style.opacity = '0';
       hero.style.opacity = (1 - smooth(HERO_OUT[0], HERO_OUT[1], p)).toFixed(3);
       about.style.opacity = smooth(ABOUT_IN[0], ABOUT_IN[1], p).toFixed(3);
       if (frameEl) frameEl.style.opacity = smooth(PHOTO_IN[0], PHOTO_IN[1], p).toFixed(3);
 
-      const charge = smooth(0.06, FLASH_AT, p) * (1 - smooth(FLASH_AT + 0.04, 0.8, p));
+      // always lit (it replaces the DOM line), charging up to the flash
+      const charge = Math.max(0.3, smooth(0.06, FLASH_AT, p) * (1 - smooth(FLASH_AT + 0.04, 0.8, p))) * (1 - smooth(0.9, 1, p));
       const flash = Math.exp(-Math.pow((p - FLASH_AT) / 0.022, 2));
 
       gl.clearColor(0, 0, 0, 0);
@@ -465,7 +476,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       gl.uniform1f(pu.p, p);
       gl.uniform1f(pu.scroll, window.scrollY);
       gl.uniform1f(pu.dpr, dpr);
-      gl.uniform1f(pu.line, linePage);
+      gl.uniform1f(pu.line, sy + lineY);
       gl.uniform2f(pu.view, window.innerWidth, vh);
       gl.drawArrays(gl.POINTS, 0, count);
       show(true);
