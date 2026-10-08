@@ -41,6 +41,8 @@ const DOWN_START = 0.36;
 const DOWN_READY = 0.42;
 const FLASH_AT = 0.33;
 const WIPER_TOP = 76; // css px, never above the header
+const DISSOLVE_BAND = 140; // css px above the wiper where hero cells come loose
+const HERO_LOCK = 0.04; // p: the hero headline hands over to its dither cells
 
 const QUAD_VS = `#version 300 es
 void main() {
@@ -136,7 +138,7 @@ void main() {
   // while they hang in the sky most stars are faint; they brighten as they fly in
   float hang = depth > 0.8 ? 0.85 : 0.2 * depth;
   float sky = hero ? mix(1.0, hang, smoothstep(0.0, 0.6, t1)) : hang * step(fract(rnd * 13.7), 0.15) * smoothstep(0.02, 0.2, uP);
-  float alpha = (hero ? step(s1, uP) : 1.0) * max(sky, t2);
+  float alpha = (hero ? smoothstep(0.0, ${HERO_LOCK}, uP) : 1.0) * max(sky, t2);
   // the real About takes over as the wiper passes; spare stars fade at the end
   if (kind < 1.5) alpha *= 1.0 - step(aFlags.z, uP);
   else alpha *= 1.0 - smoothstep(0.82, 1.0, uP);
@@ -407,7 +409,9 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         const mx = rand() * vw, my = skyTop + vh * (0.12 + 0.8 * rand());
         const sx = s ? s.x : mx, syy = s ? s.y : my;
         const dx = d ? d.x : mx, dy = d ? d.y : my;
-        const s1 = s ? crossUp(s.y) : 0;
+        // letters erode ahead of the wiper: a cell comes loose anywhere in a
+        // band above the line, in random order, so glyphs crumble, never cut
+        const s1 = s ? crossUp(s.y + DISSOLVE_BAND * Math.pow(rand(), 0.7)) : 0;
         const s2 = d ? crossDown(d.y) : 1;
         const handover = d?.kind === 1 ? g.photoDone + 0.05 + 0.07 * r : s2 + 0.012;
         arr.set([
@@ -449,7 +453,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     const clearDom = () => {
       if (!domActive) return;
       domActive = false;
-      hero.style.clipPath = about.style.clipPath = horizon.style.opacity = '';
+      hero.style.opacity = about.style.clipPath = horizon.style.opacity = '';
       if (frameEl) frameEl.style.opacity = '';
     };
 
@@ -476,9 +480,9 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       // the way up, About above it on the way down
       domActive = true;
       horizon.style.opacity = '0';
-      const hb = hero.getBoundingClientRect();
       const ab = about.getBoundingClientRect();
-      hero.style.clipPath = `inset(0 0 ${p < UP_END ? Math.max(0, hb.bottom - wy).toFixed(1) + 'px' : '100%'} 0)`;
+      // the hero hands over to its dither cells at once; they do the dissolving
+      hero.style.opacity = (1 - smooth(0, HERO_LOCK, p)).toFixed(3);
       about.style.clipPath = `inset(0 0 ${p > DOWN_START ? Math.max(0, ab.bottom - wy).toFixed(1) + 'px' : '100%'} 0)`;
       if (frameEl) frameEl.style.opacity = smooth(g.photoDone + 0.05, g.photoDone + 0.12, p).toFixed(3);
 
