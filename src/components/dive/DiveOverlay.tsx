@@ -23,6 +23,8 @@ interface Props {
 
 const nextFrame = () => new Promise<number>((r) => requestAnimationFrame(r));
 
+const CARD_MS = 380; // card rising out of / sinking into the effect
+
 export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const veilRef = useRef<HTMLDivElement>(null);
@@ -73,7 +75,10 @@ export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
     };
 
     const crossFade = async () => {
-      if (run.dir === 'in') {
+      if (run.close) {
+        await fade(veil, 0, 1, 100);
+        run.close();
+      } else if (run.dir === 'in') {
         await fade(veil, 0, 1, 100);
         await arrive(run);
       } else {
@@ -95,10 +100,31 @@ export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
         await crossFade();
       } else if (run.dir === 'in') {
         renderer.aim(run.origin ?? null);
-        await play(0, 1, DUR_IN);
+        const end = run.landAt ?? 1;
+        await play(0, end, DUR_IN * end);
         if (!alive) return;
         await arrive(run);
-        await fade(root, 1, 0, 260);
+        if (run.land) {
+          // the card rises out of the effect: keep flying a little while it fades
+          await Promise.all([play(end, Math.min(1, end + 0.1), CARD_MS), fade(root, 1, 0, CARD_MS)]);
+        } else {
+          await fade(root, 1, 0, 260);
+        }
+      } else if (run.close) {
+        // Card closing: the effect re-forms over the card, the card goes
+        // under it, then the camera flies back out into its node.
+        const from = run.landAt ?? 1;
+        root.style.opacity = '0';
+        veil.style.opacity = '0';
+        renderer.render(from, 0);
+        await fade(root, 0, 1, CARD_MS);
+        if (!alive) return;
+        run.close();
+        await nextFrame();
+        await nextFrame();
+        if (!alive) return;
+        renderer.aim(locate(run.anchor));
+        await play(from, 0, DUR_OUT * from);
       } else {
         // Back: hold the hero frame while the previous page mounts, then fly
         // out of the image and back into the control that launched it.
@@ -128,7 +154,7 @@ export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
         ref={veilRef}
         className="absolute inset-0 bg-background"
         // a reverse dive starts covered, so the page underneath never flashes
-        style={{ opacity: run.dir === 'out' ? 1 : 0 }}
+        style={{ opacity: run.dir === 'out' && !run.close ? 1 : 0 }}
       />
     </div>
   );

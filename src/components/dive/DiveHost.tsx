@@ -21,6 +21,8 @@ export interface DiveRun {
   mode: DiveMode;
   to?: string;
   land?: () => void;
+  landAt?: number;
+  close?: () => void;
   dialect: Dialect;
   image?: string;
   origin?: { x: number; y: number };
@@ -115,7 +117,10 @@ export default function DiveHost() {
       if (busy.current) return true; // one dive at a time; swallow the extra click
       busy.current = true;
       if (req.to?.startsWith('/work/')) routeChunks.work().catch(() => undefined);
-      setRun({ id: ++seq.current, dir: 'in', mode: pickMode(), ...req });
+      const m = pickMode();
+      // a card close only reverses a dive that actually ran as GL
+      if (req.close) setRun({ id: ++seq.current, dir: 'out', mode: m === 'gl' ? 'gl' : 'fade', ...req });
+      else setRun({ id: ++seq.current, dir: 'in', mode: m, ...req });
       return true;
     });
     return () => {

@@ -3,6 +3,10 @@
 // plays it. Callers ask `diveBus.dive(req)`; a false return means no dive
 // will run (lite mode, no host mounted), so the caller navigates plainly.
 
+/** where a constellation dive hands over to the detail card: the dialect
+ *  effect is fully formed (dither laid, glyphs typed, CRT door half open) */
+export const DIVE_LAND_AT = 0.62;
+
 export type Dialect = 'crt' | 'dither' | 'ascii';
 
 export interface DiveRequest {
@@ -11,6 +15,12 @@ export interface DiveRequest {
   /** land without a route change: called under the final frame instead of
    *  navigating (the constellation opens its detail card this way) */
   land?: () => void;
+  /** where a `land` dive stops, 0..1 of the full dive: the card rises out of
+   *  the dialect effect mid-flight instead of after the full-screen image */
+  landAt?: number;
+  /** reverse a `land` dive: the effect closes over the card, `close` runs
+   *  under it, and the camera flies back out into the launching control */
+  close?: () => void;
   dialect: Dialect;
   /** key frame the projector throws onto the wall */
   image?: string;

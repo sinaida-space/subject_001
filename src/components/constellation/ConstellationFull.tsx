@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildGraph, buildAdjacency, type GraphNode, type Category, CATEGORY_COLORS, CATEGORY_LABEL, SKILL_LINKS, OFF_WHITE } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
-import { diveBus } from '@/lib/diveBus';
+import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
 import { synth, type VoiceKind } from '@/lib/constellationSynth';
 import SynthPanel from './SynthPanel';
 
@@ -1073,15 +1073,14 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     [],
   );
 
-  // Every work opens with a dive (#119) that lands on its detail card; the
-  // card's own links lead on to the case page. No dive (lite, no host) opens
+  // Every work opens with a dive (#119); its detail card rises out of the
+  // dialect effect mid-flight, and the card's own links lead on to the case. No dive (lite, no host) opens
   // the card plainly.
   const navigate = (node: RNode) => {
     const p = node.project;
     if (!p) return;
-    const open = () => constellationBus.focusWork(node.id);
-    const dived = diveBus.dive({ land: open, dialect: p.dialect, image: p.image, origin: nodeClientPoint(node), anchor: `node:${p.id}` });
-    if (!dived) open();
+    const dived = diveBus.dive({ land: () => constellationBus.focusWork(node.id, true), landAt: DIVE_LAND_AT, dialect: p.dialect, image: p.image, origin: nodeClientPoint(node), anchor: `node:${p.id}` });
+    if (!dived) constellationBus.focusWork(node.id);
   };
 
   const onPointerUp = (e: React.PointerEvent) => {

@@ -3,9 +3,10 @@
 //  · focusWork(id)  — a project star or index row is clicked → open its detail popup
 
 type Listener = (id: string | null) => void;
+type FocusListener = (id: string | null, viaDive?: boolean) => void;
 
 const highlightListeners = new Set<Listener>();
-const focusListeners = new Set<Listener>();
+const focusListeners = new Set<FocusListener>();
 
 export const constellationBus = {
   // list → constellation
@@ -18,10 +19,10 @@ export const constellationBus = {
   },
 
   // constellation → selected works
-  focusWork(id: string) {
-    focusListeners.forEach((l) => l(id));
+  focusWork(id: string, viaDive = false) {
+    focusListeners.forEach((l) => l(id, viaDive));
   },
-  subscribeFocus(l: Listener) {
+  subscribeFocus(l: FocusListener) {
     focusListeners.add(l);
     return () => focusListeners.delete(l);
   },
