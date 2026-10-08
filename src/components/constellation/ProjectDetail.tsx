@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import type { Project, ProjectKind } from '@/data/projects';
 import type { FocusOrigin } from '@/lib/constellationBus';
 import { createCardBuild } from './cardBuild';
+import type { Dialect } from '@/lib/diveBus';
 import VideoEmbed from '@/components/VideoEmbed';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import DisplacementImage from '@/components/DisplacementImage';
@@ -235,6 +236,17 @@ const seg = (p: number, a: number, b: number) => {
 };
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+
+// Cards opened from the list build up in a random look each time, never the
+// same one twice in a row: CRT lock, dither develop, raster dither. Same
+// code paths as the per-work dialects, so the variety costs nothing extra.
+const BUILDS: Dialect[] = ['crt', 'dither', 'ascii'];
+let lastBuild: Dialect | null = null;
+const pickBuild = (): Dialect => {
+  const pool = BUILDS.filter((d) => d !== lastBuild);
+  lastBuild = pool[Math.floor(Math.random() * pool.length)];
+  return lastBuild;
+};
 type Pt = [number, number];
 // convex hull (monotone chain): the throw is the hull of lens and screen
 const hull = (pts: Pt[]): Pt[] => {
@@ -270,6 +282,8 @@ export default function ProjectDetail({
   const titleRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
   const buildRef = useRef<HTMLCanvasElement>(null);
+  // chosen once per card, so closing plays the same look backwards
+  const [buildLook] = useState<Dialect>(pickBuild); // lazy: picked once, not on every render
   const closing = useRef(false);
 
   // Projection screen: the row is the projector. Its title lifts off the
@@ -315,7 +329,7 @@ export default function ProjectDetail({
         if (buildCanvas) buildCanvas.style.display = '';
         const cs0 = getComputedStyle(card);
         const build = buildCanvas
-          ? createCardBuild(buildCanvas, project.dialect, cs0.backgroundColor, cs0.getPropertyValue('--sinaida-red') ? `hsl(${cs0.getPropertyValue('--sinaida-red').trim()})` : '#ff0a0a')
+          ? createCardBuild(buildCanvas, buildLook, cs0.backgroundColor, cs0.getPropertyValue('--sinaida-red') ? `hsl(${cs0.getPropertyValue('--sinaida-red').trim()})` : '#ff0a0a')
           : null;
         // the row itself is the lens: its two rules are the near edge of the throw
         const lens = { l: o.left, r: o.left + o.width, t: o.top, b: o.top + o.height };
@@ -389,7 +403,7 @@ export default function ProjectDetail({
         frame(dir === 'open' ? 0 : 1);
         requestAnimationFrame(tick);
       }),
-    [origin, project.dialect],
+    [origin, buildLook],
   );
 
   // play the door before the first paint so the card never flashes whole
