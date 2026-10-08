@@ -71,7 +71,7 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
     >
       <span className="font-mono text-[14px] text-accent transition-transform group-hover:translate-x-1">→</span>
       <span className="flex-1">
-        <span className="font-display text-lg uppercase text-foreground transition-colors group-hover:text-accent">
+        <span data-row-title className="font-display text-lg uppercase text-foreground transition-colors group-hover:text-accent">
           {project.title}
         </span>
         <span className="ml-3 font-mono text-[13px] normal-case text-foreground/60">{project.tagline}</span>

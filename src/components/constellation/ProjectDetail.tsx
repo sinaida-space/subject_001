@@ -226,12 +226,30 @@ function Readout({ project }: { project: Project }) {
 // Opening from an index row: the row's two rules light up, then part like
 // a stage door to the card's top and bottom edges, and the card is revealed
 // between them. Closing plays it backwards into the row.
-const DOOR_MS = 820; // whole door: rules glow (first ~35 %), then part
-const LIT = 0.35; // fraction of the door spent lighting the rules in place
-const EASE = 'cubic-bezier(0.45, 0, 0.2, 1)';
-// the index rule's own colour, so the door starts as the line already there
-const RULE = 'hsl(var(--foreground) / 0.1)';
-const RED = 'hsl(var(--sinaida-red))';
+const THROW_MS = 950; // the whole projection, open or close
+// eased 0..1 inside [a, b] of the timeline
+const seg = (p: number, a: number, b: number) => {
+  const t = Math.min(1, Math.max(0, (p - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+type Pt = [number, number];
+// convex hull (monotone chain): the throw is the hull of lens and screen
+const hull = (pts: Pt[]): Pt[] => {
+  const p = [...pts].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o: Pt, a: Pt, b: Pt) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const half = (list: Pt[]) => {
+    const h: Pt[] = [];
+    for (const q of list) {
+      while (h.length >= 2 && cross(h[h.length - 2], h[h.length - 1], q) <= 0) h.pop();
+      h.push(q);
+    }
+    h.pop();
+    return h;
+  };
+  return [...half(p), ...half([...p].reverse())];
+};
 
 export default function ProjectDetail({
   project,
@@ -245,58 +263,112 @@ export default function ProjectDetail({
   const shutter = !!origin;
   const [mounted, setMounted] = useState(shutter);
   const cardRef = useRef<HTMLDivElement>(null);
-  const topRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const beamRef = useRef<SVGPolygonElement>(null);
+  const edgesRef = useRef<SVGPathElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
   const closing = useRef(false);
 
-  // One continuous animation per element, so nothing pops: the row's two
-  // rules brighten from their grey into a red glow where they already are,
-  // then part to the card's edges while the card and its backdrop fade in
-  // between them. Closing is the same timeline reversed.
+  // Projection screen: the row is the projector. Its title lifts off the
+  // list and flies up to become the card's title; its two rules extrude
+  // into a lit throw of light whose far end travels out to the card; the
+  // card lands at the end of the throw as a screen tilting flat while its
+  // exposure comes up. One clock drives every layer, so closing is the
+  // same frames played backwards.
   const run = useCallback(
-    (dir: 'open' | 'close') => {
-      const card = cardRef.current;
-      const top = topRef.current;
-      const bottom = bottomRef.current;
-      const backdrop = card?.parentElement;
-      if (!origin || !card || !top || !bottom || !backdrop) return Promise.resolve();
-      // re-measure the row each time: the page may have moved since the click
-      const live = origin.el?.isConnected ? origin.el.getBoundingClientRect() : null;
-      const o = live ? { left: live.left, top: live.top, width: live.width, height: live.height } : origin;
-      const c = card.getBoundingClientRect();
-      const rowBottom = o.top + o.height;
-      const at = (y: number, left: number, width: number) => ({ top: `${y}px`, left: `${left}px`, width: `${width}px` });
-      const grey = { background: RULE, boxShadow: '0 0 0 0 hsl(var(--sinaida-red) / 0)' };
-      const glow = { background: RED, boxShadow: '0 0 12px 1px hsl(var(--sinaida-red) / 0.8)' };
-      const rule = (rowY: number, cardY: number) => [
-        { ...at(rowY, o.left, o.width), ...grey, opacity: 1, offset: 0 },
-        { ...at(rowY, o.left, o.width), ...glow, opacity: 1, offset: LIT },
-        { ...at(cardY, c.left, c.width), ...glow, opacity: 1, offset: 0.88 },
-        { ...at(cardY, c.left, c.width), ...glow, opacity: 0, offset: 1 },
-      ];
-      // the card shows only between the rules, and only once they part
-      const band = `inset(${Math.max(0, o.top - c.top)}px 0 ${Math.max(0, c.bottom - rowBottom)}px 0)`;
-      const cardFrames = [
-        { clipPath: band, opacity: 0, offset: 0 },
-        { clipPath: band, opacity: 0, offset: LIT },
-        { clipPath: 'inset(0px 0 0px 0)', opacity: 1, offset: 0.88 },
-        { clipPath: 'inset(0px 0 0px 0)', opacity: 1, offset: 1 },
-      ];
-      const fadeFrames = [
-        { opacity: 0, offset: 0 },
-        { opacity: 0, offset: LIT * 0.5 },
-        { opacity: 1, offset: 0.88 },
-        { opacity: 1, offset: 1 },
-      ];
-      const opts = { duration: DOOR_MS, easing: EASE, fill: 'forwards' as const, direction: dir === 'open' ? ('normal' as const) : ('reverse' as const) };
-      const anims = [
-        top.animate(rule(o.top, c.top), opts),
-        bottom.animate(rule(rowBottom, c.bottom - 1), opts),
-        card.animate(cardFrames, opts),
-        backdrop.animate(fadeFrames, opts),
-      ];
-      return Promise.all(anims.map((x) => x.finished.catch(() => undefined))).then(() => undefined);
-    },
+    (dir: 'open' | 'close') =>
+      new Promise<void>((resolve) => {
+        const card = cardRef.current;
+        const backdrop = card?.parentElement;
+        const beam = beamRef.current;
+        const edges = edgesRef.current;
+        const svg = svgRef.current;
+        const title = titleRef.current;
+        const label = labelRef.current;
+        if (!origin || !card || !backdrop || !beam || !edges || !svg || !title || !label) return resolve();
+
+        const live = origin.el?.isConnected ? origin.el.getBoundingClientRect() : null;
+        const o = live ? { left: live.left, top: live.top, width: live.width, height: live.height } : origin;
+        // per-frame styles must not be smeared by the card's CSS transition
+        card.style.transition = 'none';
+        backdrop.style.transition = 'none';
+        // measure the card flat, before any transform of ours touches it
+        card.style.transform = 'none';
+        const c = card.getBoundingClientRect();
+        const lr = label.getBoundingClientRect();
+        const rowTitle = origin.el?.querySelector('[data-row-title]');
+        const tr = rowTitle?.getBoundingClientRect() ?? new DOMRect(o.left + 40, o.top + 12, 200, 24);
+        if (rowTitle) {
+          title.textContent = rowTitle.textContent;
+          const cs = getComputedStyle(rowTitle);
+          title.style.font = cs.font;
+          title.style.letterSpacing = cs.letterSpacing;
+          title.style.textTransform = cs.textTransform;
+        }
+        const titleScale = lr.height / Math.max(tr.height, 1);
+        // the row itself is the lens: its two rules are the near edge of the throw
+        const lens = { l: o.left, r: o.left + o.width, t: o.top, b: o.top + o.height };
+
+        const frame = (p: number) => {
+          // rules ignite (0-.2), throw travels (.12-.7), screen lands (.42-.92)
+          const ignite = seg(p, 0, 0.2);
+          const throwT = easeOut(seg(p, 0.12, 0.7));
+          const land = seg(p, 0.42, 0.92);
+          const fly = seg(p, 0.08, 0.78);
+          const fadeBeam = 1 - seg(p, 0.62, 0.95);
+
+          backdrop.style.opacity = String(seg(p, 0.05, 0.6));
+
+          // the throw: the row's arrow is the lens; the screen flies out of it
+          // to the card, and the light is the hull between the two
+          const fl = mix(lens.l, c.left, throwT), fr = mix(lens.r, c.right, throwT);
+          const ft = mix(lens.t, c.top, throwT), fb = mix(lens.b, c.bottom, throwT);
+          const lensPts: Pt[] = [[lens.l, lens.t], [lens.r, lens.t], [lens.r, lens.b], [lens.l, lens.b]];
+          const far: Pt[] = [[fl, ft], [fr, ft], [fr, fb], [fl, fb]];
+          beam.setAttribute('points', hull([...lensPts, ...far]).map((q) => q.join(',')).join(' '));
+          // the rules, the four rails extruding from the row's corners, the screen's frame
+          edges.setAttribute(
+            'd',
+            `M${lens.l},${lens.t}H${lens.r} M${lens.l},${lens.b}H${lens.r} ` +
+              lensPts.map(([x, y], i) => `M${x},${y}L${far[i][0]},${far[i][1]}`).join(' ') +
+              ` M${fl},${ft}H${fr}V${fb}H${fl}Z`,
+          );
+          svg.style.opacity = String(ignite * fadeBeam);
+          beam.style.opacity = String(0.55 * seg(p, 0.1, 0.35));
+
+          // the screen: tilted back and dim at the end of the throw, settling flat and lit
+          card.style.opacity = String(land);
+          card.style.transform = `perspective(1400px) translateZ(${mix(-140, 0, land)}px) rotateX(${mix(14, 0, land)}deg)`;
+          card.style.filter = land < 1 ? `brightness(${mix(0.25, 1, land)})` : '';
+
+          // the title lifts off the row and becomes the card's titlebar label
+          const lift = Math.sin(Math.PI * fly) * 18;
+          title.style.opacity = String(1 - seg(p, 0.74, 0.86)); // sits exactly on the row title at p = 0
+          title.style.transform = `translate(${mix(tr.left, lr.left, fly)}px, ${mix(tr.top, lr.top, fly) - lift}px) scale(${mix(1, titleScale, fly)})`;
+          title.style.color = fly > 0.5 ? 'hsl(var(--primary-legible))' : '';
+          label.style.opacity = String(seg(p, 0.76, 0.9));
+          if (rowTitle instanceof HTMLElement) rowTitle.style.opacity = p > 0 ? '0' : '';
+        };
+
+        const t0 = performance.now();
+        const tick = (now: number) => {
+          const k = Math.min(1, (now - t0) / THROW_MS);
+          frame(dir === 'open' ? k : 1 - k);
+          if (k < 1) requestAnimationFrame(tick);
+          else {
+            if (dir === 'open') {
+              card.style.transform = '';
+              card.style.filter = '';
+            } else if (rowTitle instanceof HTMLElement) {
+              rowTitle.style.opacity = '';
+            }
+            resolve();
+          }
+        };
+        frame(dir === 'open' ? 0 : 1);
+        requestAnimationFrame(tick);
+      }),
     [origin],
   );
 
@@ -352,8 +424,25 @@ export default function ProjectDetail({
     >
       {shutter && (
         <>
-          <div ref={topRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ opacity: 0 }} />
-          <div ref={bottomRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ opacity: 0 }} />
+          <svg ref={svgRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[71] h-full w-full" style={{ opacity: 0 }}>
+            <defs>
+              <filter id="throw-glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <polygon ref={beamRef} fill="hsl(var(--sinaida-red) / 0.14)" />
+            <path ref={edgesRef} fill="none" stroke="hsl(var(--sinaida-red))" strokeWidth="1" filter="url(#throw-glow)" />
+          </svg>
+          <div
+            ref={titleRef}
+            aria-hidden="true"
+            className="pointer-events-none fixed left-0 top-0 z-[72] whitespace-nowrap text-foreground"
+            style={{ transformOrigin: '0 0', opacity: 0 }}
+          />
         </>
       )}
       <div
@@ -372,7 +461,7 @@ export default function ProjectDetail({
         aria-label={`${project.title}: project readout`}
       >
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', lineHeight: 1.15, minWidth: 0, color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
+          <span ref={labelRef} style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', lineHeight: 1.15, minWidth: 0, color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
             {splitAt < 0 ? headerLabel : (
               <>
                 {headerLabel.slice(0, splitAt)}
