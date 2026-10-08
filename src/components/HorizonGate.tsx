@@ -1,16 +1,20 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Horizon gate (#120): the seam between hero and About as a CRT power-on.
-// Scrolling heats the red horizon line to neon; as it rises a second line
-// splits off and travels down. The two lines are the edges of a screen
-// opening: About is revealed between them, the lower edge develops through
-// 3 px Bayer dither cells, and the portrait first lands as a 1-bit red
-// dither before it dissolves into the real photo.
+// Horizon gate (#120): the hero becomes stars, the stars become About.
 //
-// Everything is a pure function of the scroll position, so scrolling back
-// plays the same frames in reverse and nothing moves while the page rests
-// (motion law). About itself stays real DOM at its real size; this is only a
-// fixed, pointer-transparent WebGL2 veil drawn on scroll frames while the
-// horizon is on screen. Full mode only: lite renders the children as they are.
+//   1. lock: the hero headline turns into 3 px dither cells, cell by cell
+//   2. fall: the cells come loose and drift down into the red horizon line
+//      as stars, each at its own depth; the line charges as they cross it
+//   3. flash: the line fires once, a thin CRT flick that splits and closes
+//   4. land: the stars fly out of the line into About, top line first, land
+//      as dither cells on its letters and resolve into the real text; the
+//      portrait lands last as red 1-bit dither and resolves into the photo
+//
+// Cells are sampled from the real DOM (every glyph where it renders), so the
+// hand-over in both directions is exact. Spare hero cells stay behind as
+// stars; spare About cells are gathered from the galaxy. Everything is drawn
+// over the galaxy, nothing is black, and every frame is a pure function of
+// the scroll position: scrolling back reassembles the hero (motion law).
+// Full mode only: lite renders the children as they are.
 // ─────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, type ReactNode } from 'react';
@@ -20,103 +24,236 @@ const smooth = (a: number, b: number, x: number) => {
   const t = clamp01((x - a) / (b - a));
   return t * t * (3 - 2 * t);
 };
-const easeInOutCubic = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
+// The gate plays while the horizon line rises from START to END (fractions
+// of the viewport height); p runs 0..1 across it.
+const START = 0.96;
+const END = 0.14;
+const CELL = 3; // css px, the site's dither cell
+const MAX_PARTICLES = 24000;
 const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
-// Built in steps (#120), each one switchable on its own: the neon line and
-// its split, the dither veil over About, the portrait developing.
-const VEIL = true;
-const PORTRAIT = true;
+// Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
+const HERO_OUT: [number, number] = [0.02, 0.09]; // hero DOM gives way to its cells
+const FLASH_AT = 0.47; // the line fires
+const ABOUT_IN: [number, number] = [0.9, 0.97]; // About text takes over from the cells
+const PHOTO_IN: [number, number] = [0.92, 1.0]; // the portrait resolves last
 
-const VERT = `#version 300 es
+// ── shaders ───────────────────────────────────────────────────────────────
+
+const QUAD_VS = `#version 300 es
 void main() {
-  // one triangle covering the screen
   vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
 }`;
 
-const FRAG = `#version 300 es
+// the horizon line: a thin neon tube that charges as stars cross it, then
+// fires once with a short CRT split. No wide wash, red never burns white.
+const LINE_FS = `#version 300 es
 precision highp float;
-uniform vec2 uRes;          // canvas size, device px
-uniform float uCell;        // dither cell, device px (3 css px)
-uniform float uLine;        // horizon line y, device px from the top
-uniform float uLower;       // the line that splits off and travels down
-uniform float uBottom;      // bottom edge of About: nothing is veiled below it
-uniform vec2 uSpan;         // horizon x extent (left, right)
-uniform float uGlow;        // 0 faint divider .. 1 full neon
-uniform float uSplit;       // 0 closed .. 1 the screen is fully open
-uniform vec4 uPhoto;        // portrait rect x, y, w, h
-uniform float uPhotoQ;      // 0 red 1-bit dither .. 1 real photo
-uniform float uPhotoReady;
-uniform sampler2D uTex;
-uniform vec3 uVoid;
-uniform float uVeil;        // step b on/off
+uniform vec2 uRes;
+uniform float uDpr;
+uniform float uLine;    // device px from the top
+uniform vec2 uSpan;     // x extent
+uniform float uCharge;  // 0..1
+uniform float uFlash;   // 0..1
 out vec4 outColor;
-
-const vec3 RED_HOT = vec3(1.0, 0.16, 0.18);  // neon core: burns red, never white
-const vec3 RED = vec3(0.8, 0.0, 0.0);        // --sinaida-red
-
-// ordered dither threshold, 8x8 Bayer built from 2x2 steps
-float bayer2(vec2 a) { a = floor(a); return fract(dot(a, vec2(0.5, a.y * 0.75))); }
-float bayer4(vec2 a) { return bayer2(0.5 * a) * 0.25 + bayer2(a); }
-float bayer8(vec2 a) { return bayer4(0.5 * a) * 0.25 + bayer2(a); }
-float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-
-// a neon tube along y = ly: tight core plus a wide soft halo
-float tube(float y, float ly, float core, float halo) {
-  float d = abs(y - ly);
-  return exp(-d * d / (2.0 * core * core)) + 0.35 * exp(-d / halo);
+const vec3 RED = vec3(0.804, 0.0, 0.0);
+const vec3 RED_HOT = vec3(1.0, 0.2, 0.17);
+float tube(float d, float core, float halo) {
+  return exp(-d * d / (2.0 * core * core)) + 0.45 * exp(-d * d / (2.0 * halo * halo));
 }
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+  float fall = 60.0 * uDpr;
+  float x = smoothstep(uSpan.x - fall, uSpan.x + fall, p.x) * (1.0 - smoothstep(uSpan.y - fall, uSpan.y + fall, p.x));
+  float split = uFlash * 7.0 * uDpr;     // the line opens into two and closes
+  float d0 = p.y - uLine;
+  float i = tube(abs(d0), 0.8 * uDpr, 5.0 * uDpr) * (0.35 + 0.65 * uCharge) * (1.0 - uFlash)
+          + (tube(abs(d0 - split), 0.9 * uDpr, 7.0 * uDpr) + tube(abs(d0 + split), 0.9 * uDpr, 7.0 * uDpr)) * uFlash * 1.3;
+  i *= x * max(uCharge, uFlash);
+  vec3 col = mix(RED, RED_HOT, clamp(i, 0.0, 1.0)) * i;
+  outColor = vec4(col, clamp(i, 0.0, 1.0));
+}`;
+
+const PT_VS = `#version 300 es
+in vec2 aSrc;     // page px: where the cell starts (hero glyph or a galaxy star)
+in vec2 aMid;     // page px: where it crosses the horizon line
+in vec2 aDst;     // page px: where it lands (About glyph / portrait, or a star)
+in vec3 aCol0;
+in vec3 aCol1;
+in vec4 aTime;    // s1 (leave), s2 (land), depth, rnd
+in vec2 aFlags;   // x: starts visible (hero cell), y: kind 0 lands on About, 1 photo, 2 stays a star
+uniform float uP;
+uniform float uScroll;
+uniform float uDpr;
+uniform float uLine;  // page px
+uniform vec2 uView;   // css px
+out vec3 vCol;
+out float vAlpha;
+out float vRound;
+
+const vec3 RED_HOT = vec3(1.0, 0.2, 0.17);
 
 void main() {
-  vec2 frag = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y); // y down, like the page
-  vec2 cell = floor(frag / uCell);
-  float b = bayer8(cell);
-  vec4 col = vec4(0.0);
+  float s1 = aTime.x, s2 = aTime.y, depth = aTime.z, rnd = aTime.w;
+  float t1 = smoothstep(s1, s1 + 0.24, uP);
+  float t2 = smoothstep(s2, s2 + 0.2, uP);
 
-  // ── the veil: About is dark below the lower line ──
-  float band = 18.0 * uCell;                       // dithered developing edge
-  float inside = uVeil * step(uLine, frag.y) * step(frag.y, uBottom);
-  float k = clamp((frag.y - uLower + band) / band, 0.0, 1.0); // 0 above the band .. 1 at the line
-  float cover = inside * step(b, k * k);
-  // just above the edge, cells that already opened glow like fresh phosphor
-  float phosphor = inside * (1.0 - cover) * k * (1.0 - uSplit * 0.6);
-  // faint scanlines over the opened screen, fading as it completes
-  float open = inside * step(frag.y, uLower);
-  float scan = open * step(0.5, fract(frag.y / uCell * 0.5)) * 0.22 * (1.0 - smoothstep(0.55, 1.0, uSplit));
+  // fall into the line, accelerating like something pulled in
+  vec2 a = mix(aSrc, aMid, t1 * t1);
+  a.x += sin(t1 * 3.14159) * (rnd - 0.5) * 70.0;
+  // and out of it, easing into place
+  float land = 1.0 - pow(1.0 - t2, 3.0);
+  vec2 pos = mix(a, aDst, land);
+  pos.x += sin(t2 * 3.14159) * (rnd - 0.5) * 110.0;
 
-  col = vec4(uVoid, 1.0) * cover;
-  col += vec4(0.0, 0.0, 0.0, scan) * (1.0 - cover);
-  col += vec4(RED * 0.55, 0.55) * phosphor * phosphor;
+  // in flight a cell is a star: round, sized by depth, then a crisp cell again
+  float flight = smoothstep(0.0, 0.25, t1) * (1.0 - smoothstep(0.75, 1.0, t2));
+  if (aFlags.y > 1.5) flight = smoothstep(0.0, 0.25, t1);
+  float starSize = mix(1.2, 3.6, depth);
+  gl_PointSize = mix(3.0, starSize, flight) * uDpr;
 
-  // ── the portrait develops: 1-bit red dither, then the real photo ──
-  vec2 uv = (frag - uPhoto.xy) / uPhoto.zw;
-  if (uPhotoReady > 0.5 && cover < 0.5 && all(greaterThanEqual(uv, vec2(0.0))) && all(lessThanEqual(uv, vec2(1.0)))) {
-    // cells dissolve in random order so the photo reads as developing, not wiping
-    float keep = step(uPhotoQ, hash(cell));
-    if (keep > 0.5) {
-      vec3 c = texture(uTex, uv).rgb;
-      float lum = dot(c, vec3(0.299, 0.587, 0.114));
-      lum = clamp((lum - 0.12) * 1.5, 0.0, 1.0);
-      float on = step(b, lum);
-      col = vec4(mix(uVoid, RED_HOT * 0.9, on), 1.0);
+  vec3 star = mix(vec3(0.95, 0.93, 0.9), vec3(0.85, 0.12, 0.2), step(0.8, rnd)) * mix(0.55, 1.0, depth);
+  vec3 col = mix(aCol0, star, flight);
+  col = mix(col, aCol1, aFlags.y > 1.5 ? t2 : land * (1.0 - flight));
+  // crossing the line, a star burns hot red
+  float heat = exp(-abs(pos.y - uLine) / 26.0) * flight;
+  col = mix(col, RED_HOT, heat * 0.85);
+
+  // hero cells appear cell by cell as the DOM headline gives way
+  float alpha = aFlags.x > 0.5 ? step(rnd, (uP - ${HERO_OUT[0].toFixed(3)}) / ${(HERO_OUT[1] - HERO_OUT[0]).toFixed(3)} + 0.02)
+                               : smoothstep(s1, s1 + 0.12, uP) * mix(0.4, 1.0, depth);
+  // and hand over to the real About cell by cell, the portrait last
+  if (aFlags.y < 0.5) alpha *= 1.0 - step(mix(${ABOUT_IN[0].toFixed(3)}, ${ABOUT_IN[1].toFixed(3)}, rnd), uP);
+  else if (aFlags.y < 1.5) alpha *= 1.0 - step(mix(${PHOTO_IN[0].toFixed(3)}, ${PHOTO_IN[1].toFixed(3)} - 0.01, rnd), uP);
+  else alpha *= 1.0 - smoothstep(0.78, 1.0, uP);
+
+  vCol = col;
+  vAlpha = alpha;
+  vRound = flight;
+  vec2 scr = vec2(pos.x, pos.y - uScroll);
+  gl_Position = vec4(scr.x / uView.x * 2.0 - 1.0, 1.0 - scr.y / uView.y * 2.0, 0.0, 1.0);
+}`;
+
+const PT_FS = `#version 300 es
+precision highp float;
+in vec3 vCol;
+in float vAlpha;
+in float vRound;
+out vec4 outColor;
+void main() {
+  float d = length(gl_PointCoord - 0.5);
+  float soft = smoothstep(0.5, 0.1, d);
+  float a = vAlpha * mix(1.0, soft, vRound);
+  if (a < 0.01) discard;
+  outColor = vec4(vCol * a, a);
+}`;
+
+// ── sampling the DOM into cells ───────────────────────────────────────────
+
+interface Cell { x: number; y: number; r: number; g: number; b: number }
+
+// false when the element or an ancestor up to `root` is transparent (a
+// hidden caption, a footnote waiting for its click)
+function shown(el: Element, root: Element) {
+  for (let e: Element | null = el; e && e !== root.parentElement; e = e.parentElement) {
+    if (parseFloat(getComputedStyle(e).opacity) < 0.05) return false;
+  }
+  return true;
+}
+
+// Draws every visible glyph under `root` into a canvas at its rendered place,
+// then reads it back on the 3 px grid. Coordinates come back in page px.
+function sampleText(root: HTMLElement, skip: (el: Element) => boolean, box: DOMRect, checkOpacity: boolean): Cell[] {
+  const w = Math.ceil(box.width), h = Math.ceil(box.height);
+  if (w < 1 || h < 1) return [];
+  const cv = document.createElement('canvas');
+  cv.width = w;
+  cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return [];
+  const range = document.createRange();
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
+    const el = n.parentElement;
+    if (!el || skip(el)) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || cs.display === 'none' || (checkOpacity && !shown(el, root))) continue;
+    ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    ctx.fillStyle = cs.color;
+    ctx.textBaseline = 'alphabetic';
+    const upper = cs.textTransform === 'uppercase';
+    const text = n.data;
+    for (let i = 0; i < text.length; i++) {
+      if (/\s/.test(text[i])) continue;
+      range.setStart(n, i);
+      range.setEnd(n, i + 1);
+      const r = range.getBoundingClientRect();
+      if (r.width < 1 || r.bottom < box.top || r.top > box.bottom) continue;
+      const ch = upper ? text[i].toUpperCase() : text[i];
+      const m = ctx.measureText(ch);
+      const base = r.top + (r.height + m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2;
+      ctx.fillText(ch, r.left - box.left, base - box.top);
     }
   }
+  const data = ctx.getImageData(0, 0, w, h).data;
+  const cells: Cell[] = [];
+  const sy = window.scrollY;
+  // the grid is aligned to the page, so cells land on the same lattice everywhere
+  const x0 = Math.ceil(box.left / CELL) * CELL - box.left;
+  const y0 = Math.ceil((box.top + sy) / CELL) * CELL - (box.top + sy);
+  for (let y = y0 + 1; y < h; y += CELL) {
+    for (let x = x0 + 1; x < w; x += CELL) {
+      const k = ((y | 0) * w + (x | 0)) * 4;
+      if (data[k + 3] < 110) continue;
+      cells.push({ x: box.left + x, y: box.top + sy + y, r: data[k] / 255, g: data[k + 1] / 255, b: data[k + 2] / 255 });
+    }
+  }
+  return cells;
+}
 
-  // ── the two neon lines ──
-  float span = smoothstep(uSpan.x, uSpan.x + (uSpan.y - uSpan.x) * 0.22, frag.x)
-             * smoothstep(uSpan.y, uSpan.y - (uSpan.y - uSpan.x) * 0.22, frag.x);
-  float up = uGlow * span * tube(frag.y, uLine, 0.9 * uCell / 3.0 + 0.6, 10.0 * uCell / 3.0 + 26.0 * uGlow);
-  float lowOn = smoothstep(0.0, 0.04, uSplit) * (1.0 - smoothstep(0.88, 1.0, uSplit));
-  float down = lowOn * span * tube(frag.y, uLower, 1.1, 14.0 * uCell / 3.0);
-  float neon = clamp(up + down, 0.0, 1.0);
-  vec3 tint = mix(RED, RED_HOT, clamp(neon * 1.6 - 0.4, 0.0, 1.0));
-  col.rgb = col.rgb * (1.0 - neon) + tint * neon;
-  col.a = max(col.a, neon);
+const bayer8 = (x: number, y: number) => {
+  let v = 0;
+  for (let bit = 0, s = 1; bit < 3; bit++, s *= 4) {
+    const xb = (x >> bit) & 1, yb = (y >> bit) & 1;
+    v += ((xb ^ yb) * 2 + yb) * (16 / s);
+  }
+  return v / 64;
+};
 
-  outColor = col; // premultiplied
-}`;
+// the portrait as red 1-bit dither on the same grid
+function samplePhoto(img: HTMLImageElement, rect: DOMRect): Cell[] {
+  const w = Math.ceil(rect.width), h = Math.ceil(rect.height);
+  const cv = document.createElement('canvas');
+  cv.width = w;
+  cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  if (!ctx || w < 1) return [];
+  ctx.drawImage(img, 0, 0, w, h);
+  const data = ctx.getImageData(0, 0, w, h).data;
+  const sy = window.scrollY;
+  const cells: Cell[] = [];
+  for (let y = 1; y < h; y += CELL) {
+    for (let x = 1; x < w; x += CELL) {
+      const k = (y * w + x) * 4;
+      const lum = (0.299 * data[k] + 0.587 * data[k + 1] + 0.114 * data[k + 2]) / 255;
+      if (Math.min(1, Math.max(0, (lum - 0.22) * 1.9)) <= bayer8(x / CELL | 0, y / CELL | 0)) continue;
+      cells.push({ x: rect.left + x, y: rect.top + sy + y, r: 1, g: 0.2, b: 0.17 });
+    }
+  }
+  return cells;
+}
+
+// seeded PRNG, so a rebuild after resize lands the same way
+function rng(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 function compile(gl: WebGL2RenderingContext, type: number, src: string) {
   const s = gl.createShader(type)!;
@@ -124,6 +261,14 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string) {
   gl.compileShader(s);
   if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) ?? 'shader');
   return s;
+}
+function link(gl: WebGL2RenderingContext, vs: string, fs: string) {
+  const p = gl.createProgram()!;
+  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) ?? 'link');
+  return p;
 }
 
 export default function HorizonGate({ children }: { children: ReactNode }) {
@@ -133,53 +278,111 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = rootRef.current;
     const canvas = canvasRef.current;
-    if (!root || !canvas) return;
+    // the hero sits right before the gate in the page
+    const hero = root?.previousElementSibling as HTMLElement | null;
+    const about = root?.querySelector<HTMLElement>('#about');
+    const horizon = root?.querySelector<HTMLElement>('[data-horizon]');
+    if (!root || !canvas || !hero || !about || !horizon) return;
     const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, antialias: false });
     if (!gl) return;
 
-    let prog: WebGLProgram;
+    let lineProg: WebGLProgram, ptProg: WebGLProgram;
     try {
-      prog = gl.createProgram()!;
-      gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
-      gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG));
-      gl.linkProgram(prog);
-      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) ?? 'link');
+      lineProg = link(gl, QUAD_VS, LINE_FS);
+      ptProg = link(gl, PT_VS, PT_FS);
     } catch (e) {
       console.error('HorizonGate:', e);
       return;
     }
-    gl.useProgram(prog);
-    gl.bindVertexArray(gl.createVertexArray());
-    const U = (n: string) => gl.getUniformLocation(prog, n);
-    const u = {
-      res: U('uRes'), cell: U('uCell'), line: U('uLine'), lower: U('uLower'), bottom: U('uBottom'),
-      span: U('uSpan'), glow: U('uGlow'), split: U('uSplit'), photo: U('uPhoto'), photoQ: U('uPhotoQ'),
-      photoReady: U('uPhotoReady'), tex: U('uTex'), void: U('uVoid'), veil: U('uVeil'),
-    };
+    const L = (n: string) => gl.getUniformLocation(lineProg, n);
+    const P = (n: string) => gl.getUniformLocation(ptProg, n);
+    const lu = { res: L('uRes'), dpr: L('uDpr'), line: L('uLine'), span: L('uSpan'), charge: L('uCharge'), flash: L('uFlash') };
+    const pu = { p: P('uP'), scroll: P('uScroll'), dpr: P('uDpr'), line: P('uLine'), view: P('uView') };
+    const quadVao = gl.createVertexArray();
+    const ptVao = gl.createVertexArray();
+    const buf = gl.createBuffer();
+    let count = 0;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-    // void colour from the live token, so the veil matches the page exactly
-    const bg = getComputedStyle(document.documentElement).getPropertyValue('--background').trim().split(/\s+/);
-    const l = parseFloat(bg[2] ?? '2') / 100;
-    gl.uniform3f(u.void, l, l, l);
-    gl.uniform1i(u.tex, 0);
-    gl.uniform1f(u.veil, VEIL ? 1 : 0);
-
-    let photoReady = 0;
-    const tex = gl.createTexture();
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => {
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      photoReady = 1;
-      schedule();
-    };
-    if (PORTRAIT) img.src = PHOTO_SRC;
+    const photo = new Image();
+    photo.src = PHOTO_SRC;
 
     let dpr = 1;
+    let linePage = 0;
+    let built = false;
+
+    // Sample hero and About into cells and pair them into particles.
+    const build = () => {
+      const vw = window.innerWidth, vh = window.innerHeight, sy = window.scrollY;
+      const hz = horizon.getBoundingClientRect();
+      linePage = hz.top + hz.height / 2 + sy;
+      const heroBox = hero.getBoundingClientRect();
+      const skipHero = (el: Element) => !!el.closest('.sr-only, .hero-ghost, .hero-noise, .hero-whisper, button');
+      const src = sampleText(hero, skipHero, heroBox, true);
+      const aboutBox = about.getBoundingClientRect();
+      // only what can be on screen when the gate completes
+      const cap = new DOMRect(aboutBox.left, aboutBox.top, aboutBox.width, Math.min(aboutBox.height, linePage - sy + vh * 1.05 - aboutBox.top));
+      const skipAbout = (el: Element) => !!el.closest('.sr-only');
+      // About's blocks may still wait for their scroll reveal, so no opacity check
+      const text = sampleText(about, skipAbout, cap, false);
+      const img = about.querySelector<HTMLImageElement>('picture img');
+      const pr = img?.getBoundingClientRect();
+      const face = photo.complete && photo.naturalWidth && pr && pr.top < cap.bottom ? samplePhoto(photo, pr) : [];
+
+      const rand = rng(120);
+      let dst: (Cell & { kind: number })[] = [
+        ...text.map((c) => ({ ...c, kind: 0 })),
+        ...face.map((c) => ({ ...c, kind: 1 })),
+      ];
+      const budget = MAX_PARTICLES - Math.min(src.length, MAX_PARTICLES / 3);
+      if (dst.length > budget) dst = dst.filter(() => rand() < budget / dst.length);
+      const yMin = Math.min(...dst.map((c) => c.y), linePage), yMax = Math.max(...dst.map((c) => c.y), linePage + 1);
+
+      const n = Math.max(src.length, dst.length);
+      const STRIDE = 2 + 2 + 2 + 3 + 3 + 4 + 2;
+      const arr = new Float32Array(n * STRIDE);
+      const spanL = hz.left, spanR = hz.right;
+      // shuffle sources so each glyph scatters over the whole of About
+      const order = src.map((_, i) => i).sort(() => rand() - 0.5);
+      for (let i = 0; i < n; i++) {
+        const r = rand(), depth = rand();
+        const s = i < src.length ? src[order[i]] : null;
+        const d = i < dst.length ? dst[i] : null;
+        const sx = s ? s.x : rand() * vw;
+        const syy = s ? s.y : linePage - 40 - rand() * vh * 0.9;
+        const dx = d ? d.x : rand() * vw;
+        const dy = d ? d.y : linePage + (rand() - 0.35) * vh * 1.1;
+        const mx = Math.min(spanR - 24, Math.max(spanL + 24, sx + (dx - sx) * 0.35 + (rand() - 0.5) * 60));
+        // leave the hero top lines first; land on About top lines first, the portrait last
+        const s1 = 0.06 + 0.16 * (s ? (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) : rand()) * 0.6 + 0.08 * r;
+        const order01 = d ? (d.y - yMin) / Math.max(1, yMax - yMin) : rand();
+        const s2 = d?.kind === 1 ? 0.6 + 0.1 * r : d ? 0.5 + 0.24 * order01 + 0.04 * r : 0.5 + 0.2 * r;
+        const o = i * STRIDE;
+        arr.set([
+          sx, syy, mx, linePage, dx, dy,
+          s ? s.r : 0.9, s ? s.g : 0.9, s ? s.b : 0.88,
+          d ? d.r : 0.9, d ? d.g : 0.9, d ? d.b : 0.88,
+          Math.min(s1, 0.24), s2, depth, r,
+          s ? 1 : 0, d ? d.kind : 2,
+        ], o);
+      }
+      gl.bindVertexArray(ptVao);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
+      const attrs: [string, number][] = [['aSrc', 2], ['aMid', 2], ['aDst', 2], ['aCol0', 3], ['aCol1', 3], ['aTime', 4], ['aFlags', 2]];
+      let off = 0;
+      for (const [name, size] of attrs) {
+        const loc = gl.getAttribLocation(ptProg, name);
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, size, gl.FLOAT, false, STRIDE * 4, off * 4);
+        off += size;
+      }
+      gl.bindVertexArray(null);
+      count = n;
+      built = true;
+    };
+
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(window.innerWidth * dpr);
@@ -187,6 +390,16 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
     resize();
+
+    // DOM side: opacity only, cleared entirely outside the gate
+    const frameEl = about.querySelector<HTMLElement>('.photo-frame-wrapper');
+    let domActive = false;
+    const clearDom = () => {
+      if (!domActive) return;
+      domActive = false;
+      hero.style.opacity = about.style.opacity = '';
+      if (frameEl) frameEl.style.opacity = '';
+    };
 
     let raf = 0;
     let shown = false;
@@ -199,62 +412,81 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     const frame = () => {
       raf = 0;
       const vh = window.innerHeight;
-      const horizon = root.querySelector<HTMLElement>('[data-horizon]');
-      if (!horizon) return;
       const h = horizon.getBoundingClientRect();
       const lineY = h.top + h.height / 2;
-      if (lineY < -80 || lineY > vh + 80) { show(false); return; }
+      const p = clamp01((START - lineY / vh) / (START - END));
+      if (p <= 0 || p >= 1 || !built) {
+        clearDom();
+        show(false);
+        return;
+      }
 
-      const r = root.getBoundingClientRect();
-      // the line heats up as it enters, the screen opens while it rises to the top fifth
-      const glow = smooth(vh * 1.02, vh * 0.72, lineY);
-      const split = clamp01((vh * 0.82 - lineY) / (vh * 0.6));
-      const lower = lineY + (vh + 60 - lineY) * easeInOutCubic(split);
+      domActive = true;
+      hero.style.opacity = (1 - smooth(HERO_OUT[0], HERO_OUT[1], p)).toFixed(3);
+      about.style.opacity = smooth(ABOUT_IN[0], ABOUT_IN[1], p).toFixed(3);
+      if (frameEl) frameEl.style.opacity = smooth(PHOTO_IN[0], PHOTO_IN[1], p).toFixed(3);
 
-      // the portrait develops once the lower line has passed it
-      const photo = root.querySelector<HTMLElement>('#about picture img')?.getBoundingClientRect();
-      let photoQ = 1;
-      if (photo) photoQ = clamp01((lower - photo.bottom) / (vh * 0.3));
+      const charge = smooth(0.12, FLASH_AT, p) * (1 - smooth(FLASH_AT + 0.04, 0.8, p));
+      const flash = Math.exp(-Math.pow((p - FLASH_AT) / 0.022, 2));
 
-      gl.uniform2f(u.res, canvas.width, canvas.height);
-      gl.uniform1f(u.cell, 3 * dpr);
-      gl.uniform1f(u.line, lineY * dpr);
-      gl.uniform1f(u.lower, lower * dpr);
-      gl.uniform1f(u.bottom, r.bottom * dpr);
-      gl.uniform2f(u.span, h.left * dpr, h.right * dpr);
-      gl.uniform1f(u.glow, glow);
-      gl.uniform1f(u.split, split);
-      if (photo) gl.uniform4f(u.photo, photo.left * dpr, photo.top * dpr, photo.width * dpr, photo.height * dpr);
-      gl.uniform1f(u.photoQ, photoQ);
-      gl.uniform1f(u.photoReady, photoReady && photo ? 1 : 0);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
+
+      gl.useProgram(lineProg);
+      gl.bindVertexArray(quadVao);
+      gl.uniform2f(lu.res, canvas.width, canvas.height);
+      gl.uniform1f(lu.dpr, dpr);
+      gl.uniform1f(lu.line, lineY * dpr);
+      gl.uniform2f(lu.span, h.left * dpr, h.right * dpr);
+      gl.uniform1f(lu.charge, charge);
+      gl.uniform1f(lu.flash, flash);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      gl.useProgram(ptProg);
+      gl.bindVertexArray(ptVao);
+      gl.uniform1f(pu.p, p);
+      gl.uniform1f(pu.scroll, window.scrollY);
+      gl.uniform1f(pu.dpr, dpr);
+      gl.uniform1f(pu.line, linePage);
+      gl.uniform2f(pu.view, window.innerWidth, vh);
+      gl.drawArrays(gl.POINTS, 0, count);
       show(true);
     };
-    function schedule() {
+    const schedule = () => {
       if (!raf) raf = requestAnimationFrame(frame);
-    }
-    const onResize = () => { resize(); schedule(); };
+    };
+
+    // Sample once the page has settled (fonts, hero scramble, photo), and
+    // again after a resize. Sampling reads the DOM in its natural state.
+    let buildTimer = 0;
+    const rebuild = (delay: number) => {
+      clearTimeout(buildTimer);
+      buildTimer = window.setTimeout(() => {
+        clearDom();
+        build();
+        schedule();
+      }, delay);
+    };
+    let dead = false;
+    Promise.all([document.fonts.ready, photo.decode().catch(() => undefined)]).then(() => {
+      if (!dead) rebuild(1600);
+    });
+    const onResize = () => { resize(); rebuild(250); };
 
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', onResize);
-    // About's layout settles after fonts and lazy images; redraw when it does
-    const ro = new ResizeObserver(schedule);
-    ro.observe(root);
-    schedule();
 
     return () => {
+      dead = true;
+      clearTimeout(buildTimer);
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
-      ro.disconnect();
-      img.onload = null;
+      clearDom();
       // no loseContext(): on macOS Chrome it blanks the window for a frame (#119)
-      gl.deleteTexture(tex);
-      gl.deleteProgram(prog);
+      gl.deleteBuffer(buf);
+      gl.deleteProgram(lineProg);
+      gl.deleteProgram(ptProg);
     };
   }, []);
 
