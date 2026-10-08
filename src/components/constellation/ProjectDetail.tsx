@@ -226,9 +226,12 @@ function Readout({ project }: { project: Project }) {
 // Opening from an index row: the row's two rules light up, then part like
 // a stage door to the card's top and bottom edges, and the card is revealed
 // between them. Closing plays it backwards into the row.
-const LIGHT_MS = 200;
-const OPEN_MS = 460;
-const EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
+const DOOR_MS = 820; // whole door: rules glow (first ~35 %), then part
+const LIT = 0.35; // fraction of the door spent lighting the rules in place
+const EASE = 'cubic-bezier(0.45, 0, 0.2, 1)';
+// the index rule's own colour, so the door starts as the line already there
+const RULE = 'hsl(var(--foreground) / 0.1)';
+const RED = 'hsl(var(--sinaida-red))';
 
 export default function ProjectDetail({
   project,
@@ -246,49 +249,53 @@ export default function ProjectDetail({
   const bottomRef = useRef<HTMLDivElement>(null);
   const closing = useRef(false);
 
-  // the clip that shows only the band between the two rules
-  const band = (o: FocusOrigin, c: DOMRect) => {
-    const t = Math.max(0, o.top - c.top);
-    const b = Math.max(0, c.bottom - (o.top + o.height));
-    return `inset(${t}px 0 ${b}px 0)`;
-  };
-  const lines = (o: FocusOrigin, c: DOMRect, opened: boolean) => [
-    { left: `${o.left}px`, width: `${o.width}px`, top: `${opened ? c.top : o.top}px` },
-    { left: `${o.left}px`, width: `${o.width}px`, top: `${opened ? c.bottom - 1 : o.top + o.height - 1}px` },
-  ];
+  // One continuous animation per element, so nothing pops: the row's two
+  // rules brighten from their grey into a red glow where they already are,
+  // then part to the card's edges while the card and its backdrop fade in
+  // between them. Closing is the same timeline reversed.
   const run = useCallback(
     (dir: 'open' | 'close') => {
       const card = cardRef.current;
       const top = topRef.current;
       const bottom = bottomRef.current;
-      if (!origin || !card || !top || !bottom) return Promise.resolve();
+      const backdrop = card?.parentElement;
+      if (!origin || !card || !top || !bottom || !backdrop) return Promise.resolve();
+      // re-measure the row each time: the page may have moved since the click
+      const live = origin.el?.isConnected ? origin.el.getBoundingClientRect() : null;
+      const o = live ? { left: live.left, top: live.top, width: live.width, height: live.height } : origin;
       const c = card.getBoundingClientRect();
-      const closed = lines(origin, c, false);
-      const open = [
-        { left: `${c.left}px`, width: `${c.width}px`, top: `${c.top}px` },
-        { left: `${c.left}px`, width: `${c.width}px`, top: `${c.bottom - 1}px` },
+      const rowBottom = o.top + o.height;
+      const at = (y: number, left: number, width: number) => ({ top: `${y}px`, left: `${left}px`, width: `${width}px` });
+      const grey = { background: RULE, boxShadow: '0 0 0 0 hsl(var(--sinaida-red) / 0)' };
+      const glow = { background: RED, boxShadow: '0 0 12px 1px hsl(var(--sinaida-red) / 0.8)' };
+      const rule = (rowY: number, cardY: number) => [
+        { ...at(rowY, o.left, o.width), ...grey, opacity: 1, offset: 0 },
+        { ...at(rowY, o.left, o.width), ...glow, opacity: 1, offset: LIT },
+        { ...at(cardY, c.left, c.width), ...glow, opacity: 1, offset: 0.88 },
+        { ...at(cardY, c.left, c.width), ...glow, opacity: 0, offset: 1 },
       ];
-      const dim = { opacity: 0.25, boxShadow: '0 0 0 hsl(var(--sinaida-red) / 0)' };
-      const lit = { opacity: 1, boxShadow: '0 0 14px 2px hsl(var(--sinaida-red) / 0.85)' };
-      const opts = (d: number, delay = 0) => ({ duration: d, delay, easing: EASE, fill: 'forwards' as const });
-      const anims =
-        dir === 'open'
-          ? [
-              top.animate([{ ...closed[0], ...dim }, { ...closed[0], ...lit, offset: 0.3 }, { ...open[0], ...lit }], opts(LIGHT_MS + OPEN_MS)),
-              bottom.animate([{ ...closed[1], ...dim }, { ...closed[1], ...lit, offset: 0.3 }, { ...open[1], ...lit }], opts(LIGHT_MS + OPEN_MS)),
-              card.animate(
-                [{ clipPath: band(origin, c) }, { clipPath: band(origin, c), offset: 0.3 }, { clipPath: 'inset(0px 0 0px 0)' }],
-                opts(LIGHT_MS + OPEN_MS),
-              ),
-              top.animate([{ opacity: 1 }, { opacity: 0 }], opts(240, LIGHT_MS + OPEN_MS)),
-              bottom.animate([{ opacity: 1 }, { opacity: 0 }], opts(240, LIGHT_MS + OPEN_MS)),
-            ]
-          : [
-              top.animate([{ ...open[0], ...lit }, { ...closed[0], ...lit, offset: 0.7 }, { ...closed[0], ...dim, opacity: 0 }], opts(OPEN_MS + LIGHT_MS)),
-              bottom.animate([{ ...open[1], ...lit }, { ...closed[1], ...lit, offset: 0.7 }, { ...closed[1], ...dim, opacity: 0 }], opts(OPEN_MS + LIGHT_MS)),
-              card.animate([{ clipPath: 'inset(0px 0 0px 0)' }, { clipPath: band(origin, c), offset: 0.7 }, { clipPath: band(origin, c) }], opts(OPEN_MS + LIGHT_MS)),
-            ];
-      return Promise.all(anims.map((a) => a.finished.catch(() => undefined))).then(() => undefined);
+      // the card shows only between the rules, and only once they part
+      const band = `inset(${Math.max(0, o.top - c.top)}px 0 ${Math.max(0, c.bottom - rowBottom)}px 0)`;
+      const cardFrames = [
+        { clipPath: band, opacity: 0, offset: 0 },
+        { clipPath: band, opacity: 0, offset: LIT },
+        { clipPath: 'inset(0px 0 0px 0)', opacity: 1, offset: 0.88 },
+        { clipPath: 'inset(0px 0 0px 0)', opacity: 1, offset: 1 },
+      ];
+      const fadeFrames = [
+        { opacity: 0, offset: 0 },
+        { opacity: 0, offset: LIT * 0.5 },
+        { opacity: 1, offset: 0.88 },
+        { opacity: 1, offset: 1 },
+      ];
+      const opts = { duration: DOOR_MS, easing: EASE, fill: 'forwards' as const, direction: dir === 'open' ? ('normal' as const) : ('reverse' as const) };
+      const anims = [
+        top.animate(rule(o.top, c.top), opts),
+        bottom.animate(rule(rowBottom, c.bottom - 1), opts),
+        card.animate(cardFrames, opts),
+        backdrop.animate(fadeFrames, opts),
+      ];
+      return Promise.all(anims.map((x) => x.finished.catch(() => undefined))).then(() => undefined);
     },
     [origin],
   );
@@ -345,8 +352,8 @@ export default function ProjectDetail({
     >
       {shutter && (
         <>
-          <div ref={topRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ background: 'hsl(var(--sinaida-red))', opacity: 0 }} />
-          <div ref={bottomRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ background: 'hsl(var(--sinaida-red))', opacity: 0 }} />
+          <div ref={topRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ opacity: 0 }} />
+          <div ref={bottomRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ opacity: 0 }} />
         </>
       )}
       <div

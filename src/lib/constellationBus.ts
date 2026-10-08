@@ -4,7 +4,7 @@
 
 type Listener = (id: string | null) => void;
 /** viewport box of the control a card opens from (the index row's lines) */
-export type FocusOrigin = { left: number; top: number; width: number; height: number };
+export type FocusOrigin = { left: number; top: number; width: number; height: number; el?: Element };
 type FocusListener = (id: string | null, viaDive?: boolean, origin?: FocusOrigin) => void;
 
 const highlightListeners = new Set<Listener>();

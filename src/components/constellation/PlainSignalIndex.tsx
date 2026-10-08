@@ -56,16 +56,18 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
       ref={rowRef}
       type="button"
       onClick={() => {
-        // the row's own rules light up and open into the card
+        // the row's own rules light up and open into the card; the hover
+        // preview steps aside at once so nothing flashes over the door
+        if (previewEnabled) onPreview(null, 0, 0, true);
         const r = rowRef.current?.getBoundingClientRect();
-        constellationBus.focusWork(project.id, false, r && { left: r.left, top: r.top, width: r.width, height: r.height });
+        constellationBus.focusWork(project.id, false, r && { left: r.left, top: r.top, width: r.width, height: r.height, el: rowRef.current ?? undefined });
       }}
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onFocus={handleFocus}
       onBlur={handleBlur}
-      className="group flex w-full items-baseline gap-3 border-t border-l-2 border-l-transparent border-foreground/10 py-4 pl-3 -ml-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
+      className="group flex w-full items-baseline gap-3 border-t border-l-2 border-l-transparent border-foreground/10 py-4 pl-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
     >
       <span className="font-mono text-[14px] text-accent transition-transform group-hover:translate-x-1">→</span>
       <span className="flex-1">
@@ -118,7 +120,10 @@ export default function PlainSignalIndex() {
               >
                 {KIND_LABEL[kind]}
               </h3>
-              <div className="border-b border-foreground/10">
+              {/* rules run edge to edge for every row: the wrapper takes the
+                  row's hover-bar inset, so top and bottom lines start and end
+                  at the same x */}
+              <div className="-ml-3 w-[calc(100%+0.75rem)] border-b border-foreground/10">
                 {items.map((p) => (
                   <Row key={p.id} project={p} previewEnabled={previewEnabled} onPreview={handlePreview} />
                 ))}
