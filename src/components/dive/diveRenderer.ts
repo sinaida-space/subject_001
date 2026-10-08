@@ -747,8 +747,10 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
     const header = document.querySelector('header');
     const top = ((header ? header.getBoundingClientRect().bottom : 0) + 12) * dpr;
     const fit = (v: number, lo: number, hi: number) => (lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v)));
-    const cx = fit(c[0] - (A[0] - c[0]) * 0.4, m + w0 / 2, W - m - w0 / 2);
-    const cy = fit(c[1] - (A[1] - c[1]) * 0.4, top + h0 / 2, H - m - h0 / 2);
+    // the wall sits where the card will open, centred: the beam leaves the
+    // star and simply opens up into it, with no sideways travel
+    const cx = c[0];
+    const cy = fit(c[1], top + h0 / 2, H - m - h0 / 2);
 
     // lift screen-space choices into world space at their depths
     const k = Dw / f;
@@ -777,7 +779,8 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
   // camera and projected wall for a progress value
   const rigAt = (p: number, B: Beat) => {
     const g = geo;
-    const cam: V3 = [g.wallC[0] * B.dollyXY, g.wallC[1] * B.dollyXY, g.zEnd * B.dollyZ];
+    // straight push-in: the camera never swings sideways onto the beam axis
+    const cam: V3 = [0, g.wallC[1] * B.dollyXY, g.zEnd * B.dollyZ]; // wallC is centred in x; y only nudges under the header
     const s = g.f / (g.Dw - cam[2]);
     const hw = g.half[0] * s, hh = g.half[1] * s;
     const rcx = g.c[0] + (g.wallC[0] - cam[0]) * s, rcy = g.c[1] + (g.wallC[1] - cam[1]) * s;
