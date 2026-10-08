@@ -36,6 +36,7 @@ const PHOTO_SRC = '/sinaida-photo-600.jpg';
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
 const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
 const FLASH_AT = 0.29; // the line fires
+const CATCH_UP_MS = 110; // how quickly the gate catches up with a wheel step
 const LINE_MEET = 0.5; // the line rises to this height of the screen to meet the stars
 const LINE_HOLD: [number, number] = [0.24, 0.31]; // it holds there while it collects them
 const ABOUT_IN: [number, number] = [0.86, 0.95]; // About text takes over from the cells
@@ -428,13 +429,24 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       canvas.style.visibility = on ? 'visible' : 'hidden';
     };
 
-    const frame = () => {
+    // A wheel moves the page in steps; the gate follows the scroll through a
+    // short damped catch-up so the line glides between steps instead of
+    // jumping. It only moves while catching up with the user's scroll.
+    let pShown = -1;
+    let lastT = 0;
+    const frame = (now: number) => {
       raf = 0;
       const vh = window.innerHeight;
       const h = horizon.getBoundingClientRect();
       const sy = window.scrollY;
       const end = Math.max(SCROLL_START + 400, about.getBoundingClientRect().top + sy - vh * 0.12);
-      const p = clamp01((sy - SCROLL_START) / (end - SCROLL_START));
+      const target = clamp01((sy - SCROLL_START) / (end - SCROLL_START));
+      if (pShown < 0 || Math.abs(target - pShown) > 0.5) pShown = target; // a jump (reload, anchor link) lands at once
+      else pShown += (target - pShown) * (1 - Math.exp(-Math.min(64, now - lastT) / CATCH_UP_MS));
+      lastT = now;
+      if (Math.abs(target - pShown) > 1e-4) schedule();
+      else pShown = target;
+      const p = pShown;
       if (p <= 0 || p >= 1 || !built) {
         clearDom();
         show(false);
@@ -444,18 +456,22 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       // The line leaves its place under the hero and rises to meet the stars
       // as they dissolve, holds while it collects them, then rides down the
       // screen carrying them; they peel off into About's letters behind it.
+      // ...and after the flash it rises back into its own place above About,
+      // so at the end it is the real line again, exactly where it sits.
+      const home = h.top + h.height / 2;
       const lineY = p < LINE_HOLD[1]
-        ? mix(h.top + h.height / 2, vh * LINE_MEET, smooth(0, LINE_HOLD[0], p))
-        : mix(vh * LINE_MEET, vh * 0.96, clamp01((p - LINE_HOLD[1]) / (0.95 - LINE_HOLD[1])));
+        ? mix(home, vh * LINE_MEET, smooth(0, LINE_HOLD[0], p))
+        : mix(vh * LINE_MEET, home, smooth(LINE_HOLD[1], 1, p));
 
       domActive = true;
-      horizon.style.opacity = '0';
+      // the real line hands over to the drawn one and takes it back at the end
+      horizon.style.opacity = (1 - smooth(0, 0.03, p) + smooth(0.94, 1, p)).toFixed(3);
       hero.style.opacity = (1 - smooth(HERO_OUT[0], HERO_OUT[1], p)).toFixed(3);
       about.style.opacity = smooth(ABOUT_IN[0], ABOUT_IN[1], p).toFixed(3);
       if (frameEl) frameEl.style.opacity = smooth(PHOTO_IN[0], PHOTO_IN[1], p).toFixed(3);
 
       // always lit (it replaces the DOM line), charging up to the flash
-      const charge = Math.max(0.3, smooth(0.06, FLASH_AT, p) * (1 - smooth(FLASH_AT + 0.04, 0.8, p))) * (1 - smooth(0.9, 1, p));
+      const charge = Math.max(0.3, smooth(0.06, FLASH_AT, p) * (1 - smooth(FLASH_AT + 0.04, 0.8, p))) * (1 - smooth(0.94, 1, p));
       const flash = Math.exp(-Math.pow((p - FLASH_AT) / 0.022, 2));
 
       gl.clearColor(0, 0, 0, 0);
