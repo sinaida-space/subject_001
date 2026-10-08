@@ -3,7 +3,9 @@
 //  · focusWork(id)  — a project star or index row is clicked → open its detail popup
 
 type Listener = (id: string | null) => void;
-type FocusListener = (id: string | null, viaDive?: boolean) => void;
+/** viewport box of the control a card opens from (the index row's lines) */
+export type FocusOrigin = { left: number; top: number; width: number; height: number };
+type FocusListener = (id: string | null, viaDive?: boolean, origin?: FocusOrigin) => void;
 
 const highlightListeners = new Set<Listener>();
 const focusListeners = new Set<FocusListener>();
@@ -19,8 +21,8 @@ export const constellationBus = {
   },
 
   // constellation → selected works
-  focusWork(id: string, viaDive = false) {
-    focusListeners.forEach((l) => l(id, viaDive));
+  focusWork(id: string, viaDive = false, origin?: FocusOrigin) {
+    focusListeners.forEach((l) => l(id, viaDive, origin));
   },
   subscribeFocus(l: FocusListener) {
     focusListeners.add(l);

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import type { Project, ProjectKind } from '@/data/projects';
+import type { FocusOrigin } from '@/lib/constellationBus';
 import VideoEmbed from '@/components/VideoEmbed';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import DisplacementImage from '@/components/DisplacementImage';
@@ -222,8 +223,87 @@ function Readout({ project }: { project: Project }) {
 // every screen size. The open/close transition is a single, fast (180ms)
 // fade + scale triggered directly by the click that opened it — no idle
 // animation, no page scroll required to reach it.
-export default function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
-  const [mounted, setMounted] = useState(false);
+// Opening from an index row: the row's two rules light up, then part like
+// a stage door to the card's top and bottom edges, and the card is revealed
+// between them. Closing plays it backwards into the row.
+const LIGHT_MS = 200;
+const OPEN_MS = 460;
+const EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
+
+export default function ProjectDetail({
+  project,
+  onClose: close,
+  origin,
+}: {
+  project: Project;
+  onClose: () => void;
+  origin?: FocusOrigin;
+}) {
+  const shutter = !!origin;
+  const [mounted, setMounted] = useState(shutter);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const closing = useRef(false);
+
+  // the clip that shows only the band between the two rules
+  const band = (o: FocusOrigin, c: DOMRect) => {
+    const t = Math.max(0, o.top - c.top);
+    const b = Math.max(0, c.bottom - (o.top + o.height));
+    return `inset(${t}px 0 ${b}px 0)`;
+  };
+  const lines = (o: FocusOrigin, c: DOMRect, opened: boolean) => [
+    { left: `${o.left}px`, width: `${o.width}px`, top: `${opened ? c.top : o.top}px` },
+    { left: `${o.left}px`, width: `${o.width}px`, top: `${opened ? c.bottom - 1 : o.top + o.height - 1}px` },
+  ];
+  const run = useCallback(
+    (dir: 'open' | 'close') => {
+      const card = cardRef.current;
+      const top = topRef.current;
+      const bottom = bottomRef.current;
+      if (!origin || !card || !top || !bottom) return Promise.resolve();
+      const c = card.getBoundingClientRect();
+      const closed = lines(origin, c, false);
+      const open = [
+        { left: `${c.left}px`, width: `${c.width}px`, top: `${c.top}px` },
+        { left: `${c.left}px`, width: `${c.width}px`, top: `${c.bottom - 1}px` },
+      ];
+      const dim = { opacity: 0.25, boxShadow: '0 0 0 hsl(var(--sinaida-red) / 0)' };
+      const lit = { opacity: 1, boxShadow: '0 0 14px 2px hsl(var(--sinaida-red) / 0.85)' };
+      const opts = (d: number, delay = 0) => ({ duration: d, delay, easing: EASE, fill: 'forwards' as const });
+      const anims =
+        dir === 'open'
+          ? [
+              top.animate([{ ...closed[0], ...dim }, { ...closed[0], ...lit, offset: 0.3 }, { ...open[0], ...lit }], opts(LIGHT_MS + OPEN_MS)),
+              bottom.animate([{ ...closed[1], ...dim }, { ...closed[1], ...lit, offset: 0.3 }, { ...open[1], ...lit }], opts(LIGHT_MS + OPEN_MS)),
+              card.animate(
+                [{ clipPath: band(origin, c) }, { clipPath: band(origin, c), offset: 0.3 }, { clipPath: 'inset(0px 0 0px 0)' }],
+                opts(LIGHT_MS + OPEN_MS),
+              ),
+              top.animate([{ opacity: 1 }, { opacity: 0 }], opts(240, LIGHT_MS + OPEN_MS)),
+              bottom.animate([{ opacity: 1 }, { opacity: 0 }], opts(240, LIGHT_MS + OPEN_MS)),
+            ]
+          : [
+              top.animate([{ ...open[0], ...lit }, { ...closed[0], ...lit, offset: 0.7 }, { ...closed[0], ...dim, opacity: 0 }], opts(OPEN_MS + LIGHT_MS)),
+              bottom.animate([{ ...open[1], ...lit }, { ...closed[1], ...lit, offset: 0.7 }, { ...closed[1], ...dim, opacity: 0 }], opts(OPEN_MS + LIGHT_MS)),
+              card.animate([{ clipPath: 'inset(0px 0 0px 0)' }, { clipPath: band(origin, c), offset: 0.7 }, { clipPath: band(origin, c) }], opts(OPEN_MS + LIGHT_MS)),
+            ];
+      return Promise.all(anims.map((a) => a.finished.catch(() => undefined))).then(() => undefined);
+    },
+    [origin],
+  );
+
+  // play the door before the first paint so the card never flashes whole
+  useLayoutEffect(() => {
+    if (shutter) run('open');
+  }, [shutter, run]);
+
+  const onClose = useCallback(() => {
+    if (!shutter) return close();
+    if (closing.current) return;
+    closing.current = true;
+    run('close').then(close);
+  }, [shutter, run, close]);
 
   useEffect(() => {
     // Mount closed, then flip to open on the next frame so the transition
@@ -263,7 +343,14 @@ export default function ProjectDetail({ project, onClose }: { project: Project; 
       style={{ opacity: mounted ? 1 : 0 }}
       onClick={onClose}
     >
+      {shutter && (
+        <>
+          <div ref={topRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ background: 'hsl(var(--sinaida-red))', opacity: 0 }} />
+          <div ref={bottomRef} aria-hidden="true" className="pointer-events-none fixed z-[71] h-px" style={{ background: 'hsl(var(--sinaida-red))', opacity: 0 }} />
+        </>
+      )}
       <div
+        ref={cardRef}
         className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out md:max-w-[1400px]"
         style={{
           background: 'hsl(var(--background))',

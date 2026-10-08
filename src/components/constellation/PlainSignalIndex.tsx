@@ -55,7 +55,11 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
     <button
       ref={rowRef}
       type="button"
-      onClick={() => constellationBus.focusWork(project.id)}
+      onClick={() => {
+        // the row's own rules light up and open into the card
+        const r = rowRef.current?.getBoundingClientRect();
+        constellationBus.focusWork(project.id, false, r && { left: r.left, top: r.top, width: r.width, height: r.height });
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

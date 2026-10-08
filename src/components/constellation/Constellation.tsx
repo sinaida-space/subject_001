@@ -4,7 +4,7 @@ import { buildGraph } from '@/data/graph';
 import type { GraphNode } from '@/data/graph';
 import { projectById } from '@/data/projects';
 import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
-import { constellationBus } from '@/lib/constellationBus';
+import { constellationBus, type FocusOrigin } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
 import PlainSignalIndex from './PlainSignalIndex';
 import ProjectDetail from './ProjectDetail';
@@ -25,13 +25,15 @@ export default function Constellation() {
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const [openId, setOpenId] = useState<string | null>(null);
   const openedByDive = useRef(false);
+  const [openOrigin, setOpenOrigin] = useState<FocusOrigin | undefined>();
   const sectionRef = useRef<HTMLElement>(null);
   const graphBoundsRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const unsub = constellationBus.subscribeFocus((id, viaDive) => {
+    const unsub = constellationBus.subscribeFocus((id, viaDive, origin) => {
       openedByDive.current = !!viaDive;
+      setOpenOrigin(origin);
       setOpenId(id);
     });
     return () => unsub();
@@ -118,7 +120,7 @@ export default function Constellation() {
 
             {/* Readout opens as a fixed-position modal window (ProjectDetail) —
                same treatment on every screen size, doesn't affect page layout. */}
-            {openProject && <ProjectDetail project={openProject} onClose={closeProject} />}
+            {openProject && <ProjectDetail project={openProject} onClose={closeProject} origin={mode === 'full' ? openOrigin : undefined} />}
 
             {/* Plain-text reading always sits below the map in full mode; in
                lite mode (auto-detected or manually toggled via Header/Footer)
