@@ -36,7 +36,7 @@ const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
 const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
-const FLASH_AT = 0.28; // the line fires
+const LINE_TOP = 72; // css px: the line ends just under the header
 const ABOUT_IN: [number, number] = [0.84, 0.96]; // About text takes over from the cells
 const PHOTO_IN: [number, number] = [0.9, 1.0]; // the portrait resolves last
 
@@ -99,14 +99,14 @@ const vec3 RED_HOT = vec3(1.0, 0.2, 0.17);
 
 void main() {
   float s1 = aTime.x, s2 = aTime.y, depth = aTime.z, rnd = aTime.w;
-  float t1 = smoothstep(s1, s1 + 0.2, uP);
-  float t2 = smoothstep(s2, s2 + 0.2, uP);
+  float t1 = smoothstep(s1, s1 + 0.08, uP); // the line sweeps into it
+  float t2 = smoothstep(s2, s2 + 0.18, uP); // it falls out of the line
 
   // fall into the line, accelerating like something pulled in
   vec2 a = mix(aSrc, vec2(aMid.x, uLine), t1 * t1);
   a.x += sin(t1 * 3.14159) * (rnd - 0.5) * 70.0;
-  // and out of it, easing into place
-  float land = 1.0 - pow(1.0 - t2, 3.0);
+  // and drops out of it like dust under gravity
+  float land = t2 * t2;
   vec2 pos = mix(a, aDst, land);
   // gathered on the line, the cells sparkle in a thin band around it
   pos.y += (fract(rnd * 31.7) - 0.5) * 16.0 * t1 * (1.0 - t2);
@@ -128,12 +128,10 @@ void main() {
   float heat = exp(-abs(pos.y - uLine) / 26.0) * flight;
   col = mix(col, RED_HOT, heat * 0.85);
 
-  // hero cells appear cell by cell as the DOM headline gives way
-  // stars gathered from the galaxy stay faint (most of them unseen) until
-  // they reach the line, so the sky never turns to noise
-  float faint = step(fract(rnd * 13.7), 0.12) * 0.55 * depth * smoothstep(s1, s1 + 0.12, uP);
+  // hero cells appear cell by cell as the DOM headline gives way;
+  // spare cells (no hero glyph behind them) appear as the line sheds them
   float alpha = aFlags.x > 0.5 ? step(rnd, (uP - ${HERO_OUT[0].toFixed(3)}) / ${(HERO_OUT[1] - HERO_OUT[0]).toFixed(3)} + 0.02)
-                               : max(faint, smoothstep(0.75, 1.0, t1));
+                               : smoothstep(s2 - 0.02, s2 + 0.02, uP);
   // and hand over to the real About cell by cell, the portrait last
   if (aFlags.y < 0.5) alpha *= 1.0 - step(mix(${ABOUT_IN[0].toFixed(3)}, ${ABOUT_IN[1].toFixed(3)}, rnd), uP);
   else if (aFlags.y < 1.5) alpha *= 1.0 - step(mix(${PHOTO_IN[0].toFixed(3)}, ${PHOTO_IN[1].toFixed(3)} - 0.01, rnd), uP);
@@ -330,6 +328,10 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     let dpr = 1;
     let linePage = 0;
     let built = false;
+    // the line's flight, screen px: from the bottom of the screen to the top,
+    // part linear, part S-curve, so it is moving from the first scroll on
+    const g = { y0: 0, flash: 0.3 };
+    const lineScreenAt = (q: number) => g.y0 - (g.y0 - LINE_TOP) * (0.45 * q + 0.55 * smooth(0, 1, q));
 
     // Sample hero and About into cells and pair them into particles.
     const build = () => {
@@ -357,6 +359,13 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const budget = MAX_PARTICLES - Math.min(src.length, MAX_PARTICLES / 3);
       if (dst.length > budget) dst = dst.filter(() => rand() < budget / dst.length);
       const yMin = Math.min(...dst.map((c) => c.y), linePage), yMax = Math.max(...dst.map((c) => c.y), linePage + 1);
+      // the line's path, page px, and when it passes a given height
+      g.y0 = Math.min(linePage - SCROLL_START, vh * 0.92);
+      const linePageAt = (q: number) => SCROLL_START + q * GATE_LENGTH + lineScreenAt(q);
+      const crossing = (y: number) => {
+        for (let k = 0; k <= 200; k++) if (linePageAt(k / 200) <= y + 4) return k / 200;
+        return null;
+      };
 
       const n = Math.max(src.length, dst.length);
       const STRIDE = 2 + 2 + 2 + 3 + 3 + 4 + 2;
@@ -368,21 +377,28 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         const r = rand(), depth = rand();
         const s = i < src.length ? src[order[i]] : null;
         const d = i < dst.length ? dst[i] : null;
-        const sx = s ? s.x : rand() * vw;
-        const syy = s ? s.y : linePage - 40 - rand() * vh * 0.9;
-        const dx = d ? d.x : rand() * vw;
+        const dxx = d ? d.x : rand() * vw;
+        // a spare cell is shed by the line itself, right above its letter
+        const sx = s ? s.x : dxx + (rand() - 0.5) * 40;
+        const syy = s ? s.y : linePageAt(0);
+        const dx = dxx;
         const dy = d ? d.y : linePage + (rand() - 0.35) * vh * 1.1;
         const mx = Math.min(spanR - 24, Math.max(spanL + 24, sx + (dx - sx) * 0.35 + (rand() - 0.5) * 60));
-        // leave the hero top lines first; land on About top lines first, the portrait last
-        const s1 = 0.005 + 0.03 * (s ? (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) : rand()) + 0.03 * r;
+        // a hero cell is swept up when the line passes it; glyphs the line
+        // never reaches (already near the top) fall into it early on
+        const hit = s ? crossing(s.y) : 0;
+        const s1 = s ? (hit ?? 0.02 + 0.12 * r) : 0;
+        // the line sheds About from the start, top lines first, the portrait
+        // developing on the way; a cell never drops before it was picked up
         const order01 = d ? (d.y - yMin) / Math.max(1, yMax - yMin) : rand();
-        const s2 = d?.kind === 1 ? 0.48 + 0.14 * r : d ? 0.29 + 0.4 * order01 + 0.05 * r : 0.29 + 0.3 * r;
+        const shed = d?.kind === 1 ? 0.25 + 0.4 * r : d ? 0.06 + 0.62 * order01 + 0.05 * r : 0.3 + 0.5 * r;
+        const s2 = s ? Math.max(shed, s1 + 0.06) : shed;
         const o = i * STRIDE;
         arr.set([
           sx, syy, mx, linePage, dx, dy,
           s ? s.r : 0.9, s ? s.g : 0.9, s ? s.b : 0.88,
           d ? d.r : 0.9, d ? d.g : 0.9, d ? d.b : 0.88,
-          Math.min(s1, 0.18), s2, depth, r,
+          s1, s2, depth, r,
           s ? 1 : 0, d ? d.kind : 2,
         ], o);
       }
@@ -398,6 +414,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         off += size;
       }
       gl.bindVertexArray(null);
+      const hits = src.map((c) => crossing(c.y)).filter((x): x is number => x !== null).sort((a, b) => a - b);
+      g.flash = hits.length ? hits[hits.length >> 1] + 0.04 : 0.3;
       count = n;
       built = true;
     };
@@ -438,39 +456,30 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       if (p <= 0 || p >= 1 || !built) {
         clearDom();
         // past the gate the hero is gone for good while any of it is still on screen
-        if (p >= 1 && built && hero.getBoundingClientRect().bottom > 0) {
+        // and the line has flown off the top, so its old place stays empty
+        if (p >= 1 && built) {
           domActive = true;
-          hero.style.opacity = '0';
+          horizon.style.opacity = '0';
+          if (hero.getBoundingClientRect().bottom > 0) hero.style.opacity = '0';
         }
         show(false);
         return;
       }
 
-      // The line leaves its place under the hero and rises to meet the stars
-      // as they dissolve, holds while it collects them, then rides down the
-      // screen carrying them; they peel off into About's letters behind it.
-      // ...and after the flash it rises back into its own place above About,
-      // so at the end it is the real line again, exactly where it sits.
-      // The line always travels with the scroll and never stops while the
-      // page moves. It runs ahead of its home by `lead`: an S-curve up while
-      // it collects (up to ~2.3x the page's speed), an S-curve back while it
-      // scatters (never below ~0.45x). Both curves start and end flat, so its
-      // speed changes without a jolt and matches the page at either end.
-      const home = h.top + h.height / 2;
-      const peak = Math.min(130, vh * 0.15);
-      const lead = peak * (p < FLASH_AT ? smooth(0, FLASH_AT, p) : 1 - smooth(FLASH_AT, 1, p));
-      const lineY = home - lead;
+      // the line flies up the screen, always faster than the page
+      const lineY = lineScreenAt(p);
 
       domActive = true;
-      // the real line hands over to the drawn one and takes it back at the end
-      horizon.style.opacity = (1 - smooth(0, 0.03, p) + smooth(0.94, 1, p)).toFixed(3);
+      // the real line hands over to the drawn one, which takes it away
+      horizon.style.opacity = (1 - smooth(0, 0.03, p)).toFixed(3);
       hero.style.opacity = (1 - smooth(HERO_OUT[0], HERO_OUT[1], p)).toFixed(3);
       about.style.opacity = smooth(ABOUT_IN[0], ABOUT_IN[1], p).toFixed(3);
       if (frameEl) frameEl.style.opacity = smooth(PHOTO_IN[0], PHOTO_IN[1], p).toFixed(3);
 
       // always lit (it replaces the DOM line), charging up to the flash
-      const charge = Math.max(0.3, smooth(0.06, FLASH_AT, p) * (1 - smooth(FLASH_AT + 0.04, 0.8, p))) * (1 - smooth(0.94, 1, p));
-      const flash = Math.exp(-Math.pow((p - FLASH_AT) / 0.022, 2));
+      // always lit, charging as it sweeps the hero, firing once, fading out under the header
+      const charge = Math.max(0.35, smooth(0.02, g.flash, p) * (1 - smooth(g.flash + 0.04, 0.7, p))) * (1 - smooth(0.88, 1, p));
+      const flash = Math.exp(-Math.pow((p - g.flash) / 0.022, 2));
 
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
