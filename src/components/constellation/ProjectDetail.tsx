@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import type { Project, ProjectKind } from '@/data/projects';
 import type { FocusOrigin } from '@/lib/constellationBus';
+import { createCardBuild } from './cardBuild';
 import VideoEmbed from '@/components/VideoEmbed';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import DisplacementImage from '@/components/DisplacementImage';
@@ -172,7 +173,7 @@ function Readout({ project }: { project: Project }) {
             aria-modal="true"
             aria-label={`${project.title}: full text`}
           >
-            <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ position: 'relative', zIndex: 30, background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
                 FULL TEXT
               </span>
@@ -226,7 +227,7 @@ function Readout({ project }: { project: Project }) {
 // Opening from an index row: the row's two rules light up, then part like
 // a stage door to the card's top and bottom edges, and the card is revealed
 // between them. Closing plays it backwards into the row.
-const THROW_MS = 950; // the whole projection, open or close
+const THROW_MS = 1150; // the whole projection and the build-up, open or close
 // eased 0..1 inside [a, b] of the timeline
 const seg = (p: number, a: number, b: number) => {
   const t = Math.min(1, Math.max(0, (p - a) / (b - a)));
@@ -268,6 +269,7 @@ export default function ProjectDetail({
   const svgRef = useRef<SVGSVGElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
+  const buildRef = useRef<HTMLCanvasElement>(null);
   const closing = useRef(false);
 
   // Projection screen: the row is the projector. Its title lifts off the
@@ -307,16 +309,22 @@ export default function ProjectDetail({
           title.style.textTransform = cs.textTransform;
         }
         const titleScale = lr.height / Math.max(tr.height, 1);
+        // the contents come up in the work's own dialect once the screen lands
+        const buildCanvas = buildRef.current;
+        const cs0 = getComputedStyle(card);
+        const build = buildCanvas
+          ? createCardBuild(buildCanvas, project.dialect, cs0.backgroundColor, cs0.getPropertyValue('--sinaida-red') ? `hsl(${cs0.getPropertyValue('--sinaida-red').trim()})` : '#ff0a0a')
+          : null;
         // the row itself is the lens: its two rules are the near edge of the throw
         const lens = { l: o.left, r: o.left + o.width, t: o.top, b: o.top + o.height };
 
         const frame = (p: number) => {
           // rules ignite (0-.2), throw travels (.12-.7), screen lands (.42-.92)
           const ignite = seg(p, 0, 0.2);
-          const throwT = easeOut(seg(p, 0.12, 0.7));
-          const land = seg(p, 0.42, 0.92);
-          const fly = seg(p, 0.08, 0.78);
-          const fadeBeam = 1 - seg(p, 0.62, 0.95);
+          const throwT = easeOut(seg(p, 0.1, 0.6));
+          const land = seg(p, 0.36, 0.7); // solid before the build-up gets going
+          const fly = seg(p, 0.08, 0.66);
+          const fadeBeam = 1 - seg(p, 0.55, 0.82);
 
           backdrop.style.opacity = String(seg(p, 0.05, 0.6));
 
@@ -340,14 +348,24 @@ export default function ProjectDetail({
           // the screen: tilted back and dim at the end of the throw, settling flat and lit
           card.style.opacity = String(land);
           card.style.transform = `perspective(1400px) translateZ(${mix(-140, 0, land)}px) rotateX(${mix(14, 0, land)}deg)`;
-          card.style.filter = land < 1 ? `brightness(${mix(0.25, 1, land)})` : '';
+          const q = seg(p, 0.5, 1);
+          const sp = build ? build.split(q) : 0;
+          const fx = [
+            land < 1 ? `brightness(${mix(0.25, 1, land)})` : '',
+            sp > 0.05 ? `drop-shadow(${sp}px 0 0 rgba(255,10,10,0.55)) drop-shadow(${-sp}px 0 0 rgba(0,220,255,0.35))` : '',
+          ].join(' ').trim();
+          card.style.filter = fx;
+          if (build && buildCanvas) {
+            build.draw(q);
+            buildCanvas.style.display = q >= 1 ? 'none' : '';
+          }
 
           // the title lifts off the row and becomes the card's titlebar label
           const lift = Math.sin(Math.PI * fly) * 18;
-          title.style.opacity = String(1 - seg(p, 0.74, 0.86)); // sits exactly on the row title at p = 0
+          title.style.opacity = String(1 - seg(p, 0.62, 0.72)); // sits exactly on the row title at p = 0
           title.style.transform = `translate(${mix(tr.left, lr.left, fly)}px, ${mix(tr.top, lr.top, fly) - lift}px) scale(${mix(1, titleScale, fly)})`;
           title.style.color = fly > 0.5 ? 'hsl(var(--primary-legible))' : '';
-          label.style.opacity = String(seg(p, 0.76, 0.9));
+          label.style.opacity = String(seg(p, 0.64, 0.74));
           if (rowTitle instanceof HTMLElement) rowTitle.style.opacity = p > 0 ? '0' : '';
         };
 
@@ -369,7 +387,7 @@ export default function ProjectDetail({
         frame(dir === 'open' ? 0 : 1);
         requestAnimationFrame(tick);
       }),
-    [origin],
+    [origin, project.dialect],
   );
 
   // play the door before the first paint so the card never flashes whole
@@ -460,6 +478,7 @@ export default function ProjectDetail({
         aria-modal="true"
         aria-label={`${project.title}: project readout`}
       >
+        {shutter && <canvas ref={buildRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 h-full w-full" />}
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span ref={labelRef} style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', lineHeight: 1.15, minWidth: 0, color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
             {splitAt < 0 ? headerLabel : (
