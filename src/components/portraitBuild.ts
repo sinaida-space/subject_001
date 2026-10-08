@@ -1,7 +1,7 @@
 // ── Portrait build for the horizon gate (#120) ──
 // The About portrait develops out of the site's own image dither (the 4x4
 // Bayer red-on-void used for every work image, lib/ditherPreview) as the
-// line's stars land on it, cell by cell from the top with a red front, then
+// line's stars land on it, cell by cell from the top, then
 // resolves into the real photo the same way. A small 2D canvas laid over
 // the photo; cells are 3 css px, drawn one pixel each into a buffer and
 // scaled up without smoothing, so a frame costs two drawImage calls.
@@ -69,7 +69,7 @@ export function createPortraitBuild(host: HTMLElement, src: string): PortraitBui
         const i = (y * cols + x) * 4;
         const t = BAYER[(y & 7) * 8 + (x & 7)];
         const shown = t < grow - 0.09 && t >= gone;
-        const edge = t < grow && t >= grow - 0.09 && t >= gone;
+        const edge = false;
         md[i + 3] = shown ? 255 : 0;
         fd[i] = 255; fd[i + 1] = 40; fd[i + 2] = 34; fd[i + 3] = edge ? 255 : 0; // the hot red front
       }

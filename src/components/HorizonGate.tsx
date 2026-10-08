@@ -1,19 +1,22 @@
 // ─────────────────────────────────────────────────────────────────────────
 // Horizon gate (#120): the hero becomes stars, the stars become About.
 //
-//   1. lock: the hero headline turns into 3 px dither cells, cell by cell
-//   2. fall: the cells come loose and drift down into the red horizon line
-//      as stars, each at its own depth; the line charges as they cross it
-//   3. flash: the line fires once, a thin CRT flick that splits and closes
-//   4. land: the stars fly out of the line into About, top line first, land
-//      as dither cells on its letters and resolve into the real text; the
-//      portrait lands last as red 1-bit dither and resolves into the photo
+// Everything is a pure function of the scroll position (css px), so
+// scrolling back plays the same frames in reverse and nothing moves at rest.
 //
-// Cells are sampled from the real DOM (every glyph where it renders), so the
-// hand-over in both directions is exact. Spare hero cells stay behind as
-// stars; spare About cells are gathered from the galaxy. Everything is drawn
-// over the galaxy, nothing is black, and every frame is a pure function of
-// the scroll position: scrolling back reassembles the hero (motion law).
+//   hero   the headline locks into 3 px dither cells on the first wheel tick
+//          and falls into the red horizon line as stars
+//   line   flies up to mid-screen within ~100 px of scroll, fires once when
+//          the hero is in, then keeps rising slower and fades under the header
+//   About  rises from below to meet the line (a transform lift that eases
+//          back to zero), and every block is poured as it scrolls in: stars
+//          fall into its letters, land as dither, and the real block takes
+//          over once its last cell has landed. This runs over the whole of
+//          About, so ORIGIN / DRIFT / FOCUS and the paragraphs pour too.
+//   photo  stars rain onto the portrait slot and the site's own image dither
+//          develops under them; it stays dither until the portrait's centre
+//          reaches the middle of the screen, then resolves into the photo.
+//
 // Full mode only: lite renders the children as they are.
 // ─────────────────────────────────────────────────────────────────────────
 
@@ -21,26 +24,26 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortraitBuild, type PortraitBuild } from '@/components/portraitBuild';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
-const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 const smooth = (a: number, b: number, x: number) => {
   const t = clamp01((x - a) / (b - a));
   return t * t * (3 - 2 * t);
 };
 
-// The gate starts a few wheel ticks into the page and ends as About's top
-// reaches the upper eighth of the screen; p runs 0..1 in between.
-const SCROLL_START = 16; // css px: the first wheel tick already starts it
 const CELL = 3; // css px, the site's dither cell
-const MAX_PARTICLES = 24000;
+const MAX_PARTICLES = 26000;
 const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
-// Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
-const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
-const GATE_END = 0.45; // the gate ends when About's top reaches this height of the screen
-const SHED_AT = 0.98; // a letter is shed by the line as it scrolls in at this height
-const FALL = 0.12; // p it takes a shed cell to fall into its letter
-
-// ── shaders ───────────────────────────────────────────────────────────────
+// All in css px of scroll.
+const S0 = 16; // the first wheel tick starts it
+const HERO_LOCK = 30; // the headline hands over to its cells
+const HERO_FALL = 95; // how long a hero cell takes to fall into the line
+const LINE_LEN = 620; // the line's whole flight
+const LINE_TOP = 72; // where it fades, just under the header
+const FLASH_AT = S0 + 130; // the hero is in: the line fires
+const LIFT_RISE = 90; // About rises to meet the line
+const FALL = 110; // a poured cell falls into its letter
+const SHED_AT = 0.92; // a letter is poured as it scrolls in at this screen height
+const HAND = 24; // a finished block fades in over this much scroll
 
 const QUAD_VS = `#version 300 es
 void main() {
@@ -77,20 +80,21 @@ void main() {
   outColor = vec4(col, clamp(i, 0.0, 1.0));
 }`;
 
+
 const PT_VS = `#version 300 es
-in vec2 aSrc;     // page px: where the cell starts (hero glyph or a galaxy star)
-in vec2 aMid;     // page px: x is where it meets the line (y follows the moving line)
-in vec2 aDst;     // page px: where it lands (About glyph / portrait, or a star)
+in vec2 aSrc;     // hero cell: page px; poured cell: (x jitter, drop height)
+in vec2 aMid;     // x where a hero cell meets the line
+in vec2 aDst;     // page px: its letter / portrait cell (spare hero stars: unused)
 in vec3 aCol0;
 in vec3 aCol1;
-in vec4 aTime;    // s1 (leave), s2 (land), depth, rnd
-in vec3 aFlags;   // x: starts visible (hero cell), y: kind 0 lands on About, 1 photo, 2 stays a star; z: hands over to the real block
-uniform float uP;
-uniform float uScroll;
+in vec4 aTime;    // s1 (hero falls), s2 (poured), depth, rnd; scroll px
+in vec3 aFlags;   // x: hero cell, y: kind 0 text, 1 portrait, 2 spare hero star; z: hand-over scroll px
+uniform float uSy;
+uniform float uLinePage;  // the line, page px
+uniform float uLineOn;
+uniform float uLift;      // css px About is lifted by
 uniform float uDpr;
-uniform float uLine;  // the moving line, page px
-uniform vec2 uView;   // css px
-uniform float uLift;  // css px: About rides this far up, right under the line
+uniform vec2 uView;
 out vec3 vCol;
 out float vAlpha;
 out float vRound;
@@ -100,51 +104,48 @@ const vec3 RED_HOT = vec3(1.0, 0.2, 0.17);
 
 void main() {
   float s1 = aTime.x, s2 = aTime.y, depth = aTime.z, rnd = aTime.w;
-  float t1 = smoothstep(s1, s1 + 0.2, uP); // a hero cell falls into the line
-  float t2 = smoothstep(s2, s2 + ${FALL}, uP); // an About cell falls out of it
+  bool hero = aFlags.x > 0.5;
+  float kind = aFlags.y;
+  vec2 dst = kind < 1.5 ? aDst - vec2(0.0, uLift) : aDst;
 
-  // fall into the line, accelerating like something pulled in
-  vec2 a = mix(aSrc, vec2(aMid.x, uLine), t1 * t1);
-  a.x += sin(t1 * 3.14159) * (rnd - 0.5) * 70.0;
-  // and drops out of it like dust under gravity
+  // a hero cell falls into the line and rides it, sparkling in a thin band
+  float t1 = hero ? smoothstep(s1, s1 + ${HERO_FALL}.0, uSy) : 1.0;
+  vec2 a;
+  if (hero) {
+    a = mix(aSrc, vec2(aMid.x, uLinePage), t1 * t1);
+    a.x += sin(t1 * 3.14159) * (rnd - 0.5) * 70.0;
+    a.y += (fract(rnd * 31.7) - 0.5) * 16.0 * t1;
+  } else {
+    // a poured cell leaves the line, or (once the line is high above) the sky just over its letter
+    a = vec2(dst.x + aSrc.x, max(uLinePage, dst.y - aSrc.y));
+  }
+  // and falls into its letter like dust under gravity
+  float t2 = kind > 1.5 ? 0.0 : smoothstep(s2, s2 + ${FALL}.0, uSy);
   float land = t2 * t2;
-  vec2 dst = aFlags.y < 1.5 ? aDst - vec2(0.0, uLift) : aDst;
   vec2 pos = mix(a, dst, land);
-  // gathered on the line, the cells sparkle in a thin band around it
-  pos.y += (fract(rnd * 31.7) - 0.5) * 16.0 * t1 * (1.0 - t2);
-  pos.x += sin(t2 * 3.14159) * (rnd - 0.5) * 110.0;
+  pos.x += sin(t2 * 3.14159) * (rnd - 0.5) * 60.0;
 
-  // in flight a cell is a star: round, sized by depth, then a crisp cell again
-  float flight = smoothstep(0.0, 0.25, t1) * (1.0 - smoothstep(0.75, 1.0, t2));
-  if (aFlags.y > 1.5) flight = smoothstep(0.0, 0.25, t1);
-  float starSize = mix(1.2, 3.6, depth);
-  // a few cells bloom: a bright core inside a soft halo
-  float bloom = step(0.93, fract(rnd * 7.13));
-  // whole device pixels, so moving cells do not shimmer between pixel rows
-  // landed, a cell is a hair smaller than its 3 px slot, so dither reads as dither
+  // in flight a star (round, sized by depth, a few bloom); landed a crisp cell
+  float flight = (hero ? smoothstep(0.0, 0.25, t1) : 1.0) * (1.0 - smoothstep(0.75, 1.0, t2));
+  float bloom = step(0.93, fract(rnd * 7.13)) * step(0.5, flight);
   float cellPx = max(1.0, floor(3.0 * uDpr - 0.5));
-  gl_PointSize = max(1.0, floor(mix(cellPx, starSize * uDpr, flight) * (1.0 + 3.0 * bloom) + 0.5));
+  gl_PointSize = max(1.0, floor(mix(cellPx, mix(1.2, 3.6, depth) * uDpr, flight) * (1.0 + 3.0 * bloom) + 0.5));
 
   vec3 star = mix(vec3(0.95, 0.93, 0.9), vec3(0.85, 0.12, 0.2), step(0.8, rnd)) * mix(0.55, 1.0, depth);
   vec3 col = mix(aCol0, star, flight);
-  col = mix(col, aCol1, aFlags.y > 1.5 ? t2 : land * (1.0 - flight));
-  // crossing the line, a star burns hot red
-  float heat = exp(-abs(pos.y - uLine) / 26.0) * flight;
-  col = mix(col, RED_HOT, heat * 0.85);
+  col = mix(col, aCol1, land * (1.0 - flight));
+  col = mix(col, RED_HOT, exp(-abs(pos.y - uLinePage) / 26.0) * flight * 0.85 * uLineOn);
 
-  // hero cells appear cell by cell as the DOM headline gives way;
-  // spare cells (no hero glyph behind them) appear as the line sheds them
-  float alpha = aFlags.x > 0.5 ? step(rnd, (uP - ${HERO_OUT[0].toFixed(3)}) / ${(HERO_OUT[1] - HERO_OUT[0]).toFixed(3)} + 0.02)
-                               : smoothstep(s2 - 0.02, s2 + 0.02, uP);
-  // its block is complete: it dissolves as the real block takes over
-  if (aFlags.y < 1.5) alpha *= 1.0 - step(aFlags.z, uP);
-  else alpha *= 1.0 - smoothstep(0.78, 1.0, uP);
+  float alpha = hero ? step(rnd, (uSy - ${S0}.0) / ${HERO_LOCK}.0 + 0.02) : smoothstep(s2 - 4.0, s2 + 8.0, uSy);
+  if (kind < 0.5) alpha *= 1.0 - step(aFlags.z, uSy);          // the real block takes over
+  else if (kind < 1.5) alpha *= 1.0 - step(s2 + ${FALL}.0, uSy); // the portrait dither develops where it lands
+  else alpha *= uLineOn;                                          // spare hero stars leave with the line
 
   vCol = col;
   vAlpha = alpha;
   vRound = flight;
   vBloom = bloom;
-  vec2 scr = vec2(pos.x, pos.y - uScroll);
+  vec2 scr = vec2(pos.x, pos.y - uSy);
   gl_Position = vec4(scr.x / uView.x * 2.0 - 1.0, 1.0 - scr.y / uView.y * 2.0, 0.0, 1.0);
 }`;
 
@@ -304,6 +305,7 @@ function link(gl: WebGL2RenderingContext, vs: string, fs: string) {
   return p;
 }
 
+
 export default function HorizonGate({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -330,145 +332,120 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     const L = (n: string) => gl.getUniformLocation(lineProg, n);
     const P = (n: string) => gl.getUniformLocation(ptProg, n);
     const lu = { res: L('uRes'), dpr: L('uDpr'), line: L('uLine'), span: L('uSpan'), charge: L('uCharge'), flash: L('uFlash') };
-    const pu = { p: P('uP'), scroll: P('uScroll'), dpr: P('uDpr'), line: P('uLine'), view: P('uView'), lift: P('uLift') };
+    const pu = { sy: P('uSy'), line: P('uLinePage'), on: P('uLineOn'), lift: P('uLift'), dpr: P('uDpr'), view: P('uView') };
     const quadVao = gl.createVertexArray();
     const ptVao = gl.createVertexArray();
     const buf = gl.createBuffer();
-    let count = 0;
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
     const photo = new Image();
     photo.src = PHOTO_SRC;
-
-    let dpr = 1;
-    let linePage = 0;
-    let blocks: HTMLElement[] = [];
-    let portrait: PortraitBuild | null = null;
     const photoImg = about.querySelector<HTMLImageElement>('picture img');
     const photoFrame = about.querySelector<HTMLElement>('.photo-frame-wrapper');
-    let blockDone: number[] = [];
-    let built = false;
-    // the line's flight, screen px: from the bottom of the screen to the top,
-    // part linear, part S-curve, so it is moving from the first scroll on
-    // fast at first while it collects the hero, then smoothly slower, and it
-    // lands on its own place above About exactly as the gate ends
-    const g = { y0: 0, end: 0, len: 600, flash: 0.24, photoA: 0.5, photoW: 0.25 };
-    // (a cubic Hermite: leaves at ~2x the page's speed, docks at exactly the
-    // page's speed, monotonic in between, so it never stops or turns back)
-    const lineScreenAt = (q: number) => {
-      const d = g.end - g.y0;
-      const m1 = Math.max(3 * d, -g.len);
-      // largest start speed that keeps the curve monotonic (Fritsch-Carlson)
-      const beta = d ? m1 / d : 0;
-      const m0 = d * Math.sqrt(Math.max(0, 9 - beta * beta)) * 0.97;
-      const q2 = q * q, q3 = q2 * q;
-      return (2 * q3 - 3 * q2 + 1) * g.y0 + (q3 - 2 * q2 + q) * m0 + (-2 * q3 + 3 * q2) * g.end + (q3 - q2) * m1;
-    };
+    let portrait: PortraitBuild | null = null;
 
-    // Sample hero and About into cells and pair them into particles.
+    // Layout, measured at build time.
+    const g = {
+      built: false, count: 0, y0: 0, lift: 0, liftEnd: S0 + LIFT_RISE, end: S0 + LINE_LEN,
+      photoA: 0, photoB: 1, blocks: [] as HTMLElement[], done: [] as number[],
+    };
+    // the line's height on screen: to mid-screen fast, then steadily higher
+    const lineAt = (sy: number) => {
+      const u = clamp01((sy - S0) / LINE_LEN);
+      const fast = 1 - Math.pow(1 - Math.min(1, u / 0.16), 3);
+      return g.y0 - (g.y0 - LINE_TOP) * (0.55 * fast + 0.45 * u);
+    };
+    // About's lift: rises to meet the line, eases back slower than the page
+    // moves, so About only ever travels up the screen
+    const liftAt = (sy: number) => g.lift * smooth(S0, S0 + LIFT_RISE, sy) * (1 - smooth(S0 + LIFT_RISE, g.liftEnd, sy));
+
     const build = () => {
       const vw = window.innerWidth, vh = window.innerHeight, sy = window.scrollY;
       const hz = horizon.getBoundingClientRect();
-      linePage = hz.top + hz.height / 2 + sy;
+      const linePage = hz.top + hz.height / 2 + sy;
+      g.y0 = Math.min(linePage - S0, vh * 0.92);
+      const aboutBox = about.getBoundingClientRect();
+      const aboutTop = aboutBox.top + sy;
+      // lift About so its heading sits at ~60% of the screen once the line is up
+      g.lift = Math.max(0, aboutTop + 80 - (S0 + LIFT_RISE) - vh * 0.6);
+      g.liftEnd = S0 + LIFT_RISE + Math.max(500, (1.5 * g.lift) / 0.9);
+
+      // hero cells
       const heroBox = hero.getBoundingClientRect();
       const skipHero = (el: Element) => !!el.closest('.sr-only, .hero-ghost, .hero-noise, .hero-whisper, button');
       const src = sampleText(hero, skipHero, heroBox, true);
-      const aboutBox = about.getBoundingClientRect();
-      // only what can be on screen when the gate completes
-      g.len = Math.max(420, aboutBox.top + sy - vh * GATE_END - SCROLL_START);
-      const cap = new DOMRect(aboutBox.left, aboutBox.top, aboutBox.width, Math.min(aboutBox.height, SCROLL_START + g.len - sy + vh * 1.05 - aboutBox.top));
-      const skipAbout = (el: Element) => !!el.closest('.sr-only');
-      // About's blocks may still wait for their scroll reveal, so no opacity check
-      // About hands over block by block: a heading, a paragraph, a row, the portrait
-      blocks = Array.from(about.querySelectorAll<HTMLElement>('h2, p, span.block, div'))
-        .filter((el) => el.closest('.photo-frame-wrapper') === null);
+
+      // About cells, block by block, over the whole section
+      g.blocks = Array.from(about.querySelectorAll<HTMLElement>('h2, p, span.block, div')).filter((el) => el.closest('.photo-frame-wrapper') === null);
       const blockOf = (el: Element) => {
         const b = el.closest('h2, p, span.block, div');
-        const i = b ? blocks.indexOf(b as HTMLElement) : -1;
+        const i = b ? g.blocks.indexOf(b as HTMLElement) : -1;
         return i < 0 ? 254 : i;
       };
-      const text = sampleText(about, skipAbout, cap, false, blockOf);
-      const img = about.querySelector<HTMLImageElement>('picture img');
-      const pr = img?.getBoundingClientRect();
-      const face = photo.complete && photo.naturalWidth && pr && pr.top < cap.bottom ? samplePhoto(photo, pr) : [];
+      const text = sampleText(about, (el) => !!el.closest('.sr-only'), aboutBox, false, blockOf);
+      const pr = photoImg?.getBoundingClientRect();
+      const face = photo.complete && photo.naturalWidth && pr ? samplePhoto(photo, pr) : [];
 
       const rand = rng(120);
-      let dst: (Cell & { kind: number })[] = [
-        ...text.map((c) => ({ ...c, kind: 0 })),
-        ...face.map((c) => ({ ...c, kind: 1, blk: 255 })),
+      let dst: (Cell & { kind: number; shed: number })[] = [
+        ...text.map((c) => ({ ...c, kind: 0, shed: 0 })),
+        ...face.map((c) => ({ ...c, kind: 1, shed: 0 })),
       ];
-      const budget = MAX_PARTICLES - Math.min(src.length, MAX_PARTICLES / 3);
+      const budget = MAX_PARTICLES - Math.min(src.length, MAX_PARTICLES / 4);
       if (dst.length > budget) dst = dst.filter(() => rand() < budget / dst.length);
-            // the line's path, page px, and when it passes a given height
-      g.y0 = Math.min(linePage - SCROLL_START, vh * 0.92);
-      g.end = linePage - SCROLL_START - g.len; // its home on screen when the gate ends
-      // About rides under the line, so a letter's screen height is the line's
-      // plus its distance below it; it is shed when that reaches the bottom
-      const scrollsIn = (y: number) => {
-        let lo = 0, hi = 1;
-        if (lineScreenAt(0) + (y - linePage) <= vh * SHED_AT) return 0;
-        for (let i = 0; i < 22; i++) {
+
+      // a cell is poured when its (lifted) letter scrolls in at SHED_AT
+      const shedY = vh * SHED_AT;
+      const pourAt = (y: number) => {
+        if (y - S0 - liftAt(S0) <= shedY) return S0;
+        let lo = S0, hi = S0 + 8000;
+        for (let i = 0; i < 26; i++) {
           const m = (lo + hi) / 2;
-          if (lineScreenAt(m) + (y - linePage) > vh * SHED_AT) lo = m; else hi = m;
+          if (y - m - liftAt(m) > shedY) lo = m; else hi = m;
         }
         return hi;
       };
+      for (const d of dst) d.shed = pourAt(d.y) + rand() * 30;
+      // hero stars go to the first letters poured
+      dst.sort((a, b) => a.shed - b.shed);
 
-      // the portrait's build window: from when it scrolls in, done well before the end
-      const photoTop = pr ? pr.top + sy : 0, photoH = pr ? Math.max(1, pr.height) : 1;
-      g.photoA = pr ? Math.min(0.6, scrollsIn(photoTop) + 0.01) : 0.5;
-      g.photoW = Math.max(0.12, Math.min(0.3, 0.84 - g.photoA - FALL));
+      // portrait window: from its first cell poured to its last landed
+      const faceSheds = dst.filter((d) => d.kind === 1).map((d) => d.shed);
+      g.photoA = faceSheds.length ? Math.min(...faceSheds) : 0;
+      g.photoB = faceSheds.length ? Math.max(...faceSheds) + FALL : 1;
+
       const n = Math.max(src.length, dst.length);
       const STRIDE = 2 + 2 + 2 + 3 + 3 + 4 + 3;
-      const s2s = new Float32Array(n);
       const arr = new Float32Array(n * STRIDE);
-      const spanL = hz.left, spanR = hz.right;
-      // shuffle sources so each glyph scatters over the whole of About
       const order = src.map((_, i) => i).sort(() => rand() - 0.5);
+      g.done = new Array(g.blocks.length).fill(-1);
+      for (const d of dst) {
+        if (d.kind === 0 && d.blk !== undefined && d.blk < g.blocks.length) g.done[d.blk] = Math.max(g.done[d.blk], d.shed + FALL);
+      }
+      let last = S0 + LINE_LEN;
       for (let i = 0; i < n; i++) {
         const r = rand(), depth = rand();
         const s = i < src.length ? src[order[i]] : null;
         const d = i < dst.length ? dst[i] : null;
-        const dxx = d ? d.x : rand() * vw;
-        // a spare cell is shed by the line itself, right above its letter
-        const sx = s ? s.x : dxx + (rand() - 0.5) * 40;
-        const syy = s ? s.y : linePage;
-        const dx = dxx;
-        const dy = d ? d.y : linePage + (rand() - 0.35) * vh * 1.1;
-        const mx = Math.min(spanR - 24, Math.max(spanL + 24, sx + (dx - sx) * 0.35 + (rand() - 0.5) * 60));
-        // the hero breaks up from the first wheel ticks and falls into the line
-        const s1 = s ? 0.005 + 0.03 * (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) + 0.03 * r : 0;
-        // each letter is shed as it scrolls into view, so About is always
-        // forming on screen; the portrait a beat later; never before pickup
-        const shed = !d ? 0.3 + 0.5 * r
-          // stars rain onto the portrait top to bottom over its build window
-          : d.kind === 1 ? g.photoA + g.photoW * (0.8 * (d.y - photoTop) / photoH + 0.2 * r)
-          : scrollsIn(d.y) + 0.025 * r;
-        const s2 = Math.max(0.03, s ? Math.max(shed, s1 + 0.12) : shed);
-        const o = i * STRIDE;
+        const s1 = s ? S0 + 8 + 50 * clamp01((s.y - heroBox.top - sy) / Math.max(1, heroBox.height)) + 40 * r : 0;
+        // a hero cell is never poured before it has reached the line
+        const s2 = d ? (s ? Math.max(d.shed, s1 + HERO_FALL) : d.shed) : 0;
+        const mx = Math.min(hz.right - 24, Math.max(hz.left + 24, (s ? s.x : 0) + ((d ? d.x : rand() * vw) - (s ? s.x : 0)) * 0.35 + (rand() - 0.5) * 60));
+        const hand = d && d.kind === 0 && d.blk !== undefined && d.blk < g.blocks.length ? g.done[d.blk] + rand() * 18 : s2 + FALL;
+        if (d) last = Math.max(last, s2 + FALL + HAND);
         arr.set([
-          sx, syy, mx, linePage, dx, dy,
+          s ? s.x : (rand() - 0.5) * 40, s ? s.y : 120 + 160 * rand(),
+          mx, 0,
+          d ? d.x : 0, d ? d.y : 0,
           s ? s.r : 0.9, s ? s.g : 0.9, s ? s.b : 0.88,
           d ? d.r : 0.9, d ? d.g : 0.9, d ? d.b : 0.88,
           s1, s2, depth, r,
-          s ? 1 : 0, d ? d.kind : 2, 0,
-        ], o);
-        s2s[i] = s2;
+          s ? 1 : 0, d ? d.kind : 2, hand,
+        ], i * STRIDE);
       }
-      // a block is done when its last cell has landed; then the real block
-      // takes over and its cells dissolve, cell by cell
-      blockDone = new Array(blocks.length).fill(-1);
-      for (let i = 0; i < dst.length; i++) {
-        const b = dst[i].blk;
-        if (b !== undefined && b < blocks.length) blockDone[b] = Math.max(blockDone[b], s2s[i] + FALL);
-      }
-      for (let i = 0; i < n; i++) {
-        const b = i < dst.length ? dst[i].blk : undefined;
-        const done = b !== undefined && b < blocks.length ? blockDone[b] : 0.97;
-        // portrait stars vanish as they land: the dither develops where they hit
-        arr[i * STRIDE + STRIDE - 1] = i < dst.length && dst[i].kind === 1 ? s2s[i] + FALL : done + 0.03 * arr[i * STRIDE + 15];
-      }
+      g.end = Math.max(last, g.liftEnd);
+
       gl.bindVertexArray(ptVao);
       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
@@ -481,13 +458,14 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         off += size;
       }
       gl.bindVertexArray(null);
-      g.flash = 0.24; // when the hero's stars have reached the line
+      g.count = n;
+
       const host = photoImg?.closest('picture')?.parentElement;
       if (host && !portrait) portrait = createPortraitBuild(host, PHOTO_SRC);
-      count = n;
-      built = true;
+      g.built = true;
     };
 
+    let dpr = 1;
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(window.innerWidth * dpr);
@@ -496,16 +474,22 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     };
     resize();
 
-    // DOM side: opacity and one clip, cleared entirely outside the gate
+    // DOM side: opacity and one transform, cleared entirely outside the gate.
+    // Writes only on change, so a scroll frame touches just what moved.
+    const written = new WeakMap<HTMLElement, Record<string, string>>();
+    const put = (el: HTMLElement, prop: 'opacity' | 'transform', v: string) => {
+      const w = written.get(el) ?? {};
+      if (w[prop] === v) return;
+      w[prop] = v;
+      written.set(el, w);
+      el.style[prop] = v;
+    };
     let domActive = false;
     const clearDom = () => {
       if (!domActive) return;
       domActive = false;
-      hero.style.opacity = about.style.transform = horizon.style.opacity = '';
-      blocks.forEach((el) => { el.style.opacity = ''; });
-      if (photoFrame) photoFrame.style.opacity = '';
-      if (photoImg) photoImg.style.opacity = '';
-      portrait?.draw(0, 1);
+      for (const el of [hero, horizon, ...g.blocks, ...(photoFrame ? [photoFrame] : [])]) put(el, 'opacity', '');
+      put(about, 'transform', '');
     };
 
     let raf = 0;
@@ -518,47 +502,50 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
 
     const frame = () => {
       raf = 0;
-      const vh = window.innerHeight;
-      const h = horizon.getBoundingClientRect();
-      const sy = window.scrollY;
-      // tied 1:1 to the scroll, never lagging behind it
-      const p = clamp01((sy - SCROLL_START) / g.len);
-      if (p <= 0 || p >= 1 || !built) {
+      if (!g.built) return;
+      const vh = window.innerHeight, sy = window.scrollY;
+
+      // the portrait: dither while it is in the lower half of the screen,
+      // the photo once its centre has passed the middle (both directions)
+      if (portrait && photoImg && photoFrame) {
+        if (sy <= S0) {
+          portrait.draw(0, 1);
+          photoImg.style.opacity = '';
+        } else {
+          const r = photoFrame.getBoundingClientRect();
+          const resolve = smooth(vh * 0.5 + 40, vh * 0.5 - 60, (r.top + r.bottom) / 2);
+          portrait.draw(clamp01((sy - g.photoA) / (g.photoB - g.photoA)), resolve);
+          put(photoImg, 'opacity', resolve > 0 ? '1' : '0');
+        }
+      }
+
+      if (sy <= S0 || sy >= g.end) {
         clearDom();
-        // past the gate the hero is gone for good while any of it is still on screen
-        if (p >= 1 && built && hero.getBoundingClientRect().bottom > 0) {
+        if (sy >= g.end) {
+          // past the gate: the line has flown off, the hero is gone while still on screen
           domActive = true;
-          hero.style.opacity = '0';
+          horizon.style.opacity = '0';
+          if (hero.getBoundingClientRect().bottom > 0) hero.style.opacity = '0';
         }
         show(false);
         return;
       }
 
-      const lineY = lineScreenAt(p);
-
       domActive = true;
-      // the real line hands over to the drawn one and takes it back as it lands
-      horizon.style.opacity = (1 - smooth(0, 0.03, p) + smooth(0.96, 1, p)).toFixed(3);
-      hero.style.opacity = (1 - smooth(HERO_OUT[0], HERO_OUT[1], p)).toFixed(3);
-      // About rides right under the line: lifted by exactly the line's lead
-      const lift = Math.max(0, h.top + h.height / 2 - lineY);
-      about.style.transform = `translateY(${(-lift).toFixed(1)}px)`;
-      blocks.forEach((el, i) => {
-        if (blockDone[i] >= 0) el.style.opacity = smooth(blockDone[i], blockDone[i] + 0.04, p).toFixed(3);
+      const lineY = lineAt(sy);
+      const lineOn = smooth(S0, S0 + 12, sy) * (1 - smooth(S0 + LINE_LEN * 0.85, S0 + LINE_LEN, sy));
+      const lift = liftAt(sy);
+      put(horizon, 'opacity', '0');
+      put(hero, 'opacity', (1 - smooth(S0, S0 + HERO_LOCK, sy)).toFixed(2));
+      put(about, 'transform', lift > 0.05 ? `translateY(${(-lift).toFixed(1)}px)` : '');
+      g.blocks.forEach((el, i) => {
+        if (g.done[i] >= 0) put(el, 'opacity', smooth(g.done[i], g.done[i] + HAND, sy).toFixed(2));
       });
-      // the portrait: its frame appears as the first stars reach it, the site's
-      // dither develops under them, then resolves into the photo
-      const build = clamp01((p - g.photoA - FALL * 0.6) / g.photoW);
-      const resolveAt = Math.min(0.9, g.photoA + g.photoW + FALL);
-      const resolve = smooth(resolveAt, resolveAt + 0.08, p);
-      if (photoFrame) photoFrame.style.opacity = smooth(g.photoA, g.photoA + 0.03, p).toFixed(3);
-      if (photoImg) photoImg.style.opacity = resolve > 0 ? '1' : '0';
-      portrait?.draw(build, resolve);
+      if (photoFrame) put(photoFrame, 'opacity', smooth(g.photoA - 10, g.photoA + 20, sy).toFixed(2));
 
-      // always lit (it replaces the DOM line), charging up to the flash
-      // always lit, charging as it sweeps the hero, firing once, fading out under the header
-      const charge = Math.max(0.35, smooth(0.02, g.flash, p) * (1 - smooth(g.flash + 0.04, 0.7, p))) * (1 - smooth(0.96, 1, p));
-      const flash = Math.exp(-Math.pow((p - g.flash) / 0.022, 2));
+      const charge = Math.max(0.35, smooth(S0, FLASH_AT, sy) * (1 - smooth(FLASH_AT + 20, S0 + LINE_LEN * 0.6, sy))) * lineOn;
+      const flash = Math.exp(-Math.pow((sy - FLASH_AT) / 12, 2)) * lineOn;
+      const hz = horizon.getBoundingClientRect();
 
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -568,20 +555,20 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       gl.uniform2f(lu.res, canvas.width, canvas.height);
       gl.uniform1f(lu.dpr, dpr);
       gl.uniform1f(lu.line, lineY * dpr);
-      gl.uniform2f(lu.span, h.left * dpr, h.right * dpr);
+      gl.uniform2f(lu.span, hz.left * dpr, hz.right * dpr);
       gl.uniform1f(lu.charge, charge);
       gl.uniform1f(lu.flash, flash);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
 
       gl.useProgram(ptProg);
       gl.bindVertexArray(ptVao);
-      gl.uniform1f(pu.p, p);
-      gl.uniform1f(pu.scroll, window.scrollY);
-      gl.uniform1f(pu.dpr, dpr);
+      gl.uniform1f(pu.sy, sy);
       gl.uniform1f(pu.line, sy + lineY);
-      gl.uniform2f(pu.view, window.innerWidth, vh);
+      gl.uniform1f(pu.on, lineOn);
       gl.uniform1f(pu.lift, lift);
-      gl.drawArrays(gl.POINTS, 0, count);
+      gl.uniform1f(pu.dpr, dpr);
+      gl.uniform2f(pu.view, window.innerWidth, vh);
+      gl.drawArrays(gl.POINTS, 0, g.count);
       show(true);
     };
     const schedule = () => {
@@ -595,13 +582,14 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       clearTimeout(buildTimer);
       buildTimer = window.setTimeout(() => {
         clearDom();
+        about.style.transform = '';
         build();
         schedule();
       }, delay);
     };
     let dead = false;
     Promise.all([document.fonts.ready, photo.decode().catch(() => undefined)]).then(() => {
-      if (!dead) rebuild(1600);
+      if (!dead) rebuild(900);
     });
     const onResize = () => { resize(); rebuild(250); };
 
@@ -615,11 +603,12 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
       clearDom();
+      if (photoImg) photoImg.style.opacity = '';
+      portrait?.destroy();
       // no loseContext(): on macOS Chrome it blanks the window for a frame (#119)
       gl.deleteBuffer(buf);
       gl.deleteProgram(lineProg);
       gl.deleteProgram(ptProg);
-      portrait?.destroy();
     };
   }, []);
 
