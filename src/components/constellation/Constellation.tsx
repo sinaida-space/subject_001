@@ -3,7 +3,8 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 import { buildGraph } from '@/data/graph';
 import type { GraphNode } from '@/data/graph';
 import { projectById } from '@/data/projects';
-import { constellationBus } from '@/lib/constellationBus';
+import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
+import { constellationBus, type FocusOrigin } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
 import PlainSignalIndex from './PlainSignalIndex';
 import ProjectDetail from './ProjectDetail';
@@ -23,16 +24,33 @@ export default function Constellation() {
   const [active, setActive] = useState<GraphNode['project'] | null>(null);
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const [openId, setOpenId] = useState<string | null>(null);
+  const openedByDive = useRef(false);
+  const [openOrigin, setOpenOrigin] = useState<FocusOrigin | undefined>();
   const sectionRef = useRef<HTMLElement>(null);
   const graphBoundsRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const unsub = constellationBus.subscribeFocus((id) => setOpenId(id));
+    const unsub = constellationBus.subscribeFocus((id, viaDive, origin) => {
+      openedByDive.current = !!viaDive;
+      setOpenOrigin(origin);
+      setOpenId(id);
+    });
     return () => unsub();
   }, []);
 
   const openProject = openId ? projectById(openId) : undefined;
+
+  // A card that rose out of a dive sinks back into it: the reverse dive
+  // closes over the card and flies back into the node.
+  const closeProject = () => {
+    const p = openProject;
+    const close = () => setOpenId(null);
+    if (!p || !openedByDive.current) return close();
+    openedByDive.current = false;
+    const dived = diveBus.dive({ close, landAt: DIVE_LAND_AT, dialect: p.dialect, image: p.image, anchor: `node:${p.id}` });
+    if (!dived) close();
+  };
 
   return (
     <section ref={sectionRef} id="work" className="relative z-10 py-16 md:py-20">
@@ -102,7 +120,7 @@ export default function Constellation() {
 
             {/* Readout opens as a fixed-position modal window (ProjectDetail) —
                same treatment on every screen size, doesn't affect page layout. */}
-            {openProject && <ProjectDetail project={openProject} onClose={() => setOpenId(null)} />}
+            {openProject && <ProjectDetail project={openProject} onClose={closeProject} origin={mode === 'full' ? openOrigin : undefined} />}
 
             {/* Plain-text reading always sits below the map in full mode; in
                lite mode (auto-detected or manually toggled via Header/Footer)

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildGraph, buildAdjacency, type GraphNode, type Category, CATEGORY_COLORS, CATEGORY_LABEL, SKILL_LINKS, OFF_WHITE } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
+import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
 import { synth, type VoiceKind } from '@/lib/constellationSynth';
 import SynthPanel from './SynthPanel';
 
@@ -1055,8 +1056,31 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     start(); // pointer moved → resume the loop (settles & stops when input ceases)
   };
 
+  // A node's centre in client css px (the canvas lays nodes out in css px).
+  const nodeClientPoint = (node: RNode) => {
+    const r = canvasRef.current?.getBoundingClientRect();
+    return r ? { x: r.left + node.x, y: r.top + node.y } : undefined;
+  };
+
+  // Back out of a case flies into the node again: tell the dive where it is.
+  useEffect(
+    () =>
+      diveBus.setNodeLocator((id) => {
+        const n = nodesRef.current.find((m) => m.id === id);
+        const r = canvasRef.current?.getBoundingClientRect();
+        return n && r ? { x: r.left + n.x, y: r.top + n.y } : null;
+      }),
+    [],
+  );
+
+  // Every work opens with a dive (#119); its detail card rises out of the
+  // dialect effect mid-flight, and the card's own links lead on to the case. No dive (lite, no host) opens
+  // the card plainly.
   const navigate = (node: RNode) => {
-    if (node.project) constellationBus.focusWork(node.id);
+    const p = node.project;
+    if (!p) return;
+    const dived = diveBus.dive({ land: () => constellationBus.focusWork(node.id, true), landAt: DIVE_LAND_AT, dialect: p.dialect, image: p.image, origin: nodeClientPoint(node), anchor: `node:${p.id}` });
+    if (!dived) constellationBus.focusWork(node.id);
   };
 
   const onPointerUp = (e: React.PointerEvent) => {

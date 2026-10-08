@@ -24,7 +24,8 @@ type ViewTransitionDocument = Document & {
 
 function internalLink(target: EventTarget | null): HTMLAnchorElement | null {
   const a = (target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
-  if (!a || a.target || a.hasAttribute('download')) return null;
+  // data-dive links run their own transition (the case dive, #119)
+  if (!a || a.target || a.hasAttribute('download') || a.hasAttribute('data-dive')) return null;
   if (a.origin !== window.location.origin) return null;
   return chunkForPath(a.pathname) ? a : null;
 }

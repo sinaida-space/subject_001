@@ -11,6 +11,7 @@ import workStereolove from '@/assets/work-stereolove.webp';
 import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.webp';
 import workStormGlass from '@/assets/work-storm-glass.webp';
 import workConspaceRooms from '@/assets/work-conspace-rooms.webp';
+import type { Dialect } from '@/lib/diveBus';
 
 export type ProjectKind =
   | 'stage'        // live concert / performance visuals
@@ -81,6 +82,8 @@ export interface CaseStudy {
 
 export interface Project {
   id: string;
+  /** surface the case dive resolves in (#119): crt = stage, dither = image, ascii = code */
+  dialect: Dialect;
   title: string;
   /** optional second half of the title, e.g. a medium or role descriptor.
    *  Kept separate so the joining punctuation is a per-surface presentation choice. */
@@ -129,6 +132,7 @@ export const PROJECTS: Project[] = [
   // ── Flagship stage work ────────────────────────────────────
   {
     id: 'redkie-ptitsy',
+    dialect: 'crt',
     title: 'Redkie Ptitsy',
     subtitle: 'Live Concert Visuals',
     kind: 'stage',
@@ -193,6 +197,7 @@ export const PROJECTS: Project[] = [
   // ── Installations ──────────────────────────────────────────
   {
     id: 'the-eyes-chico',
+    dialect: 'dither',
     title: 'The Eyes Chico',
     kind: 'installation',
     tagline: 'Acrylic painting turned playable web experience & projection installation · with Alisa Feer',
@@ -280,6 +285,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'conspace-rooms',
+    dialect: 'dither',
     title: 'CONSPACE ROOMS',
     kind: 'installation',
     tagline: 'Walk-through labyrinth of eighteen paintings, in the browser or as a gesture-controlled projection · with UVALISS',
@@ -396,6 +402,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'aether-currents',
+    dialect: 'ascii',
     title: 'Aether Currents',
     kind: 'game',
     tagline: 'Browser instrument played with bare hands · with Telefm',
@@ -477,6 +484,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'ethereal-path',
+    dialect: 'dither',
     title: 'Ethereal Path',
     kind: 'game',
     tagline: 'Off-axis descent steered by head & hand movement: the body is the controller',
@@ -498,6 +506,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'stereolove',
+    dialect: 'crt',
     title: 'Stereolove',
     kind: 'game',
     tagline: 'Head-coupled op-art: the screen becomes an unstable optical volume',
@@ -518,6 +527,7 @@ export const PROJECTS: Project[] = [
 
   {
     id: 'infinite-voidsong',
+    dialect: 'ascii',
     title: 'Infinite Voidsong',
     subtitle: 'Focus Soundscapes',
     kind: 'game',
@@ -537,6 +547,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'storm-glass',
+    dialect: 'ascii',
     title: 'Storm Glass',
     subtitle: 'TouchDesigner Tutorial',
     kind: 'tutorial',

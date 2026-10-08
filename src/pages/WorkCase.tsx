@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { projectById, PROJECTS } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
 import DisplacementImage from '@/components/DisplacementImage';
@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
+import { CaseDiveControls, ProcessFloor } from '@/components/dive/CaseDive';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -45,6 +46,9 @@ export default function WorkCase() {
   const cs = project?.caseStudy;
   const [heroLoaded, setHeroLoaded] = useState(false);
   const { mode } = useRenderMode();
+  // DEPTH 02 (#119): the process floor lives on the same route
+  const [search] = useSearchParams();
+  const depth = search.get('depth') === '2' ? 2 : 1;
 
   const title = project
     ? `${project.title}${project.subtitle ? `: ${project.subtitle}` : ''} · Case Study | ${SITE_NAME}`
@@ -78,6 +82,9 @@ export default function WorkCase() {
       )}
       <Header />
       <main id="main-content" tabIndex={-1} className="container relative z-10 mx-auto max-w-6xl px-6 pt-40 pb-24 md:pt-32 lg:pt-36">
+        {depth === 2 ? (
+          <ProcessFloor project={project} full={mode === 'full'} />
+        ) : (
         <div className="grid grid-cols-1 gap-x-12 gap-y-10 md:grid-cols-12">
           {/* ── Identity — back link, kind badge, title. Left column only; the
               empty spacer beside it completes row 1, so row 2 (image + text)
@@ -141,6 +148,9 @@ export default function WorkCase() {
                 <HeartbeatPlaceholder loaded={heroLoaded} width="100%" height="100%" className="absolute inset-0" />
               </div>
             )}
+
+            {/* ── Dive one floor down, or sideways along a thread (#119) ── */}
+            {mode === 'full' && <CaseDiveControls project={project} />}
 
             {/* ── Prominent case action (e.g. enter the live web experience) ── */}
             {cs.heroCta && (
@@ -353,6 +363,7 @@ export default function WorkCase() {
             )}
           </div>
         </div>
+        )}
       </main>
       <Footer />
     </div>

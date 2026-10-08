@@ -1,8 +1,9 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { PROJECTS, BADGE_LABEL, type Project, type ProjectKind } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import DitherPreview from './DitherPreview';
+import { getDitheredPreview } from '@/lib/ditherPreview';
 
 // The "lights up" reading of the Signal Map: every project, grouped plainly
 // by kind, semantic headings throughout: legible to a screen reader, a
@@ -55,17 +56,23 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
     <button
       ref={rowRef}
       type="button"
-      onClick={() => constellationBus.focusWork(project.id)}
+      onClick={() => {
+        // the row's own rules light up and open into the card; the hover
+        // preview steps aside at once so nothing flashes over the door
+        if (previewEnabled) onPreview(null, 0, 0, true);
+        const r = rowRef.current?.getBoundingClientRect();
+        constellationBus.focusWork(project.id, false, r && { left: r.left, top: r.top, width: r.width, height: r.height, el: rowRef.current ?? undefined });
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onFocus={handleFocus}
       onBlur={handleBlur}
-      className="group flex w-full items-baseline gap-3 border-t border-l-2 border-l-transparent border-foreground/10 py-4 pl-3 -ml-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
+      className="group flex w-full items-baseline gap-3 border-t border-l-2 border-l-transparent border-foreground/10 py-4 pl-3 text-left transition-colors hover:border-l-primary hover:bg-foreground/[0.04]"
     >
       <span className="font-mono text-[14px] text-accent transition-transform group-hover:translate-x-1">→</span>
       <span className="flex-1">
-        <span className="font-display text-lg uppercase text-foreground transition-colors group-hover:text-accent">
+        <span data-row-title className="font-display text-lg uppercase text-foreground transition-colors group-hover:text-accent">
           {project.title}
         </span>
         <span className="ml-3 font-mono text-[13px] normal-case text-foreground/60">{project.tagline}</span>
@@ -90,6 +97,35 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
 export default function PlainSignalIndex() {
   const { mode } = useRenderMode();
   const previewEnabled = mode !== 'lite';
+
+  // Dither every hover preview ahead of time, one image per idle slot, so
+  // the first hover never stalls on the dither (Safari has no
+  // requestIdleCallback, hence the timeout fallback). Cached by src.
+  useEffect(() => {
+    if (!previewEnabled) return;
+    // hover previews, then the cards' video posters (dithered at 960x540 by
+    // DitheredThumb), so opening a card never dithers on the main thread
+    const jobs: [string, number?, number?][] = [
+      ...PROJECTS.map((p) => p.image).filter((x): x is string => !!x).map((src): [string] => [src]),
+      ...PROJECTS.filter((p) => p.video).map((p): [string, number, number] => [`/video-posters/${p.video}.jpg`, 960, 540]),
+    ];
+    let i = 0;
+    let t = 0;
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const idle = (cb: () => void) => (ric ? ric.call(window, cb, { timeout: 2000 }) : window.setTimeout(cb, 200));
+    const next = () => {
+      if (i >= jobs.length) return;
+      const [src, w, h] = jobs[i++];
+      getDitheredPreview(src, w, h).finally(() => {
+        t = idle(next) as number;
+      });
+    };
+    t = window.setTimeout(next, 2500); // after first paint settles
+    return () => {
+      i = jobs.length;
+      window.clearTimeout(t);
+    };
+  }, [previewEnabled]);
   const [preview, setPreview] = useState<{ src: string | null; x: number; y: number; instant: boolean }>({
     src: null,
     x: 0,
@@ -114,7 +150,10 @@ export default function PlainSignalIndex() {
               >
                 {KIND_LABEL[kind]}
               </h3>
-              <div className="border-b border-foreground/10">
+              {/* rules run edge to edge for every row: the wrapper takes the
+                  row's hover-bar inset, so top and bottom lines start and end
+                  at the same x */}
+              <div className="-ml-3 w-[calc(100%+0.75rem)] border-b border-foreground/10">
                 {items.map((p) => (
                   <Row key={p.id} project={p} previewEnabled={previewEnabled} onPreview={handlePreview} />
                 ))}

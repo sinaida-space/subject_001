@@ -4,6 +4,7 @@ import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import WebMcpTools from "@/components/WebMcpTools";
 import RouteEnhancer from "@/components/RouteEnhancer";
+import DiveHost from "@/components/dive/DiveHost";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 import { routeChunks } from "@/lib/routeChunks";
 
@@ -51,6 +52,7 @@ const App = () => (
       </a>
       <ScrollToTop />
       <RouteEnhancer />
+      <DiveHost />
       <SiteCursor />
       <WebMcpTools />
       <Suspense fallback={<RouteFallback />}>
