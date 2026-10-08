@@ -4,6 +4,12 @@ import "./lib/staticShell";
 import App from "./App.tsx";
 import "./index.css";
 
+// A reload starts at the top, so the hero → About gate plays from its start
+// instead of the browser restoring the old offset deep in the page. Route
+// changes already reset scroll (App's ScrollToTop) and hash links scroll
+// themselves (Index), so nothing relies on the browser's restoration.
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
 createRoot(document.getElementById("root")!).render(<App />);
 
 // Easter egg hint for anyone who opens devtools. Printed once per load.
