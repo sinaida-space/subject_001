@@ -98,7 +98,7 @@ function OneBitCrops({ src }: { src: string }) {
       .then(() => {
         if (!alive) return;
         const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-        const cw = 96, ch = 72; // 4:3 cells, magnified with pixelated scaling
+        const cw = 192, ch = 144; // 4:3 cells, magnified with pixelated scaling
         // crop windows as fractions of the frame: left, centre, right
         const crops = [
           [0.04, 0.1],

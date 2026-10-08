@@ -22,7 +22,8 @@ export default function DitheredThumb({ src, alt, className, loading = 'lazy', w
   useEffect(() => {
     let cancelled = false;
     setDataUrl(null);
-    getDitheredPreview(src, width, height).then((url) => {
+    // dither at twice the shown size, so the dots stay fine on screen
+    getDitheredPreview(src, width && width * 2, height && height * 2).then((url) => {
       if (!cancelled) setDataUrl(url);
     });
     return () => {

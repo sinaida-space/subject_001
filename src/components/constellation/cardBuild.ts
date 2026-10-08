@@ -46,7 +46,7 @@ export function createCardBuild(canvas: HTMLCanvasElement, dialect: Dialect, cov
   if (dialect !== 'crt') {
     // cells are rendered one pixel each into a small buffer, then scaled up
     // without smoothing: 1-bit cells at the cost of a single drawImage
-    const CELL = 6;
+    const CELL = 3;
     const cols = Math.ceil(w / CELL);
     const rows = Math.ceil(h / CELL);
     const buf = document.createElement('canvas');

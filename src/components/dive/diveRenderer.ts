@@ -290,11 +290,11 @@ vec4 dither(vec2 p, float form) {
   vec2 hp = p - uHeroRect.xy;
   if (!inHero(hp)) return vec4(0.0);
 
-  // Deposit: 6 css px cells, fixed to the image so they magnify as the
+  // Deposit: 3 css px cells, fixed to the image so they magnify as the
   // camera dives in. A cell appears once the local density (build-up times
   // the wall's form) passes its ordered threshold, and fades in over a short
   // band, so the pattern thickens out of the hotspot with no full-cell pop.
-  vec2 base = floor(hp / (6.0 * uUnit));
+  vec2 base = floor(hp / (3.0 * uUnit));
   float threshold = bayer8(base) * 0.86;
   float cellA = smoothstep(threshold, threshold + 0.12, uDitherIn * form);
   if (cellA <= 0.0) return vec4(0.0);
@@ -445,6 +445,11 @@ void main() {
   float vd = segDist(p, uLensPt, uOrigin) / length(uResolution);
   float va = uVignette * smoothstep(0.05, 0.55, vd) * (1.0 - uDissolve);
   wall += vec4(VOID * va, va) * (1.0 - wall.a);
+
+  // the dive is red on void only: highlights burn to a hot red, never to
+  // white (a white wall read as a flash). Premultiplied: rgb stays <= alpha.
+  float wl = max(wall.r, max(wall.g, wall.b));
+  wall.rgb = vec3(wl, 0.06 * wl, 0.06 * wl);
 
   // landing: the pattern dissolves cell by cell over the card
   fragColor = wall * dissolveKeep(p, uHeroRect.xy, uDissolveCell, uOrigin, uResolution, uDissolve);
@@ -793,7 +798,7 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
     // image-locked cells: they magnify with the wall, softened so the small wall stays legible
     const unit = dpr * Math.pow(R.rect[2] / W, 0.6);
     // the landing dissolve breaks the pattern on its own grid: glyph cells for ascii, 6 css px otherwise
-    const dCell: [number, number] = dialect === 'ascii' ? [ASCII_CELL[0] * unit, ASCII_CELL[1] * unit] : [6 * unit, 6 * unit];
+    const dCell: [number, number] = dialect === 'ascii' ? [ASCII_CELL[0] * unit, ASCII_CELL[1] * unit] : [3 * unit, 3 * unit];
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, W, H);
