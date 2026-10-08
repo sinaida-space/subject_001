@@ -29,16 +29,16 @@ const smooth = (a: number, b: number, x: number) => {
 // The gate starts a few wheel ticks into the page and ends as About's top
 // reaches the upper eighth of the screen; p runs 0..1 in between.
 const SCROLL_START = 16; // css px: the first wheel tick already starts it
-const GATE_LENGTH = 460; // css px of scroll for the whole gate, no pauses
 const CELL = 3; // css px, the site's dither cell
 const MAX_PARTICLES = 24000;
 const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
 const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
-const LINE_TOP = 72; // css px: the line ends just under the header
-const ABOUT_IN: [number, number] = [0.84, 0.96]; // About text takes over from the cells
-const PHOTO_IN: [number, number] = [0.9, 1.0]; // the portrait resolves last
+const GATE_END = 0.17; // the gate ends when About's top reaches this height of the screen
+const SHED_AT = 0.98; // a letter is shed by the line as it scrolls in at this height
+const FALL = 0.12; // p it takes a shed cell to fall into its letter
+const HAND_AT = 0.68; // above this height of the screen the dither is real text
 
 // ── shaders ───────────────────────────────────────────────────────────────
 
@@ -90,6 +90,8 @@ uniform float uScroll;
 uniform float uDpr;
 uniform float uLine;  // the moving line, page px
 uniform vec2 uView;   // css px
+uniform float uHand;  // screen px: above it the real About has taken over
+uniform float uLift;  // css px: About rides this far up, right under the line
 out vec3 vCol;
 out float vAlpha;
 out float vRound;
@@ -99,15 +101,16 @@ const vec3 RED_HOT = vec3(1.0, 0.2, 0.17);
 
 void main() {
   float s1 = aTime.x, s2 = aTime.y, depth = aTime.z, rnd = aTime.w;
-  float t1 = smoothstep(s1, s1 + 0.08, uP); // the line sweeps into it
-  float t2 = smoothstep(s2, s2 + 0.18, uP); // it falls out of the line
+  float t1 = smoothstep(s1, s1 + 0.2, uP); // a hero cell falls into the line
+  float t2 = smoothstep(s2, s2 + ${FALL}, uP); // an About cell falls out of it
 
   // fall into the line, accelerating like something pulled in
   vec2 a = mix(aSrc, vec2(aMid.x, uLine), t1 * t1);
   a.x += sin(t1 * 3.14159) * (rnd - 0.5) * 70.0;
   // and drops out of it like dust under gravity
   float land = t2 * t2;
-  vec2 pos = mix(a, aDst, land);
+  vec2 dst = aFlags.y < 1.5 ? aDst - vec2(0.0, uLift) : aDst;
+  vec2 pos = mix(a, dst, land);
   // gathered on the line, the cells sparkle in a thin band around it
   pos.y += (fract(rnd * 31.7) - 0.5) * 16.0 * t1 * (1.0 - t2);
   pos.x += sin(t2 * 3.14159) * (rnd - 0.5) * 110.0;
@@ -133,8 +136,8 @@ void main() {
   float alpha = aFlags.x > 0.5 ? step(rnd, (uP - ${HERO_OUT[0].toFixed(3)}) / ${(HERO_OUT[1] - HERO_OUT[0]).toFixed(3)} + 0.02)
                                : smoothstep(s2 - 0.02, s2 + 0.02, uP);
   // and hand over to the real About cell by cell, the portrait last
-  if (aFlags.y < 0.5) alpha *= 1.0 - step(mix(${ABOUT_IN[0].toFixed(3)}, ${ABOUT_IN[1].toFixed(3)}, rnd), uP);
-  else if (aFlags.y < 1.5) alpha *= 1.0 - step(mix(${PHOTO_IN[0].toFixed(3)}, ${PHOTO_IN[1].toFixed(3)} - 0.01, rnd), uP);
+  // a landed cell gives way to the real text once it scrolls above the hand-over height
+  if (aFlags.y < 1.5) alpha *= 1.0 - step(0.999, t2) * step(pos.y - uScroll, uHand);
   else alpha *= 1.0 - smoothstep(0.78, 1.0, uP);
 
   vCol = col;
@@ -314,7 +317,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     const L = (n: string) => gl.getUniformLocation(lineProg, n);
     const P = (n: string) => gl.getUniformLocation(ptProg, n);
     const lu = { res: L('uRes'), dpr: L('uDpr'), line: L('uLine'), span: L('uSpan'), charge: L('uCharge'), flash: L('uFlash') };
-    const pu = { p: P('uP'), scroll: P('uScroll'), dpr: P('uDpr'), line: P('uLine'), view: P('uView') };
+    const pu = { p: P('uP'), scroll: P('uScroll'), dpr: P('uDpr'), line: P('uLine'), view: P('uView'), hand: P('uHand'), lift: P('uLift') };
     const quadVao = gl.createVertexArray();
     const ptVao = gl.createVertexArray();
     const buf = gl.createBuffer();
@@ -330,8 +333,17 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     let built = false;
     // the line's flight, screen px: from the bottom of the screen to the top,
     // part linear, part S-curve, so it is moving from the first scroll on
-    const g = { y0: 0, flash: 0.3 };
-    const lineScreenAt = (q: number) => g.y0 - (g.y0 - LINE_TOP) * (0.45 * q + 0.55 * smooth(0, 1, q));
+    // fast at first while it collects the hero, then smoothly slower, and it
+    // lands on its own place above About exactly as the gate ends
+    const g = { y0: 0, end: 0, len: 600, flash: 0.24 };
+    // (a cubic Hermite: leaves at ~2x the page's speed, docks at exactly the
+    // page's speed, monotonic in between, so it never stops or turns back)
+    const lineScreenAt = (q: number) => {
+      const d = g.end - g.y0;
+      const m0 = Math.max(3 * d, Math.min(0, 2.7 * d)), m1 = Math.max(3 * d, -g.len);
+      const q2 = q * q, q3 = q2 * q;
+      return (2 * q3 - 3 * q2 + 1) * g.y0 + (q3 - 2 * q2 + q) * m0 + (-2 * q3 + 3 * q2) * g.end + (q3 - q2) * m1;
+    };
 
     // Sample hero and About into cells and pair them into particles.
     const build = () => {
@@ -343,7 +355,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const src = sampleText(hero, skipHero, heroBox, true);
       const aboutBox = about.getBoundingClientRect();
       // only what can be on screen when the gate completes
-      const cap = new DOMRect(aboutBox.left, aboutBox.top, aboutBox.width, Math.min(aboutBox.height, SCROLL_START + GATE_LENGTH - sy + vh * 1.05 - aboutBox.top));
+      g.len = Math.max(420, aboutBox.top + sy - vh * GATE_END - SCROLL_START);
+      const cap = new DOMRect(aboutBox.left, aboutBox.top, aboutBox.width, Math.min(aboutBox.height, SCROLL_START + g.len - sy + vh * 1.05 - aboutBox.top));
       const skipAbout = (el: Element) => !!el.closest('.sr-only');
       // About's blocks may still wait for their scroll reveal, so no opacity check
       const text = sampleText(about, skipAbout, cap, false);
@@ -358,13 +371,19 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       ];
       const budget = MAX_PARTICLES - Math.min(src.length, MAX_PARTICLES / 3);
       if (dst.length > budget) dst = dst.filter(() => rand() < budget / dst.length);
-      const yMin = Math.min(...dst.map((c) => c.y), linePage), yMax = Math.max(...dst.map((c) => c.y), linePage + 1);
-      // the line's path, page px, and when it passes a given height
+            // the line's path, page px, and when it passes a given height
       g.y0 = Math.min(linePage - SCROLL_START, vh * 0.92);
-      const linePageAt = (q: number) => SCROLL_START + q * GATE_LENGTH + lineScreenAt(q);
-      const crossing = (y: number) => {
-        for (let k = 0; k <= 200; k++) if (linePageAt(k / 200) <= y + 4) return k / 200;
-        return null;
+      g.end = linePage - SCROLL_START - g.len; // its home on screen when the gate ends
+      // About rides under the line, so a letter's screen height is the line's
+      // plus its distance below it; it is shed when that reaches the bottom
+      const scrollsIn = (y: number) => {
+        let lo = 0, hi = 1;
+        if (lineScreenAt(0) + (y - linePage) <= vh * SHED_AT) return 0;
+        for (let i = 0; i < 22; i++) {
+          const m = (lo + hi) / 2;
+          if (lineScreenAt(m) + (y - linePage) > vh * SHED_AT) lo = m; else hi = m;
+        }
+        return hi;
       };
 
       const n = Math.max(src.length, dst.length);
@@ -380,19 +399,16 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         const dxx = d ? d.x : rand() * vw;
         // a spare cell is shed by the line itself, right above its letter
         const sx = s ? s.x : dxx + (rand() - 0.5) * 40;
-        const syy = s ? s.y : linePageAt(0);
+        const syy = s ? s.y : linePage;
         const dx = dxx;
         const dy = d ? d.y : linePage + (rand() - 0.35) * vh * 1.1;
         const mx = Math.min(spanR - 24, Math.max(spanL + 24, sx + (dx - sx) * 0.35 + (rand() - 0.5) * 60));
-        // a hero cell is swept up when the line passes it; glyphs the line
-        // never reaches (already near the top) fall into it early on
-        const hit = s ? crossing(s.y) : 0;
-        const s1 = s ? (hit ?? 0.02 + 0.12 * r) : 0;
-        // the line sheds About from the start, top lines first, the portrait
-        // developing on the way; a cell never drops before it was picked up
-        const order01 = d ? (d.y - yMin) / Math.max(1, yMax - yMin) : rand();
-        const shed = d?.kind === 1 ? 0.25 + 0.4 * r : d ? 0.06 + 0.62 * order01 + 0.05 * r : 0.3 + 0.5 * r;
-        const s2 = s ? Math.max(shed, s1 + 0.06) : shed;
+        // the hero breaks up from the first wheel ticks and falls into the line
+        const s1 = s ? 0.005 + 0.03 * (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) + 0.03 * r : 0;
+        // each letter is shed as it scrolls into view, so About is always
+        // forming on screen; the portrait a beat later; never before pickup
+        const shed = d ? scrollsIn(d.y) + (d.kind === 1 ? 0.04 : 0) + 0.025 * r : 0.3 + 0.5 * r;
+        const s2 = Math.max(0.03, s ? Math.max(shed, s1 + 0.12) : shed);
         const o = i * STRIDE;
         arr.set([
           sx, syy, mx, linePage, dx, dy,
@@ -414,8 +430,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         off += size;
       }
       gl.bindVertexArray(null);
-      const hits = src.map((c) => crossing(c.y)).filter((x): x is number => x !== null).sort((a, b) => a - b);
-      g.flash = hits.length ? hits[hits.length >> 1] + 0.04 : 0.3;
+      g.flash = 0.24; // when the hero's stars have reached the line
       count = n;
       built = true;
     };
@@ -428,14 +443,12 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     };
     resize();
 
-    // DOM side: opacity only, cleared entirely outside the gate
-    const frameEl = about.querySelector<HTMLElement>('.photo-frame-wrapper');
+    // DOM side: opacity and one clip, cleared entirely outside the gate
     let domActive = false;
     const clearDom = () => {
       if (!domActive) return;
       domActive = false;
-      hero.style.opacity = about.style.opacity = horizon.style.opacity = '';
-      if (frameEl) frameEl.style.opacity = '';
+      hero.style.opacity = about.style.clipPath = about.style.transform = horizon.style.opacity = '';
     };
 
     let raf = 0;
@@ -452,33 +465,36 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const h = horizon.getBoundingClientRect();
       const sy = window.scrollY;
       // tied 1:1 to the scroll, never lagging behind it
-      const p = clamp01((sy - SCROLL_START) / GATE_LENGTH);
+      const p = clamp01((sy - SCROLL_START) / g.len);
       if (p <= 0 || p >= 1 || !built) {
         clearDom();
         // past the gate the hero is gone for good while any of it is still on screen
-        // and the line has flown off the top, so its old place stays empty
-        if (p >= 1 && built) {
+        if (p >= 1 && built && hero.getBoundingClientRect().bottom > 0) {
           domActive = true;
-          horizon.style.opacity = '0';
-          if (hero.getBoundingClientRect().bottom > 0) hero.style.opacity = '0';
+          hero.style.opacity = '0';
         }
         show(false);
         return;
       }
 
-      // the line flies up the screen, always faster than the page
       const lineY = lineScreenAt(p);
+      // real About above the hand-over height, forming dither below it; at
+      // the very end the hand-over sweeps down so nothing is left as dither
+      const hand = vh * mix(HAND_AT, 1.05, smooth(0.9, 1, p));
 
       domActive = true;
-      // the real line hands over to the drawn one, which takes it away
-      horizon.style.opacity = (1 - smooth(0, 0.03, p)).toFixed(3);
+      // the real line hands over to the drawn one and takes it back as it lands
+      horizon.style.opacity = (1 - smooth(0, 0.03, p) + smooth(0.96, 1, p)).toFixed(3);
       hero.style.opacity = (1 - smooth(HERO_OUT[0], HERO_OUT[1], p)).toFixed(3);
-      about.style.opacity = smooth(ABOUT_IN[0], ABOUT_IN[1], p).toFixed(3);
-      if (frameEl) frameEl.style.opacity = smooth(PHOTO_IN[0], PHOTO_IN[1], p).toFixed(3);
+      // About rides right under the line: lifted by exactly the line's lead
+      const lift = Math.max(0, h.top + h.height / 2 - lineY);
+      about.style.transform = `translateY(${(-lift).toFixed(1)}px)`;
+      const ab = about.getBoundingClientRect();
+      about.style.clipPath = `inset(0 0 ${Math.max(0, ab.bottom - hand).toFixed(1)}px 0)`;
 
       // always lit (it replaces the DOM line), charging up to the flash
       // always lit, charging as it sweeps the hero, firing once, fading out under the header
-      const charge = Math.max(0.35, smooth(0.02, g.flash, p) * (1 - smooth(g.flash + 0.04, 0.7, p))) * (1 - smooth(0.88, 1, p));
+      const charge = Math.max(0.35, smooth(0.02, g.flash, p) * (1 - smooth(g.flash + 0.04, 0.7, p))) * (1 - smooth(0.96, 1, p));
       const flash = Math.exp(-Math.pow((p - g.flash) / 0.022, 2));
 
       gl.clearColor(0, 0, 0, 0);
@@ -501,6 +517,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       gl.uniform1f(pu.dpr, dpr);
       gl.uniform1f(pu.line, sy + lineY);
       gl.uniform2f(pu.view, window.innerWidth, vh);
+      gl.uniform1f(pu.hand, hand);
+      gl.uniform1f(pu.lift, lift);
       gl.drawArrays(gl.POINTS, 0, count);
       show(true);
     };
