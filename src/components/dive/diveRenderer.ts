@@ -638,7 +638,9 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
   const D = DIALECTS[dialect];
 
   // ── canvas size ──
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // 1.5x density: the beam and the dither read the same, at ~45 % fewer
+  // pixels than 2x on a Retina screen (Safari's WebGL felt it)
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   const W = Math.round(window.innerWidth * dpr);
   const H = Math.round(window.innerHeight * dpr);
   canvas.width = W;

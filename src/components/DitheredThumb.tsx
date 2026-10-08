@@ -43,7 +43,8 @@ export default function DitheredThumb({ src, alt, className, loading = 'lazy', w
       loading={loading}
       className={className}
       draggable={false}
-      style={{ opacity: settled ? 1 : 0, transition: 'opacity 220ms ease-out' }}
+      // hidden until dithered; once settled the className's own opacity applies again
+      style={settled ? undefined : { opacity: 0 }}
     />
   );
 }

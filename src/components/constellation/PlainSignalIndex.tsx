@@ -1,8 +1,9 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { PROJECTS, BADGE_LABEL, type Project, type ProjectKind } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import DitherPreview from './DitherPreview';
+import { getDitheredPreview } from '@/lib/ditherPreview';
 
 // The "lights up" reading of the Signal Map: every project, grouped plainly
 // by kind, semantic headings throughout: legible to a screen reader, a
@@ -96,6 +97,35 @@ function Row({ project, previewEnabled, onPreview }: RowProps) {
 export default function PlainSignalIndex() {
   const { mode } = useRenderMode();
   const previewEnabled = mode !== 'lite';
+
+  // Dither every hover preview ahead of time, one image per idle slot, so
+  // the first hover never stalls on the dither (Safari has no
+  // requestIdleCallback, hence the timeout fallback). Cached by src.
+  useEffect(() => {
+    if (!previewEnabled) return;
+    // hover previews, then the cards' video posters (dithered at 960x540 by
+    // DitheredThumb), so opening a card never dithers on the main thread
+    const jobs: [string, number?, number?][] = [
+      ...PROJECTS.map((p) => p.image).filter((x): x is string => !!x).map((src): [string] => [src]),
+      ...PROJECTS.filter((p) => p.video).map((p): [string, number, number] => [`/video-posters/${p.video}.jpg`, 960, 540]),
+    ];
+    let i = 0;
+    let t = 0;
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const idle = (cb: () => void) => (ric ? ric.call(window, cb, { timeout: 2000 }) : window.setTimeout(cb, 200));
+    const next = () => {
+      if (i >= jobs.length) return;
+      const [src, w, h] = jobs[i++];
+      getDitheredPreview(src, w, h).finally(() => {
+        t = idle(next) as number;
+      });
+    };
+    t = window.setTimeout(next, 2500); // after first paint settles
+    return () => {
+      i = jobs.length;
+      window.clearTimeout(t);
+    };
+  }, [previewEnabled]);
   const [preview, setPreview] = useState<{ src: string | null; x: number; y: number; instant: boolean }>({
     src: null,
     x: 0,

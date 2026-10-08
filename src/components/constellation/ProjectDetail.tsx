@@ -278,6 +278,8 @@ export default function ProjectDetail({
   const cardRef = useRef<HTMLDivElement>(null);
   const beamRef = useRef<SVGPolygonElement>(null);
   const edgesRef = useRef<SVGPathElement>(null);
+  const haloRef = useRef<SVGPathElement>(null);
+  const dimRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
@@ -311,6 +313,7 @@ export default function ProjectDetail({
         backdrop.style.transition = 'none';
         // measure the card flat, before any transform of ours touches it
         card.style.transform = 'none';
+        card.style.willChange = 'transform, opacity';
         const c = card.getBoundingClientRect();
         const lr = label.getBoundingClientRect();
         const rowTitle = origin.el?.querySelector('[data-row-title]');
@@ -352,12 +355,12 @@ export default function ProjectDetail({
           const far: Pt[] = [[fl, ft], [fr, ft], [fr, fb], [fl, fb]];
           beam.setAttribute('points', hull([...lensPts, ...far]).map((q) => q.join(',')).join(' '));
           // the rules, the four rails extruding from the row's corners, the screen's frame
-          edges.setAttribute(
-            'd',
+          const edgeD =
             `M${lens.l},${lens.t}H${lens.r} M${lens.l},${lens.b}H${lens.r} ` +
               lensPts.map(([x, y], i) => `M${x},${y}L${far[i][0]},${far[i][1]}`).join(' ') +
-              ` M${fl},${ft}H${fr}V${fb}H${fl}Z`,
-          );
+              ` M${fl},${ft}H${fr}V${fb}H${fl}Z`;
+          edges.setAttribute('d', edgeD);
+          haloRef.current?.setAttribute('d', edgeD);
           svg.style.opacity = String(ignite * fadeBeam);
           beam.style.opacity = String(0.55 * seg(p, 0.1, 0.35));
 
@@ -365,12 +368,9 @@ export default function ProjectDetail({
           card.style.opacity = String(land);
           card.style.transform = `perspective(1400px) translateZ(${mix(-140, 0, land)}px) rotateX(${mix(14, 0, land)}deg)`;
           const q = seg(p, 0.5, 1);
-          const sp = build ? build.split(q) : 0;
-          const fx = [
-            land < 1 ? `brightness(${mix(0.25, 1, land)})` : '',
-            sp > 0.05 ? `drop-shadow(${sp}px 0 0 rgba(255,10,10,0.55)) drop-shadow(${-sp}px 0 0 rgba(0,220,255,0.35))` : '',
-          ].join(' ').trim();
-          card.style.filter = fx;
+          // exposure coming up: a black veil fading off (opacity is composited;
+          // a CSS brightness filter repaints the whole card every frame in Safari)
+          if (dimRef.current) dimRef.current.style.opacity = String(0.75 * (1 - land));
           if (build && buildCanvas) {
             build.draw(q);
             buildCanvas.style.display = q >= 1 ? 'none' : '';
@@ -393,7 +393,7 @@ export default function ProjectDetail({
           else {
             if (dir === 'open') {
               card.style.transform = '';
-              card.style.filter = '';
+              card.style.willChange = '';
             } else if (rowTitle instanceof HTMLElement) {
               rowTitle.style.opacity = '';
             }
@@ -459,17 +459,11 @@ export default function ProjectDetail({
       {shutter && (
         <>
           <svg ref={svgRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[71] h-full w-full" style={{ opacity: 0 }}>
-            <defs>
-              <filter id="throw-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="b" />
-                <feMerge>
-                  <feMergeNode in="b" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
+            {/* glow without an SVG blur filter (Safari repaints those every
+                frame): a wide faint stroke under the hairline */}
             <polygon ref={beamRef} fill="hsl(var(--sinaida-red) / 0.14)" />
-            <path ref={edgesRef} fill="none" stroke="hsl(var(--sinaida-red))" strokeWidth="1" filter="url(#throw-glow)" />
+            <path ref={haloRef} fill="none" stroke="hsl(var(--sinaida-red) / 0.22)" strokeWidth="6" strokeLinecap="round" />
+            <path ref={edgesRef} fill="none" stroke="hsl(var(--sinaida-red))" strokeWidth="1" />
           </svg>
           <div
             ref={titleRef}
@@ -495,6 +489,7 @@ export default function ProjectDetail({
         aria-label={`${project.title}: project readout`}
       >
         {shutter && <canvas ref={buildRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 h-full w-full" />}
+        {shutter && <div ref={dimRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-[40] bg-black" style={{ opacity: 0 }} />}
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span ref={labelRef} style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', lineHeight: 1.15, minWidth: 0, color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
             {splitAt < 0 ? headerLabel : (
