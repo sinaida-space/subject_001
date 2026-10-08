@@ -27,13 +27,13 @@ const smooth = (a: number, b: number, x: number) => {
 
 // The gate starts a few wheel ticks into the page and ends as About's top
 // reaches the upper eighth of the screen; p runs 0..1 in between.
-const SCROLL_START = 240; // css px
+const SCROLL_START = 16; // css px: the first wheel tick already starts it
 const CELL = 3; // css px, the site's dither cell
 const MAX_PARTICLES = 24000;
 const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
 // Beats of p, shared by JS (DOM fades) and the shaders (passed as constants).
-const HERO_OUT: [number, number] = [0.02, 0.09]; // hero DOM gives way to its cells
+const HERO_OUT: [number, number] = [0.0, 0.04]; // hero DOM gives way to its cells
 const FLASH_AT = 0.38; // the line fires
 const ABOUT_IN: [number, number] = [0.86, 0.95]; // About text takes over from the cells
 const PHOTO_IN: [number, number] = [0.9, 1.0]; // the portrait resolves last
@@ -371,7 +371,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         const dy = d ? d.y : linePage + (rand() - 0.35) * vh * 1.1;
         const mx = Math.min(spanR - 24, Math.max(spanL + 24, sx + (dx - sx) * 0.35 + (rand() - 0.5) * 60));
         // leave the hero top lines first; land on About top lines first, the portrait last
-        const s1 = 0.03 + 0.1 * (s ? (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) : rand()) + 0.05 * r;
+        const s1 = 0.005 + 0.03 * (s ? (s.y - heroBox.top - sy) / Math.max(1, heroBox.height) : rand()) + 0.03 * r;
         const order01 = d ? (d.y - yMin) / Math.max(1, yMax - yMin) : rand();
         const s2 = d?.kind === 1 ? 0.52 + 0.1 * r : d ? 0.4 + 0.26 * order01 + 0.04 * r : 0.4 + 0.2 * r;
         const o = i * STRIDE;
