@@ -9,10 +9,13 @@
 // canvas that exists only during the dive. Screen coordinates are device px,
 // origin top-left; world units are device px too, the camera looks down +z.
 //
-// Changes from the draft for the real app: the canvas is transparent, so the
-// live page shows through at p = 0 and a void veil closes over it as the lamp
-// strikes; the draft's DOM field of fake nodes is gone (the real constellation
-// sits underneath); one key frame per dive, loaded on demand.
+// Changes from the draft for the real app: the canvas is transparent and
+// never veils the page, so the dive happens inside the live site (spec 2,
+// "one seamless universe"): the beam grows out of the real node, the wall
+// materialises out of its light with feathered, dithered edges, only dust
+// lit by the beam is drawn over the real star field, and the card rises out
+// of the pattern as it dissolves cell by cell (`dissolve`). One key frame
+// per dive, loaded on demand.
 // ─────────────────────────────────────────────────────────────────────────
 
 import type { Dialect } from '@/lib/diveBus';
@@ -31,18 +34,24 @@ const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
 const easeInOutCubic = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const easeInOutQuart = (x: number) => (x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2);
 
-// The shared beat of the dive, independent of dialect.
-//  0.00-0.16  the page sinks into void under the veil
-//  0.00-0.12  lamp strike: the beam throws onto the wall
+// The shared beat of the dive, independent of dialect. Nothing switches on:
+// every term eases in, and the page stays visible underneath throughout.
+//  0.00-0.18  the beam throws out of the node, its light front travelling to the wall
+//  0.02-0.20  a soft vignette (<= 35 %) gathers around the beam path
+//  0.07-0.48  the wall grows out of the beam's hotspot
 //  0.10-0.84  dolly: the camera pushes along the beam until the wall fills the frame
-//  0.26-0.98  the projected surface speaks its dialect
+//  0.14-0.98  the projected surface speaks its dialect
 //  0.22-0.90  the beam thins out, we are inside the image
+//  0.70-0.97  the wall's feathered edge hardens, so p = 1 covers the frame exactly
 function beat(p: number) {
-  const strike = p < 0.055 ? 0.5 : p < 0.075 ? 0.12 : 1; // a lamp catching, deterministic in p
-  const lamp = smooth(0.025, 0.12, p) * strike;
+  const lamp = smooth(0.0, 0.14, p);
   return {
-    veil: smooth(0, 0.16, p),
     lamp,
+    // how far along the beam its light has travelled, 0 lens .. 1 wall (overshoots so the front clears it)
+    throw: 1.15 * easeOutCubic(clamp01(p / 0.18)),
+    grow: smooth(0.07, 0.48, p),
+    feather: 0.55 * (1 - smooth(0.7, 0.97, p)),
+    vignette: 0.3 * smooth(0.02, 0.2, p) * (1 - smooth(0.7, 0.98, p)),
     // seen from inside the beam the haze would veil the wall, so it thins as we dive
     beam: lamp * (1 - 0.5 * smooth(0.22, 0.5, p)) * (1 - smooth(0.55, 0.9, p)),
     lens: lamp * (1 - smooth(0.16, 0.42, p)),
@@ -62,14 +71,14 @@ const DIALECTS: Record<Dialect, { id: number; at: (p: number) => Sched }> = {
   dither: {
     id: 1,
     at: (p) => ({
-      ditherIn: smooth(0.26, 0.56, p), // 1-bit cells laid on the lit wall
+      ditherIn: smooth(0.14, 0.6, p), // 1-bit cells laid on the lit wall, a long eased ramp
       resolve: clamp01((p - 0.5) / 0.48), // 1-bit → full image, radiating from the hotspot
     }),
   },
   ascii: {
     id: 2,
     at: (p) => ({
-      typeIn: clamp01((p - 0.26) / 0.34), // glyphs print top to bottom
+      typeIn: smooth(0.14, 0.6, p), // glyphs print outward from the hotspot, rising through the ramp
       handover: clamp01((p - 0.62) / 0.36), // bright cells burn through to the photograph
     }),
   },
@@ -80,7 +89,7 @@ const DIALECTS: Record<Dialect, { id: number; at: (p: number) => Sched }> = {
       // projector shutter: fast open with a small mechanical flutter
       const shutter = open >= 1 ? 1 : Math.max(0, easeOutCubic(open) + 0.05 * Math.sin(open * 28) * (1 - open));
       return {
-        lineGlow: smooth(0.3, 0.42, p) * (1 - smooth(0.52, 0.68, p)),
+        lineGlow: smooth(0.16, 0.44, p) * (1 - smooth(0.52, 0.72, p)), // the line blooms in slowly
         aperture: shutter,
         edgeGlow: smooth(0.48, 0.56, p) * (1 - smooth(0.75, 0.95, p)),
         scanline: 1 - smooth(0.66, 1, p),
@@ -110,12 +119,28 @@ float luma(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
 float bayer2(vec2 a) { a = floor(a); return fract(dot(a, vec2(0.5, a.y * 0.75))); }
 float bayer4(vec2 a) { return bayer2(0.5 * a) * 0.25 + bayer2(a); }
 float bayer8(vec2 a) { return bayer4(0.5 * a) * 0.25 + bayer2(a); }
+
+// The landing dissolve: the pattern breaks up cell by cell as a threshold
+// rises, nearest the hotspot first, in ordered (Bayer) order within that
+// wave, so the card underneath shows through the gaps. Each cell fades out
+// over a short band instead of blinking. Returns how much of the cell stays.
+//   p: pixel, device px (top-left); grid0: where the cell grid is anchored;
+//   cell: cell size, device px; hot: hotspot; dissolve: 0 whole .. 1 gone
+float dissolveKeep(vec2 p, vec2 grid0, vec2 cell, vec2 hot, vec2 res, float dissolve) {
+  if (dissolve <= 0.0) return 1.0;
+  vec2 q = floor((p - grid0) / cell);
+  vec2 centre = grid0 + (q + 0.5) * cell;
+  float radial = clamp(distance(centre, hot) / (0.5 * length(res)), 0.0, 1.0);
+  float threshold = 0.55 * bayer8(q) + 0.45 * radial;   // 0 .. ~1
+  return 1.0 - smoothstep(threshold, threshold + 0.12, dissolve * 1.15);
+}
 `;
 
-// Dust: stars live in 3D between the camera and a little past the wall. At
-// p = 0 each one projects exactly onto its home pixel, so the field looks
-// flat; once the camera moves they part around it with true parallax, and
-// the ones inside the beam volume catch the light like motes in a projector.
+// Dust: motes live in 3D between the camera and the wall. Only the ones
+// inside the beam volume are drawn, catching the light like dust in a
+// projector; everywhere else the site's real star field shows through, so
+// there is one sky, not two. At p = 0 each mote projects onto its home
+// pixel; once the camera moves they part around it with true parallax.
 const STAR_VS = `#version 300 es
 precision highp float;
 layout(location = 0) in vec2 aField;   // home position on screen, device px
@@ -127,10 +152,9 @@ uniform float uFocal;       // focal length, device px
 uniform vec3  uCam;         // camera position, world
 uniform float uWallZ;       // depth of the projection wall
 uniform float uDpr;
-uniform vec4  uRect;        // projected wall on screen: x, y, w, h
 uniform vec4  uPlanes[6];   // beam volume: inside where dot(n, x) + w >= 0
-uniform float uLamp;        // wall is lit, hides the stars behind it
-uniform float uBeam;        // beam strength, lights the stars inside it
+uniform float uSoft;        // world units over which a mote fades in at the beam's edge
+uniform float uBeam;        // beam strength, lights the motes inside it
 uniform float uStarAlpha;
 
 out vec3 vColor;
@@ -140,34 +164,29 @@ const vec3 OFF_WHITE = vec3(0.949, 0.937, 0.914);
 const vec3 HOT = vec3(1.0, 0.55, 0.5);
 
 void main() {
-  // near stars sit just past the camera, far ones behind the wall
+  // near motes sit just past the camera, far ones by the wall
   float z = mix(1.8, 0.2, aStar.x) * uWallZ;
   vec3 world = vec3((aField - uCentre) * z / uFocal, z);
   vec3 rel = world - uCam;
 
+  // how deep inside the beam this mote sits: a soft edge, so motes drift
+  // into the light instead of blinking on as the camera moves
+  float inside = 1.0;
+  for (int i = 0; i < 6; i++) inside *= smoothstep(0.0, uSoft, dot(uPlanes[i].xyz, world) + uPlanes[i].w);
+  float lit = inside * uBeam;
+
   float near = 0.03 * uWallZ;
-  if (rel.z < near) { gl_Position = vec4(2.0, 2.0, 0.0, 1.0); gl_PointSize = 0.0; vAlpha = 0.0; vColor = vec3(0.0); return; }
+  if (rel.z < near || lit <= 0.001) { gl_Position = vec4(2.0, 2.0, 0.0, 1.0); gl_PointSize = 0.0; vAlpha = 0.0; vColor = vec3(0.0); return; }
 
   vec2 screen = uCentre + rel.xy * uFocal / rel.z;
   float grow = z / rel.z;                       // 1 at rest, larger as we approach
   float size = aStar.y * uDpr * min(grow, 2.5);
-  float alpha = (0.55 + 0.45 * aStar.x) * smoothstep(near, 3.0 * near, rel.z);
-
-  // behind the lit wall: occluded by the projection
-  vec2 inRect = step(uRect.xy, screen) * step(screen, uRect.xy + uRect.zw);
-  if (z > uWallZ) alpha *= 1.0 - uLamp * inRect.x * inRect.y;
-
-  // inside the beam: dust motes catching the light
-  float inside = 1.0;
-  for (int i = 0; i < 6; i++) inside *= step(0.0, dot(uPlanes[i].xyz, world) + uPlanes[i].w);
-  float lit = inside * uBeam;
-  vec3 col = mix(aColor, mix(HOT, OFF_WHITE, aStar.z), lit * 0.85);
-  alpha *= 1.0 + 2.2 * lit;
+  float alpha = (0.55 + 0.45 * aStar.x) * smoothstep(near, 3.0 * near, rel.z) * lit * 2.4;
 
   vec2 clip = screen / vec2(uCentre * 2.0) * 2.0 - 1.0;
   gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
   gl_PointSize = max(size, 1.0);
-  vColor = col;
+  vColor = mix(aColor, mix(HOT, OFF_WHITE, aStar.z), 0.85);   // the site's palette, warmed by the lamp
   vAlpha = alpha * uStarAlpha;
 }`;
 
@@ -206,6 +225,12 @@ uniform float uTexelPerPx;   // image texels per device px on the wall (mip choi
 uniform vec2  uOrigin;       // projector hotspot, device px
 uniform float uLamp;         // 0 dark wall, 1 lamp fully on
 uniform float uUnit;         // device px per css px of the projected image (grows as we dive)
+uniform float uGrow;         // 0..1 how far the wall has grown out of the hotspot
+uniform float uFeather;      // edge softness, share of the shorter half side; 0 = hard (frame filled)
+uniform float uVignette;     // darkness around the beam path, 0..0.3
+uniform vec2  uLensPt;       // lens on screen (or the hotspot once it is behind us), device px
+uniform float uDissolve;     // landing dissolve, 0 whole .. 1 gone
+uniform vec2  uDissolveCell; // dissolve cell, device px
 
 // 1 - dither
 uniform float uDitherIn;     // share of 1-bit cells already deposited
@@ -244,76 +269,110 @@ vec3 imageAt(vec2 frameUV, float cellPx) {
   return textureLod(uImage, coverUV(frameUV), lod).rgb;
 }
 
+// -- the wall's shape: how much of it has materialised at this pixel --
+// The wall is made of the beam's light, so it has no hard edge: it grows as
+// a soft disc out of the hotspot (the wall centre) and is feathered towards
+// its rect edges. The feather hardens only once the wall fills the frame.
+float wallForm(vec2 p) {
+  vec2 halfSize = 0.5 * uHeroRect.zw;
+  vec2 h = (p - uHeroRect.xy - halfSize) / halfSize;                     // -1..1 across the wall
+  // feather in px is the same on both axes: a fraction of the shorter half side
+  vec2 fe = max(vec2(uFeather * min(halfSize.x, halfSize.y)) / halfSize, vec2(1e-4));
+  vec2 e = 1.0 - smoothstep(1.0 - fe, vec2(1.0), abs(h));
+  // growth: the disc's rim is half a radius soft, so it swells rather than wipes
+  float r = length(h) * 0.7071;                                          // 0 centre .. 1 corners
+  float R = uGrow * 1.5;
+  return e.x * e.y * (1.0 - smoothstep(R - 0.5, R, r));
+}
+
 // -- 1 - dither: the image arrives as 1-bit red/void cells, then refines --
-vec4 dither(vec2 p) {
+vec4 dither(vec2 p, float form) {
   vec2 hp = p - uHeroRect.xy;
   if (!inHero(hp)) return vec4(0.0);
 
-  // resolution arrives as a wave from the hotspot, quantised into hard steps
+  // Deposit: 6 css px cells, fixed to the image so they magnify as the
+  // camera dives in. A cell appears once the local density (build-up times
+  // the wall's form) passes its ordered threshold, and fades in over a short
+  // band, so the pattern thickens out of the hotspot with no full-cell pop.
+  vec2 base = floor(hp / (6.0 * uUnit));
+  float threshold = bayer8(base) * 0.86;
+  float cellA = smoothstep(threshold, threshold + 0.12, uDitherIn * form);
+  if (cellA <= 0.0) return vec4(0.0);
+
+  // resolution arrives as a wave from the hotspot in four stages
   float spread = 0.9;
   float d = distance(p, uOrigin) / length(uResolution);
-  float stage = clamp(uResolve * (1.0 + spread) - d * spread, 0.0, 1.0);
-  if (stage >= 1.0) return vec4(imageAt(hp / uHeroRect.zw, 1.0), 1.0);
+  float stage = clamp(uResolve * (1.0 + spread) - d * spread, 0.0, 1.0) * 4.0;
+  // the next, finer stage takes over pixel by pixel across the last 40 % of
+  // each band (ordered dissolve), instead of every cell switching at once
+  float k = floor(stage) + step(bayer8(floor(hp / max(uUnit, 1.0))) + 0.01, smoothstep(0.6, 1.0, fract(stage)));
+  if (k >= 4.0) return vec4(imageAt(hp / uHeroRect.zw, 1.0), 1.0) * cellA;
 
-  float k = floor(stage * 4.0);
   float cellCss   = k < 0.5 ? 6.0 : k < 1.5 ? 4.0 : k < 2.5 ? 2.0 : 1.0;
   float levels    = k < 0.5 ? 2.0 : k < 1.5 ? 3.0 : k < 2.5 ? 4.0 : 8.0;
   float colourMix = k < 1.5 ? 0.0 : k < 2.5 ? 0.55 : 1.0;
 
-  // cells are fixed to the image, so they magnify as the camera dives in
-  if (hash12(floor(hp / (6.0 * uUnit))) > uDitherIn) return vec4(0.0);
-
   float cellPx = max(cellCss * uUnit, 1.0);
   vec2 q = floor(hp / cellPx);
   vec3 src = imageAt((q + 0.5) * cellPx / uHeroRect.zw, cellPx);
-  float threshold = bayer8(q) + 0.5 / 64.0;
+  float bt = bayer8(q) + 0.5 / 64.0;
   float L = levels - 1.0;
 
-  float v = floor(smoothstep(0.04, 0.9, luma(src)) * L + threshold) / L;
+  float v = floor(smoothstep(0.04, 0.9, luma(src)) * L + bt) / L;
   // stage 0 is strictly red on void; later stages add an off-white top stop
   vec3 duo = k < 0.5 ? mix(VOID, RED, v)
            : v < 0.5 ? mix(VOID, RED, v * 2.0) : mix(RED, OFF_WHITE, v * 2.0 - 1.0);
-  vec3 full = floor(src * L + threshold) / L;
-  return vec4(mix(duo, full, colourMix), 1.0);
+  vec3 full = floor(src * L + bt) / L;
+  return vec4(mix(duo, full, colourMix), 1.0) * cellA;   // premultiplied
 }
 
 // -- 2 - ascii: a printout of the image, then the photograph burns through --
-vec4 ascii(vec2 p) {
+vec4 ascii(vec2 p, float form) {
   vec2 hp = p - uHeroRect.xy;
   if (!inHero(hp)) return vec4(0.0);
 
   vec2 g = floor(hp / uCell);       // which character cell
   vec2 local = fract(hp / uCell);   // where inside it
-  float lum = smoothstep(0.03, 0.85, luma(imageAt((g + 0.5) * uCell / uHeroRect.zw, max(uCell.x, uCell.y))));
+  vec2 cellCentre = (g + 0.5) * uCell;
+  float lum = smoothstep(0.03, 0.85, luma(imageAt(cellCentre / uHeroRect.zw, max(uCell.x, uCell.y))));
   float h = hash12(g);
 
-  // printout runs top to bottom with a ragged edge
-  float rows = ceil(uHeroRect.w / uCell.y);
-  float order = (g.y / rows) * 0.7 + h * 0.3;
-  float typed = (uTypeIn * 1.15 - order) / 0.15;   // <0 blank, 0..1 decoding, >1 settled
-  if (typed <= 0.0) return vec4(0.0);
+  // the printout spreads out of the hotspot with a ragged edge
+  float radial = clamp(distance(uHeroRect.xy + cellCentre, uOrigin) / (0.5 * length(uHeroRect.zw)), 0.0, 1.0);
+  float order = radial * 0.7 + h * 0.3;
+  float typed = clamp((uTypeIn * 1.3 - order) / 0.3, 0.0, 1.0);
+  // each glyph rises through the density ramp (' ' . : - = ...) to its own
+  // brightness; towards the feathered edge it stops early, on thin glyphs
+  float rise = typed * smoothstep(0.05, 0.7, form);
+  if (rise <= 0.0) return vec4(0.0);
 
-  // bright cells burn through first, flashing a red cursor block on the way
-  float swapAt = 1.0 - (lum * 0.6 + h * 0.4);
-  float burn = (uHandover * 1.15 - swapAt) / 0.15;
-  if (burn >= 0.35) return vec4(imageAt(hp / uHeroRect.zw, 1.0), 1.0);
-  if (burn > 0.0) return vec4(RED, 1.0);
-
-  float glyph = typed < 1.0
-    ? floor(hash12(g + floor(uTime * 30.0)) * uGlyphCount)   // decoding flicker
-    : min(floor(lum * uGlyphCount), uGlyphCount - 1.0);
+  float glyph = min(floor(lum * rise * uGlyphCount), uGlyphCount - 1.0);
   float ink = texture(uGlyphs, vec2((glyph + local.x) / uGlyphCount, local.y)).r;
   vec3 inkColour = lum > 0.8 ? OFF_WHITE : RED_TEXT;
-  return vec4(mix(VOID, inkColour, ink), 1.0);
+  vec3 col = mix(VOID, inkColour, ink);
+
+  // bright cells burn through first: a red cursor block eases in, then the
+  // photograph eases out of it
+  float swapAt = 1.0 - (lum * 0.6 + h * 0.4);
+  float burn = (uHandover * 1.15 - swapAt) / 0.15;
+  float solid = 0.0;   // 1 once the cell burns: cursor block and photograph are opaque
+  if (burn > 0.0) {
+    vec3 photo = imageAt(hp / uHeroRect.zw, 1.0);
+    solid = smoothstep(0.0, 0.2, burn);
+    col = mix(mix(col, RED, solid), photo, smoothstep(0.2, 0.6, burn));
+  }
+  // ink is solid, the void between glyphs only half: the live page keeps
+  // glowing through the printout instead of a dark slab forming behind it
+  float a = rise * max(mix(0.5, 1.0, ink), solid);
+  return vec4(col * a, a);   // premultiplied: the cell fades in with its glyph
 }
 
 // -- 3 - crt: a power line across the wall opens like a stage door --
-vec4 crt(vec2 p) {
+vec4 crt(vec2 p, float form) {
   vec2 centre = uHeroRect.xy + 0.5 * uHeroRect.zw;
   float dy = p.y - centre.y;
-  float x0 = uHeroRect.x, x1 = uHeroRect.x + uHeroRect.z;
-  float fall = 48.0 * uDpr;
-  float xMask = smoothstep(x0 - fall, x0, p.x) * (1.0 - smoothstep(x1, x1 + fall, p.x));
+  // the line grows out of the hotspot along the wall's feathered width
+  float lineForm = wallForm(vec2(p.x, centre.y));
 
   vec3 col = vec3(0.0);
   float a = 0.0;
@@ -335,45 +394,60 @@ vec4 crt(vec2 p) {
       rgb += uScanline * 0.08 * (hash12(vec2(floor(p.y / (2.0 * uDpr)), floor(uTime * 50.0))) - 0.5);
       col = rgb;
     }
-    a = 1.0;   // bent-away corners stay black glass
+    // bent-away corners stay black glass; towards the wall's edge the glass
+    // thins out in 1-bit ordered dither, the house texture
+    a = step(bayer4(p / max(uDpr, 1.0)) + 0.03, form);
+    col *= a;
   }
 
   // shutter blades: a hot red edge rides each side of the opening gate
   float edge = abs(abs(dy) - halfOpen);
-  float blade = exp(-edge * edge / (2.0 * pow(5.0 * uDpr, 2.0))) * uEdgeGlow * xMask;
+  float blade = exp(-edge * edge / (2.0 * pow(5.0 * uDpr, 2.0))) * uEdgeGlow * lineForm;
 
-  // the power line: white-hot core, red halo, mains flicker
+  // the power line: white-hot core, red halo that blooms wider as it eases in
   float flicker = 0.85 + 0.15 * hash12(vec2(floor(uTime * 40.0), 7.0));
   float core = exp(-dy * dy / (2.0 * pow(1.2 * uDpr, 2.0)));
-  float halo = exp(-dy * dy / (2.0 * pow(16.0 * uDpr, 2.0)));
-  vec3 glow = (OFF_WHITE * core + RED * halo * 0.9) * uLineGlow * flicker * xMask + RED * blade;
+  float bloom = mix(5.0, 16.0, uLineGlow) * uDpr;
+  float halo = exp(-dy * dy / (2.0 * bloom * bloom));
+  vec3 glow = (OFF_WHITE * core * uLineGlow + RED * halo * 0.9) * uLineGlow * flicker * lineForm + RED * blade;
 
   col += glow;
   a = max(a, clamp(max(glow.r, max(glow.g, glow.b)), 0.0, 1.0));
   return vec4(col, a);
 }
 
+// distance from p to the segment a-b, device px
+float segDist(vec2 p, vec2 a, vec2 b) {
+  vec2 ab = b - a;
+  float t = clamp(dot(p - a, ab) / max(dot(ab, ab), 1e-3), 0.0, 1.0);
+  return length(p - a - ab * t);
+}
+
 void main() {
   vec2 p = vec2(gl_FragCoord.x, uResolution.y - gl_FragCoord.y);
-  vec4 d = uVariant == 1 ? dither(p) : uVariant == 2 ? ascii(p) : crt(p);
+  float form = wallForm(p);
+  vec4 d = uVariant == 1 ? dither(p, form) : uVariant == 2 ? ascii(p, form) : crt(p, form);
 
-  // Bare projector light on the wall: a red hotspot that falls off to the
-  // corners, plus a faint spill past the edges so a surface is implied.
-  vec2 hp = p - uHeroRect.xy;
-  vec2 halfSize = 0.5 * uHeroRect.zw;
-  vec2 h = (hp - halfSize) / halfSize;                     // -1..1 across the wall
-  float inside = step(max(abs(h.x), abs(h.y)), 1.0);
-  float outside = length(max(abs(hp - halfSize) - halfSize, 0.0)) / uDpr;   // css px past the edge
-  float hot = 1.0 - 0.45 * dot(h, h);
-  float spill = (1.0 - inside) * 0.22 * exp(-outside / 18.0);
-  float light = (inside * 0.34 * hot + spill) * uLamp;
-  // quantise the light into a few ordered-dither steps, the house texture
+  // Bare projector light on the wall: a red hotspot falling off to the
+  // corners, shaped by the form, then quantised into ordered-dither steps so
+  // the feathered edge reads as a thinning dither density, not a blur.
+  // Its alpha equals its brightness: light added onto the live page, which
+  // keeps showing through.
+  vec2 h = (p - uHeroRect.xy - 0.5 * uHeroRect.zw) / (0.5 * uHeroRect.zw);
+  float hot = 1.0 - 0.45 * min(dot(h, h), 2.0);
+  float light = 0.34 * hot * form * uLamp;
   light = floor(light * 7.0 + bayer4(p / max(uDpr, 1.0))) / 7.0;
-  vec3 lit = RED * light;
-  float litA = clamp(inside * uLamp + spill * uLamp, 0.0, 1.0);
+  vec4 lit = vec4(RED * light, light);
+  vec4 wall = d + lit * (1.0 - d.a);   // dialect over the light (premultiplied)
 
-  // dialect over the light (premultiplied)
-  fragColor = vec4(d.rgb + lit * (1.0 - d.a), d.a + litA * (1.0 - d.a));
+  // a soft vignette, darkest away from the beam path, so the beam reads
+  // without a veil over the page; it never exceeds 35 % (uVignette <= 0.3)
+  float vd = segDist(p, uLensPt, uOrigin) / length(uResolution);
+  float va = uVignette * smoothstep(0.05, 0.55, vd) * (1.0 - uDissolve);
+  wall += vec4(VOID * va, va) * (1.0 - wall.a);
+
+  // landing: the pattern dissolves cell by cell over the card
+  fragColor = wall * dissolveKeep(p, uHeroRect.xy, uDissolveCell, uOrigin, uResolution, uDissolve);
 }
 `;
 
@@ -394,6 +468,7 @@ uniform vec3  uWallCentre;   // centre of the projected rect, world
 uniform vec2  uWallHalf;     // half size of the projected rect, world
 uniform vec4  uPlanes[6];    // inside where dot(n, x) + w >= 0
 uniform float uBeam;         // lamp strength along the beam
+uniform float uThrow;        // the light's front, 0 lens .. 1 wall: the beam grows out of the node
 uniform vec2  uLens;         // lens on screen, device px
 uniform float uLensGlow;     // lens glare, 0 once the lens is behind us
 uniform float uDpr;
@@ -453,8 +528,9 @@ void main() {
       float hot = 1.0 - 0.35 * dot(uv, uv);                                   // lamp hotspot
       float streak = 0.35 + 1.3 * pow(noise2(uv * 7.0 + 3.1), 2.0);           // shafts fanning from the lens
       float haze = 0.45 + 1.1 * noise3(x * hazeFreq);                         // smoke the camera flies through
+      float front = 1.0 - smoothstep(uThrow - 0.15, uThrow, along);           // soft leading edge of the throw
       // the same light spreads over a growing cross-section: density ~ 1/along^2
-      light += blade * hot * streak * haze / (0.035 + along * along) * dt;
+      light += blade * hot * streak * haze * front / (0.035 + along * along) * dt;
     }
     light *= uBeam * 0.32 / L;
   }
@@ -474,14 +550,23 @@ void main() {
 `;
 
 // Additive blit of the half-res beam buffer, nearest texel. The canvas is
-// transparent, so light also adds coverage: brightness becomes alpha.
+// transparent, so light also adds coverage: brightness becomes alpha. At
+// landing the beam dissolves on the same cell grid as the wall.
 const BLIT_FS = `#version 300 es
-precision mediump float;
+precision highp float;
+${COMMON}
 uniform sampler2D uTex;
 uniform float uScale;
+uniform vec2  uResolution;
+uniform vec4  uHeroRect;
+uniform vec2  uOrigin;
+uniform vec2  uDissolveCell;
+uniform float uDissolve;
 out vec4 fragColor;
 void main() {
   vec3 c = texelFetch(uTex, ivec2(gl_FragCoord.xy / uScale), 0).rgb;
+  vec2 p = vec2(gl_FragCoord.x, uResolution.y - gl_FragCoord.y);
+  c *= dissolveKeep(p, uHeroRect.xy, uDissolveCell, uOrigin, uResolution, uDissolve);
   fragColor = vec4(c, max(c.r, max(c.g, c.b)));
 }
 `;
@@ -501,7 +586,8 @@ const ASCII_CELL = [10, 15]; // css px, one character at full dive
 export interface DiveRenderer {
   /** Aim the projector from this client css point (viewport centre if null). */
   aim(origin: { x: number; y: number } | null): void;
-  render(p: number, clockSec: number): void;
+  /** p: dive progress 0 page .. 1 hero; dissolve: landing dissolve 0 whole .. 1 gone */
+  render(p: number, dissolve?: number): void;
   dispose(): void;
 }
 
@@ -696,20 +782,26 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
     return { cam, rect, centre: [rcx, rcy] as [number, number], lens, lensOn };
   };
 
-  const render = (p: number, clock: number) => {
+  // Everything below is a function of p and dissolve only (the shader clock
+  // is derived from p too), so the reverse dive plays the very same frames.
+  const render = (p: number, dissolve = 0) => {
     const B = beat(p);
     const R = rigAt(p, B);
     const U = D.at(p);
+    const clock = (p * DUR_IN) / 1000;
+    // image-locked cells: they magnify with the wall, softened so the small wall stays legible
+    const unit = dpr * Math.pow(R.rect[2] / W, 0.6);
+    // the landing dissolve breaks the pattern on its own grid: glyph cells for ascii, 6 css px otherwise
+    const dCell: [number, number] = dialect === 'ascii' ? [ASCII_CELL[0] * unit, ASCII_CELL[1] * unit] : [6 * unit, 6 * unit];
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, W, H);
-    // the veil: void closing over the live page, premultiplied
-    const v = B.veil;
-    gl.clearColor(0.0196 * v, 0.0196 * v, 0.0196 * v, v);
+    // no veil: the canvas starts clear and the live page stays visible under the whole dive
+    gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.enable(gl.BLEND);
 
-    // 1. the wall: projector light + dialect
+    // 1. the wall: projector light + dialect + the soft vignette under them
     if (p > 0) {
       const { u } = wallProg;
       gl.useProgram(wallProg.p);
@@ -728,12 +820,16 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       gl.uniform1f(u.uImageAspect, image.w / image.h);
       gl.uniform1f(u.uTexelPerPx, Math.max(image.w / R.rect[2], image.h / R.rect[3]));
       gl.uniform2f(u.uOrigin, ...R.centre);
-      // image-locked cells: they magnify with the wall, softened so the small wall stays legible
-      const unit = dpr * Math.pow(R.rect[2] / W, 0.6);
+      gl.uniform2f(u.uLensPt, ...(R.lensOn ? R.lens : R.centre));
+      gl.uniform2f(u.uDissolveCell, ...dCell);
       const set1 = (name: string, val: number | undefined) => {
         if (u[name]) gl.uniform1f(u[name], val ?? 0);
       };
       set1('uLamp', B.lamp);
+      set1('uGrow', B.grow);
+      set1('uFeather', B.feather);
+      set1('uVignette', B.vignette);
+      set1('uDissolve', dissolve);
       set1('uUnit', unit);
       set1('uDitherIn', U.ditherIn);
       set1('uResolve', U.resolve);
@@ -752,9 +848,9 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
-    // 2. dust, additive like the site field; it arrives with the veil
-    const starAlpha = B.stars * v;
-    if (starAlpha > 0.001) {
+    // 2. dust lit inside the beam, additive like the site field; the real stars show through elsewhere
+    const starAlpha = B.stars * (1 - dissolve);
+    if (starAlpha > 0.001 && B.beam > 0.001) {
       const { u } = starProg;
       gl.useProgram(starProg.p);
       gl.blendFunc(gl.ONE, gl.ONE);
@@ -763,9 +859,8 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       gl.uniform3f(u.uCam, ...R.cam);
       gl.uniform1f(u.uWallZ, geo.Dw);
       gl.uniform1f(u.uDpr, dpr);
-      gl.uniform4f(u.uRect, ...R.rect);
       gl.uniform4fv(u.uPlanes, geo.planes);
-      gl.uniform1f(u.uLamp, B.lamp);
+      gl.uniform1f(u.uSoft, geo.Dw * 0.015);
       gl.uniform1f(u.uBeam, B.beam);
       gl.uniform1f(u.uStarAlpha, starAlpha);
       gl.bindVertexArray(starVAO);
@@ -789,6 +884,7 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       gl.uniform2f(u.uWallHalf, ...geo.half);
       gl.uniform4fv(u.uPlanes, geo.planes);
       gl.uniform1f(u.uBeam, B.beam);
+      gl.uniform1f(u.uThrow, B.throw);
       gl.uniform2f(u.uLens, ...R.lens);
       gl.uniform1f(u.uLensGlow, R.lensOn ? B.lens : 0);
       gl.uniform1f(u.uDpr, dpr);
@@ -798,11 +894,17 @@ export function createDiveRenderer(canvas: HTMLCanvasElement, dialect: Dialect, 
       gl.viewport(0, 0, W, H);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE);
+      const bu = blitProg.u;
       gl.useProgram(blitProg.p);
       gl.activeTexture(gl.TEXTURE2);
       gl.bindTexture(gl.TEXTURE_2D, beamTex);
-      gl.uniform1i(blitProg.u.uTex, 2);
-      gl.uniform1f(blitProg.u.uScale, BEAM_SCALE);
+      gl.uniform1i(bu.uTex, 2);
+      gl.uniform1f(bu.uScale, BEAM_SCALE);
+      gl.uniform2f(bu.uResolution, W, H);
+      gl.uniform4f(bu.uHeroRect, ...R.rect);
+      gl.uniform2f(bu.uOrigin, ...R.centre);
+      gl.uniform2f(bu.uDissolveCell, ...dCell);
+      gl.uniform1f(bu.uDissolve, dissolve);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     gl.bindVertexArray(null);

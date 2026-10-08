@@ -7,6 +7,7 @@
 import { useEffect, useRef } from 'react';
 import { createDiveRenderer, DUR_IN, DUR_OUT, type DiveRenderer } from './diveRenderer';
 import type { DiveRun } from './DiveHost';
+import { diveBus } from '@/lib/diveBus';
 
 const PROBE_KEY = 'sinaida:dive-probe';
 const PROBE_MS = 1000;
@@ -23,7 +24,13 @@ interface Props {
 
 const nextFrame = () => new Promise<number>((r) => requestAnimationFrame(r));
 
-const CARD_MS = 380; // card rising out of / sinking into the effect
+// The card rises out of the effect: the pattern dissolves cell by cell over
+// it while the camera drifts a little further, and closing plays the same
+// frames backwards (cells re-form over the card, then the camera flies out).
+const DISSOLVE_MS = 560;
+const LAND_DRIFT = 0.06; // extra dive progress drifted through during the dissolve
+
+const easeInOutSine = (x: number) => 0.5 - 0.5 * Math.cos(Math.PI * x);
 
 export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,14 +44,15 @@ export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
     const veil = veilRef.current!;
     const root = rootRef.current!;
 
-    // Play p from → to over dur ms, one frame per rAF, nothing after it ends.
-    const play = async (from: number, to: number, dur: number) => {
+    // Play p from → to (and the dissolve d0 → d1, eased) over dur ms, one
+    // frame per rAF, nothing after it ends.
+    const play = async (from: number, to: number, dur: number, d0 = 0, d1 = 0) => {
       const t0 = await nextFrame();
       for (;;) {
         const now = await nextFrame();
         if (!alive || !renderer) return;
         const k = Math.min(1, (now - t0) / dur);
-        renderer.render(from + (to - from) * k, (now - t0) / 1000);
+        renderer.render(from + (to - from) * k, d0 + (d1 - d0) * easeInOutSine(k));
         if (k >= 1) return;
       }
     };
@@ -60,7 +68,7 @@ export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
       let frames = 0;
       let now = t0;
       while (alive && renderer && now - t0 < PROBE_MS) {
-        renderer.render(0.45, 0);
+        renderer.render(0.45);
         now = await nextFrame();
         frames++;
       }
@@ -105,30 +113,32 @@ export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
         if (!alive) return;
         await arrive(run);
         if (run.land) {
-          // the card rises out of the effect: keep flying a little while it fades
-          await Promise.all([play(end, Math.min(1, end + 0.1), CARD_MS), fade(root, 1, 0, CARD_MS)]);
+          // the card is up under the pattern: dissolve it away cell by cell
+          await play(end, Math.min(1, end + LAND_DRIFT), DISSOLVE_MS, 0, 1);
         } else {
           await fade(root, 1, 0, 260);
         }
       } else if (run.close) {
-        // Card closing: the effect re-forms over the card, the card goes
-        // under it, then the camera flies back out into its node.
+        // Card closing, the landing played backwards: the cells re-form over
+        // the card, the card goes under them, then the camera flies back out
+        // into its node. Aimed at the node where it sits now (the page is
+        // scroll-locked under the card), so the rig matches the way in.
         const from = run.landAt ?? 1;
-        root.style.opacity = '0';
-        veil.style.opacity = '0';
-        renderer.render(from, 0);
-        await fade(root, 0, 1, CARD_MS);
+        const node = run.anchor.startsWith('node:') ? diveBus.locateNode(run.anchor.slice(5)) : null;
+        renderer.aim(node);
+        renderer.render(Math.min(1, from + LAND_DRIFT), 1);
+        await play(Math.min(1, from + LAND_DRIFT), from, DISSOLVE_MS, 1, 0);
         if (!alive) return;
         run.close();
         await nextFrame();
         await nextFrame();
         if (!alive) return;
-        renderer.aim(locate(run.anchor));
+        if (!node) renderer.aim(locate(run.anchor));
         await play(from, 0, DUR_OUT * from);
       } else {
         // Back: hold the hero frame while the previous page mounts, then fly
         // out of the image and back into the control that launched it.
-        renderer.render(1, 0);
+        renderer.render(1);
         veil.style.opacity = '0';
         await nextFrame();
         await nextFrame();
