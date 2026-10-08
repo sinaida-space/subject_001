@@ -26,7 +26,7 @@ export default function Constellation() {
   const [openId, setOpenId] = useState<string | null>(null);
   const openedByDive = useRef(false);
   const [openOrigin, setOpenOrigin] = useState<FocusOrigin | undefined>();
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const graphBoundsRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
 

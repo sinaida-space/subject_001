@@ -24,7 +24,7 @@ function ServiceBlock({ service }: { service: Service }) {
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
               {part.text}
             </Link>
-          ) : (
+          ) : (
             <span key={i}>{part.text}</span>
           )
         )}
@@ -39,7 +39,7 @@ function ServiceBlock({ service }: { service: Service }) {
 export default function ServicesTerminal() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  return (
+  return (
     <section
       ref={sectionRef}
       id="services" className="relative z-10 py-16 md:py-20"

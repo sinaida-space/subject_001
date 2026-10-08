@@ -25,6 +25,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      "no-irregular-whitespace": ["error", { skipJSXText: true, skipStrings: true, skipTemplates: true, skipComments: true }],
     },
   },
 );
