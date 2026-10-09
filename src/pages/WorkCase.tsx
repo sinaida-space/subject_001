@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { Fragment, lazy, Suspense, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { projectById, PROJECTS } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
@@ -13,6 +13,9 @@ import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 import { CaseDiveControls, ProcessFloor } from '@/components/dive/CaseDive';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
+
+const INLINE_LINK_CLASS =
+  'text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70';
 
 // Turns bare https:// URLs inside a credit line into clickable links,
 // displayed without the protocol/trailing slash for readability.
@@ -29,12 +32,34 @@ function linkifyCredit(text: string) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70"
+        className={INLINE_LINK_CLASS}
       >
         {url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
       </a>,
       trailing,
     ];
+  });
+}
+
+// Paragraph text with inline links: `[label](/work/id)` renders as a router
+// Link, `[label](https://...)` as an external link; any bare URL left over
+// still goes through linkifyCredit. The prerender strips the same syntax down
+// to the label (scripts/lib/site-data.mjs, stripInlineLinks).
+function renderInline(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)\s]+\))/g);
+  return parts.flatMap((part, i) => {
+    const m = part.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
+    if (!m) return part ? [<Fragment key={i}>{linkifyCredit(part)}</Fragment>] : [];
+    const [, label, href] = m;
+    return href.startsWith('/') ? (
+      <Link key={i} to={href} className={INLINE_LINK_CLASS}>
+        {label}
+      </Link>
+    ) : (
+      <a key={i} href={href} target="_blank" rel="noopener noreferrer" className={INLINE_LINK_CLASS}>
+        {label}
+      </a>
+    );
   });
 }
 
@@ -54,7 +79,7 @@ export default function WorkCase() {
     ? `${project.title}${project.subtitle ? `: ${project.subtitle}` : ''} · Case Study | ${SITE_NAME}`
     : document.title;
   const description = project
-    ? `${project.tagline}. ${project.blurb ?? ''}`.slice(0, 300)
+    ? `${project.tagline}. ${project.blurb ?? ''}`.replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1').slice(0, 300)
     : '';
   const canonical = project ? `https://sinaida.eu/work/${project.id}/` : undefined;
 
@@ -204,7 +229,7 @@ export default function WorkCase() {
                 key={p.slice(0, 32)}
                 className="mt-0 max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 first:mt-0 [&:not(:first-child)]:mt-6"
               >
-                {linkifyCredit(p)}
+                {renderInline(p)}
               </p>
             ))}
 
@@ -259,7 +284,7 @@ export default function WorkCase() {
                     key={p.slice(0, 32)}
                     className="max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 [&:not(:first-of-type)]:mt-6"
                   >
-                    {linkifyCredit(p)}
+                    {renderInline(p)}
                   </p>
                 ))}
               </section>
