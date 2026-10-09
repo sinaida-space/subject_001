@@ -57,7 +57,7 @@ export default function Constellation() {
       <div className="container mx-auto max-w-7xl px-6">
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* LEFT COLUMN — label + legend */}
-          <div ref={headingRef} className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
+          <div ref={headingRef} data-work-heading className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
             <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
               Body of Work
             </h2>
@@ -87,7 +87,15 @@ export default function Constellation() {
                whole flex-1 wrapper below — that wrapper also contains the
                plain list, which would let the card's clamp range extend
                down into that list's text. */}
-            <div ref={graphBoundsRef}>
+            {/* In full mode on desktop the graph holds still while it builds
+                itself (WorkBuild): sticky over its own scroll room below. */}
+            {/* the graph and its build room share one box, so the graph lets go where the room ends */}
+            <div>
+            <div
+              ref={graphBoundsRef}
+              data-build-track
+              className={mode === 'full' && !IS_COARSE ? 'md:sticky md:top-[5vh]' : undefined}
+            >
               {mode === 'full' && (
                 <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
                   <ConstellationFull onActiveProject={setActive} onPointerPosition={(x, y) => setPointerPos({ x, y })} />
@@ -121,6 +129,9 @@ export default function Constellation() {
             {/* Readout opens as a fixed-position modal window (ProjectDetail) —
                same treatment on every screen size, doesn't affect page layout. */}
             {openProject && <ProjectDetail project={openProject} onClose={closeProject} origin={mode === 'full' ? openOrigin : undefined} />}
+
+            {mode === 'full' && !IS_COARSE && <div data-build-room aria-hidden="true" className="hidden md:block" style={{ height: '90vh' }} />}
+            </div>
 
             {/* Plain-text reading always sits below the map in full mode; in
                lite mode (auto-detected or manually toggled via Header/Footer)

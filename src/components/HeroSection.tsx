@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { useScrambleReveal } from '@/hooks/useScrambleReveal';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
@@ -188,16 +188,19 @@ function Letters({ text, settled = text, prefix, indexOffset = 0 }: { text: stri
 // Letters calls, as if the whole eyebrow were one run — which, above md, it is.
 const SEPARATOR = ' | ';
 
-function EyebrowLayer({ name, role, prefix }: { name: string; role: string; prefix: string }) {
+// Above md the line holds as one only where it fits. Where it does not (a
+// mid-width window), it takes the phone regime, name over role, so the role
+// never breaks with one word left on the first line.
+function EyebrowLayer({ name, role, prefix, split }: { name: string; role: string; prefix: string; split: boolean }) {
   const settledName = EYEBROW.slice(0, NAME.length);
   const settledRole = EYEBROW.slice(NAME.length + SEPARATOR.length);
   return (
     <>
       <Letters text={name} settled={settledName} prefix={`${prefix}-n`} />
-      <span className="hidden md:inline">
+      <span className={split ? 'hidden' : 'hidden md:inline'}>
         <Letters text={SEPARATOR} prefix={`${prefix}-s`} indexOffset={name.length} />
       </span>
-      <br className="md:hidden" />
+      <br className={split ? undefined : 'md:hidden'} />
       <Letters text={role} settled={settledRole} prefix={`${prefix}-r`} indexOffset={name.length + SEPARATOR.length} />
     </>
   );
@@ -207,6 +210,26 @@ export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const { mode } = useRenderMode();
   const lite = mode !== 'full';
+
+  // Does the eyebrow fit on one line? Re-checked whenever its box resizes.
+  const eyebrowRef = useRef<HTMLParagraphElement>(null);
+  const eyebrowMeasureRef = useRef<HTMLSpanElement>(null);
+  const [eyebrowSplit, setEyebrowSplit] = useState(false);
+  useLayoutEffect(() => {
+    const p = eyebrowRef.current, m = eyebrowMeasureRef.current;
+    if (!p || !m) return;
+    // per-letter spans lose kerning, so the real line runs a little wider than the plain text
+    const check = () => setEyebrowSplit(m.getBoundingClientRect().width * 1.04 > p.clientWidth);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(p);
+    window.addEventListener('resize', check);
+    document.fonts?.ready.then(check);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', check);
+    };
+  }, []);
 
   // Lite mode also covers prefers-reduced-motion, so the scramble is skipped
   // there and both lines paint solid. It is also skipped when the static
@@ -328,6 +351,7 @@ export default function HeroSection() {
             glow, JS-state-driven — see comment above) plus the starfield
             tunnel dive (heroTunnelBus + ParticleField). */}
         <p
+          ref={eyebrowRef}
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(1.4rem,7.6vw,5.1875rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={stopTunnel}
@@ -337,14 +361,16 @@ export default function HeroSection() {
               Every visual layer is hidden from it and the true string is exposed
               once, unanimated. */}
           <span className="sr-only">{EYEBROW}</span>
+          {/* the one-line eyebrow, measured: plain text in the same face */}
+          <span ref={eyebrowMeasureRef} aria-hidden="true" className="pointer-events-none invisible absolute left-0 top-0 whitespace-nowrap">{EYEBROW}</span>
           <span className="hero-layer hero-layer-base" aria-hidden="true">
-            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="eb" />
+            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="eb" split={eyebrowSplit} />
           </span>
           <span className="hero-layer hero-ghost hero-ghost-red" aria-hidden="true">
-            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="ebgr" />
+            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="ebgr" split={eyebrowSplit} />
           </span>
           <span className="hero-layer hero-ghost hero-ghost-white" aria-hidden="true">
-            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="ebgw" />
+            <EyebrowLayer name={nameDisplay} role={roleDisplay} prefix="ebgw" split={eyebrowSplit} />
           </span>
         </p>
       </div>

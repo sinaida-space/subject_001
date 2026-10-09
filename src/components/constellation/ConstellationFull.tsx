@@ -5,6 +5,8 @@ import { constellationBus } from '@/lib/constellationBus';
 import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
 import { synth, type VoiceKind } from '@/lib/constellationSynth';
 import SynthPanel from './SynthPanel';
+import { workBuildBus } from '@/lib/workBuildBus';
+import { buildTimeline, ecg, type BuildTimeline } from './buildTimeline';
 
 // ── Runtime node (base "home" from layout + live physics) ──
 interface RNode {
@@ -154,6 +156,73 @@ function buildFigures(nodes: RNode[]): { a: RNode; b: RNode; cat: Category }[] {
 }
 const CATEGORIES = Object.keys(CATEGORY_LABEL) as Category[];
 
+// ── Build (#121): names and stars develop out of 3 px Bayer cells ──
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+const lin = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
+const easeOut = (t: number) => 1 - (1 - t) * (1 - t);
+const bayer8 = (x: number, y: number) => {
+  let v = 0;
+  for (let bit = 0; bit < 3; bit++) {
+    const xb = (x >> bit) & 1, yb = (y >> bit) & 1;
+    v += ((xb ^ yb) * 2 + yb) << (2 * (2 - bit));
+  }
+  return (v + 0.5) / 64;
+};
+// one mask tile per threshold step: opaque cells where the Bayer value is under it
+const maskTiles = new Map<string, HTMLCanvasElement>();
+function maskTile(level: number, cell: number): HTMLCanvasElement {
+  const key = `${level}:${cell}`;
+  const hit = maskTiles.get(key);
+  if (hit) return hit;
+  const c = document.createElement('canvas');
+  c.width = c.height = cell * 8;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#fff';
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) if (bayer8(x, y) < level / 32) g.fillRect(x * cell, y * cell, cell, cell);
+  maskTiles.set(key, c);
+  return c;
+}
+// the globe's surface: a Fibonacci sphere (even spread), lat, lon, reveal order, red?
+const GLOBE: [number, number, number, boolean][] = (() => {
+  const n = IS_COARSE ? 320 : 640;
+  const out: [number, number, number, boolean][] = [];
+  for (let i = 0; i < n; i++) {
+    const y = 1 - ((i + 0.5) / n) * 2;
+    const lat = Math.asin(y) * 0.92;
+    const lon = (((i * 2.399963) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
+    out.push([lat, lon * 0.98, ((i * 37) % 101) / 101, i % 9 === 0]);
+  }
+  return out;
+})();
+let revealCanvas: HTMLCanvasElement | null = null;
+// paint() into a scratch canvas, keep only the cells under threshold t, stamp it back
+function revealDraw(ctx: CanvasRenderingContext2D, dpr: number, box: { x1: number; y1: number; x2: number; y2: number }, t: number, paint: (c: CanvasRenderingContext2D) => void) {
+  if (t >= 1) return paint(ctx);
+  if (t <= 0) return;
+  const bw = Math.ceil(box.x2 - box.x1) + 2, bh = Math.ceil(box.y2 - box.y1) + 2;
+  if (!revealCanvas) revealCanvas = document.createElement('canvas');
+  const rc = revealCanvas;
+  if (rc.width < bw * dpr || rc.height < bh * dpr) {
+    rc.width = Math.max(rc.width, Math.ceil(bw * dpr));
+    rc.height = Math.max(rc.height, Math.ceil(bh * dpr));
+  }
+  const g = rc.getContext('2d')!;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.globalCompositeOperation = 'source-over';
+  g.clearRect(0, 0, bw * dpr, bh * dpr);
+  g.setTransform(dpr, 0, 0, dpr, -(box.x1 - 1) * dpr, -(box.y1 - 1) * dpr);
+  paint(g);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.globalCompositeOperation = 'destination-in';
+  const pat = g.createPattern(maskTile(Math.round(t * 32), Math.max(1, Math.round(3 * dpr))), 'repeat');
+  if (pat) {
+    g.fillStyle = pat;
+    g.fillRect(0, 0, bw * dpr, bh * dpr);
+  }
+  g.globalCompositeOperation = 'source-over';
+  ctx.drawImage(rc, 0, 0, bw * dpr, bh * dpr, box.x1 - 1, box.y1 - 1, bw, bh);
+}
+
 const LABEL_SCALE = 1.25;
 const PROJECT_LABEL_MIN = 20;
 const SKILL_LABEL_MIN = 16;
@@ -224,6 +293,11 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // the drop keeps its rubbery wobble. Reset (panel ■) clears this.
   const pinnedRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const figuresRef = useRef<{ a: RNode; b: RNode; cat: Category }[]>([]);
+  const timelineRef = useRef<BuildTimeline | null>(null);
+  const onScreenRef = useRef(false); // set by the IntersectionObserver below
+  // Turning the map by hand: dragging empty space folds the flat map into its
+  // globe and turns it; letting go springs it back to the flat home view.
+  const spinRef = useRef({ on: false, sph: 0, rot: 0, tilt: 0, lastX: 0, lastY: 0 });
   // One-second full-graph bloom on every drop: ramps to 1 on trigger, eases
   // back to 0. Purely user-action-driven (a drop), so motion-law compliant.
   const shineRef = useRef(0);
@@ -310,6 +384,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       };
     });
     figuresRef.current = buildFigures(nodesRef.current);
+    timelineRef.current = buildTimeline(nodesRef.current, figuresRef.current);
     if (DEV_LAYOUT) {
       const saved = readDevPins();
       writeDevPins(saved);
@@ -411,6 +486,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     parallaxRef.current.tx = 0;
     parallaxRef.current.ty = 0;
 
+    // only while the map is on screen: on phones this ran on every scroll of
+    // the whole page and redrew the full map each time, even off screen
+    if (!onScreenRef.current) return;
     lastInputRef.current = performance.now();
     start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -505,6 +583,145 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
 
     const nodeById = (id: string) => nodes.find((n) => n.id === id)!;
 
+    // ── the build (#121): what has assembled so far, a pure function of B ──
+    const B = workBuildBus.get();
+    const tl = timelineRef.current;
+    const building = B < 1 && !!tl;
+    const lit = (n: RNode) => !building || (n.kind === 'skill' ? B >= (tl!.ignite.get(n.id) ?? 0) : B >= (tl!.work.get(n.id)?.[1] ?? 0));
+    const beatU = building ? lin(B, tl!.beat[0], tl!.beat[1]) : 0;
+    const beat = beatU > 0 && beatU < 1 ? ecg(beatU) : 0;
+    // the volume: while the figures grow, the map is a globe of stars turning
+    // with the scroll, each constellation swinging to the front as it lights;
+    // then the globe unrolls into the flat, readable map. The flat map is the
+    // globe's equirectangular unwrap, so every star keeps its place.
+    const spin = spinRef.current;
+    if (!building) {
+      // the globe folds in while held, unrolls and turns home when let go
+      spin.sph += ((spin.on ? 1 : 0) - spin.sph) * 0.14;
+      if (!spin.on) {
+        const homeRot = Math.round(spin.rot / (Math.PI * 2)) * Math.PI * 2;
+        spin.rot += (homeRot - spin.rot) * 0.12;
+        spin.tilt += (0 - spin.tilt) * 0.12;
+        if (spin.sph < 0.002 && Math.abs(homeRot - spin.rot) < 0.002) {
+          spin.sph = 0;
+          spin.rot = 0;
+          spin.tilt = 0;
+        }
+      }
+      if (spin.on || spin.sph > 0) settling = true;
+    }
+    const sph = building ? 1 - (() => { const t = lin(B, tl!.unfold[0], tl!.unfold[1]); return t * t * (3 - 2 * t); })() : spin.sph;
+    const home = sph > 0 ? nodes.map((n) => [n.x, n.y] as const) : null;
+    const facing = new Map<string, number>(); // 1 front .. 0.2 back of the globe
+    let globe: { gx: number; gy: number; R: number; F: number; rot: number; tilt: number; LON: number } | null = null;
+    if (sph > 0) {
+      const vh = window.innerHeight;
+      const top = wrapRef.current?.getBoundingClientRect().top ?? 0;
+      const R = Math.min(w, vh, h) * 0.36;
+      // the globe sits in the middle of the part of the canvas that is on screen
+      const gx = w / 2, gy = Math.max(R + 20, Math.min(vh / 2 - top, h - R - 20));
+      const LON = Math.PI * 0.98;
+      const lonOf = (x: number) => ((x - w / 2) / (w / 2)) * LON;
+      // the turn: keyframes that bring each constellation round to the front as it completes
+      const keys: [number, number][] = [];
+      let last = -Infinity;
+      for (const cat of ['sound', 'space', 'code', 'body'] as Category[]) {
+        const m = nodes.filter((n) => n.kind === 'skill' && n.category === cat);
+        if (!m.length) continue;
+        let r = -lonOf(m.reduce((acc, n) => acc + n.hx, 0) / m.length);
+        while (r <= last + 0.6) r += Math.PI * 2;
+        keys.push([tl!.catEnd.get(cat) ?? 0, r]);
+        last = r;
+      }
+      keys.unshift([0, keys[0][1] - 1.4]);
+      keys.push([tl!.unfold[1], Math.ceil((last + 0.5) / (Math.PI * 2)) * Math.PI * 2]);
+      let rot = building ? keys[keys.length - 1][1] : spin.rot;
+      const tilt = building ? 0 : spin.tilt;
+      for (let i = 1; building && i < keys.length; i++) {
+        if (B <= keys[i][0]) {
+          const t = lin(B, keys[i - 1][0], keys[i][0]);
+          // a quick swing that settles: each constellation arrives at the front, then holds a beat
+          const e3 = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          rot = keys[i - 1][1] + (keys[i][1] - keys[i - 1][1]) * e3;
+          break;
+        }
+      }
+      const F = R * 3.2;
+      globe = { gx, gy, R, F, rot, tilt, LON };
+      const ct = Math.cos(tilt), st = Math.sin(tilt);
+      for (const n of nodes) {
+        const lon = lonOf(n.x) + rot;
+        const lat = Math.max(-1.35, Math.min(1.35, ((n.y - h / 2) / (h / 2)) * 1.25));
+        const X = R * Math.cos(lat) * Math.sin(lon), Y0 = R * Math.sin(lat), Z0 = R * Math.cos(lat) * Math.cos(lon);
+        // tipped toward or away from the viewer (a vertical drag, desktop)
+        const Y = Y0 * ct - Z0 * st, Z = Y0 * st + Z0 * ct;
+        const k = F / (F - Z);
+        n.x = n.x + (gx + X * k - n.x) * sph;
+        n.y = n.y + (gy + Y * k - n.y) * sph;
+        facing.set(n.id, 1 - sph * (1 - (0.2 + 0.8 * (Z / R + 1) / 2)));
+      }
+    }
+    const face = (n: RNode) => facing.get(n.id) ?? 1;
+
+
+    // ── the globe's surface: dither cells on a sphere, turning with it and
+    // unrolling with the map, dissolving as it flattens ──
+    if (globe) {
+      const { gx, gy, R, F, rot, tilt, LON } = globe;
+      const ct = Math.cos(tilt), st = Math.sin(tilt);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      // poured: while the dust falls out of About, each cell flies from the paragraph to its place
+      const pour = building ? workBuildBus.getPour() : 1;
+      const src = pour < 1 ? workBuildBus.getSource() : null;
+      const cr = src ? canvasRef.current?.getBoundingClientRect() : null;
+      const r0 = R;
+      // the stars that lit just now send a ring across the globe
+      const waves: { lat: number; lon: number; age: number }[] = [];
+      if (building) {
+        for (const n of nodes) {
+          if (n.kind !== 'skill') continue;
+          const ig = tl!.ignite.get(n.id) ?? 0;
+          const age = (B - ig) / 0.06;
+          if (age > 0 && age < 1) waves.push({ lat: Math.max(-1.35, Math.min(1.35, ((n.hy - h / 2) / (h / 2)) * 1.25)), lon: ((n.hx - w / 2) / (w / 2)) * LON, age });
+        }
+      }
+      for (let i = 0; i < GLOBE.length; i++) {
+        const [lat, lon0, th, red] = GLOBE[i];
+        const lon = lon0 + rot;
+        const X = r0 * Math.cos(lat) * Math.sin(lon), Y0 = r0 * Math.sin(lat), Z0 = r0 * Math.cos(lat) * Math.cos(lon);
+        const Y = Y0 * ct - Z0 * st, Z = Y0 * st + Z0 * ct;
+        const k = F / (F - Z);
+        // its place on the flat map: the same unwrap the stars use
+        const fx = w / 2 + (lon0 / LON) * (w / 2), fy = h / 2 + (lat / 1.25) * (h / 2);
+        const x = fx + (gx + X * k - fx) * sph, y = fy + (gy + Y * k - fy) * sph;
+        const front = (Z / r0 + 1) / 2;
+        // the near side bright, the far side a faint haze, the limb lit like a rim;
+        // as the globe flattens its cells go on a Bayer-like order
+        const limb = Math.exp(-Math.pow((front - 0.5) / 0.09, 2));
+        let a = Math.min(1, 0.07 + 0.75 * front * front + 0.55 * limb) * (th < sph * 1.1 ? 1 : 0);
+        let px = x, py = y, hot = 0;
+        if (src && cr) {
+          // in flight from a point of the paragraph, falling like the title's dust
+          const t0 = th * 0.62, t = lin(pour, t0, t0 + 0.36);
+          if (t <= 0) continue;
+          const sx = src.left - cr.left + src.width * ((i * 0.618) % 1), sy = src.top - cr.top + src.height * ((i * 0.381) % 1);
+          px = sx + (x - sx) * t + Math.sin(t * Math.PI) * ((th - 0.5) * 120);
+          py = sy + (y - sy) * t * t;
+          if (t < 1) a = 0.9;
+        }
+        for (const wv of waves) {
+          // angular distance from the lit star, the ring travelling out from it
+          const d = Math.acos(Math.max(-1, Math.min(1, Math.sin(lat) * Math.sin(wv.lat) + Math.cos(lat) * Math.cos(wv.lat) * Math.cos(lon0 - wv.lon))));
+          hot = Math.max(hot, Math.exp(-Math.pow((d - wv.age * 2.2) / 0.16, 2)) * (1 - wv.age));
+        }
+        if (a <= 0.01 && hot <= 0.01) continue;
+        ctx.fillStyle = hot > 0.15 ? `rgba(255,58,46,${Math.min(1, (0.3 + hot) * (0.35 + front)).toFixed(3)})` : red ? `rgba(205,0,0,${(a * 1.3).toFixed(3)})` : `rgba(240,235,227,${a.toFixed(3)})`;
+        const c = (front > 0.55 ? 2.4 : 1.6) + hot * 1.2;
+        ctx.fillRect(px - c / 2, py - c / 2, c, c);
+      }
+    }
+
     // ── edges ──
     ctx.lineWidth = 1.3;
     for (let i = 0; i < GEDGES.length; i++) {
@@ -517,6 +734,25 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       // lighter ambient web reads as spacious instead of a dense net of lines.
       let op = HERO_EDGES.has(i) ? 0.34 * heroFadeRef.current : 0.13;
       if (active) op = touchesActive ? 0.65 : 0.04;
+      if (building) {
+        const [pj, sk] = a.kind === 'project' ? [a, b] : [b, a];
+        const win = tl!.work.get(pj.id);
+        const t = win ? lin(B, win[0], win[1]) : 1;
+        if (t <= 0) continue;
+        const e2 = easeOut(t);
+        const hx = sk.x + (pj.x - sk.x) * e2, hy = sk.y + (pj.y - sk.y) * e2;
+        ctx.strokeStyle = hexA(e.color, Math.min(1, op + 0.3 * beat));
+        ctx.beginPath();
+        ctx.moveTo(sk.x, sk.y);
+        ctx.lineTo(hx, hy);
+        ctx.stroke();
+        // the impulse running in toward the work
+        if (t < 1) {
+          ctx.fillStyle = '#ff3a2e';
+          ctx.fillRect(hx - 1.5, hy - 1.5, 3, 3);
+        }
+        continue;
+      }
       ctx.strokeStyle = hexA(e.color, op);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
@@ -550,10 +786,23 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     ctx.setLineDash([2, 5]);
     ctx.lineWidth = 1;
     for (const f of figuresRef.current) {
-      ctx.strokeStyle = hexA(CATEGORY_COLORS[f.cat], f.cat === activeCat || f.a.category === activeCat || f.b.category === activeCat ? 0.55 : 0.2);
+      let fo = f.cat === activeCat || f.a.category === activeCat || f.b.category === activeCat ? 0.55 : 0.2;
+      let fx = f.b.x, fy = f.b.y;
+      if (building) {
+        const hop = tl!.figure.get(`${f.a.id}|${f.b.id}`);
+        // a stroke between two figures comes in once both ends are lit
+        const t = hop ? lin(B, hop.u0, hop.u1) : lin(B, Math.max(tl!.ignite.get(f.a.id) ?? 0, tl!.ignite.get(f.b.id) ?? 0), Math.max(tl!.ignite.get(f.a.id) ?? 0, tl!.ignite.get(f.b.id) ?? 0) + 0.03);
+        if (t <= 0) continue;
+        const e2 = hop ? easeOut(t) : 1;
+        fx = f.a.x + (f.b.x - f.a.x) * e2;
+        fy = f.a.y + (f.b.y - f.a.y) * e2;
+        // the growing axon burns brighter than the finished figure
+        fo = (hop && t < 1 ? 0.75 : hop ? 0.45 : 0.3 * t) + 0.3 * beat;
+      }
+      ctx.strokeStyle = hexA(CATEGORY_COLORS[f.cat], Math.min(1, fo) * Math.min(face(f.a), face(f.b)));
       ctx.beginPath();
       ctx.moveTo(f.a.x, f.a.y);
-      ctx.lineTo(f.b.x, f.b.y);
+      ctx.lineTo(fx, fy);
       ctx.stroke();
     }
     ctx.setLineDash([]);
@@ -572,15 +821,69 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
             ? 8 + n.weight * 8
             : 12 + n.weight * 12
           : 9;
-      const s = base * hover;
-      ctx.globalAlpha = (n.kind === 'project' ? 0.75 : 0.4) * intensity;
+      let s = base * hover;
+      if (building) {
+        if (!lit(n)) {
+          // a skill's star condenses out of dust just before the impulse reaches it
+          const ig = tl!.ignite.get(n.id);
+          const g = n.kind === 'skill' && ig !== undefined ? lin(B, ig - 0.04, ig) : 0;
+          if (g > 0) {
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = n.color;
+            const k = 1 - g * g;
+            for (let j = 0; j < 12; j++) {
+              const a2 = j * 2.39996 + n.hx * 0.01, r2 = (18 + ((j * 37) % 40)) * k;
+              ctx.fillRect(n.x + Math.cos(a2) * r2 - 1, n.y + Math.sin(a2) * r2 - 1, 2, 2);
+            }
+          }
+          continue;
+        }
+        const at = n.kind === 'skill' ? tl!.ignite.get(n.id) ?? 0 : tl!.work.get(n.id)?.[1] ?? 0;
+        const flash = Math.exp(-Math.pow((B - at) / 0.012, 2));
+        s *= 1 + 1.6 * flash + 0.9 * beat;
+      }
+      ctx.globalAlpha = (n.kind === 'project' ? 0.75 : 0.4) * intensity * face(n);
+      s *= 0.6 + 0.4 * face(n);
       ctx.drawImage(spr, n.x - s / 2, n.y - s / 2, s, s);
+    }
+    // the impulse itself: a hot red head with a short tail of cells
+    if (building) {
+      for (const hop of tl!.hops) {
+        const t = lin(B, hop.u0, hop.u1);
+        if (t <= 0 || t >= 1) continue;
+        const to = nodeById(hop.to);
+        const from = hop.from ? nodeById(hop.from) : null;
+        const ax = from ? from.x : -20, ay = from ? from.y : 40;
+        for (let k = 0; k < 7; k++) {
+          const tt = Math.max(0, easeOut(t) - k * 0.04);
+          ctx.globalAlpha = 0.95 - k * 0.13;
+          ctx.fillStyle = '#ff3a2e';
+          ctx.fillRect(ax + (to.x - ax) * tt - 1.5, ay + (to.y - ay) * tt - 1.5, 3, 3);
+        }
+        const hx = ax + (to.x - ax) * easeOut(t), hy = ay + (to.y - ay) * easeOut(t);
+        ctx.globalAlpha = 0.8;
+        ctx.drawImage(glowSprite('#ff3a2e'), hx - 14, hy - 14, 28, 28);
+      }
+      // on each beat a faint ring leaves the centre
+      if (beatU > 0 && beatU < 1) {
+        for (const c of [0.28, 0.72]) {
+          const r = (beatU - c) * 9;
+          if (r <= 0 || r > 1) continue;
+          ctx.globalAlpha = 0.35 * (1 - r);
+          ctx.strokeStyle = '#cd0000';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(w / 2, h / 2, Math.min(w, h) * (0.1 + r * 0.6), 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
     }
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1;
 
     // ── node cores ──
     for (const n of nodes) {
+      if (!lit(n)) continue;
       const isActive = n.id === active;
       const isNeighbor = neighbors?.has(n.id);
       let intensity = 1;
@@ -590,7 +893,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       ctx.arc(n.x, n.y, rr, 0, Math.PI * 2);
       // OFF_WHITE, same constant the project label uses below — was a pure
       // '#ffffff' that made the dot read colder than its own text.
-      ctx.fillStyle = n.kind === 'project' ? hexA(OFF_WHITE, 0.9 * intensity) : hexA(n.color, 0.9 * intensity);
+      ctx.fillStyle = n.kind === 'project' ? hexA(OFF_WHITE, 0.9 * intensity) : hexA(n.color, 0.9 * intensity * face(n));
       ctx.fill();
       if (n.kind === 'project') {
         ctx.beginPath();
@@ -667,7 +970,11 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
           useCategoryColor = false; // gray at rest, by importance
         }
       }
+      alpha *= Math.pow(face(n), 2);
       if (alpha <= 0.02) continue;
+      const lw = building ? tl!.label.get(n.id) : undefined;
+      const reveal = lw ? lin(B, lw[0], lw[1]) : 1;
+      if (reveal <= 0) continue;
       ctx.font = `${fontWeight} ${fs}px 'Geist Pixel', monospace`;
       const label = n.kind === 'project' ? n.label.toUpperCase() : n.label;
       const tw = ctx.measureText(label).width;
@@ -738,24 +1045,30 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const box = { x1: lx - 2, y1: ty - lh / 2, x2: lx + tw + 2, y2: ty + lh / 2 };
       drawn.push(box);
       labelBoxesRef.current.set(n.id, box);
-      ctx.textAlign = flip ? 'right' : 'left';
       const tx = flip ? lx + tw : lx;
-      // Darkened backdrop under the name so background stars don't compete
-      // with the text — a plain solid pad rather than a soft gradient, kept
-      // cheap since it's redrawn every animating frame.
-      ctx.fillStyle = hexA('#050505', Math.min(0.72, alpha + 0.15)); // Void — canvas needs a literal, not var()
-      ctx.fillRect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
       let color: string;
       if (n.kind === 'project') color = hexA(OFF_WHITE, alpha);
       else if (useCategoryColor) color = hexA(n.color, alpha);
       else color = hexA(n.accent ? SKILL_GRAY_ACCENT : SKILL_GRAY, alpha);
-      ctx.fillStyle = color;
-      if (isActive) {
-        ctx.shadowColor = n.color;
-        ctx.shadowBlur = 8;
-      }
-      ctx.fillText(label, tx, ty);
-      ctx.shadowBlur = 0;
+      const font = ctx.font;
+      revealDraw(ctx, dpr, box, reveal, (c) => {
+        c.font = font;
+        c.textBaseline = 'middle';
+        c.textAlign = flip ? 'right' : 'left';
+        // Darkened backdrop under the name so background stars don't compete
+        // with the text — a plain solid pad rather than a soft gradient, kept
+        // cheap since it's redrawn every animating frame.
+        c.fillStyle = hexA('#050505', Math.min(0.72, alpha + 0.15)); // Void — canvas needs a literal, not var()
+        c.fillRect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
+        c.fillStyle = color;
+        if (isActive) {
+          c.shadowColor = n.color;
+          c.shadowBlur = 8;
+        }
+        c.fillText(label, tx, ty);
+        c.shadowBlur = 0;
+        c.textAlign = 'left';
+      });
     }
     ctx.textAlign = 'left';
 
@@ -795,8 +1108,17 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         if (o < best.o) best = { x, y, o };
         if (o === 0) break;
       }
-      ctx.fillStyle = hexA(CATEGORY_COLORS[cat], cat === activeCat ? 0.95 : 0.5);
-      ctx.fillText(name, best.x, best.y);
+      const ce = building ? tl!.catEnd.get(cat) ?? 0 : 0;
+      const nameT = building ? lin(B, ce - 0.005, ce + 0.04) : 1;
+      const nameColor = hexA(CATEGORY_COLORS[cat], cat === activeCat ? 0.95 : 0.5);
+      const nameFont = ctx.font;
+      revealDraw(ctx, dpr, { x1: best.x - tw / 2 - 2, y1: best.y - 10, x2: best.x + tw / 2 + 2, y2: best.y + 10 }, nameT, (c) => {
+        c.font = nameFont;
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillStyle = nameColor;
+        c.fillText(name, best.x, best.y);
+      });
       drawn.push({ x1: best.x - tw / 2 - 4, y1: best.y - 12, x2: best.x + tw / 2 + 4, y2: best.y + 12 });
     }
 
@@ -832,6 +1154,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     } else {
       shineRef.current = 0;
     }
+
+    if (home) nodes.forEach((n, i) => { n.x = home[i][0]; n.y = home[i][1]; });
 
     // ── Self-terminating loop: keep scheduling only while there was recent input
     // or motion is still settling. Once at rest, draw this final static frame and
@@ -938,6 +1262,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     // the loop settles and stops until real input arrives.
     const io = new IntersectionObserver(
       ([entry]) => {
+        onScreenRef.current = entry.isIntersecting;
         if (entry.isIntersecting && document.visibilityState === 'visible') {
           lastInputRef.current = performance.now();
           start();
@@ -960,6 +1285,13 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     };
     document.addEventListener('visibilitychange', onVis);
 
+    // the build (#121) steps with the scroll: one frame per step
+    const unsubBuild = workBuildBus.subscribe(() => {
+      if (!onScreenRef.current) return;
+      lastInputRef.current = performance.now();
+      start();
+    });
+
     // cross-highlight from lists
     const unsub = constellationBus.subscribe((id) => {
       setActive(id, { fromList: true });
@@ -979,6 +1311,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       document.removeEventListener('visibilitychange', onVis);
       io.disconnect();
       unsub();
+      unsubBuild();
       stop();
     };
   }, [layout, start, stop, setActive, updateScrollParallax, showTooltip]);
@@ -1017,6 +1350,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         /* pointer may not be capturable (e.g. synthetic events) */
       }
     }
+    spinRef.current.lastX = x;
+    spinRef.current.lastY = y;
     start();
   };
 
@@ -1041,6 +1376,37 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         synth.updateDrone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1), stretch);
       }
     }
+    // empty space held and dragged: turn the globe. On touch only a sideways
+    // drag turns it; an upward or downward one stays the page's scroll.
+    const spin = spinRef.current;
+    if (!drag.node && drag.downTime && workBuildBus.get() >= 1) {
+      const mouse = e.pointerType === 'mouse';
+      if (!drag.moved) {
+        const dx = Math.abs(x - drag.downX), dy = Math.abs(y - drag.downY);
+        if (Math.max(dx, dy) > (mouse ? 4 : 9) && (mouse || dx > dy)) {
+          drag.moved = true;
+          spin.on = true;
+          setActive(null);
+          setTooltip(null);
+          try {
+            canvasRef.current?.setPointerCapture(e.pointerId);
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+      if (spin.on) {
+        spin.rot += (x - spin.lastX) * 0.0085;
+        if (mouse) spin.tilt = Math.max(-0.9, Math.min(0.9, spin.tilt + (y - spin.lastY) * 0.006));
+        canvasRef.current!.style.cursor = 'grabbing';
+      }
+    }
+    spin.lastX = x;
+    spin.lastY = y;
+    if (spin.on) {
+      start();
+      return;
+    }
     // hover highlight + tooltip (desktop)
     if (e.pointerType === 'mouse' && !drag.moved) {
       const node = hitTest(x, y);
@@ -1049,7 +1415,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       else setTooltip(null);
       onPointerPosition?.(e.clientX, e.clientY);
     }
-    canvasRef.current!.style.cursor = hitTest(x, y) ? 'pointer' : 'default';
+    canvasRef.current!.style.cursor = hitTest(x, y) ? 'pointer' : 'grab';
     start(); // pointer moved → resume the loop (settles & stops when input ceases)
   };
 
@@ -1128,7 +1494,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         setTooltip(null);
       }
     }
-    // release drag → spring back handled by physics (home)
+    // release drag → spring back handled by physics (home); a turned globe unrolls home
+    spinRef.current.on = false;
     dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0, offX: 0, offY: 0 };
     lastInputRef.current = performance.now();
     start();
@@ -1137,7 +1504,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // Touch drags can be cancelled by the browser (e.g. an OS gesture steals the
   // pointer) — kill the drone and drop the drag without treating it as a tap.
   const onPointerCancel = () => {
-    if (dragRef.current.moved) synth.endDrone();
+    if (dragRef.current.moved && dragRef.current.node) synth.endDrone();
+    spinRef.current.on = false;
     dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0, offX: 0, offY: 0 };
     lastInputRef.current = performance.now();
     start();
@@ -1194,7 +1562,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   }, [hitTest]);
 
   return (
-    <div ref={wrapRef} className="relative w-full" style={{ height: mobileHeight ? `${mobileHeight}px` : 'clamp(640px, 110vh, 1300px)' }}>
+    <div ref={wrapRef} className="relative w-full" style={{ height: mobileHeight ? `${mobileHeight}px` : 'clamp(600px, calc(100vh - 88px), 1300px)' }}>
       <canvas
         ref={canvasRef}
         className="absolute inset-0"
