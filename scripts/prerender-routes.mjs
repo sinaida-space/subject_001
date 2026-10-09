@@ -71,6 +71,31 @@ function heroPreloadTag(route) {
   return `<link ${attrs.join(' ')}>\n    `;
 }
 
+// A case shares its own hero still as the link card. Width and height come
+// from the WebP header (VP8X / VP8 / VP8L), so no image library is needed.
+// Cases whose still is inlined into the bundle keep the site cover.
+function webpSize(buf) {
+  const chunk = buf.toString('ascii', 12, 16);
+  if (chunk === 'VP8X') return { w: 1 + buf.readUIntLE(24, 3), h: 1 + buf.readUIntLE(27, 3) };
+  if (chunk === 'VP8 ') return { w: buf.readUInt16LE(26) & 0x3fff, h: buf.readUInt16LE(28) & 0x3fff };
+  if (chunk === 'VP8L') {
+    const b = buf.readUInt32LE(21);
+    return { w: (b & 0x3fff) + 1, h: ((b >> 14) & 0x3fff) + 1 };
+  }
+  return null;
+}
+
+function heroOgImage(route) {
+  const stem = route.work?.imageStem;
+  if (!stem) return null;
+  const files = readdirSync(join(DIST_DIR, 'assets'));
+  const full = files.find((f) => new RegExp(`^${stem}-[\\w-]{8}\\.webp$`).test(f));
+  if (!full) return null;
+  const size = webpSize(readFileSync(join(DIST_DIR, 'assets', full)));
+  if (!size) return null;
+  return { url: `https://sinaida.eu/assets/${full}`, ...size, alt: `Still from ${route.work.fullTitle}` };
+}
+
 function renderRouteHtml(baseHtml, route) {
   let html = baseHtml;
   const title = escapeHtml(route.title);
@@ -115,6 +140,22 @@ function renderRouteHtml(baseHtml, route) {
       `<noscript id="page-fallback">\n${fallback}\n    </noscript>`,
       'noscript fallback',
     );
+  }
+
+  const og = route.kind === 'work' ? heroOgImage(route) : null;
+  if (og) {
+    const alt = escapeHtml(og.alt);
+    const ogTags = [
+      [/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${og.url}">`, 'og:image'],
+      [/<meta property="og:image:width" content="[^"]*">/, `<meta property="og:image:width" content="${og.w}">`, 'og:image:width'],
+      [/<meta property="og:image:height" content="[^"]*">/, `<meta property="og:image:height" content="${og.h}">`, 'og:image:height'],
+      [/<meta property="og:image:alt" content="[^"]*">/, `<meta property="og:image:alt" content="${alt}">`, 'og:image:alt'],
+      [/<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${og.url}">`, 'twitter:image'],
+      [/<meta name="twitter:image:alt" content="[^"]*">/, `<meta name="twitter:image:alt" content="${alt}">`, 'twitter:image:alt'],
+    ];
+    for (const [regex, replacement, label] of ogTags) {
+      html = replaceRequired(html, regex, replacement, label);
+    }
   }
 
   if (route.kind === 'work') {
