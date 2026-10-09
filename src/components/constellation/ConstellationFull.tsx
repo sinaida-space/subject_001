@@ -5,6 +5,8 @@ import { constellationBus } from '@/lib/constellationBus';
 import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
 import { synth, type VoiceKind } from '@/lib/constellationSynth';
 import SynthPanel from './SynthPanel';
+import { workBuildBus } from '@/lib/workBuildBus';
+import { buildTimeline, ecg, type BuildTimeline } from './buildTimeline';
 
 // ── Runtime node (base "home" from layout + live physics) ──
 interface RNode {
@@ -154,6 +156,61 @@ function buildFigures(nodes: RNode[]): { a: RNode; b: RNode; cat: Category }[] {
 }
 const CATEGORIES = Object.keys(CATEGORY_LABEL) as Category[];
 
+// ── Build (#121): names and stars develop out of 3 px Bayer cells ──
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+const lin = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
+const easeOut = (t: number) => 1 - (1 - t) * (1 - t);
+const bayer8 = (x: number, y: number) => {
+  let v = 0;
+  for (let bit = 0; bit < 3; bit++) {
+    const xb = (x >> bit) & 1, yb = (y >> bit) & 1;
+    v += ((xb ^ yb) * 2 + yb) << (2 * (2 - bit));
+  }
+  return (v + 0.5) / 64;
+};
+// one mask tile per threshold step: opaque cells where the Bayer value is under it
+const maskTiles = new Map<string, HTMLCanvasElement>();
+function maskTile(level: number, cell: number): HTMLCanvasElement {
+  const key = `${level}:${cell}`;
+  const hit = maskTiles.get(key);
+  if (hit) return hit;
+  const c = document.createElement('canvas');
+  c.width = c.height = cell * 8;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#fff';
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) if (bayer8(x, y) < level / 32) g.fillRect(x * cell, y * cell, cell, cell);
+  maskTiles.set(key, c);
+  return c;
+}
+let revealCanvas: HTMLCanvasElement | null = null;
+// paint() into a scratch canvas, keep only the cells under threshold t, stamp it back
+function revealDraw(ctx: CanvasRenderingContext2D, dpr: number, box: { x1: number; y1: number; x2: number; y2: number }, t: number, paint: (c: CanvasRenderingContext2D) => void) {
+  if (t >= 1) return paint(ctx);
+  if (t <= 0) return;
+  const bw = Math.ceil(box.x2 - box.x1) + 2, bh = Math.ceil(box.y2 - box.y1) + 2;
+  if (!revealCanvas) revealCanvas = document.createElement('canvas');
+  const rc = revealCanvas;
+  if (rc.width < bw * dpr || rc.height < bh * dpr) {
+    rc.width = Math.max(rc.width, Math.ceil(bw * dpr));
+    rc.height = Math.max(rc.height, Math.ceil(bh * dpr));
+  }
+  const g = rc.getContext('2d')!;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.globalCompositeOperation = 'source-over';
+  g.clearRect(0, 0, bw * dpr, bh * dpr);
+  g.setTransform(dpr, 0, 0, dpr, -(box.x1 - 1) * dpr, -(box.y1 - 1) * dpr);
+  paint(g);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.globalCompositeOperation = 'destination-in';
+  const pat = g.createPattern(maskTile(Math.round(t * 32), Math.max(1, Math.round(3 * dpr))), 'repeat');
+  if (pat) {
+    g.fillStyle = pat;
+    g.fillRect(0, 0, bw * dpr, bh * dpr);
+  }
+  g.globalCompositeOperation = 'source-over';
+  ctx.drawImage(rc, 0, 0, bw * dpr, bh * dpr, box.x1 - 1, box.y1 - 1, bw, bh);
+}
+
 const LABEL_SCALE = 1.25;
 const PROJECT_LABEL_MIN = 20;
 const SKILL_LABEL_MIN = 16;
@@ -224,6 +281,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // the drop keeps its rubbery wobble. Reset (panel ■) clears this.
   const pinnedRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const figuresRef = useRef<{ a: RNode; b: RNode; cat: Category }[]>([]);
+  const timelineRef = useRef<BuildTimeline | null>(null);
   // One-second full-graph bloom on every drop: ramps to 1 on trigger, eases
   // back to 0. Purely user-action-driven (a drop), so motion-law compliant.
   const shineRef = useRef(0);
@@ -310,6 +368,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       };
     });
     figuresRef.current = buildFigures(nodesRef.current);
+    timelineRef.current = buildTimeline(nodesRef.current, figuresRef.current);
     if (DEV_LAYOUT) {
       const saved = readDevPins();
       writeDevPins(saved);
@@ -505,6 +564,31 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
 
     const nodeById = (id: string) => nodes.find((n) => n.id === id)!;
 
+    // ── the build (#121): what has assembled so far, a pure function of B ──
+    const B = workBuildBus.get();
+    const tl = timelineRef.current;
+    const building = B < 1 && !!tl;
+    const lit = (n: RNode) => !building || (n.kind === 'skill' ? B >= (tl!.ignite.get(n.id) ?? 0) : B >= (tl!.work.get(n.id)?.[1] ?? 0));
+    const beatU = building ? lin(B, tl!.beat[0], tl!.beat[1]) : 0;
+    const beat = beatU > 0 && beatU < 1 ? ecg(beatU) : 0;
+    // the volume: the flat map is the front of a sphere; it turns once and comes back
+    const tilt = building ? Math.sin(Math.PI * lin(B, tl!.tilt[0], tl!.tilt[1])) * 0.42 : 0;
+    const home = tilt ? nodes.map((n) => [n.x, n.y] as const) : null;
+    if (tilt) {
+      const cx = w / 2, cy = h / 2, R = Math.hypot(w, h) * 0.42;
+      for (const n of nodes) {
+        const dx = n.x - cx, dy = n.y - cy;
+        const d = Math.min(1, Math.hypot(dx, dy) / R);
+        const z = Math.sqrt(1 - d * d) * R;
+        const x2 = dx * Math.cos(tilt) + z * Math.sin(tilt) * 0.9;
+        const z2 = -dx * Math.sin(tilt) + z * Math.cos(tilt);
+        const y2 = dy * Math.cos(tilt * 0.35) + z * Math.sin(tilt * 0.35) * 0.25;
+        const k = 1100 / (1100 - (z2 - R));
+        n.x = cx + x2 * k;
+        n.y = cy + y2 * k;
+      }
+    }
+
     // ── edges ──
     ctx.lineWidth = 1.3;
     for (let i = 0; i < GEDGES.length; i++) {
@@ -517,6 +601,25 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       // lighter ambient web reads as spacious instead of a dense net of lines.
       let op = HERO_EDGES.has(i) ? 0.34 * heroFadeRef.current : 0.13;
       if (active) op = touchesActive ? 0.65 : 0.04;
+      if (building) {
+        const [pj, sk] = a.kind === 'project' ? [a, b] : [b, a];
+        const win = tl!.work.get(pj.id);
+        const t = win ? lin(B, win[0], win[1]) : 1;
+        if (t <= 0) continue;
+        const e2 = easeOut(t);
+        const hx = sk.x + (pj.x - sk.x) * e2, hy = sk.y + (pj.y - sk.y) * e2;
+        ctx.strokeStyle = hexA(e.color, Math.min(1, op + 0.3 * beat));
+        ctx.beginPath();
+        ctx.moveTo(sk.x, sk.y);
+        ctx.lineTo(hx, hy);
+        ctx.stroke();
+        // the impulse running in toward the work
+        if (t < 1) {
+          ctx.fillStyle = '#ff3a2e';
+          ctx.fillRect(hx - 1.5, hy - 1.5, 3, 3);
+        }
+        continue;
+      }
       ctx.strokeStyle = hexA(e.color, op);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
@@ -550,10 +653,23 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     ctx.setLineDash([2, 5]);
     ctx.lineWidth = 1;
     for (const f of figuresRef.current) {
-      ctx.strokeStyle = hexA(CATEGORY_COLORS[f.cat], f.cat === activeCat || f.a.category === activeCat || f.b.category === activeCat ? 0.55 : 0.2);
+      let fo = f.cat === activeCat || f.a.category === activeCat || f.b.category === activeCat ? 0.55 : 0.2;
+      let fx = f.b.x, fy = f.b.y;
+      if (building) {
+        const hop = tl!.figure.get(`${f.a.id}|${f.b.id}`);
+        // a stroke between two figures comes in once both ends are lit
+        const t = hop ? lin(B, hop.u0, hop.u1) : lin(B, Math.max(tl!.ignite.get(f.a.id) ?? 0, tl!.ignite.get(f.b.id) ?? 0), Math.max(tl!.ignite.get(f.a.id) ?? 0, tl!.ignite.get(f.b.id) ?? 0) + 0.03);
+        if (t <= 0) continue;
+        const e2 = hop ? easeOut(t) : 1;
+        fx = f.a.x + (f.b.x - f.a.x) * e2;
+        fy = f.a.y + (f.b.y - f.a.y) * e2;
+        // the growing axon burns brighter than the finished figure
+        fo = (hop && t < 1 ? 0.75 : hop ? 0.45 : 0.3 * t) + 0.3 * beat;
+      }
+      ctx.strokeStyle = hexA(CATEGORY_COLORS[f.cat], Math.min(1, fo));
       ctx.beginPath();
       ctx.moveTo(f.a.x, f.a.y);
-      ctx.lineTo(f.b.x, f.b.y);
+      ctx.lineTo(fx, fy);
       ctx.stroke();
     }
     ctx.setLineDash([]);
@@ -572,15 +688,68 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
             ? 8 + n.weight * 8
             : 12 + n.weight * 12
           : 9;
-      const s = base * hover;
+      let s = base * hover;
+      if (building) {
+        if (!lit(n)) {
+          // a skill's star condenses out of dust just before the impulse reaches it
+          const ig = tl!.ignite.get(n.id);
+          const g = n.kind === 'skill' && ig !== undefined ? lin(B, ig - 0.04, ig) : 0;
+          if (g > 0) {
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = n.color;
+            const k = 1 - g * g;
+            for (let j = 0; j < 12; j++) {
+              const a2 = j * 2.39996 + n.hx * 0.01, r2 = (18 + ((j * 37) % 40)) * k;
+              ctx.fillRect(n.x + Math.cos(a2) * r2 - 1, n.y + Math.sin(a2) * r2 - 1, 2, 2);
+            }
+          }
+          continue;
+        }
+        const at = n.kind === 'skill' ? tl!.ignite.get(n.id) ?? 0 : tl!.work.get(n.id)?.[1] ?? 0;
+        const flash = Math.exp(-Math.pow((B - at) / 0.012, 2));
+        s *= 1 + 1.6 * flash + 0.9 * beat;
+      }
       ctx.globalAlpha = (n.kind === 'project' ? 0.75 : 0.4) * intensity;
       ctx.drawImage(spr, n.x - s / 2, n.y - s / 2, s, s);
+    }
+    // the impulse itself: a hot red head with a short tail of cells
+    if (building) {
+      for (const hop of tl!.hops) {
+        const t = lin(B, hop.u0, hop.u1);
+        if (t <= 0 || t >= 1) continue;
+        const to = nodeById(hop.to);
+        const from = hop.from ? nodeById(hop.from) : null;
+        const ax = from ? from.x : -20, ay = from ? from.y : 40;
+        for (let k = 0; k < 7; k++) {
+          const tt = Math.max(0, easeOut(t) - k * 0.04);
+          ctx.globalAlpha = 0.95 - k * 0.13;
+          ctx.fillStyle = '#ff3a2e';
+          ctx.fillRect(ax + (to.x - ax) * tt - 1.5, ay + (to.y - ay) * tt - 1.5, 3, 3);
+        }
+        const hx = ax + (to.x - ax) * easeOut(t), hy = ay + (to.y - ay) * easeOut(t);
+        ctx.globalAlpha = 0.8;
+        ctx.drawImage(glowSprite('#ff3a2e'), hx - 14, hy - 14, 28, 28);
+      }
+      // on each beat a faint ring leaves the centre
+      if (beatU > 0 && beatU < 1) {
+        for (const c of [0.28, 0.72]) {
+          const r = (beatU - c) * 9;
+          if (r <= 0 || r > 1) continue;
+          ctx.globalAlpha = 0.35 * (1 - r);
+          ctx.strokeStyle = '#cd0000';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(w / 2, h / 2, Math.min(w, h) * (0.1 + r * 0.6), 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
     }
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1;
 
     // ── node cores ──
     for (const n of nodes) {
+      if (!lit(n)) continue;
       const isActive = n.id === active;
       const isNeighbor = neighbors?.has(n.id);
       let intensity = 1;
@@ -668,6 +837,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         }
       }
       if (alpha <= 0.02) continue;
+      const lw = building ? tl!.label.get(n.id) : undefined;
+      const reveal = lw ? lin(B, lw[0], lw[1]) : 1;
+      if (reveal <= 0) continue;
       ctx.font = `${fontWeight} ${fs}px 'Geist Pixel', monospace`;
       const label = n.kind === 'project' ? n.label.toUpperCase() : n.label;
       const tw = ctx.measureText(label).width;
@@ -738,24 +910,30 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const box = { x1: lx - 2, y1: ty - lh / 2, x2: lx + tw + 2, y2: ty + lh / 2 };
       drawn.push(box);
       labelBoxesRef.current.set(n.id, box);
-      ctx.textAlign = flip ? 'right' : 'left';
       const tx = flip ? lx + tw : lx;
-      // Darkened backdrop under the name so background stars don't compete
-      // with the text — a plain solid pad rather than a soft gradient, kept
-      // cheap since it's redrawn every animating frame.
-      ctx.fillStyle = hexA('#050505', Math.min(0.72, alpha + 0.15)); // Void — canvas needs a literal, not var()
-      ctx.fillRect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
       let color: string;
       if (n.kind === 'project') color = hexA(OFF_WHITE, alpha);
       else if (useCategoryColor) color = hexA(n.color, alpha);
       else color = hexA(n.accent ? SKILL_GRAY_ACCENT : SKILL_GRAY, alpha);
-      ctx.fillStyle = color;
-      if (isActive) {
-        ctx.shadowColor = n.color;
-        ctx.shadowBlur = 8;
-      }
-      ctx.fillText(label, tx, ty);
-      ctx.shadowBlur = 0;
+      const font = ctx.font;
+      revealDraw(ctx, dpr, box, reveal, (c) => {
+        c.font = font;
+        c.textBaseline = 'middle';
+        c.textAlign = flip ? 'right' : 'left';
+        // Darkened backdrop under the name so background stars don't compete
+        // with the text — a plain solid pad rather than a soft gradient, kept
+        // cheap since it's redrawn every animating frame.
+        c.fillStyle = hexA('#050505', Math.min(0.72, alpha + 0.15)); // Void — canvas needs a literal, not var()
+        c.fillRect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
+        c.fillStyle = color;
+        if (isActive) {
+          c.shadowColor = n.color;
+          c.shadowBlur = 8;
+        }
+        c.fillText(label, tx, ty);
+        c.shadowBlur = 0;
+        c.textAlign = 'left';
+      });
     }
     ctx.textAlign = 'left';
 
@@ -795,8 +973,17 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         if (o < best.o) best = { x, y, o };
         if (o === 0) break;
       }
-      ctx.fillStyle = hexA(CATEGORY_COLORS[cat], cat === activeCat ? 0.95 : 0.5);
-      ctx.fillText(name, best.x, best.y);
+      const ce = building ? tl!.catEnd.get(cat) ?? 0 : 0;
+      const nameT = building ? lin(B, ce - 0.005, ce + 0.04) : 1;
+      const nameColor = hexA(CATEGORY_COLORS[cat], cat === activeCat ? 0.95 : 0.5);
+      const nameFont = ctx.font;
+      revealDraw(ctx, dpr, { x1: best.x - tw / 2 - 2, y1: best.y - 10, x2: best.x + tw / 2 + 2, y2: best.y + 10 }, nameT, (c) => {
+        c.font = nameFont;
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillStyle = nameColor;
+        c.fillText(name, best.x, best.y);
+      });
       drawn.push({ x1: best.x - tw / 2 - 4, y1: best.y - 12, x2: best.x + tw / 2 + 4, y2: best.y + 12 });
     }
 
@@ -832,6 +1019,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     } else {
       shineRef.current = 0;
     }
+
+    if (home) nodes.forEach((n, i) => { n.x = home[i][0]; n.y = home[i][1]; });
 
     // ── Self-terminating loop: keep scheduling only while there was recent input
     // or motion is still settling. Once at rest, draw this final static frame and
@@ -960,6 +1149,12 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     };
     document.addEventListener('visibilitychange', onVis);
 
+    // the build (#121) steps with the scroll: one frame per step
+    const unsubBuild = workBuildBus.subscribe(() => {
+      lastInputRef.current = performance.now();
+      start();
+    });
+
     // cross-highlight from lists
     const unsub = constellationBus.subscribe((id) => {
       setActive(id, { fromList: true });
@@ -979,6 +1174,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       document.removeEventListener('visibilitychange', onVis);
       io.disconnect();
       unsub();
+      unsubBuild();
       stop();
     };
   }, [layout, start, stop, setActive, updateScrollParallax, showTooltip]);

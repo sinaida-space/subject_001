@@ -173,7 +173,10 @@
   html {
     scroll-behavior: smooth;
     scroll-timeline: --page-scroll block;
+    /* clip, not hidden: hidden on both html and body made body a scroll
+       container, and every position: sticky on the page stopped sticking */
     overflow-x: hidden;
+    overflow-x: clip;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     /* iOS/macOS Safari paints its own default (white) behind the rubber-band
@@ -187,6 +190,7 @@
     @apply bg-background text-foreground;
     font-family: var(--font-mono);
     overflow-x: hidden;
+    overflow-x: clip;
     background: radial-gradient(circle at center, hsl(var(--background)), hsl(var(--background) / 0.85));
   }
 
