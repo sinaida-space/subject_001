@@ -23,7 +23,7 @@ export function createPortraitBuild(host: HTMLElement, src: string): PortraitBui
   Object.assign(canvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', pointerEvents: 'none', zIndex: '2' });
   host.appendChild(canvas);
 
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   const w = Math.max(1, host.clientWidth), h = Math.max(1, host.clientHeight);
   canvas.width = Math.round(w * dpr);
   canvas.height = Math.round(h * dpr);

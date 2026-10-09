@@ -30,7 +30,9 @@ const smooth = (a: number, b: number, x: number) => {
 };
 
 const CELL = 3; // css px, the site's dither cell
-const MAX_PARTICLES = 26000;
+// Phones get a lighter gate: fewer stars, no bloom, 1x density.
+const LIGHT = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
+const MAX_PARTICLES = LIGHT ? 9000 : 26000;
 const PHOTO_SRC = '/sinaida-photo-600.jpg';
 
 // All in css px of scroll.
@@ -128,7 +130,7 @@ void main() {
 
   // in flight a star (round, sized by depth, a few bloom); landed a crisp cell
   float flight = (hero ? smoothstep(0.0, 0.25, t1) : 1.0) * (1.0 - smoothstep(0.75, 1.0, t2));
-  float bloom = step(0.93, fract(rnd * 7.13)) * step(0.5, flight);
+  float bloom = ${LIGHT ? '0.0' : 'step(0.93, fract(rnd * 7.13)) * step(0.5, flight)'};
   float cellPx = max(1.0, floor(3.0 * uDpr - 0.5));
   gl_PointSize = max(1.0, floor(mix(cellPx, mix(1.2, 3.6, depth) * uDpr, flight) * (1.0 + 3.0 * bloom) + 0.5));
 
@@ -468,7 +470,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
 
     let dpr = 1;
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      dpr = LIGHT ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(window.innerWidth * dpr);
       canvas.height = Math.round(window.innerHeight * dpr);
       gl.viewport(0, 0, canvas.width, canvas.height);
@@ -517,7 +519,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
           const built = clamp01((sy - g.photoA) / (g.photoB - g.photoA));
           // never the photo before the dither is fully poured, in either direction
           const resolve = built < 1 ? 0 : smooth(vh * 0.5 + 40, vh * 0.5 - 60, (r.top + r.bottom) / 2);
-          portrait.draw(built, resolve);
+          // quantised, so the portrait canvas only redraws when a step changes
+          portrait.draw(Math.round(built * 48) / 48, Math.round(resolve * 48) / 48);
           put(photoImg, 'opacity', resolve > 0 ? '1' : '0');
         }
       }
