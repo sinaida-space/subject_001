@@ -1,10 +1,11 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { buildGraph, buildAdjacency, type GraphNode, OFF_WHITE } from '@/data/graph';
 import { computeLayout } from '@/lib/layout';
 import { constellationBus } from '@/lib/constellationBus';
 
 const VW = 1100;
 const VH = 780;
+const MIN_LABEL_PX = 12; // smallest rendered label size, in CSS px
 
 interface Props {
   onActiveProject?: (p: GraphNode['project'] | null) => void;
@@ -19,6 +20,24 @@ export default function ConstellationLite({ onActiveProject }: Props) {
   const posById = useMemo(() => new Map(laid.nodes.map((n) => [n.id, n])), [laid]);
 
   const [active, setActive] = useState<string | null>(null);
+
+  // The SVG is scaled to fit its box, so on a phone 21 user units render at
+  // about 7 CSS px. Measure the scale and lift labels so they land on at least
+  // MIN_LABEL_PX on screen. Resize-driven only, no loop.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const measure = () => {
+      const s = Math.min(el.clientWidth / VW, el.clientHeight / VH);
+      if (s > 0) setScale(s);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const neighbors = active ? adj.get(active) ?? new Set<string>() : null;
 
   useEffect(() => {
@@ -38,7 +57,7 @@ export default function ConstellationLite({ onActiveProject }: Props) {
   };
 
   return (
-    <div className="relative w-full" style={{ height: 'clamp(480px, 76vh, 860px)' }}>
+    <div ref={boxRef} className="relative w-full" style={{ height: 'clamp(480px, 76vh, 860px)' }}>
       <svg viewBox={`0 0 ${VW} ${VH}`} className="h-full w-full" preserveAspectRatio="xMidYMid meet">
         {/* edges */}
         {edges.map((e, i) => {
@@ -76,6 +95,13 @@ export default function ConstellationLite({ onActiveProject }: Props) {
           // Skill-first: skills carry labels by default; project names only
           // surface once the visitor traces into that star — except the two
           // hero works and the accent skills, which stay named at all times.
+          const baseFs = n.kind === 'project' ? 21 : 20;
+          const fs = Math.max(baseFs, MIN_LABEL_PX / scale);
+          const k = fs / baseFs; // box and offsets grow with the type
+          // At phone scale the grown label can run past the right edge;
+          // those labels flip to the left of their star instead.
+          const labelW = (n.label.length * (n.kind === 'project' ? 10 : 8.6) + 6) * k;
+          const flip = n.x + r + 4 + labelW > VW;
           const showLabel = n.kind === 'skill' ? true : isActive || !!isNeighbor || !!n.accent;
           const labelAlpha = active
             ? isActive
@@ -128,18 +154,19 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                       the name's readability — width is a monospace estimate
                       since SVG can't measure text without a DOM round-trip. */}
                   <rect
-                    x={n.x + r + 4}
-                    y={n.y + 4 - (n.kind === 'project' ? 13 : 11)}
-                    width={n.label.length * (n.kind === 'project' ? 10 : 8.6) + 6}
-                    height={n.kind === 'project' ? 19 : 16}
+                    x={flip ? n.x - r - 4 - labelW : n.x + r + 4}
+                    y={n.y + 4 - (n.kind === 'project' ? 13 : 11) * k}
+                    width={labelW}
+                    height={(n.kind === 'project' ? 19 : 16) * k}
                     fill="hsl(var(--background))"
                     opacity={Math.min(0.72, labelAlpha + 0.15)}
                     style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
                   />
                   <text
-                    x={n.x + r + 7}
+                    x={flip ? n.x - r - 7 : n.x + r + 7}
                     y={n.y + 4}
-                    fontSize={n.kind === 'project' ? 21 : 20}
+                    textAnchor={flip ? 'end' : 'start'}
+                    fontSize={fs}
                     fontWeight={n.kind === 'project' ? 500 : 400}
                     fontFamily="'Geist Pixel', monospace"
                     fill={n.kind === 'project' ? OFF_WHITE : n.color}

@@ -212,6 +212,17 @@ export function ProcessFloor({ project, full }: { project: Project; full: boolea
     window.scrollTo(0, 0);
   }, []);
 
+  // Esc climbs back the same way the "Depth 01" link does
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (arrivedByDive) navigate(-1);
+      else navigate(location.pathname);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [arrivedByDive, navigate, location.pathname]);
+
   return (
     <div className="grid grid-cols-1 gap-x-12 gap-y-10 md:grid-cols-12">
       <div className="md:col-span-5">

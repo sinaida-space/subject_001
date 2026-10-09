@@ -3,9 +3,13 @@
 // and (via the SEO script / llms.txt) the static content layer.
 
 import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.webp';
+import workRedkiePtitsy640 from '@/assets/work-redkie-ptitsy-640.webp';
+import workRedkiePtitsy1024 from '@/assets/work-redkie-ptitsy-1024.webp';
 import workEyesChico from '@/assets/work-eyes-chico.webp';
 import eyesChicoPainting from '@/assets/work-eyes-chico-painting.jpg';
 import workAetherCurrents from '@/assets/work-aether-currents.webp';
+import workAetherCurrents640 from '@/assets/work-aether-currents-640.webp';
+import workAetherCurrents1024 from '@/assets/work-aether-currents-1024.webp';
 import workEtherealPath from '@/assets/work-ethereal-path.webp';
 import workStereolove from '@/assets/work-stereolove.webp';
 import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.webp';
@@ -33,6 +37,8 @@ export interface CaseMedia {
   label: string;
   video: string;
   caption?: string;
+  /** Performance date, shown under the video (never in the title). */
+  date?: string;
 }
 
 /** Content of the animated signal-chain diagram on a case page. */
@@ -102,6 +108,8 @@ export interface Project {
   video?: string;
   /** still image (used when there is no video) */
   image?: string;
+  /** responsive widths of `image` for the case hero (640/1024/full), as a srcset string */
+  imageSrcSet?: string;
   links?: ProjectLink[];
   badges?: Badge[];
   /** shows as an expandable row in Selected Works */
@@ -136,12 +144,13 @@ export const PROJECTS: Project[] = [
     title: 'Redkie Ptitsy',
     subtitle: 'Live Concert Visuals',
     kind: 'stage',
-    tagline: 'Live at Sklad No. 3, Moscow · 26 March 2026 · 9 projections, one per song',
+    tagline: 'Live at Sklad No. 3, Moscow · 9 projections, one per song',
     blurb:
-      'Performed live on 26 March 2026 at Sklad No. 3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine audio-reactive projections, one for each song, ran in real time behind the band all night. Each one is a TouchDesigner system that listens to the live mix. Festivals and touring productions can book the same setup.',
+      'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine audio-reactive projections, one for each song, ran in real time behind the band all night. Each one is a TouchDesigner system that listens to the live mix. Festivals and touring productions can book the same setup.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: ['event-design', 'audio-reactive', 'touchdesigner', 'algorithmic-systems'],
     image: workRedkiePtitsy,
+    imageSrcSet: `${workRedkiePtitsy640} 640w, ${workRedkiePtitsy1024} 1024w, ${workRedkiePtitsy} 1600w`,
     video: 'bDDAXRlz5FQ',
     links: [
       { label: 'Redkie Ptitsy', url: 'https://band.link/redkieptitsy' },
@@ -164,10 +173,11 @@ export const PROJECTS: Project[] = [
           caption:
             'No audio: the songs are the label’s masters, rights unclear for redistribution. This is the visual system running clean, without the room mix.',
         },
-        { label: 'Live at Sklad No. 3', video: 'bDDAXRlz5FQ' },
+        { label: 'Live at Sklad No. 3', video: 'bDDAXRlz5FQ', date: '26 March 2026' },
         {
           label: 'Nine logos, one code',
           video: 'qpXGjDI2N64',
+          date: '26 March 2026',
           caption:
             'The logo animations were performed in between the songs. Those are logo variations that run through nine different TouchDesigner treatments, all driven by one signal: the band name, Redkie Ptitsy (meaning, “rare birds”) encoded in Morse code.',
         },
@@ -180,7 +190,7 @@ export const PROJECTS: Project[] = [
           { label: 'Per-song patch ×9', detail: 'One visual system per song, each with its own look.' },
           { label: 'Projection', detail: 'Projected behind the band for the whole set.' },
         ],
-        footer: '> full-set run · Sklad No. 3, Moscow · 26 March 2026',
+        footer: '> full-set run · Sklad No. 3, Moscow',
       },
       contributors: [
         { name: 'Redkie Ptitsy', url: 'https://band.link/redkieptitsy', type: 'MusicGroup' },
@@ -413,6 +423,7 @@ export const PROJECTS: Project[] = [
     url: 'https://aether-currents.sinaida.eu/',
     video: 'fxrrSxvKp9Q',
     image: workAetherCurrents,
+    imageSrcSet: `${workAetherCurrents640} 640w, ${workAetherCurrents1024} 1024w, ${workAetherCurrents} 1600w`,
     links: [
       { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
       { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },

@@ -140,6 +140,11 @@ export default function WorkCase() {
               <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
                 <DisplacementImage
                   src={project.image}
+                  srcSet={project.imageSrcSet}
+                  sizes="(min-width: 768px) 40vw, 100vw"
+                  width={1600}
+                  height={900}
+                  priority
                   alt={project.title}
                   onLoad={() => setHeroLoaded(true)}
                   style={{ position: 'absolute', inset: 0, height: '100%', width: '100%' }}
@@ -265,6 +270,9 @@ export default function WorkCase() {
               <div key={m.video} className="mt-10">
                 <div className="clinical-label mb-3 text-foreground/65">{m.label}</div>
                 <VideoEmbed id={m.video} title={`${project.title}: ${m.label}`} />
+                {m.date && (
+                  <div className="clinical-label mt-2 text-foreground/65">{m.date}</div>
+                )}
                 {m.caption && (
                   <p className="mt-2 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
                     {m.caption}
