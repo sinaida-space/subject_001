@@ -183,7 +183,7 @@ export default function WorkCase() {
             )}
 
             {/* ── Dive one floor down, or sideways along a thread (#119) ── */}
-            {mode === 'full' && <CaseDiveControls project={project} />}
+            <CaseDiveControls project={project} />
 
             {/* ── Prominent case action (e.g. enter the live web experience) ── */}
             {cs.heroCta && (

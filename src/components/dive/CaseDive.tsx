@@ -41,7 +41,8 @@ function threadsFor(project: Project) {
     .slice(0, 3);
 }
 
-/** ▼ DEPTH 02 mark and the threads, at the foot of the case hero. Full mode only. */
+/** ▼ DEPTH 02 mark and the threads, at the foot of the case hero. In lite mode
+ * no dive runs, so the same links fall through to plain navigation. */
 export function CaseDiveControls({ project }: { project: Project }) {
   const { pathname } = useLocation();
   const threads = threadsFor(project);
@@ -68,15 +69,16 @@ export function CaseDiveControls({ project }: { project: Project }) {
               onClick={diveClick({ to: `/work/${to.id}`, dialect: to.dialect, image: to.image, anchor: `thread:${to.id}` })}
               className="group grid grid-cols-[3rem_1fr] items-baseline gap-x-3 font-mono uppercase"
             >
-              {/* the thread itself: a thin red line running off the hero edge,
+              {/* the thread itself: a thin quiet line running off the hero edge
+                  (red only on hover, the mark above stays the one accent),
                   on the title's baseline; the shared skills sit under the
                   title as one small caption, so every row reads the same */}
-              <span aria-hidden="true" className="h-px w-8 self-center bg-primary transition-all group-hover:w-12" />
-              <span className="text-[13px] tracking-[0.15em] text-foreground/80 transition-colors group-hover:text-foreground">
+              <span aria-hidden="true" className="h-px w-8 self-center bg-foreground/25 transition-all group-hover:w-12 group-hover:bg-primary" />
+              <span className="text-[13px] tracking-[0.15em] text-foreground/75 transition-colors group-hover:text-foreground">
                 {to.title} →
               </span>
               {shared.slice(0, 2).map((s) => (
-                <span key={s.label} className="col-start-2 mt-1 text-[11px] tracking-[0.12em] text-primary-legible/80">
+                <span key={s.label} className="col-start-2 mt-1 text-[11px] tracking-[0.12em] text-foreground/40">
                   {s.label}
                 </span>
               ))}
