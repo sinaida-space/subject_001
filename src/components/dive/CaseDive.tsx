@@ -58,7 +58,7 @@ export function CaseDiveControls({ project }: { project: Project }) {
         ▼ Depth 02
       </Link>
       {threads.length > 0 && (
-        <nav aria-label="Threads to connected works" className="flex flex-col gap-2">
+        <nav aria-label="Threads to connected works" className="flex flex-col gap-4">
           {threads.map(({ to, shared }) => (
             <Link
               key={to.id}
@@ -66,18 +66,20 @@ export function CaseDiveControls({ project }: { project: Project }) {
               data-dive=""
               data-dive-anchor={`thread:${to.id}`}
               onClick={diveClick({ to: `/work/${to.id}`, dialect: to.dialect, image: to.image, anchor: `thread:${to.id}` })}
-              className="group flex items-center gap-3 font-mono text-[13px] uppercase tracking-[0.15em]"
+              className="group grid grid-cols-[3rem_1fr] items-baseline gap-x-3 font-mono uppercase"
             >
-              {/* the thread itself: a thin red line running off the hero edge */}
-              <span aria-hidden="true" className="h-px w-8 shrink-0 bg-primary transition-all group-hover:w-12" />
-              <span className="text-primary-legible">
-                {shared
-                  .slice(0, 2)
-                  .map((s) => s.label)
-                  .join(' · ')}{' '}
-                →
+              {/* the thread itself: a thin red line running off the hero edge,
+                  on the title's baseline; the shared skills sit under the
+                  title as one small caption, so every row reads the same */}
+              <span aria-hidden="true" className="h-px w-8 self-center bg-primary transition-all group-hover:w-12" />
+              <span className="text-[13px] tracking-[0.15em] text-foreground/80 transition-colors group-hover:text-foreground">
+                {to.title} →
               </span>
-              <span className="text-foreground/65 transition-colors group-hover:text-foreground">{to.title}</span>
+              {shared.slice(0, 2).map((s) => (
+                <span key={s.label} className="col-start-2 mt-1 text-[11px] tracking-[0.12em] text-primary-legible/80">
+                  {s.label}
+                </span>
+              ))}
             </Link>
           ))}
         </nav>
