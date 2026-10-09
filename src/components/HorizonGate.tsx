@@ -40,7 +40,8 @@ const HERO_FALL = 95; // how long a hero cell takes to fall into the line
 const LINE_LEN = 620; // the line's whole flight
 const LINE_TOP = 72; // where it fades, just under the header
 const FLASH_AT = S0 + 130; // the hero is in: the line fires
-const LIFT_RISE = 90; // About rises to meet the line
+const LIFT_RISE = 150; // About rises to meet the line, once the hero is in it
+const POUR_FROM = S0 + 120; // About starts pouring when the hero stars have reached the line
 const FALL = 110; // a poured cell falls into its letter
 const SHED_AT = 0.92; // a letter is poured as it scrolls in at this screen height
 const HAND = 24; // a finished block fades in over this much scroll
@@ -358,7 +359,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     };
     // About's lift: rises to meet the line, eases back slower than the page
     // moves, so About only ever travels up the screen
-    const liftAt = (sy: number) => g.lift * smooth(S0, S0 + LIFT_RISE, sy) * (1 - smooth(S0 + LIFT_RISE, g.liftEnd, sy));
+    const liftAt = (sy: number) => g.lift * smooth(S0 + 30, S0 + LIFT_RISE, sy) * (1 - smooth(S0 + LIFT_RISE, g.liftEnd, sy));
 
     const build = () => {
       const vw = window.innerWidth, vh = window.innerHeight, sy = window.scrollY;
@@ -406,7 +407,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         }
         return hi;
       };
-      for (const d of dst) d.shed = pourAt(d.y) + rand() * 30;
+      for (const d of dst) d.shed = Math.max(pourAt(d.y), POUR_FROM + (d.y - aboutTop) * 0.15) + rand() * 30;
       // hero stars go to the first letters poured
       dst.sort((a, b) => a.shed - b.shed);
 
@@ -513,8 +514,10 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
           photoImg.style.opacity = '';
         } else {
           const r = photoFrame.getBoundingClientRect();
-          const resolve = smooth(vh * 0.5 + 40, vh * 0.5 - 60, (r.top + r.bottom) / 2);
-          portrait.draw(clamp01((sy - g.photoA) / (g.photoB - g.photoA)), resolve);
+          const built = clamp01((sy - g.photoA) / (g.photoB - g.photoA));
+          // never the photo before the dither is fully poured, in either direction
+          const resolve = built < 1 ? 0 : smooth(vh * 0.5 + 40, vh * 0.5 - 60, (r.top + r.bottom) / 2);
+          portrait.draw(built, resolve);
           put(photoImg, 'opacity', resolve > 0 ? '1' : '0');
         }
       }
