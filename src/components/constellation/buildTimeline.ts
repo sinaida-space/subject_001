@@ -4,8 +4,8 @@ import type { Category } from '@/data/graph';
 // (0..1, from workBuildBus). One impulse is handed on star to star: it jumps
 // into each constellation, sound → space → code → body, and grows that
 // figure's strokes in the order its tree was built. Then the skill names
-// develop, then every work lights where its skills' impulses meet, then the
-// map turns once like a sphere and beats twice.
+// develop as the globe of stars unrolls into the flat map, then every work
+// lights where its skills' impulses meet, then the map beats twice.
 
 export interface BuildNode { id: string; kind: 'project' | 'skill'; category: Category; accent?: boolean; weight: number }
 export interface Hop { from: string | null; to: string; u0: number; u1: number; axon: boolean }
@@ -16,14 +16,14 @@ export interface BuildTimeline {
   catEnd: Map<Category, number>;
   label: Map<string, [number, number]>; // name develops
   work: Map<string, [number, number]>; // impulses converge on a work
-  tilt: [number, number];
+  unfold: [number, number]; // the globe unrolls into the flat map
   beat: [number, number];
 }
 
 const ORDER: Category[] = ['sound', 'space', 'code', 'body'];
-const CATS: [number, number] = [0, 0.4];
-const NAMES: [number, number] = [0.4, 0.54];
-const WORKS: [number, number] = [0.54, 0.8];
+const CATS: [number, number] = [0, 0.36];
+const NAMES: [number, number] = [0.48, 0.6];
+const WORKS: [number, number] = [0.6, 0.86];
 
 export function buildTimeline(nodes: BuildNode[], figures: { a: { id: string }; b: { id: string }; cat: Category }[]): BuildTimeline {
   const hops: Hop[] = [];
@@ -76,7 +76,7 @@ export function buildTimeline(nodes: BuildNode[], figures: { a: { id: string }; 
     label.set(n.id, [u0 + 0.05, u0 + 0.09]);
   });
 
-  return { hops, ignite, figure, catEnd, label, work, tilt: [0.8, 0.9], beat: [0.9, 1] };
+  return { hops, ignite, figure, catEnd, label, work, unfold: [0.36, 0.52], beat: [0.88, 1] };
 }
 
 // two heartbeats over u in 0..1, the logo's own ECG (P, QRS, T)

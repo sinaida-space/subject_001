@@ -9,9 +9,9 @@
 //          star to star, then the skill names, then the works, a turn of
 //          the sphere and two heartbeats
 //
-// Driven by scroll, but latched: once something is built it stays built
+// Driven by scroll both ways while it builds; once finished it holds, built,
 // while you scroll around Work. Only when you scroll back up far enough for
-// About to come apart again does the build rewind with you.
+// About to come apart again does it rewind with you.
 //
 // Desktop gives the map its own scroll room (the graph holds still while
 // it builds); on phones the long map builds as it scrolls through.
@@ -134,7 +134,8 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       // ── the pour
       const tt = title.getBoundingClientRect().top;
       const pourP = lin(tt, POUR_A * vh, POUR_B * vh);
-      pourL = reset ? pourP : Math.max(pourL, pourP);
+      // follows the scroll both ways until it has finished, then holds
+      pourL = reset || pourL < 1 ? pourP : 1;
 
       // ── the map: the track holds still (desktop) over its room, or scrolls through (phones)
       const track = root.querySelector<HTMLElement>('[data-build-track]');
@@ -153,11 +154,12 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
           const a = vh * 0.35 + tr.height;
           mapP = clamp01((a - rr.top) / (vh * 0.3 + room.offsetHeight));
         } else {
-          mapP = clamp01((vh * 0.6 - tr.top) / Math.max(1, tr.height - vh * 0.3));
+          // phones: done by the time the map's middle reaches the middle of the screen
+          mapP = clamp01((vh * 0.85 - tr.top) / Math.max(1, tr.height / 2 + vh * 0.35));
         }
       }
       if (pourL < 1) mapP = 0;
-      mapL = reset ? mapP : Math.max(mapL, mapP);
+      mapL = reset || mapL < 1 ? mapP : 1;
       workBuildBus.set(mapL);
 
       // ── the heading: hidden until poured, then the real type
@@ -205,7 +207,14 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const room = root.querySelector<HTMLElement>('[data-build-room]');
       if (!track || !room || room.offsetHeight === 0) return;
       const vh = window.innerHeight;
-      track.style.top = `${Math.round(Math.min(vh * 0.05, vh * 0.97 - track.scrollHeight))}px`;
+      // the map itself (the canvas), whole and just under the header when it fits, else bottom-aligned
+      const map = track.querySelector('canvas');
+      const mh = map ? map.offsetHeight : track.offsetHeight;
+      const off = map ? map.getBoundingClientRect().top - track.getBoundingClientRect().top : 0;
+      const header = document.querySelector('header')?.getBoundingClientRect().height ?? 64;
+      const room2 = vh - header - mh;
+      const top = room2 >= 0 ? header + room2 / 2 - off : vh - mh - off - 8;
+      track.style.top = `${Math.round(top)}px`;
     };
     placeTrack();
     const onResize = () => {
