@@ -98,6 +98,10 @@ export default function ConstellationLite({ onActiveProject }: Props) {
           const baseFs = n.kind === 'project' ? 21 : 20;
           const fs = Math.max(baseFs, MIN_LABEL_PX / scale);
           const k = fs / baseFs; // box and offsets grow with the type
+          // At phone scale the grown label can run past the right edge;
+          // those labels flip to the left of their star instead.
+          const labelW = (n.label.length * (n.kind === 'project' ? 10 : 8.6) + 6) * k;
+          const flip = n.x + r + 4 + labelW > VW;
           const showLabel = n.kind === 'skill' ? true : isActive || !!isNeighbor || !!n.accent;
           const labelAlpha = active
             ? isActive
@@ -150,17 +154,18 @@ export default function ConstellationLite({ onActiveProject }: Props) {
                       the name's readability — width is a monospace estimate
                       since SVG can't measure text without a DOM round-trip. */}
                   <rect
-                    x={n.x + r + 4}
+                    x={flip ? n.x - r - 4 - labelW : n.x + r + 4}
                     y={n.y + 4 - (n.kind === 'project' ? 13 : 11) * k}
-                    width={(n.label.length * (n.kind === 'project' ? 10 : 8.6) + 6) * k}
+                    width={labelW}
                     height={(n.kind === 'project' ? 19 : 16) * k}
                     fill="hsl(var(--background))"
                     opacity={Math.min(0.72, labelAlpha + 0.15)}
                     style={{ transition: 'opacity 0.25s', pointerEvents: 'none' }}
                   />
                   <text
-                    x={n.x + r + 7}
+                    x={flip ? n.x - r - 7 : n.x + r + 7}
                     y={n.y + 4}
+                    textAnchor={flip ? 'end' : 'start'}
                     fontSize={fs}
                     fontWeight={n.kind === 'project' ? 500 : 400}
                     fontFamily="'Geist Pixel', monospace"
