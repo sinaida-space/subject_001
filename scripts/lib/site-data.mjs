@@ -82,7 +82,10 @@ function splitTopLevelObjects(arrayBody) {
 const UNESCAPE = { n: '\n', t: '\t', r: '\r', "'": "'", '"': '"', '`': '`', '\\': '\\' };
 
 function unescapeLiteral(raw) {
-  return raw.replace(/\\(.)/g, (_, ch) => UNESCAPE[ch] ?? ch);
+  // \uXXXX first (the NBSP glue in projects.ts is written as \u00A0), then single-char escapes.
+  return raw.replace(/\\(u[0-9a-fA-F]{4}|.)/g, (_, ch) =>
+    ch.length === 5 ? String.fromCharCode(parseInt(ch.slice(1), 16)) : UNESCAPE[ch] ?? ch,
+  );
 }
 
 /**
