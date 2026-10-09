@@ -51,7 +51,10 @@ function renderInline(text: string) {
     const m = part.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
     if (!m) return part ? [<Fragment key={i}>{linkifyCredit(part)}</Fragment>] : [];
     const [, label, href] = m;
-    return href.startsWith('/') ? (
+    // Allowlist: site paths and http(s) only. javascript:, data:, //host fall back to plain label.
+    const internal = href.startsWith('/') && !href.startsWith('//');
+    if (!internal && !/^https?:\/\//i.test(href)) return [<Fragment key={i}>{label}</Fragment>];
+    return internal ? (
       <Link key={i} to={href} className={INLINE_LINK_CLASS}>
         {label}
       </Link>
