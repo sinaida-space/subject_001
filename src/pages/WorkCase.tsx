@@ -140,6 +140,11 @@ export default function WorkCase() {
               <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
                 <DisplacementImage
                   src={project.image}
+                  srcSet={project.imageSrcSet}
+                  sizes="(min-width: 768px) 40vw, 100vw"
+                  width={1600}
+                  height={900}
+                  priority
                   alt={project.title}
                   onLoad={() => setHeroLoaded(true)}
                   style={{ position: 'absolute', inset: 0, height: '100%', width: '100%' }}

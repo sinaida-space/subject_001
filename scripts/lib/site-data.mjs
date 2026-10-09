@@ -198,12 +198,21 @@ export function readCaseStudies() {
       );
     }
 
+    // The hero still is an imported asset (`image: workX,` + `import workX from
+    // '@/assets/file.webp'`); keep its file stem so the prerender can find the
+    // hashed build output and preload it.
+    const imageIdent = head.match(/^\s*image:\s*(\w+),/m)?.[1];
+    const imageStem = imageIdent
+      ? source.match(new RegExp(`import\\s+${imageIdent}\\s+from\\s+'@/assets/([^']+)\\.webp'`))?.[1]
+      : undefined;
+
     const subtitle = readString(head, 'subtitle');
     const blurb = readString(head, 'blurb');
     const intro = readStringArray(caseBody, 'intro');
 
     works.push({
       id,
+      imageStem,
       title,
       subtitle,
       fullTitle: subtitle ? `${title}: ${subtitle}` : title,

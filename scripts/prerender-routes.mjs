@@ -19,7 +19,7 @@
 // which derives /work/<slug>/ pages from src/data/projects.ts, so a new case
 // study is picked up automatically the next time this runs.
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { DIST_DIR, buildRoutes } from './lib/site-data.mjs';
@@ -43,6 +43,32 @@ function replaceRequired(html, regex, replacement, label) {
   // A `$` in the replacement (none in today's copy, but copy changes) would
   // otherwise read as a capture-group reference, so it goes in via a function.
   return html.replace(regex, () => replacement);
+}
+
+/**
+ * Preload tag for a case page's hero still (the LCP element). The hashed file
+ * names come from dist/assets, matched by the asset's source stem: the full
+ * size is `<stem>-<hash>.webp`, optional widths are `<stem>-640-<hash>.webp`
+ * and `<stem>-1024-<hash>.webp`. Returns '' when the case has no hero image.
+ */
+function heroPreloadTag(route) {
+  const stem = route.work?.imageStem;
+  if (!stem) return '';
+  const files = readdirSync(join(DIST_DIR, 'assets'));
+  const find = (re) => files.find((f) => re.test(f));
+  const full = find(new RegExp(`^${stem}-[\\w-]{8}\\.webp$`));
+  if (!full) return '';
+  const w640 = find(new RegExp(`^${stem}-640-[\\w-]{8}\\.webp$`));
+  const w1024 = find(new RegExp(`^${stem}-1024-[\\w-]{8}\\.webp$`));
+  const attrs = ['rel="preload"', 'as="image"', `href="/assets/${full}"`];
+  if (w640 && w1024) {
+    attrs.push(
+      `imagesrcset="/assets/${w640} 640w, /assets/${w1024} 1024w, /assets/${full} 1600w"`,
+      'imagesizes="(min-width: 768px) 40vw, 100vw"',
+    );
+  }
+  attrs.push('fetchpriority="high"');
+  return `<link ${attrs.join(' ')}>\n    `;
 }
 
 function renderRouteHtml(baseHtml, route) {
@@ -89,6 +115,11 @@ function renderRouteHtml(baseHtml, route) {
       `<noscript id="page-fallback">\n${fallback}\n    </noscript>`,
       'noscript fallback',
     );
+  }
+
+  if (route.kind === 'work') {
+    const preload = heroPreloadTag(route);
+    if (preload) html = replaceRequired(html, /<\/head>/, `${preload}</head>`, 'head close');
   }
 
   return html;

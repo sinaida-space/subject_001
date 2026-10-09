@@ -38,6 +38,14 @@ interface DisplacementImageProps {
   imgClassName?: string;
   imgStyle?: CSSProperties;
   onLoad?: () => void;
+  /** responsive candidates for the base image */
+  srcSet?: string;
+  sizes?: string;
+  /** intrinsic size, reserves layout and lets the browser pick before load */
+  width?: number;
+  height?: number;
+  /** LCP image: eager, high fetch priority, sync-friendly decode */
+  priority?: boolean;
   /** Peak displacement in px near the cursor. Default 24. */
   strength?: number;
   /** Radius (px) of the ripple bump around the cursor. Default 90. */
@@ -52,6 +60,11 @@ export default function DisplacementImage({
   imgClassName,
   imgStyle,
   onLoad,
+  srcSet,
+  sizes,
+  width,
+  height,
+  priority,
   strength = 24,
   radius = 90,
 }: DisplacementImageProps) {
@@ -150,7 +163,18 @@ export default function DisplacementImage({
   return (
     <div ref={wrapRef} className={className} style={{ position: 'relative', overflow: 'hidden', ...style }} data-displacement-wrap>
       {/* Base image — always present, always visible, plain and static. */}
-      <img src={src} alt={alt} onLoad={onLoad} className={imgClassName} style={objectStyle} />
+      <img
+        src={src}
+        srcSet={srcSet}
+        sizes={sizes}
+        width={width}
+        height={height}
+        alt={alt}
+        onLoad={onLoad}
+        className={imgClassName}
+        style={objectStyle}
+        {...(priority ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})}
+      />
 
       {active && (
         <>
@@ -158,6 +182,8 @@ export default function DisplacementImage({
           <img
             ref={overlayRef}
             src={src}
+            srcSet={srcSet}
+            sizes={sizes}
             alt=""
             aria-hidden="true"
             className={imgClassName}

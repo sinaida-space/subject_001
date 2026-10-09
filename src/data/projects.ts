@@ -3,9 +3,13 @@
 // and (via the SEO script / llms.txt) the static content layer.
 
 import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.webp';
+import workRedkiePtitsy640 from '@/assets/work-redkie-ptitsy-640.webp';
+import workRedkiePtitsy1024 from '@/assets/work-redkie-ptitsy-1024.webp';
 import workEyesChico from '@/assets/work-eyes-chico.webp';
 import eyesChicoPainting from '@/assets/work-eyes-chico-painting.jpg';
 import workAetherCurrents from '@/assets/work-aether-currents.webp';
+import workAetherCurrents640 from '@/assets/work-aether-currents-640.webp';
+import workAetherCurrents1024 from '@/assets/work-aether-currents-1024.webp';
 import workEtherealPath from '@/assets/work-ethereal-path.webp';
 import workStereolove from '@/assets/work-stereolove.webp';
 import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.webp';
@@ -102,6 +106,8 @@ export interface Project {
   video?: string;
   /** still image (used when there is no video) */
   image?: string;
+  /** responsive widths of `image` for the case hero (640/1024/full), as a srcset string */
+  imageSrcSet?: string;
   links?: ProjectLink[];
   badges?: Badge[];
   /** shows as an expandable row in Selected Works */
@@ -142,6 +148,7 @@ export const PROJECTS: Project[] = [
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: ['event-design', 'audio-reactive', 'touchdesigner', 'algorithmic-systems'],
     image: workRedkiePtitsy,
+    imageSrcSet: `${workRedkiePtitsy640} 640w, ${workRedkiePtitsy1024} 1024w, ${workRedkiePtitsy} 1600w`,
     video: 'bDDAXRlz5FQ',
     links: [
       { label: 'Redkie Ptitsy', url: 'https://band.link/redkieptitsy' },
@@ -413,6 +420,7 @@ export const PROJECTS: Project[] = [
     url: 'https://aether-currents.sinaida.eu/',
     video: 'fxrrSxvKp9Q',
     image: workAetherCurrents,
+    imageSrcSet: `${workAetherCurrents640} 640w, ${workAetherCurrents1024} 1024w, ${workAetherCurrents} 1600w`,
     links: [
       { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
       { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
