@@ -295,6 +295,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   const figuresRef = useRef<{ a: RNode; b: RNode; cat: Category }[]>([]);
   const timelineRef = useRef<BuildTimeline | null>(null);
   const onScreenRef = useRef(false); // set by the IntersectionObserver below
+  // Turning the map by hand: dragging empty space folds the flat map into its
+  // globe and turns it; letting go springs it back to the flat home view.
+  const spinRef = useRef({ on: false, sph: 0, rot: 0, tilt: 0, lastX: 0, lastY: 0 });
   // One-second full-graph bloom on every drop: ramps to 1 on trigger, eases
   // back to 0. Purely user-action-driven (a drop), so motion-law compliant.
   const shineRef = useRef(0);
@@ -591,10 +594,26 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     // with the scroll, each constellation swinging to the front as it lights;
     // then the globe unrolls into the flat, readable map. The flat map is the
     // globe's equirectangular unwrap, so every star keeps its place.
-    const sph = building ? 1 - (() => { const t = lin(B, tl!.unfold[0], tl!.unfold[1]); return t * t * (3 - 2 * t); })() : 0;
+    const spin = spinRef.current;
+    if (!building) {
+      // the globe folds in while held, unrolls and turns home when let go
+      spin.sph += ((spin.on ? 1 : 0) - spin.sph) * 0.14;
+      if (!spin.on) {
+        const homeRot = Math.round(spin.rot / (Math.PI * 2)) * Math.PI * 2;
+        spin.rot += (homeRot - spin.rot) * 0.12;
+        spin.tilt += (0 - spin.tilt) * 0.12;
+        if (spin.sph < 0.002 && Math.abs(homeRot - spin.rot) < 0.002) {
+          spin.sph = 0;
+          spin.rot = 0;
+          spin.tilt = 0;
+        }
+      }
+      if (spin.on || spin.sph > 0) settling = true;
+    }
+    const sph = building ? 1 - (() => { const t = lin(B, tl!.unfold[0], tl!.unfold[1]); return t * t * (3 - 2 * t); })() : spin.sph;
     const home = sph > 0 ? nodes.map((n) => [n.x, n.y] as const) : null;
     const facing = new Map<string, number>(); // 1 front .. 0.2 back of the globe
-    let globe: { gx: number; gy: number; R: number; F: number; rot: number; LON: number } | null = null;
+    let globe: { gx: number; gy: number; R: number; F: number; rot: number; tilt: number; LON: number } | null = null;
     if (sph > 0) {
       const vh = window.innerHeight;
       const top = wrapRef.current?.getBoundingClientRect().top ?? 0;
@@ -616,8 +635,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       }
       keys.unshift([0, keys[0][1] - 1.4]);
       keys.push([tl!.unfold[1], Math.ceil((last + 0.5) / (Math.PI * 2)) * Math.PI * 2]);
-      let rot = keys[keys.length - 1][1];
-      for (let i = 1; i < keys.length; i++) {
+      let rot = building ? keys[keys.length - 1][1] : spin.rot;
+      const tilt = building ? 0 : spin.tilt;
+      for (let i = 1; building && i < keys.length; i++) {
         if (B <= keys[i][0]) {
           const t = lin(B, keys[i - 1][0], keys[i][0]);
           rot = keys[i - 1][1] + (keys[i][1] - keys[i - 1][1]) * (t * t * (3 - 2 * t));
@@ -625,11 +645,14 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         }
       }
       const F = R * 3.2;
-      globe = { gx, gy, R, F, rot, LON };
+      globe = { gx, gy, R, F, rot, tilt, LON };
+      const ct = Math.cos(tilt), st = Math.sin(tilt);
       for (const n of nodes) {
         const lon = lonOf(n.x) + rot;
         const lat = Math.max(-1.35, Math.min(1.35, ((n.y - h / 2) / (h / 2)) * 1.25));
-        const X = R * Math.cos(lat) * Math.sin(lon), Y = R * Math.sin(lat), Z = R * Math.cos(lat) * Math.cos(lon);
+        const X = R * Math.cos(lat) * Math.sin(lon), Y0 = R * Math.sin(lat), Z0 = R * Math.cos(lat) * Math.cos(lon);
+        // tipped toward or away from the viewer (a vertical drag, desktop)
+        const Y = Y0 * ct - Z0 * st, Z = Y0 * st + Z0 * ct;
         const k = F / (F - Z);
         n.x = n.x + (gx + X * k - n.x) * sph;
         n.y = n.y + (gy + Y * k - n.y) * sph;
@@ -642,15 +665,17 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     // ── the globe's surface: dither cells on a sphere, turning with it and
     // unrolling with the map, dissolving as it flattens ──
     if (globe) {
-      const { gx, gy, R, F, rot, LON } = globe;
+      const { gx, gy, R, F, rot, tilt, LON } = globe;
+      const ct = Math.cos(tilt), st = Math.sin(tilt);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
-      const born = lin(B, 0, 0.06);
+      const born = building ? lin(B, 0, 0.06) : 1;
       const r0 = R * (0.55 + 0.45 * born);
       for (let i = 0; i < GLOBE.length; i++) {
         const [lat, lon0, th, red] = GLOBE[i];
         const lon = lon0 + rot;
-        const X = r0 * Math.cos(lat) * Math.sin(lon), Y = r0 * Math.sin(lat), Z = r0 * Math.cos(lat) * Math.cos(lon);
+        const X = r0 * Math.cos(lat) * Math.sin(lon), Y0 = r0 * Math.sin(lat), Z0 = r0 * Math.cos(lat) * Math.cos(lon);
+        const Y = Y0 * ct - Z0 * st, Z = Y0 * st + Z0 * ct;
         const k = F / (F - Z);
         // its place on the flat map: the same unwrap the stars use
         const fx = w / 2 + (lon0 / LON) * (w / 2), fy = h / 2 + (lat / 1.25) * (h / 2);
@@ -915,6 +940,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
           useCategoryColor = false; // gray at rest, by importance
         }
       }
+      alpha *= Math.pow(face(n), 2);
       if (alpha <= 0.02) continue;
       const lw = building ? tl!.label.get(n.id) : undefined;
       const reveal = lw ? lin(B, lw[0], lw[1]) : 1;
@@ -1294,6 +1320,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         /* pointer may not be capturable (e.g. synthetic events) */
       }
     }
+    spinRef.current.lastX = x;
+    spinRef.current.lastY = y;
     start();
   };
 
@@ -1318,6 +1346,37 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         synth.updateDrone(e.clientX / (window.innerWidth || 1), e.clientY / (window.innerHeight || 1), stretch);
       }
     }
+    // empty space held and dragged: turn the globe. On touch only a sideways
+    // drag turns it; an upward or downward one stays the page's scroll.
+    const spin = spinRef.current;
+    if (!drag.node && drag.downTime && workBuildBus.get() >= 1) {
+      const mouse = e.pointerType === 'mouse';
+      if (!drag.moved) {
+        const dx = Math.abs(x - drag.downX), dy = Math.abs(y - drag.downY);
+        if (Math.max(dx, dy) > (mouse ? 4 : 9) && (mouse || dx > dy)) {
+          drag.moved = true;
+          spin.on = true;
+          setActive(null);
+          setTooltip(null);
+          try {
+            canvasRef.current?.setPointerCapture(e.pointerId);
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+      if (spin.on) {
+        spin.rot += (x - spin.lastX) * 0.0085;
+        if (mouse) spin.tilt = Math.max(-0.9, Math.min(0.9, spin.tilt + (y - spin.lastY) * 0.006));
+        canvasRef.current!.style.cursor = 'grabbing';
+      }
+    }
+    spin.lastX = x;
+    spin.lastY = y;
+    if (spin.on) {
+      start();
+      return;
+    }
     // hover highlight + tooltip (desktop)
     if (e.pointerType === 'mouse' && !drag.moved) {
       const node = hitTest(x, y);
@@ -1326,7 +1385,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       else setTooltip(null);
       onPointerPosition?.(e.clientX, e.clientY);
     }
-    canvasRef.current!.style.cursor = hitTest(x, y) ? 'pointer' : 'default';
+    canvasRef.current!.style.cursor = hitTest(x, y) ? 'pointer' : 'grab';
     start(); // pointer moved → resume the loop (settles & stops when input ceases)
   };
 
@@ -1405,7 +1464,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         setTooltip(null);
       }
     }
-    // release drag → spring back handled by physics (home)
+    // release drag → spring back handled by physics (home); a turned globe unrolls home
+    spinRef.current.on = false;
     dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0, offX: 0, offY: 0 };
     lastInputRef.current = performance.now();
     start();
@@ -1414,7 +1474,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // Touch drags can be cancelled by the browser (e.g. an OS gesture steals the
   // pointer) — kill the drone and drop the drag without treating it as a tap.
   const onPointerCancel = () => {
-    if (dragRef.current.moved) synth.endDrone();
+    if (dragRef.current.moved && dragRef.current.node) synth.endDrone();
+    spinRef.current.on = false;
     dragRef.current = { node: null, moved: false, downX: 0, downY: 0, downTime: 0, offX: 0, offY: 0 };
     lastInputRef.current = performance.now();
     start();
