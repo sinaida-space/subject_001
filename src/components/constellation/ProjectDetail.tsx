@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
-import type { Project, ProjectKind } from '@/data/projects';
+import { PROJECTS, type Project, type ProjectKind } from '@/data/projects';
 import type { FocusOrigin } from '@/lib/constellationBus';
 import { createCardBuild } from './cardBuild';
 import type { Dialect } from '@/lib/diveBus';
@@ -18,14 +18,12 @@ const KIND_LABEL: Record<ProjectKind, string> = {
   tutorial: 'Tutorial',
 };
 
-// Internal case-study pages, keyed by project id — every project with a
-// `caseStudy` block in projects.ts gets a `/work/<id>` page.
-const CASE_PAGES: Record<string, string> = {
-  'redkie-ptitsy': '/work/redkie-ptitsy',
-  'the-eyes-chico': '/work/the-eyes-chico',
-  'aether-currents': '/work/aether-currents',
-  'conspace-rooms': '/work/conspace-rooms',
-};
+// Internal case-study pages, keyed by project id: every project with a
+// `caseStudy` block in projects.ts gets a `/work/<id>` page, so the map is
+// derived from the data and a new case shows up on its card automatically.
+const CASE_PAGES: Record<string, string> = Object.fromEntries(
+  PROJECTS.filter((p) => p.caseStudy).map((p) => [p.id, `/work/${p.id}`]),
+);
 
 function projectLinks(project: Project) {
   const links = [...(project.links ?? [])];

@@ -82,7 +82,10 @@ function splitTopLevelObjects(arrayBody) {
 const UNESCAPE = { n: '\n', t: '\t', r: '\r', "'": "'", '"': '"', '`': '`', '\\': '\\' };
 
 function unescapeLiteral(raw) {
-  return raw.replace(/\\(.)/g, (_, ch) => UNESCAPE[ch] ?? ch);
+  // \uXXXX first (the NBSP glue in projects.ts is written as \u00A0), then single-char escapes.
+  return raw.replace(/\\(u[0-9a-fA-F]{4}|.)/g, (_, ch) =>
+    ch.length === 5 ? String.fromCharCode(parseInt(ch.slice(1), 16)) : UNESCAPE[ch] ?? ch,
+  );
 }
 
 /**
@@ -146,6 +149,21 @@ function readObject(scope, field, fields) {
 
 // ── projects.ts → case-study route model ─────────────────────────────────
 
+/**
+ * Case paragraphs may carry inline links as `[label](/work/id)` or
+ * `[label](https://...)` (rendered by WorkCase.tsx). Head tags, JSON-LD and
+ * the <noscript> body get the label alone.
+ */
+export function stripInlineLinks(text) {
+  return text == null ? text : String(text).replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1');
+}
+
+/** stripInlineLinks over every string value of a flat object (stat, order). */
+function stripObject(obj) {
+  if (!obj) return obj;
+  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, stripInlineLinks(v)]));
+}
+
 /** Trim to maxLen characters, breaking on a word boundary, never mid-word. */
 export function trimToWordBoundary(text, maxLen = 160) {
   const clean = String(text).replace(/\s+/g, ' ').trim();
@@ -191,7 +209,7 @@ export function readCaseStudies() {
 
     const id = readString(head, 'id');
     const title = readString(head, 'title');
-    const tagline = readString(head, 'tagline');
+    const tagline = stripInlineLinks(readString(head, 'tagline'));
     if (!id || !title || !tagline) {
       throw new Error(
         `site-data: a project with caseStudy is missing id/title/tagline (got id=${id}, title=${title}, tagline=${tagline})`,
@@ -207,8 +225,8 @@ export function readCaseStudies() {
       : undefined;
 
     const subtitle = readString(head, 'subtitle');
-    const blurb = readString(head, 'blurb');
-    const intro = readStringArray(caseBody, 'intro');
+    const blurb = stripInlineLinks(readString(head, 'blurb'));
+    const intro = readStringArray(caseBody, 'intro')?.map(stripInlineLinks);
 
     works.push({
       id,
@@ -224,8 +242,8 @@ export function readCaseStudies() {
       body: intro && intro.length ? intro : blurb ? [blurb] : [],
       tools: readStringArray(head, 'tools') ?? [],
       externalUrl: readString(head, 'url'),
-      stat: readObject(caseBody, 'stat', ['value', 'heading', 'body']),
-      order: readObject(caseBody, 'order', ['heading', 'body', 'suffix']),
+      stat: stripObject(readObject(caseBody, 'stat', ['value', 'heading', 'body'])),
+      order: stripObject(readObject(caseBody, 'order', ['heading', 'body', 'suffix'])),
       credits: readStringArray(caseBody, 'credits') ?? [],
       links: readObjectArray(caseBody, 'links', ['label', 'url']) ?? [],
       contributors: readObjectArray(caseBody, 'contributors', ['name', 'url', 'type']) ?? [],
