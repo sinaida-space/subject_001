@@ -500,8 +500,8 @@ export const PROJECTS: Project[] = [
     kind: 'game',
     tagline: 'Off-axis descent steered by head & hand movement: the body is the controller',
     blurb:
-      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. All tracking on-device, nothing leaves the machine. Raymarched GLSL, no frameworks. Built as a physical reset for people who sit too long at screens, and a working study in movement-driven visuals: the same system that lets a performer’s body drive the image.",
-    tools: ['WebGL2 / GLSL raymarching', 'MediaPipe body tracking', 'Web Audio'],
+      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. All tracking runs on the device, and nothing leaves the machine. Ray-based GLSL shading, no frameworks. An art experiment and a toy, and a working study in the body as controller: the same system can let a performer’s body drive the image.",
+    tools: ['WebGL2 / GLSL', 'MediaPipe body tracking', 'Web Audio'],
     skills: ['body-tracking', 'head-coupled', 'creative-web', 'algorithmic-systems', 'perception-media', 'interactive-installations'],
     image: workEtherealPath,
     url: 'https://sinaida-space.github.io/ethereal-path/',
@@ -513,6 +513,85 @@ export const PROJECTS: Project[] = [
     weight: 0.7,
     background: true,
     listed: true,
+    caseStudy: {
+      kindLabel: 'Interactive web',
+      intro: [
+        'Ethereal Path is\u00A0a\u00A0descent from under a\u00A0water surface into a\u00A0nebula, steered by\u00A0your head and\u00A0your hands. A\u00A0webcam reads your body on\u00A0the\u00A0device, and\u00A0where you lean changes how you see\u00A0the\u00A0tunnel.',
+        'It\u00A0is\u00A0an\u00A0art experiment and\u00A0a\u00A0toy. Every so\u00A0often the\u00A0drift stops at\u00A0a\u00A0broken ring, and\u00A0the\u00A0ring closes when you make the\u00A0movement it\u00A0asks for: a\u00A0slow turn of\u00A0the\u00A0head, a\u00A0shrug, a\u00A0reach. Then a\u00A0question arrives, and\u00A0the\u00A0descent\u00A0continues.',
+        'It\u00A0runs in\u00A0a\u00A0browser tab, with or\u00A0without a\u00A0camera, in\u00A0a\u00A0five-minute seated version and\u00A0an\u00A0eight-minute version that gets you onto your\u00A0feet.',
+      ],
+      heroCta: { label: 'Take the descent', url: 'https://sinaida-space.github.io/ethereal-path/' },
+      stat: {
+        value: '0',
+        heading: 'Camera frames that leave the device',
+        body: 'Pose tracking runs in\u00A0the\u00A0page. Nothing is\u00A0recorded or\u00A0sent. The\u00A0only network call is\u00A0a\u00A0one-time download of\u00A0the\u00A0tracking model, made only if\u00A0you choose\u00A0the\u00A0camera.',
+      },
+      sections: [
+        {
+          heading: 'What it is',
+          paragraphs: [
+            'A\u00A0browser artwork that uses the\u00A0body as\u00A0its controller. You start just below the\u00A0surface, look up\u00A0at\u00A0the\u00A0light and\u00A0dive into a\u00A0tunnel of\u00A0light filaments that opens into a\u00A0nebula. Sinaida made the\u00A0concept, the\u00A0code and\u00A0the\u00A0artwork. The\u00A0stack is\u00A0small on\u00A0purpose: plain JavaScript with WebGL2 and\u00A0GLSL, MediaPipe for\u00A0pose tracking, Web Audio for\u00A0sound, with no\u00A0framework and\u00A0no\u00A0build\u00A0step.',
+            'In her practice it is a study for larger rooms. Her installations need a body to drive the image with nothing in its hands, and this piece is where she learned to read one through an ordinary webcam.',
+          ],
+        },
+        {
+          heading: 'Where it started',
+          paragraphs: [
+            'With her own body after long days at\u00A0a\u00A0screen. Years at\u00A0the\u00A0ballet barre left a\u00A0memory in\u00A0it: movement resets the\u00A0head. She wanted a\u00A0piece that asks for\u00A0a\u00A0few real movements and\u00A0answers each one with\u00A0light.',
+            'The\u00A0second reason was practical. Body tracking is\u00A0the\u00A0controller for\u00A0the\u00A0bigger installations she wants to\u00A0build, and\u00A0a\u00A0small piece was the\u00A0right place to\u00A0learn what a\u00A0webcam can read well and\u00A0where\u00A0it\u00A0fails.',
+          ],
+        },
+        {
+          heading: 'What was tested',
+          paragraphs: [
+            'Perspective first. The\u00A0scene is\u00A0drawn through an\u00A0off-axis window: for\u00A0every pixel the\u00A0shader casts a\u00A0ray from your eye position through that point of\u00A0the\u00A0window, so\u00A0leaning shifts the\u00A0view the\u00A0way it\u00A0does at\u00A0a\u00A0real\u00A0window.',
+            'Then the\u00A0signals. Raw landmarks from the\u00A0lite MediaPipe pose model become smoothed signals measured against your starting position: head turn and\u00A0tilt, shrug, standing, rising onto the\u00A0toes and\u00A0hand height. The\u00A0drift pauses at\u00A0a\u00A0station, and\u00A0only a\u00A0verified movement closes the\u00A0ring. Every station also closes on\u00A0its own after 45 seconds, so\u00A0the\u00A0piece has no\u00A0failure\u00A0state.',
+            'The\u00A0camera stays optional. A\u00A0stand-in\u00A0for\u00A0pointer, keyboard or\u00A0touch produces the\u00A0same signals as\u00A0the\u00A0tracker, so\u00A0the\u00A0rest of\u00A0the\u00A0piece never needs to\u00A0know where its input comes\u00A0from.',
+          ],
+        },
+        {
+          heading: 'How it was made',
+          paragraphs: [
+            'The\u00A0first full pass took three days in\u00A0July 2026, built as\u00A0a\u00A0numbered series of\u00A0pull requests: renderer, tracking, tunnel shader, session arc, sound, onboarding, the\u00A0stations and\u00A0the\u00A0surface\u00A0scene.',
+            'The\u00A0tunnel changed its method on\u00A0the\u00A0way. Version 1.0 marched rays through a\u00A0volume. Version 1.1 shades each ray in\u00A0closed form, with cylinder walls and\u00A0layered filament noise, which gives every pixel a\u00A0fixed cost and\u00A0looks closer to\u00A0long-exposure photographs of\u00A0light streaks. A\u00A0short test at\u00A0startup times the\u00A0graphics card and\u00A0picks one of\u00A0three quality tiers, so\u00A0a\u00A0weak laptop still gets the\u00A0whole\u00A0descent.',
+            'There are no\u00A0audio files. Water, bubbles, the\u00A0plunge and\u00A0the\u00A0bells are synthesized in\u00A0the\u00A0browser, the\u00A0bells on\u00A0a\u00A0pentatonic set so\u00A0random notes cannot clash. One rule from the\u00A0code comments holds the\u00A0mix together: if\u00A0you notice the\u00A0music, it\u00A0is\u00A0too\u00A0loud.',
+          ],
+        },
+        {
+          heading: 'What it taught',
+          paragraphs: [
+            'Sinaida tried it with a few friends, and nobody recorded feedback. What the piece gave her is a working method for the body as input: pose and hand tracking that runs on the device, close attention to latency, and a camera image that never leaves the machine.',
+            'That method went into CONSPACE ROOMS, where visitors steer a\u00A0projected labyrinth with their bare hands:\u00A0https://sinaida.eu/work/conspace-rooms/',
+          ],
+        },
+      ],
+      media: [
+        {
+          label: 'The descent',
+          video: '15wl2Sko5GA',
+          caption: 'A\u00A031-second demo of\u00A0the\u00A0piece.',
+        },
+      ],
+      method: {
+        trace: '> idea_pipeline.trace() // body → light',
+        stages: [
+          { label: 'The window', detail: 'The\u00A0scene is\u00A0drawn through an\u00A0off-axis window. Your head position moves the\u00A0eye, so\u00A0leaning changes\u00A0the\u00A0view.' },
+          { label: 'Pose signals', detail: 'On-device pose tracking becomes smoothed signals measured from your starting position: head turn and\u00A0tilt, shrug, standing, rise plus the\u00A0height of\u00A0each\u00A0hand.' },
+          { label: 'Stations', detail: 'The\u00A0drift pauses at\u00A0a\u00A0broken ring. A\u00A0verified movement closes it. Every station also closes on\u00A0a\u00A0timeout, so\u00A0there is\u00A0no\u00A0failure\u00A0state.' },
+          { label: 'Light and sound', detail: 'Closed-form tunnel shading with bloom, and\u00A0procedural sound with no\u00A0audio files. Three quality tiers keep the\u00A0frame rate steady on\u00A0weaker graphics\u00A0cards.' },
+          { label: 'The questions', detail: 'A\u00A0shuffled deck of\u00A054 reflection questions, drawn one at\u00A0a\u00A0time as\u00A0the\u00A0rings\u00A0close.' },
+        ],
+        footer: '> code & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
+      },
+      credits: ['Concept, code & artwork: Sinaida Krivchenko · sinaida.eu · @sin.ai.da'],
+      links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/ethereal-path' }],
+      order: {
+        heading: 'What a space can commission',
+        body:
+          'The tracking tested here was built for rooms: a projection where a visitor’s movement drives the image, with nothing in their hands. Bring a space and a question, and Sinaida turns them into a body-driven experience with a working system underneath.',
+        suffix: 'to plan a body-driven piece for your space.',
+      },
+    },
   },
 
   {
@@ -522,7 +601,7 @@ export const PROJECTS: Project[] = [
     kind: 'game',
     tagline: 'Head-coupled op-art: the screen becomes an unstable optical volume',
     blurb:
-      "The browser estimates the viewer’s head position with on-device face tracking and shifts the projection in response, so the monitor behaves like an optical volume behind glass: op-art interference, a star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an open hand raised near the face) opens the next question. The same off-axis, viewer-coupled craft that stage illusions are built from.",
+      "The\u00A0browser estimates the\u00A0viewer’s head position with on-device face tracking and\u00A0shifts the\u00A0projection in\u00A0response, so\u00A0the\u00A0monitor behaves like an\u00A0optical volume behind glass: op-art interference, a\u00A0star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an\u00A0open hand raised near the\u00A0face) opens the\u00A0next question. A\u00A0browser test of\u00A0an\u00A0old lineage, from anamorphic painting to\u00A0head-coupled perspective and\u00A0the\u00A0camera-tracked LED volumes of\u00A0film\u00A0sets.",
     tools: ['Web', 'MediaPipe face & hand tracking'],
     skills: ['head-coupled', 'body-tracking', 'creative-web', 'perception-media', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/stereolove/',
@@ -534,6 +613,86 @@ export const PROJECTS: Project[] = [
     badges: ['camera'],
     weight: 0.7,
     background: true,
+    caseStudy: {
+      kindLabel: 'Interactive web',
+      intro: [
+        'Stereolove turns a\u00A0flat monitor into an\u00A0optical volume. A\u00A0webcam finds your head, and\u00A0the\u00A0picture shifts as\u00A0if\u00A0the\u00A0screen were a\u00A0window onto a\u00A0star tunnel behind\u00A0the\u00A0glass.',
+        'Questions hang inside the\u00A0tunnel as\u00A0clouds of\u00A0cyan points. From one viewpoint they line up\u00A0into words; move, and\u00A0they scatter. Raise an\u00A0open hand near your face and\u00A0the\u00A0next question\u00A0arrives.',
+      ],
+      heroCta: { label: 'Enter Stereolove', url: 'https://sinaida-space.github.io/stereolove/' },
+      stat: {
+        value: '3',
+        heading: 'Ways in',
+        body: 'Camera, mouse or\u00A0touch. The\u00A0same space opens through all three, and\u00A0the\u00A0camera is\u00A0never\u00A0required.',
+      },
+      sections: [
+        {
+          heading: 'What it is',
+          paragraphs: [
+            'A\u00A0head-coupled op-art piece for\u00A0the\u00A0browser, with the\u00A0concept title “The\u00A0Reality Negotiator”. The\u00A0monitor behaves like glass over a\u00A0luminous tunnel of\u00A0wireframe rings and\u00A0spokes. The\u00A0structure never moves on\u00A0a\u00A0timer; only the\u00A0star field drifts through depth, so\u00A0every shift in\u00A0the\u00A0picture comes from the\u00A0person in\u00A0front\u00A0of\u00A0the\u00A0screen.',
+            'In\u00A0her practice it\u00A0belongs to\u00A0the\u00A0perception work, pieces that ask how much of\u00A0what we\u00A0see is\u00A0in\u00A0the\u00A0object and\u00A0how much the\u00A0observer builds. Sinaida made the\u00A0concept, the\u00A0code\u00A0and\u00A0the\u00A0artwork.',
+          ],
+        },
+        {
+          heading: 'Where it started',
+          paragraphs: [
+            'With Magic Eye pictures. Some people see the\u00A0hidden depth, and\u00A0some never do. That frustration stayed with Sinaida, and\u00A0her biomedical training gave it\u00A0a\u00A0frame: perception is\u00A0a\u00A0negotiation between the\u00A0eye\u00A0and\u00A0the\u00A0brain.',
+            'Stereolove reverses the stereogram. The image adapts to the viewer, so nobody has to cross their eyes and wait. It grew out of her research into illusions for the stage, and the questions hidden in the tunnel are ones she asks herself.',
+          ],
+        },
+        {
+          heading: 'What was tested',
+          paragraphs: [
+            'Head-coupled perspective. A virtual eye sits in front of the screen, and every point of the scene is projected through it onto the screen plane, so when the eye moves the picture shifts like the view through a window. The projection math lives in one pure module with unit tests. Depth comes from motion parallax alone, and the eyes never have to fuse two images.',
+            'Anamorphic text. Each question is\u00A0drawn to\u00A0a\u00A0canvas and\u00A0sampled into points, and\u00A0every point is\u00A0placed on\u00A0the\u00A0sightline from one reveal position through its letter, each at\u00A0a\u00A0different depth. From that position the\u00A0points read as\u00A0words; anywhere else, parallax pulls them apart. A\u00A0resolved question stays readable for\u00A0at\u00A0least three seconds, then dissolves like\u00A0smoke.',
+            'The\u00A0lineage is\u00A0old. Holbein’s The\u00A0Ambassadors (1533) hides a\u00A0skull that resolves from one viewpoint only. Colin Ware and\u00A0colleagues described head-coupled “fish tank” virtual reality in\u00A01993, and\u00A0Johnny Chung Lee showed head tracking with a\u00A0Wii remote in\u00A02007. Film sets now use camera-tracked LED volumes that redraw the\u00A0scene for\u00A0the\u00A0camera’s position. Stereolove tests that line of\u00A0work in\u00A0a\u00A0browser tab, with an\u00A0ordinary\u00A0webcam.',
+          ],
+        },
+        {
+          heading: 'How it was made',
+          paragraphs: [
+            'The\u00A0first prototype went up\u00A0in\u00A0May 2026, and\u00A0within days it\u00A0had a\u00A0question chamber, the\u00A0starflight reveal, sound cues and\u00A0a\u00A0mobile layout. Tracking runs on\u00A0the\u00A0device: the\u00A0MediaPipe face model for\u00A0head position and\u00A0the\u00A0hand model for\u00A0one gesture, an\u00A0open hand near the\u00A0face. The\u00A0first stable face position counts as\u00A0neutral, and\u00A0MediaPipe loads only when the\u00A0camera mode starts, so\u00A0a\u00A0blocked camera never breaks\u00A0the\u00A0piece.',
+            'Then came the\u00A0frame budget. The\u00A0renderer measures its own cost and, when it\u00A0has to, lowers the\u00A0frame rate and\u00A0pixel density, thins the\u00A0points and\u00A0drops glow passes. Face and\u00A0hand detection are throttled and\u00A0never run in\u00A0the\u00A0same animation frame. All sound is\u00A0generated in\u00A0the\u00A0browser after the\u00A0visitor picks a\u00A0mode, and\u00A0no\u00A0audio file\u00A0is\u00A0loaded.',
+          ],
+        },
+        {
+          heading: 'What it taught',
+          paragraphs: [
+            'Sinaida tested it\u00A0on\u00A0a\u00A0projection, with friends around. The\u00A0piece made the\u00A0frame budget part of\u00A0the\u00A0design: a\u00A0renderer that watches its own cost and\u00A0sheds detail before it\u00A0drops\u00A0the\u00A0experience.',
+            'The\u00A0same habit of\u00A0measuring performance on\u00A0ordinary machines runs through CONSPACE ROOMS, where every passage between rooms was measured frame by\u00A0frame:\u00A0https://sinaida.eu/work/conspace-rooms/',
+          ],
+        },
+      ],
+      media: [
+        {
+          label: 'The viewpoint moves',
+          video: 'jQy4Kk70hxM',
+          caption: 'An\u00A08-second demo of\u00A0the\u00A0piece.',
+        },
+      ],
+      method: {
+        trace: '> idea_pipeline.trace() // viewpoint → volume',
+        stages: [
+          { label: 'The premise', detail: 'A\u00A0stereogram withholds depth from some viewers. Reverse it: the\u00A0image adapts\u00A0to\u00A0the\u00A0viewer.' },
+          { label: 'Head-coupled projection', detail: 'A\u00A0virtual eye in\u00A0front of\u00A0the\u00A0screen, every point projected through it. Pure math, unit\u00A0tested.' },
+          { label: 'Anamorphic points', detail: 'Question text sampled into points and\u00A0placed along sightlines from a\u00A0reveal eye, readable from one angle\u00A0only.' },
+          { label: 'Tracking', detail: 'On-device face and\u00A0hand landmarks. The\u00A0first stable face becomes neutral. MediaPipe loads only when the\u00A0camera\u00A0starts.' },
+          { label: 'Frame budget', detail: 'The\u00A0renderer watches its own frame cost and\u00A0sheds detail, frame rate and\u00A0glow before it\u00A0drops\u00A0the\u00A0experience.' },
+        ],
+        footer: '> code & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
+      },
+      credits: [
+        'Concept, code & artwork: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Title typeface: Bitmgothic, 1001Fonts',
+      ],
+      links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/stereolove' }],
+      order: {
+        heading: 'What an exhibition or a stage can commission',
+        body:
+          'Stereolove is a perception piece at the scale of one viewer and one screen: an image that answers where you stand. Exhibitions and stages can bring her a room, a show or a question, and Sinaida designs the illusion together with the system that holds it in place.',
+        suffix: 'to talk about a perception piece.',
+      },
+    },
   },
 
   {
@@ -544,7 +703,7 @@ export const PROJECTS: Project[] = [
     kind: 'game',
     tagline: 'Endless generated soundscapes for focused work, with rest built into the session',
     blurb:
-      'Layer noise, water, fire, places and music into one mix, save it as a preset, and let it run for hours. Sinaida built it for her own working day. Ballet taught her that rest is where growth happens, so the breaks are timed with the same care as the work. An audio-reactive tunnel breathes with the sound. It installs as an app, works offline and tracks\u00A0nothing.',
+      'Layer noise, water, fire, places and\u00A0music into one mix, save it\u00A0as\u00A0a\u00A0preset, and\u00A0let it\u00A0run for\u00A0hours. Sinaida built it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work. An\u00A0audio-reactive tunnel breathes with the\u00A0sound. It\u00A0installs as\u00A0an\u00A0app, works offline, and\u00A0nothing you\u00A0do\u00A0in\u00A0it\u00A0is\u00A0tracked.',
     tools: ['Web Audio API', 'WebGL', 'Offline web app'],
     skills: ['generative-sound', 'audio-reactive', 'creative-web', 'perception-media'],
     url: 'https://infinite-voidsong.vercel.app/',
@@ -555,6 +714,85 @@ export const PROJECTS: Project[] = [
     ],
     badges: ['sound'],
     weight: 0.9,
+    caseStudy: {
+      kindLabel: 'Web tool',
+      intro: [
+        'Infinite Voidsong generates sound for\u00A0focused work and\u00A0keeps playing for\u00A0as\u00A0long as\u00A0you need. You layer sounds from six families into one mix, from noise and\u00A0rain to\u00A0places and\u00A0music, save it\u00A0as\u00A0a\u00A0preset and\u00A0leave\u00A0it\u00A0running.',
+        'Sinaida built it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work, and\u00A0a\u00A0session ends with a\u00A0slow fade and\u00A0a\u00A0soft\u00A0chime.',
+        'A\u00A0tunnel drawn in\u00A0WebGL moves with the\u00A0sound. The\u00A0tool installs as\u00A0an\u00A0app, works offline, has no\u00A0accounts and\u00A0tracks\u00A0nothing.',
+      ],
+      heroCta: { label: 'Open Infinite Voidsong', url: 'https://infinite-voidsong.vercel.app/' },
+      stat: {
+        value: '0',
+        heading: 'Accounts, cookies or trackers',
+        body: 'The\u00A0whole application is\u00A0static. Your mixes and\u00A0presets stay in\u00A0the\u00A0browser on\u00A0your own\u00A0machine.',
+      },
+      sections: [
+        {
+          heading: 'What it is',
+          paragraphs: [
+            'A\u00A0free web tool for\u00A0background sound. It\u00A0starts by\u00A0asking what you are doing, from deep focus to\u00A0sleep, then how long the\u00A0session should be, where you are and\u00A0how you listen. Only then does the\u00A0sound\u00A0begin.',
+            'In\u00A0her practice it\u00A0is\u00A0the\u00A0sound environment, a\u00A0piece that lives in\u00A0the\u00A0background of\u00A0a\u00A0working day. Sinaida designed it\u00A0and\u00A0directed the\u00A0build: Vite and\u00A0TypeScript, with no\u00A0framework and\u00A0no\u00A0runtime\u00A0dependencies.',
+          ],
+        },
+        {
+          heading: 'Where it started',
+          paragraphs: [
+            'The\u00A0name came first. Only when there is\u00A0no\u00A0distraction, when nothing is\u00A0around, are we\u00A0pushed to\u00A0make something. The\u00A0void is\u00A0where the\u00A0need to\u00A0create shows up, and\u00A0the\u00A0song is\u00A0what a\u00A0person makes to\u00A0fill it. This one runs for\u00A0as\u00A0long as\u00A0the\u00A0work\u00A0does.',
+            'The\u00A0tool also takes care with evidence. Background sound helps some people with some tasks and\u00A0hurts others, so\u00A0it\u00A0asks about the\u00A0task first. It\u00A0says plainly that it\u00A0is\u00A0no\u00A0medical device and\u00A0makes no\u00A0health claims, and\u00A0its research page lists the\u00A0studies it\u00A0draws on, with what each one does and\u00A0does not\u00A0show.',
+          ],
+        },
+        {
+          heading: 'What was tested',
+          paragraphs: [
+            'Generated sound that holds for\u00A0hours. Everything is\u00A0synthesized live with the\u00A0Web Audio API. One audio worklet makes the\u00A0noise: white from a\u00A0xorshift generator, pink from Paul Kellet’s seven-pole filter, brown from a\u00A0leaky integrator. A\u00A0single tilt control blends neighboring colors with an\u00A0equal-power law, so\u00A0loudness stays flat across\u00A0the\u00A0sweep.',
+            'Recordings where they help. Since version 1.2.0, six nature layers can play short CC0 field recordings from BigSoundBank, about 3 MB in\u00A0all, loaded on\u00A0first use and\u00A0cached. The\u00A0generated versions stay as\u00A0stand-ins. The\u00A0music sources run on\u00A0a\u00A0small scheduler, and\u00A0a\u00A0Harmony switch moves chord progressions along the\u00A0circle of\u00A0fifths while staying inside one\u00A0key.',
+            'Focus Boost, an\u00A0optional pulse on\u00A0the\u00A0music layer, runs at\u00A012 to\u00A020 pulses a\u00A0second, built from an\u00A0oscillator driving a\u00A0gain node. The\u00A0tunnel follows the\u00A0mouse on\u00A0a\u00A0computer and\u00A0stays still on\u00A0a\u00A0phone. The\u00A0tilt sensor is\u00A0left out on\u00A0purpose, so\u00A0iOS never asks the\u00A0visitor for\u00A0motion\u00A0permission.',
+          ],
+        },
+        {
+          heading: 'How it was made',
+          paragraphs: [
+            'Sinaida has used ChatGPT since January 2023, and\u00A0her work with machine learning goes back further. At\u00A0university she taught perceptrons and\u00A0built predictive algorithms that sorted cases for\u00A0a\u00A0cervical cancer screening system. Since January 2026 she codes with AI agents through an\u00A0orchestrator she built herself, Mahler (https://github.com/sinaida-space/mahler-the-orchestrator). It\u00A0splits the\u00A0work, writes the\u00A0specs and\u00A0routes each task to\u00A0the\u00A0model that fits it. The\u00A0repository of\u00A0this tool keeps its plan, with every task assigned to\u00A0a\u00A0named\u00A0model.',
+            'Her years in\u00A0General Electric’s IT\u00A0Leadership Program (2012–2015, rotations across countries and\u00A0businesses) taught her to\u00A0build systems where many hands deliver one result. Now the\u00A0hands are AI agents. The\u00A0thinking that sets the\u00A0system, its rules and\u00A0its taste stays human, and\u00A0so\u00A0does what the\u00A0work is\u00A0about: bodies, perception, rest,\u00A0weather.',
+            'The\u00A0interface grew in\u00A0layers: the\u00A0audio engine first, then flat windows in\u00A0the\u00A0style of\u00A0this site with Geist Pixel as\u00A0the\u00A0only typeface, a\u00A0terminal-style welcome screen and\u00A0a\u00A0guide. Version 1.2.0 came two days after the\u00A0repository was\u00A0created.',
+          ],
+        },
+        {
+          heading: 'What it taught',
+          paragraphs: [
+            'Sinaida and\u00A0her friends use it, and\u00A0people she has never met have written online to\u00A0thank\u00A0her.',
+            'It\u00A0rests on\u00A0two working methods: directing AI agents by\u00A0spec, and\u00A0shipping a\u00A0browser piece end to\u00A0end, with performance on\u00A0ordinary machines, offline use, phones, accessibility, all in\u00A0the\u00A0same release. Both run through CONSPACE ROOMS as\u00A0well:\u00A0https://sinaida.eu/work/conspace-rooms/',
+          ],
+        },
+      ],
+      method: {
+        trace: '> idea_pipeline.trace() // question → sound',
+        stages: [
+          { label: 'The question', detail: 'The\u00A0welcome screen asks what you are doing before any sound plays, from deep focus\u00A0to\u00A0sleep.' },
+          { label: 'Generated sound', detail: 'Noise, nature, places, machines, instrumental music: all synthesized live with the\u00A0Web Audio API. Noise runs on\u00A0an\u00A0audio\u00A0worklet.' },
+          { label: 'Recorded where it helps', detail: 'Six nature layers can use short CC0 field recordings, loaded on\u00A0first use and\u00A0cached. The\u00A0generated versions remain\u00A0as\u00A0stand-ins.' },
+          { label: 'Harmony', detail: 'Chord progressions move along the\u00A0circle of\u00A0fifths inside one key, with longer 32 and\u00A064 step\u00A0phrases.' },
+          { label: 'Rest on a timer', detail: 'Work and\u00A0break presets of\u00A025/5, 50/10 and\u00A090/15, or\u00A0your own minutes. The\u00A0session ends with a\u00A0slow\u00A0fade.' },
+          { label: 'The tunnel', detail: 'A\u00A0WebGL2 tunnel with ordered dither reacts to\u00A0the\u00A0sound, and\u00A0its color follows the\u00A0sound you\u00A0pick.' },
+        ],
+        footer: '> code & artwork: Sinaida Krivchenko · Apache 2.0 · field recordings CC0 (BigSoundBank)',
+      },
+      credits: [
+        'Concept, code & design: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Field recordings: CC0, BigSoundBank',
+        'Typeface: Geist Pixel',
+      ],
+      links: [
+        { label: 'GitHub', url: 'https://github.com/sinaida-space/infinite-voidsong' },
+      ],
+      order: {
+        heading: 'What a space can commission',
+        body:
+          'Infinite Voidsong is\u00A0a\u00A0sound environment for\u00A0one person at\u00A0a\u00A0desk. The\u00A0same engine can be\u00A0shaped for\u00A0a\u00A0room where people wait, work or\u00A0rest. Bring the\u00A0space and\u00A0what happens in\u00A0it, and\u00A0Sinaida designs the\u00A0sound and\u00A0the\u00A0engine for\u00A0that\u00A0room.',
+        suffix: 'to talk about a sound environment.',
+      },
+    },
   },
   {
     id: 'storm-glass',
@@ -564,7 +802,7 @@ export const PROJECTS: Project[] = [
     kind: 'tutorial',
     tagline: 'A thunderstorm behind rainy glass, built in TouchDesigner: the bass fires the lightning',
     blurb:
-      'Clouds drift on their own, every hit in the bass fires a forked bolt, and raindrops slide, merge and bend the storm behind them. The tutorial builds the whole network step by step: noise and feedback for the sky, a script that grows a fresh bolt on each onset, a small physics sim for the drops and a GLSL pass for the refraction. The same audio-to-light chain drives her concert\u00A0visuals.',
+      'Rain on\u00A0a\u00A0window with a\u00A0storm behind it, built in\u00A0TouchDesigner, with a\u00A023-minute video that walks through the\u00A0finished network. Raindrops are spheres moving along a\u00A0line grid, the\u00A0lightning follows a\u00A0geometry path built with custom code, and\u00A0the\u00A0view comes from one of\u00A0TouchDesigner\u2019s example files. The .toe and\u00A0the\u00A0sound file are on\u00A0Patreon for\u00A0every\u00A0subscriber.',
     tools: ['TouchDesigner', 'GLSL shader', 'Audio analysis'],
     skills: ['touchdesigner', 'audio-reactive', 'algorithmic-systems', 'creative-web'],
     url: 'https://youtu.be/hwFttiCKbrU',
@@ -581,6 +819,82 @@ export const PROJECTS: Project[] = [
     badges: ['sound'],
     weight: 0.7,
     background: true,
+    caseStudy: {
+      kindLabel: 'Tutorial',
+      intro: [
+        'Storm Glass is\u00A0a\u00A0thunderstorm seen through a\u00A0rainy window, built in\u00A0TouchDesigner. It\u00A0comes with a\u00A023-minute video that walks through the\u00A0whole network\u00A0as\u00A0it\u00A0stands.',
+        'It\u00A0is\u00A0a\u00A0teaching case: a\u00A0messy network, opened up\u00A0so\u00A0that others can load it, take it\u00A0apart and\u00A0learn from it. The .toe file and\u00A0the\u00A0sound file are on\u00A0Patreon for\u00A0all subscribers, free tier\u00A0included.',
+      ],
+      heroCta: { label: 'Watch the network overview', url: 'https://youtu.be/hwFttiCKbrU' },
+      sections: [
+        {
+          heading: 'What it is',
+          paragraphs: [
+            'A\u00A0TouchDesigner network and\u00A0an\u00A0overview video of\u00A0it. Sinaida built the\u00A0network, recorded the\u00A0video and\u00A0put the\u00A0files on\u00A0her Patreon, so\u00A0anyone can open the\u00A0same project she shows on\u00A0screen. In\u00A0her practice it\u00A0is\u00A0teaching work, the\u00A0side that turns her own networks into material others can learn\u00A0from.',
+          ],
+        },
+        {
+          heading: 'Where it started',
+          paragraphs: [
+            'Purple Rain by\u00A0Prince came up\u00A0in\u00A0her playlist. The\u00A0nostalgia turned into building a\u00A0rain\u00A0network.',
+            'Her Patreon post ends with a\u00A0line that fits the\u00A0whole piece: there is\u00A0no\u00A0rainbow without\u00A0the\u00A0rain.',
+          ],
+        },
+        {
+          heading: 'What was tested',
+          paragraphs: [
+            'Raindrops are spheres moving along a\u00A0line grid. The\u00A0lightning bolt follows a\u00A0geometry path built with custom code. The\u00A0view comes from one of\u00A0TouchDesigner’s example files. Between them sit, in\u00A0her words, “way too many” comps\u00A0and\u00A0displaces.',
+            'The\u00A0stylized water map is\u00A0a\u00A0Substance file from Adobe Substance 3D Community Assets, stylized_water by\u00A0Etienne Patry. Each user downloads it\u00A0and\u00A0adds\u00A0it\u00A0to\u00A0the\u00A0network.',
+          ],
+        },
+        {
+          heading: 'How it was made',
+          paragraphs: [
+            'The\u00A0video is\u00A0an\u00A0overview of\u00A0the\u00A0finished network. It\u00A0goes through what each part does, and\u00A0the\u00A0viewer can then open the\u00A0same file and\u00A0look around at\u00A0their own\u00A0pace.',
+            'The\u00A0Patreon post says openly that the\u00A0network is\u00A0far from perfect and\u00A0asks for\u00A0better ideas for\u00A0the\u00A0raindrops. The\u00A0files went out as\u00A0they are, so\u00A0anyone with a\u00A0better idea can try it\u00A0inside the\u00A0same\u00A0network.',
+          ],
+        },
+        {
+          heading: 'What it taught',
+          paragraphs: [
+            'A\u00A0messy network becomes useful to\u00A0others once others can open it, follow it\u00A0and\u00A0question it. Storm Glass is\u00A0where Sinaida practices that handover\u00A0in\u00A0public.',
+            'It\u00A0also belongs to\u00A0the\u00A0work where sound and\u00A0light run as\u00A0one system. The\u00A0same thinking runs live behind the\u00A0band Redkie Ptitsy (https://sinaida.eu/work/redkie-ptitsy/) and\u00A0in\u00A0CONSPACE ROOMS, where the\u00A0music is\u00A0generated as\u00A0the\u00A0visitor walks\u00A0(https://sinaida.eu/work/conspace-rooms/).',
+          ],
+        },
+      ],
+      media: [
+        {
+          label: 'The network overview',
+          video: 'hwFttiCKbrU',
+          caption: '23 minutes through the\u00A0finished network.',
+        },
+      ],
+      method: {
+        trace: '> network.trace() // rain → bolt → view',
+        stages: [
+          { label: 'Rain', detail: 'Raindrops are spheres moving along a\u00A0line\u00A0grid.' },
+          { label: 'Lightning', detail: 'The\u00A0bolt follows a\u00A0geometry path built with custom\u00A0code.' },
+          { label: 'View', detail: 'The\u00A0view comes from one of\u00A0TouchDesigner’s example\u00A0files.' },
+          { label: 'Water', detail: 'A\u00A0stylized water Substance map, which each user adds from Adobe Substance 3D Community\u00A0Assets.' },
+          { label: 'Files', detail: 'The .toe and\u00A0the\u00A0sound file, on\u00A0Patreon for\u00A0all\u00A0subscribers.' },
+        ],
+        footer: '> network & tutorial: Sinaida Krivchenko · water map: Etienne Patry (Adobe Substance 3D Community Assets)',
+      },
+      credits: [
+        'Network & tutorial: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Water map: stylized_water by Etienne Patry, from Adobe Substance 3D Community Assets',
+      ],
+      links: [
+        { label: 'Project files on Patreon', url: 'https://www.patreon.com/theswansarenotwhattheyseem/posts/rain-and-169292587' },
+        { label: 'YouTube channel', url: 'https://www.youtube.com/@theSwansAreNotWhatTheySeem' },
+      ],
+      order: {
+        heading: 'What a team can book',
+        body:
+          'Storm Glass shows the\u00A0teaching side of\u00A0her TouchDesigner work: a\u00A0network others can open and\u00A0learn from. Studios and\u00A0teams can bring her a\u00A0network to\u00A0build or\u00A0untangle, or\u00A0a\u00A0group to\u00A0teach, and\u00A0Sinaida turns it\u00A0into a\u00A0system people can run\u00A0and\u00A0understand.',
+        suffix: 'to talk about a network or a session.',
+      },
+    },
   },
 ];
 
