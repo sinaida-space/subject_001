@@ -270,6 +270,9 @@ export default function WorkCase() {
               <div key={m.video} className="mt-10">
                 <div className="clinical-label mb-3 text-foreground/65">{m.label}</div>
                 <VideoEmbed id={m.video} title={`${project.title}: ${m.label}`} />
+                {m.date && (
+                  <div className="clinical-label mt-2 text-foreground/65">{m.date}</div>
+                )}
                 {m.caption && (
                   <p className="mt-2 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
                     {m.caption}

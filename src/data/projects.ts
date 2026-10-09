@@ -37,6 +37,8 @@ export interface CaseMedia {
   label: string;
   video: string;
   caption?: string;
+  /** Performance date, shown under the video (never in the title). */
+  date?: string;
 }
 
 /** Content of the animated signal-chain diagram on a case page. */
@@ -171,10 +173,11 @@ export const PROJECTS: Project[] = [
           caption:
             'No audio: the songs are the label’s masters, rights unclear for redistribution. This is the visual system running clean, without the room mix.',
         },
-        { label: 'Live at Sklad No. 3', video: 'bDDAXRlz5FQ' },
+        { label: 'Live at Sklad No. 3', video: 'bDDAXRlz5FQ', date: '26 March 2026' },
         {
           label: 'Nine logos, one code',
           video: 'qpXGjDI2N64',
+          date: '26 March 2026',
           caption:
             'The logo animations were performed in between the songs. Those are logo variations that run through nine different TouchDesigner treatments, all driven by one signal: the band name, Redkie Ptitsy (meaning, “rare birds”) encoded in Morse code.',
         },
