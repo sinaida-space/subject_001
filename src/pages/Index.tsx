@@ -8,6 +8,7 @@ import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import MoleculeBreak, { SectionBand } from '@/components/MoleculeBreak';
+import WorkGate from '@/components/WorkGate';
 import HorizonGate from '@/components/HorizonGate';
 import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -117,7 +118,13 @@ const Index = () => {
         )}
         <MoleculeBreak id="dopamine" />
         {/* HOW + WHAT — skills and every project, one living Signal Map */}
-        <Constellation />
+        {full ? (
+          <WorkGate>
+            <Constellation />
+          </WorkGate>
+        ) : (
+          <Constellation />
+        )}
         <MoleculeBreak id="serotonin" />
         <ServicesTerminal />
         <MoleculeBreak id="oxytocin" />
