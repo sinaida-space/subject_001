@@ -513,7 +513,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       if (portrait && photoImg && photoFrame) {
         if (sy <= S0) {
           portrait.draw(0, 1);
-          photoImg.style.opacity = '';
+          put(photoImg, 'opacity', '');
         } else {
           const r = photoFrame.getBoundingClientRect();
           const built = clamp01((sy - g.photoA) / (g.photoB - g.photoA));
@@ -530,8 +530,8 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
         if (sy >= g.end) {
           // past the gate: the line has flown off, the hero is gone while still on screen
           domActive = true;
-          horizon.style.opacity = '0';
-          if (hero.getBoundingClientRect().bottom > 0) hero.style.opacity = '0';
+          put(horizon, 'opacity', '0');
+          if (hero.getBoundingClientRect().bottom > 0) put(hero, 'opacity', '0');
         }
         show(false);
         return;
@@ -588,7 +588,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       clearTimeout(buildTimer);
       buildTimer = window.setTimeout(() => {
         clearDom();
-        about.style.transform = '';
+        put(about, 'transform', '');
         build();
         schedule();
       }, delay);
