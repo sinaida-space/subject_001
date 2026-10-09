@@ -372,7 +372,9 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       const aboutTop = aboutBox.top + sy;
       // lift About so its heading sits at ~60% of the screen once the line is up
       g.lift = Math.max(0, aboutTop + 80 - (S0 + LIFT_RISE) - vh * 0.6);
-      g.liftEnd = S0 + LIFT_RISE + Math.max(500, (1.5 * g.lift) / 0.9);
+      // the lift unwinds at no more than 0.4 px per px of scroll, so About keeps
+      // moving up at 60 % of the scroll speed or more and never reads as stuck
+      g.liftEnd = S0 + LIFT_RISE + Math.max(500, (1.5 * g.lift) / 0.4);
 
       // hero cells
       const heroBox = hero.getBoundingClientRect();
