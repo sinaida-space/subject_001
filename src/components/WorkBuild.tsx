@@ -122,6 +122,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       if (!on) ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
 
+    let trackH = -1;
     let pourL = 0;
     let mapL = 0;
     let raf = 0;
@@ -139,6 +140,11 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const track = root.querySelector<HTMLElement>('[data-build-track]');
       const room = root.querySelector<HTMLElement>('[data-build-room]');
       let mapP = 0;
+      // the graph loads lazily and can change height: keep its sticky offset in step
+      if (track && track.scrollHeight !== trackH) {
+        trackH = track.scrollHeight;
+        placeTrack();
+      }
       if (track) {
         const tr = track.getBoundingClientRect();
         if (room && room.offsetHeight > 0) {
@@ -199,7 +205,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const room = root.querySelector<HTMLElement>('[data-build-room]');
       if (!track || !room || room.offsetHeight === 0) return;
       const vh = window.innerHeight;
-      track.style.top = `${Math.round(Math.min(vh * 0.05, vh * 0.97 - track.offsetHeight))}px`;
+      track.style.top = `${Math.round(Math.min(vh * 0.05, vh * 0.97 - track.scrollHeight))}px`;
     };
     placeTrack();
     const onResize = () => {

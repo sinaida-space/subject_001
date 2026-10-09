@@ -89,6 +89,8 @@ export default function Constellation() {
                down into that list's text. */}
             {/* In full mode on desktop the graph holds still while it builds
                 itself (WorkBuild): sticky over its own scroll room below. */}
+            {/* the graph and its build room share one box, so the graph lets go where the room ends */}
+            <div>
             <div
               ref={graphBoundsRef}
               data-build-track
@@ -129,6 +131,7 @@ export default function Constellation() {
             {openProject && <ProjectDetail project={openProject} onClose={closeProject} origin={mode === 'full' ? openOrigin : undefined} />}
 
             {mode === 'full' && !IS_COARSE && <div data-build-room aria-hidden="true" className="hidden md:block" style={{ height: '200vh' }} />}
+            </div>
 
             {/* Plain-text reading always sits below the map in full mode; in
                lite mode (auto-detected or manually toggled via Header/Footer)
