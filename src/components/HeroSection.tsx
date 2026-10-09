@@ -303,28 +303,25 @@ export default function HeroSection() {
     if ((glowing && !prev.glowing) || (glowing && prev.visible && !whisper.visible)) setFlare((k) => k + 1);
     prevWhisper.current = { glowing, visible: whisper.visible };
   }, [glowing, whisper.visible]);
+  // While a question is up, both lines step back so it reads alone. Colours
+  // stay; only opacity drops.
+  const dimClass = `transition-opacity duration-700 ease-out ${whisper.visible ? 'opacity-20' : 'opacity-100'}`;
   const [smallHero] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
   return (
     <section
       ref={sectionRef}
-      // pb-28 on phones: 100vh runs under the mobile browser toolbar and the
-      // cookie notice, which hid the positioning line in the first screen.
-      className="relative min-h-screen flex flex-col justify-between z-10 pt-40 md:pt-32 lg:pt-36 pb-28 md:pb-10"
+      // svh, not vh: on iOS 100vh runs under the browser toolbar, which sat
+      // the centred block visibly low. Padding is symmetric so the block
+      // centres on the screen itself. No text selection or callout: a long
+      // press is the easter egg, not a copy gesture.
+      className="relative min-h-[100svh] flex flex-col justify-center z-10 py-24 md:py-28 select-none [-webkit-touch-callout:none]"
       onTouchStart={holdTunnel}
       onTouchMove={moveTunnel}
       onTouchEnd={releaseTunnel}
       onTouchCancel={releaseTunnel}
     >
-      {/* Whisper question — see useHeroWhisper. Centered over the void
-          between the two headline anchors, not tied to cursor position. */}
-      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-8 text-center" aria-hidden="true">
-        <p className={`hero-whisper hero-whisper-text font-display uppercase tracking-tight text-[clamp(1.375rem,4.25vw,2.375rem)] ${whisper.visible ? 'hero-whisper-visible' : ''}`}>
-          {whisper.text}
-        </p>
-      </div>
-
-      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl mt-6 md:mt-10">
+      <div className={`${dimClass} container mx-auto px-6 max-w-7xl`}>
         {/* Same face and same size as the headline. The two lines are one
             voice; only weight and the red span separate them. Both hero lines
             share the same hover behavior: a sustained glow/bloom (hero-text-
@@ -356,13 +353,22 @@ export default function HeroSection() {
           in it is noradrenaline, drawn out of the same stars, off to the side
           of where the whisper surfaces. Short viewports have almost no void,
           so it steps aside there rather than sit on the headline. */}
-      <div className="relative flex-1">
+      {/* Sized to hold the molecule and a two-to-three-line whisper, no
+          more: the lines frame the void instead of pinning the screen edges. */}
+      <div className="relative h-[clamp(9rem,26vh,15rem)]">
+        {/* Whisper question — see useHeroWhisper. Centered in the void
+            between the two headline anchors, not tied to cursor position. */}
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-8 text-center" aria-hidden="true">
+          <p className={`hero-whisper hero-whisper-text font-display uppercase tracking-tight text-[clamp(1.375rem,4.25vw,2.375rem)] ${whisper.visible ? 'hero-whisper-visible' : ''}`}>
+            {whisper.text}
+          </p>
+        </div>
         <div className="absolute right-[34%] md:right-[26%] top-1/2 -translate-y-1/2 [@media(max-height:620px)]:hidden">
           <MoleculeNote id="noradrenaline" width={smallHero ? 150 : 220} height={smallHero ? 60 : 90} pulse={flare} />
         </div>
       </div>
 
-      <div className="container mx-auto px-8 md:px-10 lg:px-12 max-w-7xl mb-6 md:mb-10">
+      <div className={`${dimClass} container mx-auto px-6 max-w-7xl`}>
         {/* Two sizing regimes: below md the headline breaks into two lines and
             can run wide; above md it must hold on a single line, so the vw
             factor is set by character count.
