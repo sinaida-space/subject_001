@@ -1,7 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
-import { scrambleText } from '@/lib/scramble';
-import { useRenderMode } from '@/hooks/useRenderMode';
 
 
 // ── Stagger fade-in helper ───────────────────────────────────
@@ -35,102 +33,38 @@ function Reveal({ delay = 0, children }: { delay?: number; children: React.React
 }
 
 
+// The three bio rows. They used to resolve out of scrambled glyphs; in full
+// mode the horizon gate now builds them out of falling dither, so they render
+// as plain settled text and only fade in with the rest of the column.
 function BioSignalLock() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  const { mode } = useRenderMode();
-  const lite = mode === 'lite';
-  const [locked, setLocked] = useState(false);
-
   const rows = [
     ['ORIGIN', 'Biomedical engineering, MSc., Bauman Moscow State Technical University'],
     ['DRIFT', 'Ballet. General Electric IT Leadership Program. Generative systems.'],
     ['FOCUS', 'TouchDesigner visuals + audio-reactive stage systems.'],
   ];
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!visible || lite) return;
-    let frame = 0;
-    const interval = setInterval(() => {
-      frame += 1;
-      if (frame > 12) {
-        clearInterval(interval);
-        setLocked(true);
-      }
-    }, 55);
-    return () => clearInterval(interval);
-  }, [visible, lite]);
-
   return (
-    <div
-      ref={ref}
-      className="relative overflow-hidden mb-8"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(16px)',
-        transition: 'opacity 0.4s ease, transform 0.4s ease',
-      }}
-    >
-      <style>{`
-        @keyframes bio-scan {
-          0% { transform: translateY(-100%); opacity: 0; }
-          18% { opacity: 0.8; }
-          100% { transform: translateY(360%); opacity: 0; }
-        }
-        @keyframes bio-lock-pulse {
-          0%, 100% { opacity: 0.28; }
-          50% { opacity: 0.75; }
-        }
-      `}</style>
-      {!locked && !lite && (
-        <div
-          className="absolute left-0 right-0 h-10 pointer-events-none"
-          style={{
-            top: 0,
-            background: 'linear-gradient(to bottom, transparent, hsl(var(--accent) / 0.22), transparent)',
-            animation: 'bio-scan 0.8s linear infinite',
-          }}
-        />
-      )}
-      <div className="space-y-3">
-        {rows.map(([key, val], index) => {
-          const amount = locked || lite ? 0 : Math.max(0.08, 0.38 - index * 0.08);
-          return (
-            <div
-              key={key}
-              className="font-mono bio-row"
-              style={{
-                display: 'grid',
-                gap: '0 4px',
-                fontSize: 20,
-                color: 'hsl(var(--foreground) / 0.6)',
-                letterSpacing: '0.08em',
-                transition: 'color 0.35s ease',
-              }}
-            >
-              <span style={{ color: locked || lite ? 'hsl(var(--foreground) / 0.75)' : 'hsl(var(--primary-legible))', animation: locked || lite ? 'none' : 'bio-lock-pulse 0.45s ease-in-out infinite' }}>
-                {locked || lite ? key : scrambleText(key, amount)}
-              </span>
-              <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
-              <span>{locked || lite ? val : scrambleText(val, amount)}</span>
-            </div>
-          );
-        })}
+    <Reveal delay={300}>
+      <div className="space-y-3 mb-8">
+        {rows.map(([key, val]) => (
+          <div
+            key={key}
+            className="font-mono bio-row"
+            style={{
+              display: 'grid',
+              gap: '0 4px',
+              fontSize: 20,
+              color: 'hsl(var(--foreground) / 0.6)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            <span style={{ color: 'hsl(var(--foreground) / 0.75)' }}>{key}</span>
+            <span style={{ opacity: 0.35, textAlign: 'center' }}>·····</span>
+            <span>{val}</span>
+          </div>
+        ))}
       </div>
-    </div>
+    </Reveal>
   );
 }
 

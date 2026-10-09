@@ -8,6 +8,7 @@ import ServicesTerminal from '@/components/ServicesTerminal';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import MoleculeBreak, { SectionBand } from '@/components/MoleculeBreak';
+import HorizonGate from '@/components/HorizonGate';
 import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -89,17 +90,31 @@ const Index = () => {
       <main id="main-content" tabIndex={-1}>
         {/* WHY — who she is, human first */}
         <HeroSection />
-        {/* The red horizon: where the cover ends and the content begins. */}
-        <SectionBand>
-          <div className="container mx-auto px-6 max-w-7xl">
-            <Suspense fallback={<div className="section-divider" />}>
-              <DustReveal>
-                <div className="section-divider" />
-              </DustReveal>
-            </Suspense>
-          </div>
-        </SectionBand>
-        <AboutSection />
+        {/* The red horizon: where the cover ends and the content begins. In
+            full mode scrolling turns it into the gate that opens onto About. */}
+        {full ? (
+          <HorizonGate>
+            <SectionBand>
+              <div className="container mx-auto px-6 max-w-7xl">
+                <div className="section-divider" data-horizon />
+              </div>
+            </SectionBand>
+            <AboutSection />
+          </HorizonGate>
+        ) : (
+          <>
+            <SectionBand>
+              <div className="container mx-auto px-6 max-w-7xl">
+                <Suspense fallback={<div className="section-divider" />}>
+                  <DustReveal>
+                    <div className="section-divider" />
+                  </DustReveal>
+                </Suspense>
+              </div>
+            </SectionBand>
+            <AboutSection />
+          </>
+        )}
         <MoleculeBreak id="dopamine" />
         {/* HOW + WHAT — skills and every project, one living Signal Map */}
         <Constellation />

@@ -212,9 +212,9 @@ export default function HeroSection() {
   // there and both lines paint solid. It is also skipped when the static
   // shell already showed the settled text (slow load, see staticShell.ts).
   const settled = lite || heroShellWasVisible;
-  const eyebrow = useScrambleReveal(EYEBROW, { duration: 520, disabled: settled });
-  const headA = useScrambleReveal(LINE_A, { delay: 260, duration: 760, disabled: settled });
-  const headB = useScrambleReveal(LINE_B, { delay: 420, duration: 860, disabled: settled });
+  const eyebrow = useScrambleReveal(EYEBROW, { duration: 220, disabled: settled });
+  const headA = useScrambleReveal(LINE_A, { delay: 80, duration: 300, disabled: settled });
+  const headB = useScrambleReveal(LINE_B, { delay: 140, duration: 320, disabled: settled });
 
   // Scramble preserves string length/positions throughout the reveal, so
   // slicing at the fixed prefix boundary is safe even mid-animation.
