@@ -10,7 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
-import { CaseDiveControls, ProcessFloor } from '@/components/dive/CaseDive';
+import { CaseDiveControls, ProcessFloor, RelatedWorks } from '@/components/dive/CaseDive';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -385,6 +385,8 @@ export default function WorkCase() {
                 {cs.order.suffix}
               </p>
             </div>
+
+            <RelatedWorks project={project} />
 
             {/* ── Case loop ── */}
             {cases.length > 1 && (

@@ -10,6 +10,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PROJECTS, type Project } from '@/data/projects';
 import { SKILLS } from '@/data/graph';
 import { diveBus, isDiveState, type DiveRequest } from '@/lib/diveBus';
+import DitheredThumb from '@/components/DitheredThumb';
 
 const RED = [204, 0, 0]; // --sinaida-red
 const VOID = [5, 5, 5]; // --background
@@ -41,52 +42,61 @@ function threadsFor(project: Project) {
     .slice(0, 3);
 }
 
-/** ▼ DEPTH 02 mark and the threads, at the foot of the case hero. In lite mode
- * no dive runs, so the same links fall through to plain navigation. */
+/** ▼ How it was made: dives one floor down to the process page. In lite mode
+ * no dive runs, so the link falls through to plain navigation. */
 export function CaseDiveControls({ project }: { project: Project }) {
   const { pathname } = useLocation();
-  const threads = threadsFor(project);
   return (
-    <div className="mt-6 flex flex-col gap-4">
+    <div className="mt-6">
       <Link
         to={{ pathname, search: '?depth=2' }}
         data-dive=""
         data-dive-anchor="depth"
         onClick={diveClick({ to: `${pathname}?depth=2`, dialect: project.dialect, image: project.image, anchor: 'depth' })}
-        className="clinical-label self-start text-primary-legible transition-colors hover:text-accent"
-        aria-label="Dive to depth 02: process"
+        className="clinical-label text-primary-legible transition-colors hover:text-accent"
+        aria-label="How it was made: the process behind this work"
       >
-        ▼ Depth 02
+        ▼ How it was made
       </Link>
-      {threads.length > 0 && (
-        <nav aria-label="Threads to connected works" className="flex flex-col gap-4">
-          {threads.map(({ to, shared }) => (
+    </div>
+  );
+}
+
+/** Related works at the foot of a case: up to three cases sharing the most
+ * skills, each as a dithered still with its title and the skill it shares.
+ * Quiet on purpose (grey, red only on hover): reference, not a call to action. */
+export function RelatedWorks({ project }: { project: Project }) {
+  const threads = threadsFor(project);
+  if (threads.length === 0) return null;
+  return (
+    <nav aria-label="Related works" className="mt-14" style={{ borderTop: '1px solid hsl(var(--graphite))', paddingTop: '24px' }}>
+      <div className="clinical-label mb-5 text-foreground/50">Related works</div>
+      <ul className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        {threads.map(({ to, shared }) => (
+          <li key={to.id}>
             <Link
-              key={to.id}
               to={`/work/${to.id}`}
               data-dive=""
               data-dive-anchor={`thread:${to.id}`}
               onClick={diveClick({ to: `/work/${to.id}`, dialect: to.dialect, image: to.image, anchor: `thread:${to.id}` })}
-              className="group grid grid-cols-[3rem_1fr] items-baseline gap-x-3 font-mono uppercase"
+              className="group block"
             >
-              {/* the thread itself: a thin quiet line running off the hero edge
-                  (red only on hover, the mark above stays the one accent),
-                  on the title's baseline; the shared skills sit under the
-                  title as one small caption, so every row reads the same */}
-              <span aria-hidden="true" className="h-px w-8 self-center bg-foreground/25 transition-all group-hover:w-12 group-hover:bg-primary" />
-              <span className="text-[13px] tracking-[0.15em] text-foreground/75 transition-colors group-hover:text-foreground">
+              {to.image && (
+                <div className="aspect-[4/3] overflow-hidden border border-foreground/10 opacity-60 transition group-hover:border-primary group-hover:opacity-100">
+                  <DitheredThumb src={to.image} alt="" className="h-full w-full object-cover" />
+                </div>
+              )}
+              <div className="mt-3 font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/75 transition-colors group-hover:text-foreground">
                 {to.title} →
-              </span>
-              {shared.slice(0, 2).map((s) => (
-                <span key={s.label} className="col-start-2 mt-1 text-[11px] tracking-[0.12em] text-foreground/40">
-                  {s.label}
-                </span>
-              ))}
+              </div>
+              {shared[0] && (
+                <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/40">{shared[0].label}</div>
+              )}
             </Link>
-          ))}
-        </nav>
-      )}
-    </div>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
 
@@ -216,7 +226,7 @@ export function ProcessFloor({ project, full }: { project: Project; full: boolea
     window.scrollTo(0, 0);
   }, []);
 
-  // Esc climbs back the same way the "Depth 01" link does
+  // Esc climbs back the same way the "Back to the case" link does
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
@@ -241,9 +251,9 @@ export function ProcessFloor({ project, full }: { project: Project; full: boolea
           }}
           className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
         >
-          ▲ Depth 01
+          ▲ Back to the case
         </Link>
-        <div className="clinical-label text-primary-legible">Depth 02 · Process</div>
+        <div className="clinical-label text-primary-legible">How it was made</div>
         <h1 className="mt-4 font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl">
           {project.title}
         </h1>
