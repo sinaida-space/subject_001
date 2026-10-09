@@ -21,9 +21,9 @@ export interface BuildTimeline {
 }
 
 const ORDER: Category[] = ['sound', 'space', 'code', 'body'];
-const CATS: [number, number] = [0, 0.36];
-const NAMES: [number, number] = [0.48, 0.6];
-const WORKS: [number, number] = [0.6, 0.86];
+const CATS: [number, number] = [0, 0.28];
+const NAMES: [number, number] = [0.38, 0.5];
+const WORKS: [number, number] = [0.5, 0.8];
 
 export function buildTimeline(nodes: BuildNode[], figures: { a: { id: string }; b: { id: string }; cat: Category }[]): BuildTimeline {
   const hops: Hop[] = [];
@@ -76,7 +76,7 @@ export function buildTimeline(nodes: BuildNode[], figures: { a: { id: string }; 
     label.set(n.id, [u0 + 0.05, u0 + 0.09]);
   });
 
-  return { hops, ignite, figure, catEnd, label, work, unfold: [0.36, 0.52], beat: [0.88, 1] };
+  return { hops, ignite, figure, catEnd, label, work, unfold: [0.28, 0.42], beat: [0.86, 1] };
 }
 
 // two heartbeats over u in 0..1, the logo's own ECG (P, QRS, T)

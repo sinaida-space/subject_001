@@ -130,7 +130,7 @@ export default function Constellation() {
                same treatment on every screen size, doesn't affect page layout. */}
             {openProject && <ProjectDetail project={openProject} onClose={closeProject} origin={mode === 'full' ? openOrigin : undefined} />}
 
-            {mode === 'full' && !IS_COARSE && <div data-build-room aria-hidden="true" className="hidden md:block" style={{ height: '110vh' }} />}
+            {mode === 'full' && !IS_COARSE && <div data-build-room aria-hidden="true" className="hidden md:block" style={{ height: '90vh' }} />}
             </div>
 
             {/* Plain-text reading always sits below the map in full mode; in

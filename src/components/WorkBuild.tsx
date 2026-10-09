@@ -62,6 +62,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
     if (!title || !intro) return;
 
     workBuildBus.set(0);
+    workBuildBus.setPour(0, null);
 
     let dpr = 1;
     const resize = () => {
@@ -159,6 +160,9 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
         }
       }
       if (pourL < 1) mapP = 0;
+      // the globe is poured from the same paragraph, in the map's own canvas
+      const src = findPara()?.getBoundingClientRect();
+      workBuildBus.setPour(pourL, src && pourL > 0 && pourL < 1 ? { left: src.left, top: src.top, width: src.width, height: src.height } : null);
       mapL = reset || mapL < 1 ? mapP : 1;
       workBuildBus.set(mapL);
 
@@ -235,6 +239,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       title.style.opacity = '';
       intro.style.opacity = '';
       workBuildBus.set(1);
+      workBuildBus.setPour(1, null);
     };
   }, []);
 

@@ -640,7 +640,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       for (let i = 1; building && i < keys.length; i++) {
         if (B <= keys[i][0]) {
           const t = lin(B, keys[i - 1][0], keys[i][0]);
-          rot = keys[i - 1][1] + (keys[i][1] - keys[i - 1][1]) * (t * t * (3 - 2 * t));
+          // a quick swing that settles: each constellation arrives at the front, then holds a beat
+          const e3 = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          rot = keys[i - 1][1] + (keys[i][1] - keys[i - 1][1]) * e3;
           break;
         }
       }
@@ -669,8 +671,21 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const ct = Math.cos(tilt), st = Math.sin(tilt);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
-      const born = building ? lin(B, 0, 0.06) : 1;
-      const r0 = R * (0.55 + 0.45 * born);
+      // poured: while the dust falls out of About, each cell flies from the paragraph to its place
+      const pour = building ? workBuildBus.getPour() : 1;
+      const src = pour < 1 ? workBuildBus.getSource() : null;
+      const cr = src ? canvasRef.current?.getBoundingClientRect() : null;
+      const r0 = R;
+      // the stars that lit just now send a ring across the globe
+      const waves: { lat: number; lon: number; age: number }[] = [];
+      if (building) {
+        for (const n of nodes) {
+          if (n.kind !== 'skill') continue;
+          const ig = tl!.ignite.get(n.id) ?? 0;
+          const age = (B - ig) / 0.06;
+          if (age > 0 && age < 1) waves.push({ lat: Math.max(-1.35, Math.min(1.35, ((n.hy - h / 2) / (h / 2)) * 1.25)), lon: ((n.hx - w / 2) / (w / 2)) * LON, age });
+        }
+      }
       for (let i = 0; i < GLOBE.length; i++) {
         const [lat, lon0, th, red] = GLOBE[i];
         const lon = lon0 + rot;
@@ -681,14 +696,29 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         const fx = w / 2 + (lon0 / LON) * (w / 2), fy = h / 2 + (lat / 1.25) * (h / 2);
         const x = fx + (gx + X * k - fx) * sph, y = fy + (gy + Y * k - fy) * sph;
         const front = (Z / r0 + 1) / 2;
-        // cells appear on a Bayer-like order as the globe is born, and go the same way as it flattens
-        // the near side bright, the far side a faint haze, the limb lit like a rim
+        // the near side bright, the far side a faint haze, the limb lit like a rim;
+        // as the globe flattens its cells go on a Bayer-like order
         const limb = Math.exp(-Math.pow((front - 0.5) / 0.09, 2));
-        const a = Math.min(1, 0.07 + 0.75 * front * front + 0.55 * limb) * (th < born ? 1 : 0) * (th < sph * 1.1 ? 1 : 0);
-        if (a <= 0.01) continue;
-        ctx.fillStyle = red ? `rgba(205,0,0,${(a * 1.3).toFixed(3)})` : `rgba(240,235,227,${a.toFixed(3)})`;
-        const c = front > 0.55 ? 2.4 : 1.6;
-        ctx.fillRect(x - c / 2, y - c / 2, c, c);
+        let a = Math.min(1, 0.07 + 0.75 * front * front + 0.55 * limb) * (th < sph * 1.1 ? 1 : 0);
+        let px = x, py = y, hot = 0;
+        if (src && cr) {
+          // in flight from a point of the paragraph, falling like the title's dust
+          const t0 = th * 0.62, t = lin(pour, t0, t0 + 0.36);
+          if (t <= 0) continue;
+          const sx = src.left - cr.left + src.width * ((i * 0.618) % 1), sy = src.top - cr.top + src.height * ((i * 0.381) % 1);
+          px = sx + (x - sx) * t + Math.sin(t * Math.PI) * ((th - 0.5) * 120);
+          py = sy + (y - sy) * t * t;
+          if (t < 1) a = 0.9;
+        }
+        for (const wv of waves) {
+          // angular distance from the lit star, the ring travelling out from it
+          const d = Math.acos(Math.max(-1, Math.min(1, Math.sin(lat) * Math.sin(wv.lat) + Math.cos(lat) * Math.cos(wv.lat) * Math.cos(lon0 - wv.lon))));
+          hot = Math.max(hot, Math.exp(-Math.pow((d - wv.age * 2.2) / 0.16, 2)) * (1 - wv.age));
+        }
+        if (a <= 0.01 && hot <= 0.01) continue;
+        ctx.fillStyle = hot > 0.15 ? `rgba(255,58,46,${Math.min(1, (0.3 + hot) * (0.35 + front)).toFixed(3)})` : red ? `rgba(205,0,0,${(a * 1.3).toFixed(3)})` : `rgba(240,235,227,${a.toFixed(3)})`;
+        const c = (front > 0.55 ? 2.4 : 1.6) + hot * 1.2;
+        ctx.fillRect(px - c / 2, py - c / 2, c, c);
       }
     }
 
