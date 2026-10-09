@@ -121,7 +121,9 @@ function HeadlineRuns({ a, b, prefix, red = false }: { a: string; b: string; pre
           <Letters text={b.slice(0, SPLIT_B - 1)} settled={LINE_B.slice(0, SPLIT_B - 1)} prefix={`${prefix}-b1`} />
         </span>
       </span>
-      <Letters text={b.slice(SPLIT_B - 1, SPLIT_B)} settled=" " prefix={`${prefix}-bs`} indexOffset={SPLIT_B - 1} />
+      <span className={redClass}>
+        <Letters text={b.slice(SPLIT_B - 1, SPLIT_B)} settled=" " prefix={`${prefix}-bs`} indexOffset={SPLIT_B - 1} />
+      </span>
       <span className={`hero-glue ${redClass ?? ''}`}>
         <Letters text={b.slice(SPLIT_B)} settled={LINE_B.slice(SPLIT_B)} prefix={`${prefix}-b2`} indexOffset={SPLIT_B} />
       </span>
