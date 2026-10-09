@@ -143,6 +143,14 @@ export default function ContactChannel() {
               >
                 LinkedIn ↗
               </a>
+              <a
+                href="https://calendly.com/sinaida"
+                target="_blank"
+                rel="noopener"
+                className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
+              >
+                Book a call ↗
+              </a>
             </div>
           </div>
           </div>

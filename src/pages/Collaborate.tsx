@@ -219,6 +219,14 @@ export default function Collaborate() {
             label="EMAIL ME ↗"
             className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
           />
+          <a
+            href="https://calendly.com/sinaida"
+            target="_blank"
+            rel="noopener"
+            className="mt-4 block font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
+          >
+            Book a call ↗
+          </a>
         </section>
       </main>
       <Footer />
