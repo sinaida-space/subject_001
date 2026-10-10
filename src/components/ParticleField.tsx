@@ -4,22 +4,9 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
-import { TORCH, torchState, torchLevel } from '@/lib/torch';
 
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
-// Cursor trail style: 'torch' is a soft pool of light that wakes the stars it
-// passes; 'beam' is a short long-exposure light stroke; 'stars' restores the
-// old star/steam trail.
-const CURSOR_TRAIL = 'torch' as 'torch' | 'beam' | 'stars';
-
-// Beam: the pointer path of the last BEAM_LIFE_MS, drawn as a tapered ribbon.
-// Samples age out, so after the pointer stops the beam shrinks to nothing and
-// stops asking for frames.
-const BEAM_LIFE_MS = 160;
-const BEAM_MAX_SAMPLES = 32;
-const BEAM_CORE_PX = 1.5;
-const BEAM_GLOW_PX = 8;
 
 // The canvas renders on demand (frameloop="demand"): once the field has
 // settled and nothing is driving it, no frames are drawn at all, so a page
@@ -71,99 +58,12 @@ interface ParticlesProps extends ParticleFieldProps {
   onProbe: ((medianDelta: number) => void) | null;
 }
 
-// A spring pulls each star back to its home position once activity drops.
-// Critically damped (damping = 2*sqrt(stiffness)): one soft ease home with no
-// ringing, so the field is visibly still within ~0.7s of the last input.
-const SPRING_STIFFNESS = 220;
-const SPRING_DAMPING = 29.7;
-// How fast pointer/scroll activity dies away, and the level below which the
-// stars hand over to the settle spring.
-const ACTIVITY_DECAY = 6;
-const ACTIVITY_REST = 0.05;
-
-// === TORCH ===
-// The pool of light is drawn by a small quad that only covers its own
-// bounding box (no full-screen pass); the stars read the same field in their
-// vertex shader to brighten and grow inside it. All torch state arrives as
-// uniforms, so at rest (uTorchOn = 0) both are exactly the plain field.
-const TORCH_STAR_GAIN = 0.8; // stars inside the heart of the pool: 1.8x
-const TORCH_STAR_GROW = 0.3; // and up to 1.3x their size
-const TORCH_STRETCH_MAX = 0.45; // cone elongation at a fast sweep
-const TORCH_STRETCH_SPEED = 1800; // px/s for full elongation
-
-const TORCH_GLSL = `
-  uniform vec2 uTorchPos;      // eased pointer, CSS px, y down
-  uniform vec2 uTorchDir;      // unit vector of recent motion, CSS px space
-  uniform float uTorchOn;      // 0..1 strength
-  uniform float uTorchRadius;  // pool radius, CSS px
-  uniform float uTorchStretch; // 0..TORCH_STRETCH_MAX cone elongation
-  uniform vec2 uViewportPx;    // canvas size, CSS px
-
-  // 1 at the heart of the pool, 0 outside it. The pool reaches further ahead
-  // of the motion than behind it and widens ahead: a soft cone of light.
-  float torchField(vec2 px) {
-    vec2 d = px - uTorchPos;
-    float along = dot(d, uTorchDir);
-    float across = dot(d, vec2(-uTorchDir.y, uTorchDir.x));
-    float ahead = clamp(along / uTorchRadius, -1.0, 1.0);
-    along /= 1.0 + uTorchStretch * (ahead > 0.0 ? 1.0 : 0.25);
-    across /= 1.0 + uTorchStretch * 0.5 * max(ahead, 0.0);
-    float r = length(vec2(along, across)) / uTorchRadius;
-    return 1.0 - smoothstep(0.0, 1.0, r);
-  }
-`;
-
-// Pool quad: positions -1..1 are scaled to the pool's reach and placed straight
-// in clip space around the torch.
-const poolVertexShader = `
-  ${TORCH_GLSL}
-  varying vec2 vPx;
-  void main() {
-    float reach = uTorchRadius * (1.0 + uTorchStretch);
-    vPx = uTorchPos + position.xy * reach;
-    vec2 ndc = vec2(vPx.x / uViewportPx.x * 2.0 - 1.0, 1.0 - vPx.y / uViewportPx.y * 2.0);
-    gl_Position = vec4(ndc, 0.0, 1.0);
-  }
-`;
-
-const poolFragmentShader = `
-  ${TORCH_GLSL}
-  uniform vec3 uTorchColor; // warm white
-  // Both alphas are in display (sRGB) terms: how much the pool lifts the dark
-  // page as seen. The scene is lit in linear light, hence the pow below.
-  uniform float uPoolAlpha; // light at the heart of the pool
-  uniform float uFogAlpha;  // fog texture ceiling (<= 0.08)
-  varying vec2 vPx;
-
-  float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-  }
-  // Smooth value noise
-  float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
-               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-  }
-
-  void main() {
-    float f = torchField(vPx);
-    if (f <= 0.0) discard;
-    // Soft light, brightest at the heart, very long tail
-    float light = pow(f, 1.5) * uPoolAlpha;
-    // Low-frequency fog fixed to the screen: moving the torch reveals it
-    float fog = noise(vPx / 260.0) * 0.6 + noise(vPx / 110.0 + 17.0) * 0.4;
-    fog = smoothstep(0.3, 0.9, fog) * f * uFogAlpha;
-    // A whisper of dither so the faint gradient does not band
-    float dither = (hash(gl_FragCoord.xy) - 0.5) * f / 255.0;
-    float a = pow(clamp((light + fog) * uTorchOn + dither, 0.0, 1.0), 2.2);
-    // Premultiplied: the light is added to the colour AND to the alpha, so it
-    // survives the transparent canvas being composited over the page.
-    gl_FragColor = vec4(uTorchColor * a, a);
-    #include <colorspace_fragment>
-  }
-`;
+// Disney's "ease + follow-through": a critically-under-damped spring pulls
+// each star back to its home position once activity drops, so the settle
+// has a soft overshoot instead of snapping flat to rest — read as an alive,
+// physical body rather than a lerp.
+const SPRING_STIFFNESS = 55;
+const SPRING_DAMPING = 9.5;
 
 // Custom shader for trail particles that expand over their lifetime
 const trailVertexShader = `
@@ -202,58 +102,6 @@ const trailFragmentShader = `
     gl_FragColor = vec4(vColor, alpha);
   }
 `;
-
-// Ribbon shader for the beam. aSide runs -1..1 across the ribbon, aFade is the
-// taper (1 at the head, 0 at the tail) and scales both width and alpha.
-const beamVertexShader = `
-  attribute float aSide;
-  attribute float aFade;
-  varying float vSide;
-  varying float vFade;
-  void main() {
-    vSide = aSide;
-    vFade = aFade;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const beamFragmentShader = `
-  uniform vec3 uCore;       // warm white core
-  uniform vec3 uEdge;       // site red at the glow edge
-  uniform float uCoreFrac;  // core half-width as a fraction of the glow half-width
-  uniform float uGlowAlpha; // halved on subtle pages
-  varying float vSide;
-  varying float vFade;
-  void main() {
-    float d = abs(vSide); // 0 on the centre line, 1 at the glow edge
-    // Thin hot core with a soft edge
-    float core = 1.0 - smoothstep(uCoreFrac * 0.6, uCoreFrac * 1.4, d);
-    // Soft glow, quadratic falloff to zero at the edge
-    float glow = (1.0 - d) * (1.0 - d) * uGlowAlpha;
-    // Colour shifts from warm white at the centre to red at the edge
-    vec3 col = mix(uEdge, uCore, max(core, 1.0 - smoothstep(0.0, 0.7, d)));
-    float alpha = max(core, glow) * vFade;
-    gl_FragColor = vec4(col, alpha);
-  }
-`;
-
-// --sinaida-red is stored as "H S% L%"; parse it to sRGB 0..1 for the shader.
-function readSiteRed(): THREE.Vector3 {
-  const fallback = new THREE.Vector3(0.8, 0, 0);
-  try {
-    const raw = getComputedStyle(document.documentElement).getPropertyValue('--sinaida-red').trim();
-    const [h, sPct, lPct] = raw.split(/[\s,]+/).map((v) => parseFloat(v));
-    if ([h, sPct, lPct].some((v) => Number.isNaN(v))) return fallback;
-    const sat = sPct / 100;
-    const lig = lPct / 100;
-    const k = (n: number) => (n + h / 30) % 12;
-    const a = sat * Math.min(lig, 1 - lig);
-    const f = (n: number) => lig - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-    return new THREE.Vector3(f(0), f(8), f(4));
-  } catch {
-    return fallback;
-  }
-}
 
 // R3F's own ResizeObserver-driven auto-sizing can get stuck on its very
 // first (sometimes 0×0, pre-layout) measurement and never re-fire even once
@@ -317,23 +165,9 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const tunnelTargetRef = useRef(0);
   const tunnelAmountRef = useRef(0);
   const tunnelHoldStartRef = useRef<number | null>(null);
-  const { viewport, invalidate, size } = useThree();
-  const beamRef = useRef<THREE.Mesh>(null);
-  const beamSamplesRef = useRef<{ x: number; y: number; t: number }[]>([]);
+  const { viewport, invalidate } = useThree();
   const firstFrameRef = useRef(false);
   const probeRef = useRef<number[] | null>(null);
-  const poolRef = useRef<THREE.Mesh>(null);
-  // Eased torch position (CSS px), its smoothed velocity and the cone shape.
-  const torchRef = useRef({ lit: false, x: 0, y: 0, vx: 0, vy: 0, dirX: 1, dirY: 0, stretch: 0 });
-  // Shared by the star material and the pool quad.
-  const torchUniforms = useMemo(() => ({
-    uTorchPos: { value: new THREE.Vector2() },
-    uTorchDir: { value: new THREE.Vector2(1, 0) },
-    uTorchOn: { value: 0 },
-    uTorchRadius: { value: 200 },
-    uTorchStretch: { value: 0 },
-    uViewportPx: { value: new THREE.Vector2(1, 1) },
-  }), []);
 
   useEffect(() => {
     probeRef.current = onProbe ? [] : null;
@@ -439,11 +273,6 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     mouseRef.current.y = ny;
     mouseRef.current.active = true;
     activityRef.current = Math.min(1, activityRef.current + mouseRef.current.speed * 8);
-    if (CURSOR_TRAIL === 'beam') {
-      const samples = beamSamplesRef.current;
-      samples.push({ x: nx, y: ny, t: performance.now() });
-      if (samples.length > BEAM_MAX_SAMPLES) samples.shift();
-    }
     invalidate();
   }, [invalidate]);
 
@@ -503,47 +332,12 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     // jump-link doesn't snap the whole field. Purely scroll-driven: at rest
     // this contributes nothing and the stars hold still.
     const screens = parallaxScreens(scrollRef.current, window.innerHeight);
-    parallaxRef.current = THREE.MathUtils.damp(parallaxRef.current, screens, 10, delta);
+    parallaxRef.current = THREE.MathUtils.damp(parallaxRef.current, screens, 6, delta);
     const parallax = parallaxRef.current;
 
-    activityRef.current = THREE.MathUtils.damp(activityRef.current, 0, ACTIVITY_DECAY, delta);
+    activityRef.current = THREE.MathUtils.damp(activityRef.current, 0, 2.4, delta);
     const activity = Math.max(activityRef.current, Math.min(velocityRef.current * 2, 1));
-    const isActive = activity > ACTIVITY_REST;
-
-    // === TORCH: ease toward the pointer, track the motion direction ===
-    const torchOn = CURSOR_TRAIL === 'torch' ? torchLevel(performance.now()) : 0;
-    const torch = torchRef.current;
-    let torchEasing = false;
-    if (torchOn > 0) {
-      if (!torch.lit) {
-        // A fresh lit stretch starts where the pointer is, not where it faded.
-        torch.lit = true;
-        torch.x = torchState.x; torch.y = torchState.y;
-        torch.vx = 0; torch.vy = 0; torch.stretch = 0;
-      }
-      const k = 1 - Math.exp(-delta / TORCH.ease);
-      const nx = torch.x + (torchState.x - torch.x) * k;
-      const ny = torch.y + (torchState.y - torch.y) * k;
-      torch.vx = THREE.MathUtils.damp(torch.vx, (nx - torch.x) / delta, 10, delta);
-      torch.vy = THREE.MathUtils.damp(torch.vy, (ny - torch.y) / delta, 10, delta);
-      torch.x = nx; torch.y = ny;
-      const speed = Math.hypot(torch.vx, torch.vy);
-      if (speed > 30) { torch.dirX = torch.vx / speed; torch.dirY = torch.vy / speed; }
-      torch.stretch = THREE.MathUtils.damp(
-        torch.stretch, Math.min(speed / TORCH_STRETCH_SPEED, 1) * TORCH_STRETCH_MAX, 6, delta,
-      );
-      torchEasing = Math.abs(torchState.x - torch.x) + Math.abs(torchState.y - torch.y) > 0.5;
-    } else {
-      torch.lit = false;
-    }
-    const tu = torchUniforms;
-    tu.uTorchOn.value = torchOn;
-    tu.uTorchPos.value.set(torch.x, torch.y);
-    tu.uTorchDir.value.set(torch.dirX, torch.dirY);
-    tu.uTorchStretch.value = torch.stretch;
-    tu.uViewportPx.value.set(Math.max(size.width, 1), Math.max(size.height, 1));
-    tu.uTorchRadius.value = TORCH.radiusVmin * Math.max(Math.min(size.width, size.height), 1);
-    if (poolRef.current) poolRef.current.visible = torchOn > 0;
+    const isActive = activity > 0.01;
 
     // Tunnel-dive: eases toward the hover target, so engaging/releasing reads
     // as a smooth warp-in/warp-out rather than a snap.
@@ -663,55 +457,6 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
       trailAgeAttr.needsUpdate = true;
     }
 
-    // === BEAM: long-exposure light stroke along the recent pointer path ===
-    if (beamRef.current) {
-      const now = performance.now();
-      const samples = beamSamplesRef.current;
-      while (samples.length && now - samples[0].t > BEAM_LIFE_MS) samples.shift();
-      const n = samples.length;
-      const geo = beamRef.current.geometry;
-      if (n < 2) {
-        beamRef.current.visible = false;
-        geo.setDrawRange(0, 0);
-      } else {
-        beamRef.current.visible = true;
-        const beamPos = geo.getAttribute('position').array as Float32Array;
-        const beamFade = geo.getAttribute('aFade').array as Float32Array;
-        const sx = viewport.width * 0.5;
-        const sy = viewport.height * 0.5;
-        // World units per CSS pixel on the z=0 plane
-        const halfWidth = (BEAM_GLOW_PX / 2) * (viewport.width / Math.max(size.width, 1));
-        for (let i = 0; i < n; i++) {
-          const prev = samples[Math.max(i - 1, 0)];
-          const next = samples[Math.min(i + 1, n - 1)];
-          const tx = (next.x - prev.x) * sx;
-          const ty = (next.y - prev.y) * sy;
-          const len = Math.hypot(tx, ty);
-          const nx = len > 1e-6 ? -ty / len : 0;
-          const ny = len > 1e-6 ? tx / len : 1;
-          // Taper by age (whole beam fades once the pointer stops) and by
-          // position along the path (tail always closes to a point).
-          const ageFade = Math.max(0, 1 - (now - samples[i].t) / BEAM_LIFE_MS);
-          const tailFade = Math.min(1, i / ((n - 1) * 0.4));
-          const fade = ageFade * tailFade;
-          const px = samples[i].x * sx;
-          const py = samples[i].y * sy;
-          const w = halfWidth * fade;
-          beamPos[i * 6] = px - nx * w;
-          beamPos[i * 6 + 1] = py - ny * w;
-          beamPos[i * 6 + 2] = 0;
-          beamPos[i * 6 + 3] = px + nx * w;
-          beamPos[i * 6 + 4] = py + ny * w;
-          beamPos[i * 6 + 5] = 0;
-          beamFade[i * 2] = fade;
-          beamFade[i * 2 + 1] = fade;
-        }
-        geo.getAttribute('position').needsUpdate = true;
-        geo.getAttribute('aFade').needsUpdate = true;
-        geo.setDrawRange(0, (n - 1) * 6);
-      }
-    }
-
     // === BASE PARTICLES ===
     for (let i = 0; i < particleCount; i++) {
       const ix = i * 3;
@@ -781,7 +526,9 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
         const vel = starVelocitiesRef.current;
         vel[ix] = 0; vel[ix + 1] = 0; vel[ix + 2] = 0;
       } else {
-        // Settle: a critically damped spring eases the star home and stops.
+        // Settle: a lightly under-damped spring pulls the star home, with a
+        // brief overshoot and a couple of decaying oscillations before it
+        // truly stops — Disney's ease + follow-through, not a flat lerp.
         const vel = starVelocitiesRef.current;
         const dxs = posArray[ix] - bx;
         const dys = posArray[ix + 1] - by;
@@ -807,9 +554,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     // trail puffs, parallax catching up, the tunnel easing) or while the
     // probe is sampling. Otherwise stop: the next input event invalidates.
     let moving = isActive || tunneling || tunnelTargetRef.current === 1
-      || torchOn > 0 || torchEasing
       || probeRef.current !== null
-      || beamSamplesRef.current.length > 0
       || Math.abs(parallaxRef.current - screens) > 0.0005;
     if (!moving) {
       const ages = trailAgesRef.current;
@@ -839,60 +584,6 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     return new THREE.CanvasTexture(c);
   }, []);
 
-  // The plain points material, taught to read the torch: stars inside the
-  // pool brighten (up to 1.8x) and grow a little. With uTorchOn = 0 the
-  // factors are exactly 1, so the field at rest is unchanged.
-  const starMaterial = useMemo(() => {
-    const m = new THREE.PointsMaterial({
-      map: starSprite,
-      size: 0.04,
-      vertexColors: true,
-      transparent: true,
-      opacity: subtle ? 0.5 : 1,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      sizeAttenuation: true,
-    });
-    m.onBeforeCompile = (shader) => {
-      Object.assign(shader.uniforms, torchUniforms);
-      shader.vertexShader = `${TORCH_GLSL}\nvarying float vTorch;\n${shader.vertexShader}`.replace(
-        '#include <fog_vertex>',
-        `#include <fog_vertex>
-        vec2 torchNdc = gl_Position.xy / gl_Position.w;
-        vec2 torchPx = vec2((torchNdc.x * 0.5 + 0.5) * uViewportPx.x, (0.5 - torchNdc.y * 0.5) * uViewportPx.y);
-        vTorch = uTorchOn * torchField(torchPx);
-        gl_PointSize *= 1.0 + ${TORCH_STAR_GROW.toFixed(2)} * vTorch;`,
-      );
-      shader.fragmentShader = `varying float vTorch;\n${shader.fragmentShader}`.replace(
-        '#include <alphatest_fragment>',
-        `diffuseColor.rgb *= 1.0 + ${TORCH_STAR_GAIN.toFixed(2)} * vTorch;
-        #include <alphatest_fragment>`,
-      );
-    };
-    m.customProgramCacheKey = () => 'torch-stars';
-    return m;
-  }, [starSprite, subtle, torchUniforms]);
-
-  const poolGeometry = useMemo(() => new THREE.PlaneGeometry(2, 2), []);
-  const poolMaterial = useMemo(() => new THREE.ShaderMaterial({
-    vertexShader: poolVertexShader,
-    fragmentShader: poolFragmentShader,
-    uniforms: {
-      ...torchUniforms,
-      uTorchColor: { value: new THREE.Vector3(1.0, 0.86, 0.7) },
-      uPoolAlpha: { value: subtle ? 0.09 : 0.14 },
-      uFogAlpha: { value: subtle ? 0.05 : 0.08 },
-    },
-    transparent: true,
-    depthWrite: false,
-    depthTest: false,
-    blending: THREE.CustomBlending,
-    blendSrc: THREE.OneFactor,
-    blendDst: THREE.OneFactor,
-    // The y flip from CSS px to clip space reverses the winding.
-    side: THREE.DoubleSide,
-  }), [subtle, torchUniforms]);
-
   const trailMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       vertexShader: trailVertexShader,
@@ -904,59 +595,18 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     });
   }, []);
 
-  // Beam ribbon: a strip of quads, two vertices per pointer sample.
-  const beamGeometry = useMemo(() => {
-    const g = new THREE.BufferGeometry();
-    const n = BEAM_MAX_SAMPLES;
-    const side = new Float32Array(n * 2);
-    for (let i = 0; i < n; i++) { side[i * 2] = -1; side[i * 2 + 1] = 1; }
-    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 2 * 3), 3));
-    g.setAttribute('aSide', new THREE.BufferAttribute(side, 1));
-    g.setAttribute('aFade', new THREE.BufferAttribute(new Float32Array(n * 2), 1));
-    const index: number[] = [];
-    for (let i = 0; i < n - 1; i++) {
-      const a = i * 2;
-      index.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-    }
-    g.setIndex(index);
-    g.setDrawRange(0, 0);
-    return g;
-  }, []);
-
-  const beamMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      vertexShader: beamVertexShader,
-      fragmentShader: beamFragmentShader,
-      uniforms: {
-        uCore: { value: new THREE.Vector3(1.0, 0xf1 / 255, 0xe0 / 255) },
-        uEdge: { value: readSiteRed() },
-        uCoreFrac: { value: BEAM_CORE_PX / BEAM_GLOW_PX },
-        uGlowAlpha: { value: subtle ? 0.35 : 0.7 },
-      },
-      transparent: true,
-      depthWrite: false,
-      depthTest: false,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-    });
-  }, [subtle]);
-
   return (
     <>
-      <points ref={meshRef} material={starMaterial}>
+      <points ref={meshRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} />
           <bufferAttribute attach="attributes-color" count={particleCount} array={colors} itemSize={3} />
           <bufferAttribute attach="attributes-size" count={particleCount} array={sizes} itemSize={1} />
         </bufferGeometry>
+        <pointsMaterial map={starSprite} size={0.04} vertexColors transparent opacity={subtle ? 0.5 : 1} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
 
-      {CURSOR_TRAIL === 'torch' && (
-        <mesh ref={poolRef} geometry={poolGeometry} material={poolMaterial} frustumCulled={false} visible={false} renderOrder={-1} />
-      )}
-
       {/* Trail particles — dreamy expanding steam */}
-      {CURSOR_TRAIL === 'stars' && (
       <points ref={trailRef} material={trailMaterial}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" count={trailCount} array={trailPositions} itemSize={3} />
@@ -965,11 +615,6 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
           <bufferAttribute attach="attributes-aAge" count={trailCount} array={trailAges} itemSize={1} />
         </bufferGeometry>
       </points>
-      )}
-
-      {CURSOR_TRAIL === 'beam' && (
-        <mesh ref={beamRef} geometry={beamGeometry} material={beamMaterial} frustumCulled={false} visible={false} />
-      )}
     </>
   );
 }

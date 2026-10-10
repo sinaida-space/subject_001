@@ -7,7 +7,6 @@ import RouteEnhancer from "@/components/RouteEnhancer";
 import DiveHost from "@/components/dive/DiveHost";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 import { routeChunks } from "@/lib/routeChunks";
-import { startTorch } from "@/lib/torch";
 import { startHalation } from "@/lib/halation";
 
 const PrivacyPolicy = lazy(routeChunks.privacy);
@@ -29,19 +28,12 @@ const SiteCursor = () => {
   return mode === 'full' ? <CustomCursor /> : null;
 };
 
-// Full mode only: the torch (pointer → --torch-x/--torch-y/--torch-on for
-// the chrome glints; the starfield reads the same clock) and the red
-// halation on large display headlines. Both are idle at rest.
+// Full mode only: the red halation on large display headlines. Idle at rest.
 const SiteLight = () => {
   const { mode } = useRenderMode();
   useEffect(() => {
     if (mode !== 'full') return;
-    const stopTorch = startTorch();
-    const stopHalation = startHalation();
-    return () => {
-      stopTorch();
-      stopHalation();
-    };
+    return startHalation();
   }, [mode]);
   return null;
 };
