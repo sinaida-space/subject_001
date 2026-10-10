@@ -8,15 +8,17 @@
 //            is blown off to the right as stars, while "I believe" blows in
 //            from the left and sets in the middle of the screen
 //   lines    the stage pins; the other four lines blow in one by one, then
-//            "seen" and "connected" light red, and "feel" flashes red just
-//            before the belief comes apart
-//   pour     the belief comes apart into a sparse galaxy that drifts up ("feel"
-//            flies off red); the stage lets go and About rises. Every About
-//            letter is poured from the cloud as it scrolls in, and part of the
-//            dust rains down onto the portrait slot and settles into a square
-//            (the frame appears only then) where the photo docks (sticky at
-//            md+); there it develops as soft red dither and lights up cell by
-//            cell into the photo while only the text moves
+//            "feel" flashes red just before the belief comes apart ("seen"
+//            and "connected" stay white)
+//   gust     a gust from the lower left lifts the belief apart and carries
+//            it off along a diagonal arc, up and to the right, out of the
+//            screen ("feel" flies off red); the stage lets go and About rises.
+//            The same gust brings dust in from off screen lower left: every
+//            About letter is poured from it as it scrolls in, and the
+//            portrait's dither rides it into its frame and settles into a
+//            square (the frame appears only then) where the photo docks
+//            (sticky at md+); there it develops as soft red dither and lights
+//            up cell by cell into the photo while only the text moves
 //
 // Full mode only: lite renders the children as they are.
 // ─────────────────────────────────────────────────────────────────────────
@@ -49,7 +51,9 @@ const RED = 0.08, COLOUR = 0.3; // then soft red dither, then the colour, done b
 const FRAME_IN = 24; // the frame fades in over this much scroll once 90% have landed
 const SHED_AT = LIGHT ? 1.25 : 1.14; // poured once its letter is this far down the screen (in vh)
 const HAND = 24; // a finished block fades in over this much scroll
-const DRIFT = 260; // how far the cloud rises at most, css px
+const GUST = 0.45; // a belief cell crosses the screen over this share of the gust window
+const WIND = 0.6; // About dust rides the wind at this many px per px of scroll before it pours
+const REBUILD_DH = 150; // a height-only resize smaller than this (mobile toolbars) keeps the build
 
 // The pinned part, as shares of the pin length (track height minus a screen).
 // LINES: when each line of the belief has set (line 1 sets as the stage pins).
@@ -57,25 +61,23 @@ const LINES = [0, 0.1, 0.19, 0.27, 0.35];
 const LINE_IN = 0.12; // a line blows in over this share
 const FEEL_ID = 5; // block id the sampler gives the cells of "feel"
 const PIN = {
-  seen: [0.39, 0.45],
-  conn: [0.45, 0.51],
   feel: [0.535, 0.58], // "feel" flashes red (ramps in over the first quarter) until the pour
-  pour: 0.58, // the belief comes apart
-  cloud: 0.92, // its cloud has spread by here
+  pour: 0.58, // the gust takes the belief apart
+  cloud: 0.92, // and every cell of it has left the screen by here
 };
 
 const PT_VS = `#version 300 es
-in vec2 aA;     // hero: screen px at lock; quote: start off screen left; About: its dust in the cloud
-in vec2 aB;     // quote: its letter on the pinned screen
-in vec2 aC;     // quote: its offset from the portrait's centre, or the cloud's drift; About: its letter, page px
+in vec2 aA;     // hero: screen px at lock; belief: start off screen left; About: where it pours from (screen px); portrait: its way in (shares of the screen)
+in vec2 aB;     // belief: its letter on the pinned screen; portrait: x how high the gust lifts it (share of the screen)
+in vec2 aC;     // belief: how much further the gust takes it (px); portrait: its offset from the frame's centre; About: its letter, page px
 in vec3 aCol;
 in vec4 aT;     // t1, t2, depth, rnd
-in vec4 aK;     // kind (0 About, 1 hero, 2 quote→portrait, 3 quote→cloud); About: hand-over; quote: line set, flight length, 1 for "feel"
+in vec4 aK;     // kind (0 About, 1 hero, 2 portrait, 3 belief); About: hand-over; belief: line set, flight length, 1 for "feel"
 in float aL;    // portrait cells: when it lands in the square
 uniform float uSy;
 uniform vec2 uView;
 uniform float uDpr;
-uniform vec2 uGather;     // the belief comes apart; how long a cloud cell takes to spread
+uniform vec2 uGather;     // the gust takes the belief apart; how long a belief cell takes to leave
 uniform vec2 uSlot;       // the portrait frame's centre on screen, now (it docks and sticks)
 uniform vec2 uDev;        // the settled portrait cells give way to the red dither over these scroll px
 out vec3 vCol;
@@ -97,20 +99,21 @@ void main() {
   float alpha = 0.0, flight = 0.0, lit = 1.0;
   vec3 star = galaxyColor(rnd, depth);
   float keep = galaxyKeep(rnd);
-  // the cloud the belief leaves behind rises slowly with the scroll
-  float rise = min(${DRIFT}.0, max(0.0, uSy - uGather.x) * 0.3) * mix(0.5, 1.0, depth);
+  // the gust blows from the lower left, up and to the right
+  const vec2 WIND_DIR = vec2(0.91, -0.41);
 
   if (kind < 0.5) {
-    // About: from the cloud into its letter as the letter scrolls in
-    vec2 a = aA + vec2((rnd - 0.5) * 0.3, -1.0) * rise;
+    // About: dust rides the gust in from the lower left until its letter
+    // scrolls in, then pours down into the letter (a curve, no turning back)
     vec2 dst = aC - vec2(0.0, uSy);
+    vec2 a = aA - WIND_DIR * max(0.0, aT.y - uSy) * ${WIND};
     float t = smoothstep(aT.y, aT.y + ${FALL}.0, uSy);
-    pos = mix(a, dst, t * t);
-    pos.x += sin(t * PI) * (rnd - 0.5) * 60.0;
+    vec2 ctl = aA + WIND_DIR * 50.0;
+    pos = mix(mix(a, ctl, t), mix(ctl, dst, t), t);
     flight = 1.0 - smoothstep(0.75, 1.0, t);
     col = mix(star, aCol, 1.0 - flight);
     lit = mix(1.0, keep, flight);
-    alpha = step(uGather.x, uSy) * (1.0 - step(aK.y, uSy));
+    alpha = smoothstep(uGather.x, uGather.x + 80.0, uSy) * (1.0 - step(aK.y, uSy));
   } else if (kind < 1.5) {
     // hero: locks, then the wind takes it off to the right
     float t = clamp((uSy - aT.x) / ${HERO_BLOW}.0, 0.0, 1.0);
@@ -120,41 +123,39 @@ void main() {
     col = mix(aCol, star, flight);
     lit = mix(1.0, keep, smoothstep(0.0, 0.15, t));
     alpha = step(rnd, (uSy - ${S0}.0) / ${HERO_LOCK}.0 + 0.02) * (1.0 - smoothstep(0.7, 1.0, t));
+  } else if (kind < 2.5) {
+    // portrait: the gust carries it in from off screen lower left, lifts it
+    // and drops it into the square (the photo's own 1-bit dither), wherever
+    // the frame is now. Until its row is on screen it aims at the bottom edge.
+    vec2 end = uSlot + aC;
+    float tp = clamp((uSy - aT.y) / max(1.0, aL - aT.y), 0.0, 1.0);
+    vec2 tgt = mix(vec2(end.x, min(end.y, uView.y * 0.97)), end, smoothstep(0.75, 1.0, tp));
+    vec2 src = vec2(min(-20.0, tgt.x - aA.x * uView.x), uView.y * (1.0 + aA.y) + 20.0);
+    vec2 ctl = vec2(mix(src.x, tgt.x, 0.6), min(src.y, tgt.y) - aB.x * uView.y);
+    float e = tp * tp * (3.0 - 2.0 * tp);
+    pos = mix(mix(src, ctl, e), mix(ctl, tgt, e), e);
+    // a star in the air, every cell again as it lands in the formation
+    flight = 1.0 - smoothstep(0.75, 1.0, tp);
+    lit = mix(1.0, keep, flight);
+    col = mix(star, RED_HOT, smoothstep(0.6, 1.0, tp));
+    alpha = step(uGather.x, uSy) * step(aT.y, uSy) * (1.0 - smoothstep(uDev.x, uDev.y, uSy));
   } else {
-    // the belief: blows in from the left line by line, sets, then comes apart
+    // the belief: blows in from the left line by line, sets, then the gust
+    // lifts it off along an arc, up and to the right, out of the screen
     float t1 = clamp((uSy - aT.x) / aK.z, 0.0, 1.0);
     float e1 = 1.0 - pow(1.0 - t1, 3.0);
     vec2 a = mix(aA, aB, e1);
     a.y += sin(t1 * PI) * (rnd - 0.5) * 70.0;
-    vec2 cloud = a + vec2((rnd - 0.5) * 0.3, -1.0) * rise;
-    float apart = step(uGather.x, uSy);
-    float tc;  // how far into its flight since the belief came apart
-    float landed = 0.0;  // portrait cells: turns RED_HOT as it lands
-    if (kind < 2.5) {
-      // rains down from the cloud onto the portrait slot and settles into
-      // the square (the photo's own 1-bit dither), wherever the frame is now
-      tc = clamp((uSy - uGather.x) / max(1.0, aL - uGather.x), 0.0, 1.0);
-      float tp = clamp((uSy - aT.y) / max(1.0, aL - aT.y), 0.0, 1.0);
-      pos = mix(cloud, uSlot + aC, tp * tp);
-      pos.x += sin(tp * PI) * (rnd - 0.5) * 50.0;
-      // a star in the air, every cell again as it lands in the formation
-      flight = smoothstep(0.0, 0.15, tc) * (1.0 - smoothstep(0.75, 1.0, tp));
-      lit = mix(1.0, keep, flight);
-      landed = smoothstep(0.6, 1.0, tp);
-      alpha = apart * (1.0 - smoothstep(uDev.x, uDev.y, uSy));
-    } else {
-      // into the rising cloud, fading as the About letters take its place
-      tc = clamp((uSy - aT.y) / uGather.y, 0.0, 1.0);
-      float e2 = tc * tc * (3.0 - 2.0 * tc);
-      pos = cloud + aC * e2;
-      flight = smoothstep(0.0, 0.15, tc);
-      lit = mix(1.0, keep, flight);
-      alpha = apart * (1.0 - 0.7 * e2);
-    }
+    float tc = clamp((uSy - aT.y) / uGather.y, 0.0, 1.0);
+    float u = tc * tc;  // picks up speed like a leaf in a gust
+    pos = a + vec2(u * (uView.x * 1.05 + aC.x), -pow(u, 1.7) * (uView.y * 0.55 + aC.y));
+    pos.y += sin(tc * PI) * (rnd - 0.5) * 24.0;
+    flight = smoothstep(0.0, 0.15, tc);
+    lit = mix(1.0, keep, flight);
+    alpha = step(uGather.x, uSy);
     // its letter's colour turns to its star colour; "feel" flies apart red
     // and turns over the first 30% of its flight
     col = aK.w > 0.5 ? mix(RED_HOT, star, smoothstep(0.0, 0.3, tc)) : mix(aCol, star, flight);
-    col = mix(col, RED_HOT, landed);
     // blowing in, before the line sets: a star until it nears its letter
     float arriving = step(aT.x, uSy) * (1.0 - step(aK.y, uSy));
     if (arriving > 0.5) {
@@ -278,10 +279,8 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
     const stage = root?.querySelector<HTMLElement>('[data-quote-stage]');
     const quote = root?.querySelector<HTMLElement>('[data-quote]');
     const feel = root?.querySelector<HTMLElement>('[data-feel]');
-    const seen = root?.querySelector<HTMLElement>('[data-seen]');
-    const conn = root?.querySelector<HTMLElement>('[data-connected]');
     const about = root?.querySelector<HTMLElement>('#about');
-    if (!root || !canvas || !hero || !track || !stage || !quote || !feel || !seen || !conn || !about) return;
+    if (!root || !canvas || !hero || !track || !stage || !quote || !feel || !about) return;
     const lines = Array.from(quote.querySelectorAll<HTMLElement>('[data-line]'));
     const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, antialias: false });
     if (!gl) return;
@@ -311,7 +310,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
     const g = {
       built: false, count: 0, end: 0,
       pin0: 0, pinLen: 1, lineSet: [] as number[], pour: 0, gatherLen: 1,
-      feel: [0, 0], seen: [0, 0], conn: [0, 0],
+      feel: [0, 0], vh: 1, w: 0, h: 0,
       half: { w: 0, h: 0 },
       frameOn: 0, red: [0, 1], colour: [0, 1],
       ruleY: [] as number[],
@@ -320,7 +319,10 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
     const at = (share: number) => g.pin0 + g.pinLen * share;
 
     const build = () => {
-      const vw = window.innerWidth, vh = window.innerHeight, sy = window.scrollY;
+      // the pinned stage is 100svh: a screen height that mobile toolbars
+      // do not change, so a rebuild lands everything in the same place
+      const vw = window.innerWidth, vh = stage.offsetHeight || window.innerHeight, sy = window.scrollY;
+      g.vh = vh; g.w = vw; g.h = window.innerHeight;
       const rand = rng(121);
 
       const trackBox = track.getBoundingClientRect();
@@ -328,16 +330,15 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       g.pinLen = Math.max(1, trackBox.height - vh);
       g.lineSet = LINES.map(at);
       g.feel = [at(PIN.feel[0]), at(PIN.feel[1])];
-      g.seen = [at(PIN.seen[0]), at(PIN.seen[1])];
-      g.conn = [at(PIN.conn[0]), at(PIN.conn[1])];
       g.pour = at(PIN.pour);
-      g.gatherLen = (at(PIN.cloud) - g.pour) * 0.6;
+      const gustLen = at(PIN.cloud) - g.pour;
+      g.gatherLen = gustLen * GUST;
       const pinEnd = g.pin0 + g.pinLen;
       // when each line starts blowing in: "I believe" while the hero blows away
       const q0 = S0 + 50;
       const lineFrom = g.lineSet.map((set, k) => (k === 0 ? q0 : set - g.pinLen * LINE_IN));
 
-      // portrait: its cells leave the cloud from the pour on and settle into
+      // portrait: its cells ride the gust in from the pour on and settle into
       // the square while the frame is still coming up the screen, so it is
       // whole as soon as it is fully in view; then it develops in place (red,
       // then colour) and holds still while only the text moves. At md+ its
@@ -378,13 +379,13 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       const face = photo.complete && photo.naturalWidth ? samplePhoto(photo, g.half.w * 2, g.half.h * 2) : [];
 
       const STRIDE = 2 + 2 + 2 + 3 + 4 + 4 + 1;
-      const nQuote = Math.max(qCells.length, face.length);
-      const n = aboutCells.length + heroCells.length + nQuote;
+      const n = aboutCells.length + heroCells.length + qCells.length + face.length;
       const arr = new Float32Array(n * STRIDE);
       let i = 0;
       const push = (v: number[]) => { arr.set(v, i * STRIDE); i++; };
 
-      // About: each letter takes a grain of the belief's cloud as it scrolls in
+      // About: each letter takes a grain of the gust's dust as it scrolls in;
+      // the grain waits on the wind's path, lower left of its letter
       g.done = new Array(g.blocks.length).fill(-1);
       const sheds = aboutCells.map((c) => Math.max(c.y - vh * SHED_AT, pinEnd - vh * 0.1, g.pour + 40) + rand() * 30);
       aboutCells.forEach((c, k) => {
@@ -392,11 +393,12 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       });
       let last = g.red[1] + 10;
       aboutCells.forEach((c, k) => {
-        const from = qCells.length ? qCells[Math.floor(rand() * qCells.length)] : null;
+        const fx = c.x - vw * (0.12 + 0.3 * rand());
+        const fy = vh * (0.5 + 0.38 * rand());
         const hand = c.blk !== undefined && c.blk < g.blocks.length ? g.done[c.blk] + rand() * 18 : 1e9;
         last = Math.max(last, sheds[k] + FALL + HAND);
         push([
-          from ? from.x : rand() * vw, from ? from.y - stageTop : vh * 0.5,
+          fx, fy,
           0, 0,
           c.x, c.y,
           c.r, c.g, c.b,
@@ -413,33 +415,43 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
         push([c.x, c.y - S0, 0, 0, 0, 0, c.r, c.g, c.b, s1, 0, rand(), rand(), 1, 0, 1, 0, 0]);
       }
 
-      // quote: each line blows in over its own window; every portrait cell
-      // gets a letter cell to come from, the rest join the cloud
-      const order = qCells.map((_, k) => k).sort(() => rand() - 0.5);
-      const faceH = Math.max(1, g.half.h * 2);
-      const lands: number[] = [];
-      for (let k = 0; k < nQuote && qCells.length; k++) {
-        const c = qCells[order[k % qCells.length]];
+      // belief: each line blows in over its own window; the gust front then
+      // sweeps it from the lower left, each cell lifted off in turn
+      for (const c of qCells) {
         const isFeel = c.blk === FEEL_ID;
         const line = isFeel ? 2 : Math.min(LINES.length - 1, c.blk ?? 0);
         const from = lineFrom[line], set = g.lineSet[line];
         const len = (set - from) * 0.6;
         const s = from + (set - from - len) * rand();
-        const f = k < face.length ? face[k] : null;
-        // portrait cells land top row first, like stars falling onto it, and
-        // leave the cloud at staggered points after the pour
-        const land = f ? dock - form + form * clamp01((f.y + g.half.h) / faceH * 0.85 + rand() * 0.15) : 0;
-        if (f) lands.push(land);
-        const sg = f
-          ? g.pour + 40 + Math.max(0, land - g.pour - 40) * 0.4 * rand()
-          : g.pour + (at(PIN.cloud) - g.pour - g.gatherLen) * rand();
+        const sx = c.x, syq = c.y - stageTop;
+        const front = clamp01(0.6 * (sx / vw) + 0.4 * (1 - syq / vh));
+        const sg = g.pour + (gustLen - g.gatherLen) * clamp01(front * 0.85 + rand() * 0.15);
         push([
-          -40 - rand() * vw * 0.45, c.y - stageTop + (rand() - 0.5) * 160,
-          c.x, c.y - stageTop,
-          f ? f.x : (rand() - 0.5) * 160, f ? f.y : -rand() * 120,
+          -40 - rand() * vw * 0.45, syq + (rand() - 0.5) * 160,
+          sx, syq,
+          rand() * 240, rand() * vh * 0.35,
           c.r, c.g, c.b,
           s, sg, rand(), rand(),
-          f ? 2 : 3, set, Math.max(1, len), isFeel ? 1 : 0,
+          3, set, Math.max(1, len), isFeel ? 1 : 0,
+          0,
+        ]);
+      }
+
+      // portrait: the same gust brings its dither in from off screen lower
+      // left; cells land top row first and set off at staggered points
+      const faceH = Math.max(1, g.half.h * 2);
+      const lands: number[] = [];
+      for (const f of face) {
+        const land = dock - form + form * clamp01((f.y + g.half.h) / faceH * 0.85 + rand() * 0.15);
+        lands.push(land);
+        const sg = g.pour + 40 + Math.max(0, land - g.pour - 40) * 0.4 * rand();
+        push([
+          0.15 + 0.4 * rand(), 0.02 + 0.3 * rand(),
+          0.25 + 0.3 * rand(), 0,
+          f.x, f.y,
+          1, 1, 1,
+          1e9, sg, rand(), rand(),
+          2, 0, 1, 0,
           land,
         ]);
       }
@@ -473,6 +485,9 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       dpr = LIGHT ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(window.innerWidth * dpr);
       canvas.height = Math.round(window.innerHeight * dpr);
+      // the canvas covers exactly the visible screen (100vh is the large
+      // viewport on phones, which would stretch the cells)
+      canvas.style.height = `${window.innerHeight}px`;
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
     resize();
@@ -487,7 +502,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       written.set(el, w);
       el.style.setProperty(prop, v);
     };
-    const managed = () => [hero, quote, feel, seen, conn, ...lines, ...g.blocks, ...rules];
+    const managed = () => [hero, quote, feel, ...lines, ...g.blocks, ...rules];
     // the portrait frame's border and shadow, 0..1 (1 is how AboutSection draws it)
     const frameLook = (f: number) => {
       if (!photoFrame) return;
@@ -520,6 +535,11 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       raf = 0;
       if (!g.built) return;
       const vw = window.innerWidth, vh = window.innerHeight, sy = window.scrollY;
+      // layout reads first, then only style writes (no forced layout)
+      const past = sy >= g.end;
+      const slot = !past && sy > S0 ? photoFrame?.getBoundingClientRect() : undefined;
+      const heroOn = past && hero.getBoundingClientRect().bottom > 0;
+      const stageOn = past && stage.getBoundingClientRect().bottom > 0;
       if (portrait && photoImg && photoFrame) {
         if (sy <= S0) {
           portrait.draw(0, 1);
@@ -540,8 +560,8 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
         if (sy >= g.end) {
           // past the gate: what became dust stays gone while it is still on screen
           domActive = true;
-          if (hero.getBoundingClientRect().bottom > 0) put(hero, 'opacity', '0');
-          if (stage.getBoundingClientRect().bottom > 0) put(quote, 'opacity', '0');
+          if (heroOn) put(hero, 'opacity', '0');
+          if (stageOn) put(quote, 'opacity', '0');
         }
         show(false);
         return;
@@ -552,8 +572,6 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       put(quote, 'opacity', sy >= g.pour ? '0' : '');
       lines.forEach((el, k) => put(el, 'opacity', sy < (g.lineSet[k] ?? 0) ? '0' : ''));
       light(feel, smooth(g.feel[0], g.feel[0] + (g.feel[1] - g.feel[0]) * 0.25, sy));
-      light(seen, smooth(g.seen[0], g.seen[1], sy));
-      light(conn, smooth(g.conn[0], g.conn[1], sy));
       g.blocks.forEach((el, k) => {
         if (g.done[k] >= 0) put(el, 'opacity', smooth(g.done[k], g.done[k] + HAND, sy).toFixed(2));
       });
@@ -570,7 +588,6 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       gl.uniform2f(u.view, vw, vh);
       gl.uniform1f(u.dpr, dpr);
       gl.uniform2f(u.gather, g.pour, g.gatherLen);
-      const slot = photoFrame?.getBoundingClientRect();
       gl.uniform2f(u.slot, slot ? slot.left + slot.width / 2 : vw / 2, slot ? slot.top + slot.height / 2 : vh * 2);
       gl.uniform2f(u.dev, g.red[0], g.red[1]);
       gl.drawArrays(gl.POINTS, 0, g.count);
@@ -597,7 +614,15 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
     });
     const onDither = () => primeImages(hero).then(() => { if (!dead) rebuild(0); });
     window.addEventListener('hero-dither', onDither);
-    const onResize = () => { resize(); rebuild(250); };
+    // a phone's toolbar sliding in or out only changes the height a little:
+    // keep the build (it is measured on the stable 100svh stage), just
+    // refit the canvas and redraw
+    const onResize = () => {
+      resize();
+      schedule();
+      if (g.built && window.innerWidth === g.w && Math.abs(window.innerHeight - g.h) < REBUILD_DH) return;
+      rebuild(250);
+    };
 
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', onResize);
@@ -614,6 +639,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       portrait?.destroy();
       // no loseContext(): on macOS Chrome it blanks the window for a frame (#119)
       gl.deleteBuffer(buf);
+      gl.deleteVertexArray(vao);
       gl.deleteProgram(prog);
     };
   }, []);

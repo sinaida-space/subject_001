@@ -5,9 +5,11 @@ import StarTitle from '@/components/StarTitle';
 
 
 // ── Stagger fade-in helper (lite mode; in full mode QuoteGate pours About) ──
+const REDUCED = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function Reveal({ delay = 0, children }: { delay?: number; children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(REDUCED);
 
   useEffect(() => {
     const el = ref.current;
@@ -172,30 +174,76 @@ function Eyebrow({ full }: { full: boolean }) {
     </p>
   );
   if (full) return <StarTitle text="About" caption={caption} />;
+  return <LiteHeader caption={caption} />;
+}
+
+// Lite header (shared rule with the other lite headers): at md+ the label
+// starts at 25% of the frame, and a hairline runs from the frame's left edge
+// to it, drawn out as the header scrolls from the bottom of the screen up to
+// 60% of it (a CSS var the scroll writes, scaleX only). Phones: an indent, no
+// rule. Reduced motion: the rule is simply there.
+function LiteHeader({ caption }: { caption: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || REDUCED) return;
+    let top = 0, vh = 1;
+    const measure = () => {
+      top = el.getBoundingClientRect().top + window.scrollY;
+      vh = window.innerHeight || 1;
+    };
+    let last = -1;
+    const onScroll = () => {
+      // header top on screen: 1.0 → 0.6 of the screen
+      const y = (top - window.scrollY) / vh;
+      const p = Math.round(Math.min(1, Math.max(0, (1 - y) / 0.4)) * 200) / 200;
+      if (p === last) return;
+      last = p;
+      el.style.setProperty('--rule', String(p));
+    };
+    const onResize = () => { measure(); last = -1; onScroll(); };
+    measure();
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
   return (
-    <Reveal delay={0}>
-      <h2 className="font-mono uppercase text-primary text-[32px] md:text-[40px]" style={{ letterSpacing: '0.2em' }}>
-        About
-      </h2>
-      {caption}
-    </Reveal>
+    <div ref={ref} className="relative pl-6 md:pl-[25%]" style={{ ['--rule' as string]: REDUCED ? '1' : '0' }}>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-[1.4rem] hidden h-px w-[calc(25%-1.5rem)] origin-left bg-foreground/20 md:top-[1.6rem] md:block"
+        style={{ transform: 'scaleX(var(--rule))' }}
+      />
+      <Reveal delay={0}>
+        <h2 className="font-mono uppercase text-primary text-[32px] md:text-[40px]" style={{ letterSpacing: '0.2em' }}>
+          About
+        </h2>
+        {caption}
+      </Reveal>
+    </div>
   );
 }
 
 export default function AboutSection() {
-  // full mode, md+: the portrait sticks in its column (QuoteGate develops it
-  // there while only the text moves); the column stretches over both rows
+  // md+: the portrait sticks in its column (full: QuoteGate develops it there
+  // while only the text moves); the column stretches over both rows.
+  // Lite: eyebrow and photo come up first (the photo before the headline on
+  // phones too), then the headline and the table scroll past the photo.
   const full = useRenderMode().mode === 'full';
   return (
     <section id="about" className="relative z-10 py-16 md:py-24">
       <div className="site-frame">
         <Eyebrow full={full} />
         <div className="mt-10 md:mt-16 grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-6 md:gap-y-16">
-          <h3 className="m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[12.4vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)]">
+          <h3 className={`m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[11.2vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)]${full ? '' : ' md:mt-[24svh]'}`}>
             {`Human first. Digital${NB}second.`}
           </h3>
-          <div data-photo-col className="md:col-span-3 md:row-start-1 md:row-span-2 md:max-w-[240px] md:self-stretch">
-            <div className={full ? 'md:sticky md:top-24' : undefined}>
+          <div data-photo-col className={`md:col-span-3 md:row-start-1 md:row-span-2 md:max-w-[240px] md:self-stretch${full ? '' : ' order-first md:order-none'}`}>
+            <div className="md:sticky md:top-24">
               <Reveal delay={150}>
                 <PhotoBlock />
               </Reveal>
