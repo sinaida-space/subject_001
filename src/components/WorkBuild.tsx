@@ -217,7 +217,11 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       rest.style.width = `${t.w}px`;
       rest.style.height = `${t.h}px`;
       rest.style.left = `${title.offsetLeft}px`;
-      rest.style.top = `${Math.round(title.offsetTop + (title.offsetHeight - t.h) / 2)}px`;
+      // centred in the part of the h2 box the caption does not ride over, so
+      // the formed word clears the caption (and the map below it)
+      const cap = heading.querySelector<HTMLElement>('p');
+      const free = (cap ? cap.offsetTop - 8 : title.offsetTop + title.offsetHeight) - title.offsetTop;
+      rest.style.top = `${Math.round(title.offsetTop + Math.max(0, (free - t.h) / 2))}px`;
       rest.width = Math.round(t.w * dpr);
       rest.height = Math.round(t.h * dpr);
       if (restCtx) {
