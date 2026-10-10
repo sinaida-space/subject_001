@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CITY, DOLLY_Z, GROUND_DROP, cityBus, endEyeY, span, textRects } from '@/lib/city';
+import { CITY, cityBus, cityOrigin, span, textRects } from '@/lib/city';
 import { FLIGHT } from '@/lib/flight';
 
 // ── The city's lights (#179) ──
@@ -28,6 +28,8 @@ const vertex = /* glsl */ `
   uniform vec2 uView;
   uniform vec4 uMask[${MAX_MASKS}];
   uniform int uMasks;
+  uniform float uSnap;
+  uniform float uPx;
   attribute vec4 aLook; // brightness, order of lighting, size, haze
   attribute vec3 aColor;
   varying vec3 vColor;
@@ -41,6 +43,14 @@ const vertex = /* glsl */ `
     float on = smoothstep(aLook.y, aLook.y + 0.04, uOn);
     vAlpha = min(1.0, 2.4 * aLook.x * aLook.w * min(1.0, 0.35 + px)) * on;
     vColor = aColor;
+    // MORE: the lights snap to the dither grid, 2 px squares on a 4 px pitch
+    if (uSnap > 0.0) {
+      vec2 g = (gl_Position.xy / gl_Position.w * 0.5 + 0.5) * uView;
+      vec2 snapped = (floor(g / 4.0) + 0.5) * 4.0;
+      gl_Position.xy = (mix(g, snapped, uSnap) / uView * 2.0 - 1.0) * gl_Position.w;
+      gl_PointSize = mix(gl_PointSize, 2.0 * uPx, uSnap);
+      vAlpha = mix(vAlpha, min(1.0, vAlpha * 1.6), uSnap);
+    }
     // css px on the screen; out near the text
     vec2 sp = (gl_Position.xy / gl_Position.w * 0.5 + 0.5) * uView;
     sp.y = uView.y - sp.y;
@@ -53,11 +63,13 @@ const vertex = /* glsl */ `
 `;
 
 const fragment = /* glsl */ `
+  uniform float uSnap;
   varying vec3 vColor;
   varying float vAlpha;
   void main() {
     float r = length(gl_PointCoord - 0.5);
-    float a = (1.0 - smoothstep(0.15, 0.5, r)) * vAlpha;
+    // round and soft as light; a hard square once snapped to the grid
+    float a = mix(1.0 - smoothstep(0.15, 0.5, r), 1.0, uSnap) * vAlpha;
     if (a < 0.004) discard;
     gl_FragColor = vec4(vColor, a);
   }
@@ -69,11 +81,12 @@ const rng = (seed: number) => () => {
   return seed / 4294967296;
 };
 
-export default function CityGround() {
+/** under the flight's end (home) or under the camera's own home (other pages) */
+export default function CityGround({ flight = true }: { flight?: boolean }) {
   const geometry = useMemo(() => {
     const rand = rng(179);
-    const cx = -FLIGHT.x, cz = FLIGHT.home - FLIGHT.z + DOLLY_Z;
-    const gy = endEyeY(-FLIGHT.y) - GROUND_DROP;
+    const o = cityOrigin(flight, { x: -FLIGHT.x, y: -FLIGHT.y, z: FLIGHT.home - FLIGHT.z });
+    const cx = o.x, cz = o.z, gy = o.groundY;
     const river = (z: number) => cx + 2.2 + 3 * Math.sin(z * 0.07) + 1.2 * Math.sin(z * 0.19);
     const pos = new Float32Array(COUNT * 3);
     const look = new Float32Array(COUNT * 4);
@@ -114,7 +127,7 @@ export default function CityGround() {
     g.setAttribute('aLook', new THREE.BufferAttribute(look, 4));
     g.setAttribute('aColor', new THREE.BufferAttribute(col, 3));
     return g;
-  }, []);
+  }, [flight]);
   useEffect(() => () => geometry.dispose(), [geometry]);
 
   const material = useMemo(
@@ -128,6 +141,8 @@ export default function CityGround() {
           uView: { value: new THREE.Vector2(1, 1) },
           uMask: { value: Array.from({ length: MAX_MASKS }, () => new THREE.Vector4()) },
           uMasks: { value: 0 },
+          uSnap: { value: 0 },
+          uPx: { value: 1 },
         },
         transparent: true,
         depthTest: false,
@@ -139,8 +154,16 @@ export default function CityGround() {
   useEffect(() => () => material.dispose(), [material]);
 
   const rects = useMemo(() => new Float32Array(MAX_MASKS * 4), []);
-  useFrame(({ gl, size }) => {
+  const { invalidate } = useThree();
+  useEffect(() => cityBus.onHover(() => invalidate()), [invalidate]);
+  useFrame(({ gl, size }, delta) => {
     const u = material.uniforms;
+    // MORE eases the lights onto the grid and off it again
+    const snapTo = cityBus.hover() === 'more' ? 1 : 0;
+    u.uSnap.value = THREE.MathUtils.damp(u.uSnap.value, snapTo, 9, Math.min(delta, 0.05));
+    if (Math.abs(u.uSnap.value - snapTo) < 0.002) u.uSnap.value = snapTo;
+    else invalidate();
+    u.uPx.value = gl.getPixelRatio();
     // the lights come on as the CONTACT title's stars land; the scroll's own
     // progress makes sure they are all on by the end
     u.uOn.value = Math.max(span(cityBus.pour(), [0.3, 1]), span(cityBus.progress(), CITY.ground));

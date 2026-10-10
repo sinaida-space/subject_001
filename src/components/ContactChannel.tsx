@@ -1,5 +1,6 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import ContactLinks from './ContactLinks';
+import GlitterText from './GlitterText';
 import StarTitle, { LiteTitle } from './StarTitle';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { CITY, cityBus, smoother, span } from '@/lib/city';
@@ -101,7 +102,10 @@ export default function ContactChannel() {
             {/* the block the dolly carries (#179); the question is the title's caption */}
             <div ref={blockRef}>
               <div ref={questionRef} data-ground-mask className="w-fit">{question}</div>
-              <div data-ground-mask className="w-fit">{headline}</div>
+              <div data-ground-mask className="w-fit">
+                {/* laced with star points that glint while the page scrolls (#179) */}
+                <GlitterText>{headline}</GlitterText>
+              </div>
               <div ref={linksRef} data-ground-mask className="mt-[6vh] w-fit">
                 <ContactLinks />
               </div>

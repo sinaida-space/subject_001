@@ -58,6 +58,13 @@ export function cityCamera(f: number, horizon = DEFAULT_HORIZON) {
 /** the eye height at the end of the page, in the world */
 export const endEyeY = (flightEndY: number) => flightEndY - LAND_Y;
 
+/** where the city lies: under the flight's end on the home page, under the
+ * camera's own home on the other pages (their camera does not fly) */
+export function cityOrigin(flight: boolean, end: { x: number; y: number; z: number }) {
+  const o = flight ? end : { x: 0, y: 0, z: 7 };
+  return { x: o.x, z: o.z + DOLLY_Z, groundY: endEyeY(o.y) - GROUND_DROP };
+}
+
 // ── the lines of text the ground keeps clear of
 /** fills `out` with the css px rects (left, top, right, bottom) of the
  * visible [data-ground-mask] elements (not those still unformed in their
@@ -82,6 +89,13 @@ const DEFAULT_HORIZON = 0.3;
 let progressFn: (() => number) | null = null;
 let horizon = DEFAULT_HORIZON;
 let pour = 0;
+
+/** the footer's hovers (#179, full mode): CONNECT pulls the stars near the
+ * cursor into small clusters, MORE snaps the city's lights to the dither
+ * grid, the name sends a glint through the stars */
+export type CityHover = 'connect' | 'more' | 'name' | null;
+let hover: CityHover = null;
+const hoverListeners = new Set<() => void>();
 let held = false;
 const heldListeners = new Set<() => void>();
 
@@ -117,6 +131,17 @@ export const cityBus = {
     pour = q;
   },
   pour: () => pour,
+
+  setHover(h: CityHover) {
+    if (h === hover) return;
+    hover = h;
+    hoverListeners.forEach((l) => l());
+  },
+  hover: () => hover,
+  onHover(l: () => void) {
+    hoverListeners.add(l);
+    return () => void hoverListeners.delete(l);
+  },
 };
 
 // Je suis le spectre d'une rose que tu portais hier au bal.

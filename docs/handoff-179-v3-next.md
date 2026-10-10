@@ -31,10 +31,14 @@ Her verdict on the first build (phone screenshot): the screen is fine, but the r
 - **Phones keep the live sinaida.eu layout**: logo + plaque, then Navigate | Connect in two columns with More under them, a divider, the bottom line. `PhoneMenu` is gone. Not held, no recede; the stars still pour into the lights as the footer scrolls in.
 - **Lite**: the footer has its natural height again (no `min-h-[100svh]`), and Contact's bottom padding and the footer's top padding are tighter on md+, so the end of the page shows all of LET'S TALK above the footer.
 
-### Commit 3: hovers and other pages (the track and the MORE dither hover are out with the dither ground; re-ask her before building hovers)
-- CONNECT hover: nearby stars pull into small clusters. MORE hover: the ground's dither sharpens to a finer grid. Name/logo hover: "extra bling", a glint passes through the stars. Full mode only, rewind on leave, nothing moves at rest.
-- LET'S TALK laced with star points that glint only while scrolling (MySpace-glitter memory, keep it neat).
-- Other pages, full mode: same footer with stars, dolly and dither ground; no LET'S TALK, no track. Lite: same layout, still.
+### Commit 3: hovers, glitter, other pages (built, waiting on her eye)
+
+- **Hovers** (full mode, `cityBus.setHover` from `Footer.tsx`'s `hoverOn`, pointer or focus, cleared on leave; all ease back):
+  - CONNECT: the stars in the sky over the cursor (horizontal distance only, `CLUSTER_R`) move their spring homes toward the middle of a `CLUSTER` cell, so they gather into small clusters. Subtle at the very end because the sky is sparse there; strengthen if she asks.
+  - MORE: `CityGround`'s lights snap to a 4 px grid as crisp 2 px squares (`uSnap`): light turning into matter.
+  - Name/logo: a glint band sweeps once across the stars over `GLINT_S` (star shader `uGlint`, `uGlintAmt`).
+- **LET'S TALK glitter** (`GlitterText.tsx`): star points sampled on the headline's own ink; each glints by scroll position, scaled by scroll speed, and they go out within a breath of stopping. Full mode, not under reduced motion.
+- **Other pages, full mode**: the footer publishes f on every page. Their camera (not flying) backs away and lowers its eyes the same way (`Particles`, the non-flight branch), the stars under eye level pour down (`uGround` per page), and `CityGround flight={false}` lies under the home camera (`cityOrigin`). Footer pieces resolve by position and are whole by the page's end.
 
 ### Open / leave alone
 - /experiences: do NOT link it in the footer (unclear with Dasha).

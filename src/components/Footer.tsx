@@ -3,14 +3,15 @@ import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
-import { CITY, cityBus, span } from '@/lib/city';
+import { CITY, cityBus, span, type CityHover } from '@/lib/city';
 import { ditherMask } from '@/lib/ditherMask';
 
 type Item = { label: string; to?: string; href?: string; download?: boolean; toggle?: boolean };
 
 // The three link columns, bottom-aligned so they step up like a skyline.
 // Navigate follows the page's own order.
-const COLUMNS: { label: string; items: Item[] }[] = [
+// hover: what the column does to the sky in full mode (#179, cityBus)
+const COLUMNS: { label: string; items: Item[]; hover?: CityHover }[] = [
   {
     label: 'Navigate',
     items: [
@@ -22,6 +23,7 @@ const COLUMNS: { label: string; items: Item[] }[] = [
   },
   {
     label: 'Connect',
+    hover: 'connect',
     items: [
       { label: 'Instagram', href: 'https://www.instagram.com/sin.ai.da/' },
       { label: 'YouTube', href: 'https://www.youtube.com/@theSwansAreNotWhatTheySeem' },
@@ -35,6 +37,7 @@ const COLUMNS: { label: string; items: Item[] }[] = [
   },
   {
     label: 'More',
+    hover: 'more',
     items: [
       { label: 'Statement', to: '/statement' },
       { label: 'Work with me', to: '/collaborate' },
@@ -107,6 +110,18 @@ const BottomBar = () => (
   </div>
 );
 
+// the footer's hovers (#179): pointer or keyboard focus sets them, leaving
+// clears them; in lite nothing listens
+const hoverOn = (h: CityHover) =>
+  h
+    ? {
+        onMouseEnter: () => cityBus.setHover(h),
+        onMouseLeave: () => cityBus.setHover(null),
+        onFocus: () => cityBus.setHover(h),
+        onBlur: () => cityBus.setHover(null),
+      }
+    : {};
+
 const toTop = (e: React.MouseEvent) => {
   if (window.location.pathname === '/') {
     e.preventDefault();
@@ -124,7 +139,10 @@ export default function Footer() {
   const [snakeOpen, setSnakeOpen] = useState(false);
   const { mode } = useRenderMode();
   const { pathname } = useLocation();
-  const flight = mode === 'full' && pathname === '/' && !REDUCED;
+  // full mode: the stars pour into the city under the footer on every page;
+  // the home page also holds the last screen and dollies out of Contact
+  const scene = mode === 'full' && !REDUCED;
+  const flight = scene && pathname === '/';
   const rootRef = useRef<HTMLElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
   const columnsRef = useRef<HTMLElement>(null);
@@ -145,10 +163,11 @@ export default function Footer() {
   }, [held]);
 
   // logo, columns and the bottom line resolve out of dither: on the held
-  // screen scrubbed by f; where the footer scrolls on (phones), each piece as
-  // it comes up from the bottom of the screen, so no screen is ever empty
+  // screen scrubbed by f; where the footer scrolls on (phones, other pages),
+  // each piece as it comes up from the bottom of the screen, so no screen is
+  // ever empty
   useEffect(() => {
-    if (!flight) return;
+    if (!scene) return;
     const groups = [[brandRef], [columnsRef], [barRef]];
     const levels = groups.map(() => -1);
     let raf = 0;
@@ -158,7 +177,8 @@ export default function Footer() {
       const vh = window.innerHeight;
       groups.forEach((refs, i) => {
         const el = refs[0].current;
-        const at = held || !el ? span(f, CITY.text[i]) : span((vh - el.getBoundingClientRect().top) / vh, [0.02, 0.3]);
+        // (and whole by the end of the page, wherever the last piece sits)
+        const at = held || !el ? span(f, CITY.text[i]) : Math.max(span((vh - el.getBoundingClientRect().top) / vh, [0.02, 0.3]), span(f, [0.8, 1]));
         const k = Math.round(at * 16);
         if (k === levels[i]) return;
         levels[i] = k;
@@ -177,11 +197,11 @@ export default function Footer() {
       window.removeEventListener('resize', schedule);
       groups.flat().forEach((r) => r.current && ditherMask(r.current, 16));
     };
-  }, [flight, held]);
+  }, [scene, held]);
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!flight || !root) return;
+    if (!scene || !root) return;
     // f: 0 as the footer comes in at the bottom of the screen, 1 at the end
     // of the page
     cityBus.setProgress(() => {
@@ -189,7 +209,7 @@ export default function Footer() {
       return Math.min(1, Math.max(0, (window.innerHeight - r.top) / Math.max(1, r.height)));
     });
     return () => cityBus.setProgress(null);
-  }, [flight]);
+  }, [scene]);
 
   return (
     <footer
@@ -204,7 +224,7 @@ export default function Footer() {
         <div className="site-frame pointer-events-auto">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-end lg:gap-8">
             <div ref={brandRef} className="lg:col-span-4">
-              <div data-ground-mask className="w-fit"><Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={toTop} /></div>
+              <div data-ground-mask className="w-fit" {...hoverOn('name')}><Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={toTop} /></div>
               <div className="mt-5"><Plaque /></div>
             </div>
             <Columns ref={columnsRef} className="grid grid-cols-2 items-start gap-8 md:grid-cols-3 md:items-end lg:col-span-7 lg:col-start-6" />
@@ -222,7 +242,7 @@ const Columns = forwardRef<HTMLElement, { className: string }>(function Columns(
   return (
     <nav ref={ref} aria-label="Footer" className={className}>
       {COLUMNS.map((col) => (
-        <div key={col.label}>
+        <div key={col.label} {...hoverOn(col.hover ?? null)}>
           <div data-ground-mask className="clinical-label mb-5 w-fit text-primary-legible">{col.label}</div>
           <div className="space-y-3.5">
             {col.items.map((item) => <FooterLink key={item.label} item={item} />)}
