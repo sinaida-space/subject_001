@@ -291,14 +291,17 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
     if (!root || !canvas || !hero || !track || !stage || !quote || !feel || !about) return;
     const lines = Array.from(quote.querySelectorAll<HTMLElement>('[data-line]'));
     const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, antialias: false });
-    if (!gl) return;
+    // the belief waits hidden over the hero (QuoteStage) until the gate blows
+    // it in; without the gate it is simply there
+    const unhide = () => { quote.style.opacity = ''; };
+    if (!gl) return unhide();
 
     let prog: WebGLProgram;
     try {
       prog = link(gl, PT_VS, PT_FS);
     } catch (e) {
       console.error('QuoteGate:', e);
-      return;
+      return unhide();
     }
     const U = (n: string) => gl.getUniformLocation(prog, n);
     const u = { sy: U('uSy'), view: U('uView'), dpr: U('uDpr'), gather: U('uGather'), slot: U('uSlot'), dev: U('uDev'), rel: U('uRel') };
@@ -565,6 +568,9 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
 
       if (sy <= S0 || sy >= g.end) {
         clearDom();
+        // before the first wheel tick the belief's track already overlaps the
+        // hero (#174): it stays hidden until the gust brings it (#175)
+        if (sy <= S0) put(quote, 'opacity', '0');
         if (sy >= g.end) {
           // past the gate: what became dust stays gone while it is still on screen
           domActive = true;
@@ -577,7 +583,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
 
       domActive = true;
       put(hero, 'opacity', (1 - smooth(S0, S0 + HERO_LOCK, sy)).toFixed(2));
-      put(quote, 'opacity', sy >= g.pour ? '0' : '');
+      put(quote, 'opacity', sy >= g.pour ? '0' : '1'); // '1', not '': QuoteStage hides it inline
       lines.forEach((el, k) => put(el, 'opacity', sy < (g.lineSet[k] ?? 0) ? '0' : ''));
       light(feel, smooth(g.feel[0], g.feel[0] + (g.feel[1] - g.feel[0]) * 0.25, sy));
       g.blocks.forEach((el, k) => {

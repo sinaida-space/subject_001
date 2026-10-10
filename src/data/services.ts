@@ -34,23 +34,25 @@ export interface Service {
 
 export const SERVICES: Service[] = [
   {
-    code: 'festivals',
-    word: 'SHOWS',
-    title: 'For music festivals & concerts',
+    code: 'stage',
+    word: 'STAGE',
+    title: 'For musicians, dance & theater',
     description:
-      'Audio-reactive stage visuals, one system per song, listening to the live mix straight from the desk. Delivered as a turnkey show or operated live.',
+      'Stage visuals that listen to the live mix straight from the desk and follow the performers’ bodies, one system per song or scene. Developed with the band or the creative team from first concept on, delivered as a turnkey show or operated live.',
     record: [
       { text: 'Nine projections, one per song, performed live with ' },
       { text: `Redkie${NBSP}Ptitsy`, href: '/work/redkie-ptitsy' },
-      { text: ` at Sklad${NBSP}No.${NBSP}3, Moscow, March${NBSP}2026.` },
+      { text: ` at Sklad${NBSP}No.${NBSP}3, Moscow, March${NBSP}2026. The body tracking runs live in ` },
+      { text: `Ethereal${NBSP}Path`, href: '/work/ethereal-path' },
+      { text: '.' },
     ],
-    brief: 'Brief to show: send the setlist and stage dimensions.',
-    short: `Audio-reactive visuals, one system per${NBSP}song, listening to${NBSP}the${NBSP}live mix. Turnkey show or${NBSP}operated${NBSP}live.`,
+    brief: 'Brief to show: send the setlist or the choreography notes, and the stage dimensions.',
+    short: `Visuals that play with${NBSP}the${NBSP}band and${NBSP}follow the${NBSP}performers’ bodies, one system per${NBSP}song. Turnkey show or${NBSP}operated${NBSP}live.`,
     caption: { project: 'redkie-ptitsy', text: `nine songs, nine live${NBSP}projections` },
   },
   {
     code: 'web',
-    word: 'SCREENS',
+    word: 'SCREEN',
     title: 'For interactive web',
     description:
       'Sites and components that respond to the visitor. Real-time WebGL and shaders, camera and gesture control running on-device, generative sound. Delivered as a finished site, or as a single component handed to a team that already has developers.',
@@ -66,25 +68,8 @@ export const SERVICES: Service[] = [
     caption: { project: 'aether-currents', text: `an${NBSP}instrument played with bare${NBSP}hands` },
   },
   {
-    code: 'theater',
-    word: 'SCENES',
-    title: 'For theater & dance',
-    description:
-      'Responsive scenography: real-time systems that follow the performers’ bodies and the sound, developed with the creative team from first concept onward.',
-    record: [
-      { text: 'The tracking runs live and in public: hands drive sound and image in ' },
-      { text: `Aether${NBSP}Currents`, href: '/work/aether-currents' },
-      { text: `, head and${NBSP}hands steer the whole scene in ` },
-      { text: `Ethereal${NBSP}Path`, href: '/work/ethereal-path' },
-      { text: '.' },
-    ],
-    brief: 'Brief to show: send the script or choreography notes and venue specs.',
-    short: `Responsive scenography that follows the${NBSP}performers’ bodies and${NBSP}the${NBSP}sound, from first concept${NBSP}on.`,
-    caption: { project: 'ethereal-path', text: `head and${NBSP}hands steer the${NBSP}scene` },
-  },
-  {
     code: 'venues',
-    word: 'ROOMS',
+    word: 'SPACE',
     title: 'For venues, brands & institutions',
     description:
       'Immersive installations and generative visual identities, adapted to the space they run in.',

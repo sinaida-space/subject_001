@@ -44,13 +44,17 @@ const TURN = 0.55;
 const EXIT = 0.5;
 // what follows the track rises over the exit by this many stage heights
 const OVERLAP = 0.75;
-const CELLS = 4;
+const CELLS = 3; // STAGE, SCREEN, SPACE (#175)
 const restStart = (k: number) => ENTRY + k * (REST + TURN);
 const restMid = (k: number) => restStart(k) + REST / 2;
 const EXIT_START = restStart(CELLS - 1) + REST;
-const TOTAL = EXIT_START + EXIT; // 5.25
-/** ZW sway per turn, alternating sign and size, so the three paths diverge */
-const ZW_SWAY = [0.3, -0.5, 0.62];
+const TOTAL = EXIT_START + EXIT; // 4.1
+/** ZW sway per turn, alternating sign and size, so the paths diverge */
+const ZW_SWAY = [0.3, -0.5];
+/** where each turn carries it, as shares of the stage: the entry falls into
+ * the screen surface, the first turn swings it to the side, the second up */
+const TURN_DX = [0.2, 0];
+const TURN_DY = [-0.02, -0.18];
 
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const smooth = (a: number, b: number, x: number) => {
@@ -152,9 +156,10 @@ function sceneAt(u: number): Scene {
   const bell = Math.sin(Math.PI * t);
   s.xw = paneTheta(k + smooth(0, 1, t));
   s.zw = Math.PI + ZW_SWAY[k] * bell;
-  // each turn pulls it back into the room and up a little, then home
+  // each turn pulls it back into the room and out along its own axis, then home
   s.zoom = 1 - 0.22 * bell;
-  s.dy = -0.05 * bell;
+  s.dx = TURN_DX[k] * bell;
+  s.dy = TURN_DY[k] * bell;
   s.scale[k] = s.zoom; // the leaving screen stays on its pane while it fades
   s.energy = bell;
   s.echo = bell;

@@ -8,11 +8,10 @@ import DitherReveal from '@/components/DitherReveal';
 // Body of Work as a horizontal strip of square cards, one per project.
 // Every still is red dither; its colour shows under a hovering mouse and
 // while its card holds keyboard focus. In every mode the strip pins and the
-// vertical wheel or swipe carries it sideways, never a scrollbar (#175).
-// Scroll down moves things left to right (the site's 3D law), so the row is
-// laid out right to left: the first project starts on the frame's left
-// gutter, the next ones come in from the left, and the strip lets go once
-// the last one reaches the centre. The row bleeds to the viewport edges.
+// vertical wheel or swipe carries it sideways, never a scrollbar (#175):
+// the first project starts on the frame's left gutter, the next ones come in
+// from the right, and the strip lets go once the last one reaches the centre.
+// The row bleeds to the viewport edges.
 const KIND_ORDER: ProjectKind[] = ['stage', 'installation', 'conceptual', 'game', 'tool', 'tutorial'];
 const KIND_LABEL: Record<ProjectKind, string> = {
   stage: 'Stage',
@@ -91,30 +90,21 @@ function PinnedStrip() {
   const trackRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const [box, setBox] = useState({ travel: 0, height: 0, top: 0, start: 0 });
+  const [box, setBox] = useState({ travel: 0, height: 0, top: 0 });
   const travelRef = useRef(0);
-  const startRef = useRef(0);
 
-  // measured on mount and resize only: the start offset that puts the first
-  // column (rightmost in the row) on the left gutter, the travel until the
-  // last column (leftmost) is centred, and the pin offset that centres the row
+  // measured on mount and resize only: the travel until the last column's
+  // centre meets the viewport centre, and the pin offset that centres the row
   const measure = useCallback(() => {
     const view = viewRef.current;
     const list = listRef.current;
-    const first = list?.firstElementChild as HTMLLIElement | null;
     const last = list?.lastElementChild as HTMLLIElement | null;
-    if (!view || !list || !first || !last) return;
-    const pad = parseFloat(getComputedStyle(list).paddingLeft) || 0;
-    const start = Math.round(pad - first.offsetLeft);
-    const end = Math.round(window.innerWidth / 2 - last.offsetWidth / 2 - last.offsetLeft);
-    const travel = Math.max(0, end - start);
+    if (!view || !list || !last) return;
+    const travel = Math.max(0, Math.round(last.offsetLeft + last.offsetWidth / 2 - window.innerWidth / 2));
     const height = view.offsetHeight;
     const top = Math.max(0, Math.round((window.innerHeight - height) / 2));
     travelRef.current = travel;
-    startRef.current = start;
-    setBox((b) =>
-      b.travel === travel && b.height === height && b.top === top && b.start === start ? b : { travel, height, top, start },
-    );
+    setBox((b) => (b.travel === travel && b.height === height && b.top === top ? b : { travel, height, top }));
   }, []);
 
   useLayoutEffect(() => {
@@ -141,7 +131,7 @@ function PinnedStrip() {
       const t = Math.min(travelRef.current, Math.max(0, box.top - track.getBoundingClientRect().top));
       if (t === lastT) return;
       lastT = t;
-      list.style.transform = `translate3d(${startRef.current + t}px, 0, 0)`;
+      list.style.transform = `translate3d(${-t}px, 0, 0)`;
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -159,7 +149,7 @@ function PinnedStrip() {
     (li: HTMLLIElement) => {
       const track = trackRef.current;
       if (!track) return;
-      const t = Math.min(travelRef.current, Math.max(0, window.innerWidth / 2 - li.offsetWidth / 2 - li.offsetLeft - startRef.current));
+      const t = Math.min(travelRef.current, Math.max(0, li.offsetLeft + li.offsetWidth / 2 - window.innerWidth / 2));
       window.scrollTo({ top: track.getBoundingClientRect().top + window.scrollY - box.top + t });
     },
     [box.top],
@@ -169,7 +159,7 @@ function PinnedStrip() {
     <div ref={trackRef} data-work-strip style={{ ...BLEED, height: box.height ? box.travel + box.height : undefined }}>
       {/* clip, not hidden: focus can't scroll a clipped box sideways */}
       <div ref={viewRef} className="sticky" style={{ top: box.top, overflow: 'clip' }}>
-        <ul ref={listRef} aria-label="Body of Work projects" className="flex w-max flex-row-reverse gap-[3vw] will-change-transform" style={ROW_PAD}>
+        <ul ref={listRef} aria-label="Body of Work projects" className="flex w-max gap-[3vw] will-change-transform" style={ROW_PAD}>
           {ITEMS.map((p) => (
             <Column key={p.id} project={p} onFocusColumn={centreColumn} />
           ))}

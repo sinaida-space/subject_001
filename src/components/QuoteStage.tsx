@@ -84,7 +84,8 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
             ref={quoteRef}
             data-quote
             className="mx-auto m-0 w-fit max-w-full font-display uppercase font-normal text-foreground leading-[1.05] tracking-[-0.01em] text-[7.4vw] md:text-[clamp(2rem,min(3.9vw,7svh),4.5rem)]"
-            style={story ? { willChange: 'transform, opacity' } : undefined}
+            // pinned: hidden over the hero until QuoteGate takes it over (#175)
+            style={story ? { willChange: 'transform, opacity' } : pinned ? { opacity: 0 } : undefined}
           >
             <span data-line="0" className="block">{`I${NB}believe`}</span>
             <span data-line="1" className="block">{`that technology is${NB}only meaningful${NB}when`}</span>
