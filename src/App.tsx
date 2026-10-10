@@ -21,13 +21,6 @@ const RouteFallback = () => (
   <div className="min-h-screen bg-background" aria-hidden="true" />
 );
 
-// Site-wide, not per-page — every route gets the custom cursor (previously it
-// only existed on Index/NotFound, so it silently vanished on every other page).
-const SiteCursor = () => {
-  const { mode } = useRenderMode();
-  return mode === 'full' ? <CustomCursor /> : null;
-};
-
 // Full mode only: the red halation on large display headlines. Idle at rest.
 const SiteLight = () => {
   const { mode } = useRenderMode();
@@ -64,7 +57,8 @@ const App = () => (
       <ScrollToTop />
       <RouteEnhancer />
       <DiveHost />
-      <SiteCursor />
+      {/* site-wide, every route: the red arrow in both modes, on Void and on Chalk (#175) */}
+      <CustomCursor />
       <SiteLight />
       <WebMcpTools />
       <Suspense fallback={<RouteFallback />}>

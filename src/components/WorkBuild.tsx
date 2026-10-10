@@ -58,7 +58,9 @@ const UP = 0.95;
 // The pull ends when the BODY OF WORK title's top reaches POUR_B; it takes
 // at least FORM_MIN screen heights of scroll.
 const POUR_B = 0.36;
-const TITLE_LAG = 0.7; // the formed title lags the page by this share of the scroll
+// The BODY OF WORK word is a StarTitle like every section name (#175): the
+// bang pours everything into the globe, and the h2 here only times the pull.
+const TITLE_POUR = false;
 const FORM_MIN = 0.2;
 // Once About's bottom edge drops back below this, About is coming apart:
 // the map lets go of its latch and rewinds with the scroll.
@@ -285,10 +287,11 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const rand = rng(seed), sy = window.scrollY;
       return cells.map((c): Raw => ({ anchor, x: c.x - box.left, y: c.y - sy - box.top, r: c.r, g: c.g, b: c.b, a, s: 2.4, rnd: rand(), depth: rand() }));
     };
-    // the ABOUT title: its own stars, as StarTitle draws them formed
+    // the ABOUT title stays out of the bang: it holds in the middle of the
+    // screen and thins into the fog with About's presence (StarTitle, #175)
     const readStars = () => {
       const out: Raw[] = [];
-      const tbox = about.querySelector<HTMLElement>('[data-gate-skip]');
+      const tbox = null as HTMLElement | null;
       if (tbox) {
         const ab = about.getBoundingClientRect(), tb = tbox.getBoundingClientRect();
         const t = sampleStarTitle('About', tbox.clientWidth * SPAN, { light: LIGHT });
@@ -432,7 +435,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const pace = (g: Grain, d: number) => (g.p = Math.max(1, Math.min(1 + 2 * g.depth, d > 1 ? lim / d : 3)));
       for (const g of near) {
         const x = sx({ anchor: g.anchor, x: g.rx }), y = syy({ anchor: g.anchor, y: g.ry });
-        if (toTitle.length < nT && rand() < 0.5) {
+        if (TITLE_POUR && toTitle.length < nT && rand() < 0.5) {
           toTitle.push(g);
           continue;
         }
@@ -468,7 +471,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       });
       condense = [];
       tStars.forEach((st, i) => {
-        if (taken[i]) return;
+        if (!TITLE_POUR || taken[i]) return;
         const l = titleLook(st.rnd, st.depth);
         condense.push({ i, col: pal(l.r, l.g, l.b), size: l.size, bright: l.bright });
       });
@@ -643,7 +646,6 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
 
     let trackH = -1;
     let mapL = 0;
-    let restLag = 0;
     let raf = 0;
     const frame = () => {
       raf = 0;
@@ -657,14 +659,6 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const tt = title.getBoundingClientRect().top;
       const fStart = Math.max(BANG * vh + (tt - ab.bottom), (POUR_B + FORM_MIN) * vh);
       const f = lin(tt, fStart, POUR_B * vh);
-      // once formed, the title is the far layer like every star title: past
-      // POUR_B it moves at 0.3 of the scroll speed and the map rides over it
-      // (#175); zero until then, so the pour still lands where it aims
-      const lag = Math.round(Math.min(TITLE_LAG * Math.max(0, POUR_B * vh - tt), 0.6 * vh));
-      if (lag !== restLag) {
-        restLag = lag;
-        rest.style.transform = lag ? `translate3d(0, ${lag}px, 0)` : '';
-      }
 
       // ── the map: the track holds still (desktop) over its room, or scrolls through (phones)
       const track = root.querySelector<HTMLElement>('[data-build-track]');
@@ -717,7 +711,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const hand = ease(lin(s, HAND_A, HAND_B));
       setAbout(hand <= 0 ? '' : (1 - hand).toFixed(3));
       if (!titleStars && f > 0) titleStars = placeTitle();
-      showRest(f >= 1 && !!titleStars);
+      showRest(TITLE_POUR && f >= 1 && !!titleStars);
 
       if (s >= HAND_A || f >= 1) {
         show(false);

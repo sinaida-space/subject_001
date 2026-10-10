@@ -9,7 +9,7 @@ import ConstellationLite from './ConstellationLite';
 import WorkStrip from './WorkStrip';
 import ProjectDetail from './ProjectDetail';
 import GraphHoverCard from './GraphHoverCard';
-import { LiteTitle } from '@/components/StarTitle';
+import StarTitle, { LiteTitle } from '@/components/StarTitle';
 
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
 
@@ -57,27 +57,19 @@ export default function Constellation() {
     <section ref={sectionRef} id="work" className="relative z-10 py-16 md:py-20">
       <div className="site-frame">
         <div className={mode === 'full' ? 'flex flex-col gap-8 md:gap-12' : 'flex flex-col'}>
-          {/* The heading spans the frame above the map. In full mode WorkBuild
-              pours the BODY OF WORK stars into the h2's box, so the box has the
-              width and height of the other star titles (92% of the frame,
-              min(38svh, 18vw) tall, the caption riding over its lower 30%). */}
+          {/* The heading spans the frame above the map. In full mode it is a
+              StarTitle like every section name (#175); WorkBuild times its
+              pull on the h2 inside it. */}
           {mode === 'full' ? (
             <div ref={headingRef} data-work-heading className="shrink-0">
-              <h2
-                className="font-mono uppercase text-primary"
-                style={{
-                  letterSpacing: '0.2em',
-                  fontSize: 40,
-                  width: '92%',
-                  height: 'min(38svh, 18vw)',
-                  marginBottom: 'calc(min(38svh, 18vw) * -0.3)',
-                }}
-              >
-                Body of Work
-              </h2>
-              <p className="relative z-[1] mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
-                Selected works and the skills that happen to resonate.
-              </p>
+              <StarTitle
+                text="Body of Work"
+                caption={
+                  <p className="relative z-[1] mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+                    Selected works and the skills that happen to resonate.
+                  </p>
+                }
+              />
             </div>
           ) : (
             <div ref={headingRef} data-work-heading>

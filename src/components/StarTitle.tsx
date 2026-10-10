@@ -2,13 +2,14 @@ import { useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode 
 import { galaxyBright, galaxyColor, galaxyKeep, galaxySize } from '@/lib/galaxy';
 
 // ── Star title ──
-// A section name as a giant word of sparse galaxy stars. The stars lie
-// scattered as dust while the title is below the screen and travel to their
-// letter cells as it scrolls in (title top at 100vh → 30vh, or the caller's
-// `until`); near stars set off later and fly bigger. The word is its own far
-// layer: it moves at 0.3 of the scroll speed (#175), so the content slides
-// over it. A pure function of scroll: reverse plays the same frames back, and
-// nothing is drawn while the scroll is still.
+// A section name as a giant word of sparse galaxy stars, held in the middle
+// of the screen while its section is on stage (#175). It never travels: as
+// the section comes in, the word condenses out of the fog star by star (near
+// stars first, a little soft and large, settling to their size), holds while
+// the section passes under it, and thins back into the fog as the section
+// leaves. Its opacity is where you are on the page. A pure function of
+// scroll: reverse plays the same frames back, and nothing is drawn while the
+// scroll is still.
 //
 // The <h2> keeps the text for screen readers and the outline; the canvas is
 // decoration only. Callers use it in full mode; lite keeps its plain h2.
@@ -20,7 +21,7 @@ const SPAN = 0.92; // share of the content width the word spans
 const MAX_H = 0.38; // word height cap, share of the small viewport height
 const ALPHA = 0.32; // global alpha: soft, so content over the lower part stays legible
 const OVERLAP = 0.3; // share of the word height the following content rides over
-const PARALLAX = 0.7; // the word lags the content by this share of the scroll
+const PARALLAX = 0.7; // lite titles: the label lags the content by this share of the scroll
 const BRIGHT = 0.5; // of galaxy's bright stars, the share kept here (4% → 2%)
 
 export interface Star { x: number; y: number; rnd: number; depth: number }
@@ -117,8 +118,7 @@ function halo() {
 // one star, everything precomputed that does not depend on scroll
 interface Flyer {
   tx: number; ty: number; // letter cell
-  ox: number; oy: number; // scatter offset at progress 0
-  delay: number; // share of the progress it waits before setting off
+  delay: number; // share of the presence it waits before it condenses
   size: number; depth: number;
   color: string; bright: boolean; keep: boolean;
 }
@@ -128,11 +128,19 @@ interface StarTitleProps {
   as?: 'h2';
   caption?: ReactNode;
   className?: string;
-  /** viewport share (from the top) where the title's top completes the word */
+  /** kept for callers; the word now follows its section's presence */
   until?: number;
 }
 
-export default function StarTitle({ text, as = 'h2', caption, className, until = 0.3 }: StarTitleProps) {
+/** how present a section is: 0 below the screen, 1 from when its top reaches
+ * the middle until its bottom does, 0 again once it has gone above */
+const presence = (top: number, bottom: number, vh: number) => {
+  const inn = clamp01((vh - top) / (0.5 * vh));
+  const out = clamp01(bottom / (0.5 * vh));
+  return Math.min(inn, out);
+};
+
+export default function StarTitle({ text, as = 'h2', caption, className }: StarTitleProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const Tag = as;
@@ -160,15 +168,16 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
       box.style.marginBottom = `${-Math.round(h * OVERLAP)}px`;
       canvas.width = Math.round(cw * dpr);
       canvas.height = Math.round(h * dpr);
-      const vw = window.innerWidth, vh = svh();
+      // fixed in the middle of the screen, on the box's left edge
+      canvas.style.left = `${Math.round(box.getBoundingClientRect().left)}px`;
+      canvas.style.top = `${Math.round((svh() - h) / 2)}px`;
+      canvas.style.width = `${cw}px`;
+      canvas.style.height = `${h}px`;
       flyers = stars.map((s) => {
-        const reach = 0.3 + 0.7 * s.depth; // near stars come from further out
         const [r, g, b] = galaxyColor(s.rnd, 0.55 + 0.45 * s.depth); // formed letters sit at the bright end
         return {
           tx: s.x, ty: s.y,
-          ox: (fract(s.rnd * 7.13) * 2 - 1) * 0.55 * vw * reach,
-          oy: (fract(s.rnd * 4.77) * 2 - 1) * 0.35 * vh * reach,
-          delay: 0.4 * s.depth + 0.1 * fract(s.rnd * 9.41),
+          delay: 0.45 * (1 - s.depth) + 0.3 * fract(s.rnd * 9.41),
           size: 1 + (galaxySize(s.rnd, s.depth) - 1) * 0.25, // 1..1.5 px: a fine grid wants fine stars
           depth: s.depth,
           color: `rgb(${(r * 255) | 0},${(g * 255) | 0},${(b * 255) | 0})`,
@@ -184,13 +193,11 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
       ctx.clearRect(0, 0, boxW, boxH);
       const sprite = halo();
       for (const f of flyers) {
-        const e = land(clamp01((p - f.delay) / (1 - f.delay)));
-        const x = f.tx + f.ox * (1 - e);
-        const y = f.ty + f.oy * (1 - e);
-        const s = f.size * (1 + 1.5 * f.depth * (1 - e)); // near ones fly bigger
-        if (x < -s || y < -s || x > boxW + s || y > boxH + s) continue;
-        // the full count only once in its letter; in flight the sparse share
-        const a = ALPHA * (f.keep ? 1 : e);
+        const e = land(clamp01((p - f.delay) / 0.25));
+        const x = f.tx, y = f.ty;
+        const s = f.size * (1 + 1.2 * (1 - e)); // out of the fog: soft and large, then its size
+        // the sparse share first, the full count once the word is whole
+        const a = ALPHA * e * (f.keep ? 1 : clamp01(p * 2 - 1));
         if (a <= 0.01) continue;
         ctx.globalAlpha = a;
         if (f.bright) {
@@ -203,26 +210,18 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
       ctx.globalAlpha = 1;
     };
 
-    // progress from the box's place on screen (the box itself never moves:
-    // the parallax shifts the canvas); drawn only when it changed and the box
-    // is on screen
-    let lastY = NaN;
+    // presence of the section the title heads, read once per frame; drawn
+    // only when it changed (quantised), cleared once at zero
+    const section = (box.closest('section') as HTMLElement | null) ?? box.parentElement ?? box;
     const frame = () => {
       raf = 0;
       if (!flyers.length) return;
-      const r = box.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // the word lags the page: offset grows with its distance from the centre
-      const y = Math.round(-PARALLAX * (r.top + r.height / 2 - vh / 2) * 2) / 2;
-      if (r.bottom + y < -0.2 * vh || r.top + y > vh) return; // off screen: the next scroll in will draw
-      if (y !== lastY) {
-        lastY = y;
-        canvas.style.transform = `translate3d(0, ${y}px, 0)`;
-      }
-      const p = ease(clamp01((vh - r.top) / ((1 - until) * vh)));
+      const r = section.getBoundingClientRect();
+      const p = Math.round(ease(presence(r.top, r.bottom, window.innerHeight)) * 200) / 200;
       if (p === lastP) return;
       lastP = p;
-      draw(p);
+      canvas.style.visibility = p > 0 ? 'visible' : 'hidden';
+      if (p > 0) draw(p);
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(frame);
@@ -249,7 +248,7 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
     };
-  }, [text, until]);
+  }, [text]);
 
   return (
     <>
@@ -261,7 +260,7 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
         style={{ zIndex: -1, height: 'min(38svh, 18vw)', marginBottom: 'calc(min(38svh, 18vw) * -0.3)' }}
       >
         <Tag className="sr-only">{text}</Tag>
-        <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" />
+        <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none fixed" style={{ visibility: 'hidden' }} />
       </div>
       {caption}
     </>
