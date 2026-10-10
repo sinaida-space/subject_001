@@ -4,7 +4,9 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
-import { flightAt, pageProgress } from '@/lib/flight';
+import { FLIGHT, flightAt, pageProgress } from '@/lib/flight';
+import { cityBus, cityCamera } from '@/lib/city';
+import CityLights from '@/components/CityLights';
 
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
@@ -74,9 +76,9 @@ const SPRING_STIFFNESS = 55;
 // The field is a box repeated around the camera (nearest image per star), so
 // the dive never runs out of stars; a star wraps where it cannot be seen,
 // behind the near fade or off the side.
-const FLIGHT_X = 6; // world units the camera glides left over the page
-const FLIGHT_Y = 1.6; // and sinks
-const FLIGHT_Z = 9; // and dives
+// The footer's city (#179) adds its own offset on top: the camera sinks to
+// the street as the city comes in, then cranes back while the lens narrows.
+const { x: FLIGHT_X, y: FLIGHT_Y, z: FLIGHT_Z } = FLIGHT;
 const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
 const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
 const FIELD_W = 20;
@@ -378,9 +380,10 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     let flying = false;
     if (flight) {
       const f = flightAt(pageProgress());
+      const city = cityCamera(cityBus.progress());
       const speed = Math.min(velocityRef.current, 1);
-      const tx = -FLIGHT_X * f.x, ty = -FLIGHT_Y * f.y, tz = 7 - FLIGHT_Z * f.z;
-      const tf = 60 + FLIGHT_FOV * speed;
+      const tx = -FLIGHT_X * f.x, ty = -FLIGHT_Y * f.y + city.dy, tz = FLIGHT.home - FLIGHT_Z * f.z + city.dz;
+      const tf = city.fov + FLIGHT_FOV * speed;
       const tr = FLIGHT_ROLL * speed * scrollDirRef.current;
       cam.x = THREE.MathUtils.damp(cam.x, tx, 5, delta);
       cam.y = THREE.MathUtils.damp(cam.y, ty, 5, delta);
@@ -773,6 +776,7 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
             onFirstFrame={() => setVisible(true)}
             onProbe={probing ? (reduced ? onProbeReduced : onProbe) : null}
           />
+          {flight && !REDUCED_MOTION && <CityLights />}
           {!reduced && (
             <EffectComposer>
               <Bloom

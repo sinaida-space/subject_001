@@ -26,10 +26,21 @@ export interface Flight {
   z: number;
 }
 
+/** world units the camera travels over the flight: it glides left `x`, sinks
+ * `y` and dives `z` from its home at z = `home` */
+export const FLIGHT = { x: 6, y: 1.6, z: 9, home: 7 };
+
+// the city footer (#179) takes over where it comes in: the flight ends as its
+// top reaches the bottom of the screen
+let cityFooter: HTMLElement | null = null;
+
 /** the page's scroll progress, 0 at the top, 1 at the footer */
 export function pageProgress(): number {
   if (typeof window === 'undefined') return 0;
-  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const vh = window.innerHeight;
+  let max = document.documentElement.scrollHeight - vh;
+  if (!cityFooter?.isConnected) cityFooter = document.querySelector<HTMLElement>('footer[data-city]');
+  if (cityFooter) max = Math.min(max, cityFooter.getBoundingClientRect().top + window.scrollY - vh);
   return max > 0 ? clamp01(window.scrollY / max) : 0;
 }
 
