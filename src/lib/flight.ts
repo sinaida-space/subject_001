@@ -53,7 +53,7 @@ const HOME: V3 = [0, 0, FLIGHT.home];
 const END: V3 = [-FLIGHT.x, -FLIGHT.y, FLIGHT.home - FLIGHT.z];
 /** the swing off the diagonal at each waypoint, world units (x, y);
  * hero → quote → About → Work → Services → Contact */
-const SWING: [number, number][] = [
+export const SWING: [number, number][] = [
   [0, 0],
   [0.9, 0.45],
   [-0.9, -0.4],

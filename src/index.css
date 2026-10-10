@@ -1174,3 +1174,14 @@ html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.5; }
     text-shadow: none;
   }
 }
+
+/* The footer resolving out of dither (#179, src/lib/ditherMask.ts): red while
+   it forms; a piece that holds focus shows whole. */
+.dither-forming,
+.dither-forming * {
+  color: hsl(var(--primary-legible)) !important;
+}
+.dither-forming:focus-within {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}

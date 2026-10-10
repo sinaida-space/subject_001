@@ -1,23 +1,33 @@
 import { useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CITY, GROUND_DROP, cityBus, endEyeY, span } from '@/lib/city';
+import { CITY, DOLLY_Z, GROUND_DROP, cityBus, endEyeY, span, textRects } from '@/lib/city';
 import { FLIGHT } from '@/lib/flight';
 
-// ── The city below the horizon (#179) ──
+// ── The city's lights (#179) ──
 // When the eyes lower at the end of the page, this is what they find: a
-// plane of lights under the last eye height, street lines on a grid, some
-// avenues brighter, windows scattered in the blocks, a dark river winding
-// through, thinning into haze at the horizon. The lights come on as the head
-// lowers, near ones first. Static points; one uniform drives the reveal.
+// plane of soft lights under the last eye height, on the streets of the
+// dithered ground (DitherGround), some avenues brighter, windows scattered in
+// the blocks, a dark river winding through, thinning into haze at the
+// horizon. They are light, so they glow with the stars' bloom; the ground
+// under them is matter, in dither, outside it. The lights come on as the
+// ground grows, from the horizon toward the feet, and fade out around every
+// line of text so nothing glows behind a word. Static points; one uniform
+// drives the reveal.
 
 const COUNT = 9000;
 const BLOCK = 0.9; // world units between streets
 const DEPTH = 90; // how far the plane runs ahead
 
+const MAX_MASKS = 32;
+const MASK_PAD = 28; // css px over which a light fades out near text
+
 const vertex = /* glsl */ `
   uniform float uOn;
   uniform float uScale;
+  uniform vec2 uView;
+  uniform vec4 uMask[${MAX_MASKS}];
+  uniform int uMasks;
   attribute vec4 aLook; // brightness, order of lighting, size, haze
   attribute vec3 aColor;
   varying vec3 vColor;
@@ -31,6 +41,14 @@ const vertex = /* glsl */ `
     float on = smoothstep(aLook.y, aLook.y + 0.04, uOn);
     vAlpha = min(1.0, 2.4 * aLook.x * aLook.w * min(1.0, 0.35 + px)) * on;
     vColor = aColor;
+    // css px on the screen; out near the text
+    vec2 sp = (gl_Position.xy / gl_Position.w * 0.5 + 0.5) * uView;
+    sp.y = uView.y - sp.y;
+    for (int i = 0; i < ${MAX_MASKS}; i++) {
+      if (i >= uMasks) break;
+      vec2 o2 = max(uMask[i].xy - sp, sp - uMask[i].zw);
+      vAlpha *= smoothstep(0.0, ${MASK_PAD.toFixed(1)}, max(o2.x, o2.y));
+    }
   }
 `;
 
@@ -54,7 +72,7 @@ const rng = (seed: number) => () => {
 export default function CityGround() {
   const geometry = useMemo(() => {
     const rand = rng(179);
-    const cx = -FLIGHT.x, cz = FLIGHT.home - FLIGHT.z;
+    const cx = -FLIGHT.x, cz = FLIGHT.home - FLIGHT.z + DOLLY_Z;
     const gy = endEyeY(-FLIGHT.y) - GROUND_DROP;
     const river = (z: number) => cx + 2.2 + 3 * Math.sin(z * 0.07) + 1.2 * Math.sin(z * 0.19);
     const pos = new Float32Array(COUNT * 3);
@@ -87,7 +105,8 @@ export default function CityGround() {
       }
       pos.set([x, gy, z], i * 3);
       const haze = 1 - 0.75 * Math.min(1, d / DEPTH);
-      look.set([Math.min(1, bright), Math.min(0.97, d / DEPTH * 0.85 + rand() * 0.12), street ? 0.016 : 0.012, haze], i * 4);
+      // far ones first: they come on with the ground growing toward the feet
+      look.set([Math.min(1, bright), Math.min(0.97, (1 - d / DEPTH) * 0.85 + rand() * 0.12), street ? 0.016 : 0.012, haze], i * 4);
       col.set(c, i * 3);
     }
     const g = new THREE.BufferGeometry();
@@ -103,7 +122,13 @@ export default function CityGround() {
       new THREE.ShaderMaterial({
         vertexShader: vertex,
         fragmentShader: fragment,
-        uniforms: { uOn: { value: 0 }, uScale: { value: 1 } },
+        uniforms: {
+          uOn: { value: 0 },
+          uScale: { value: 1 },
+          uView: { value: new THREE.Vector2(1, 1) },
+          uMask: { value: Array.from({ length: MAX_MASKS }, () => new THREE.Vector4()) },
+          uMasks: { value: 0 },
+        },
         transparent: true,
         depthTest: false,
         depthWrite: false,
@@ -113,9 +138,16 @@ export default function CityGround() {
   );
   useEffect(() => () => material.dispose(), [material]);
 
+  const rects = useMemo(() => new Float32Array(MAX_MASKS * 4), []);
   useFrame(({ gl, size }) => {
-    material.uniforms.uOn.value = span(cityBus.progress(), CITY.lights);
-    material.uniforms.uScale.value = size.height * 0.5 * gl.getPixelRatio();
+    const u = material.uniforms;
+    u.uOn.value = span(cityBus.progress(), CITY.ground);
+    u.uScale.value = size.height * 0.5 * gl.getPixelRatio();
+    if (u.uOn.value <= 0) return;
+    u.uView.value.set(size.width, size.height);
+    const n = textRects(rects);
+    for (let i = 0; i < n; i++) u.uMask.value[i].fromArray(rects, i * 4);
+    u.uMasks.value = n;
   });
 
   return <points geometry={geometry} material={material} frustumCulled={false} renderOrder={1} />;
