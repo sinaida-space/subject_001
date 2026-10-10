@@ -4,7 +4,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
-import { FLIGHT, flightAt, pageProgress } from '@/lib/flight';
+import { flightPose, pageProgress } from '@/lib/flight';
 import { cityBus, cityCamera } from '@/lib/city';
 import CityGround from '@/components/CityGround';
 
@@ -76,11 +76,14 @@ const SPRING_STIFFNESS = 55;
 // The field is a box repeated around the camera (nearest image per star), so
 // the dive never runs out of stars; a star wraps where it cannot be seen,
 // behind the near fade or off the side.
+// Since #179 the path bends (flightPose: a Catmull–Rom curve through a
+// waypoint per chapter) and the camera turns its head into the bends and
+// banks with them; the scroll-speed bank adds on top.
 // The footer's city (#179) adds its own offset on top: the camera sinks on,
 // then the eyes lower to the horizon and the lights below.
-const { x: FLIGHT_X, y: FLIGHT_Y, z: FLIGHT_Z } = FLIGHT;
 const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
 const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
+const AIM_DEPTH = 6; // world units ahead the pointer's aim is turned with the head
 const FIELD_W = 20;
 const FIELD_H = 14;
 const FIELD_D = 8;
@@ -179,7 +182,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
   const scrollDirRef = useRef(0);
   const parallaxRef = useRef(0);
   // the camera as it flies (damped toward the flight), and each star's wrap offset
-  const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0, pitch: 0 });
+  const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0, pitch: 0, yaw: 0 });
   const nearFade = useMemo(() => ({ value: 0 }), []);
   // the city's tilt (#179): stars under eye level thin away as the head lowers
   const below = useMemo(() => ({ eye: { value: 0 }, amt: { value: 0 } }), []);
@@ -363,8 +366,9 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     const posArray = posAttr.array as Float32Array;
 
     const cam = camRef.current;
-    const mx = cam.x + mouseRef.current.x * viewport.width * 0.5;
-    const my = cam.y + mouseRef.current.y * viewport.height * 0.5;
+    // the pointer's aim, turned with the head at the stars' usual depth
+    const mx = cam.x - Math.sin(cam.yaw) * AIM_DEPTH + mouseRef.current.x * viewport.width * 0.5;
+    const my = cam.y + Math.sin(cam.pitch) * AIM_DEPTH + mouseRef.current.y * viewport.height * 0.5;
     const mouseSpeed = mouseRef.current.speed;
 
     // Scroll velocity — amplified for visible effect
@@ -383,26 +387,29 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     // ── the flight: the camera follows the page's progress, damped like the parallax
     let flying = false;
     if (flight) {
-      const f = flightAt(pageProgress());
+      const f = flightPose(pageProgress());
       const city = cityCamera(cityBus.progress());
       const speed = Math.min(velocityRef.current, 1);
-      const tx = -FLIGHT_X * f.x, ty = -FLIGHT_Y * f.y + city.dy, tz = FLIGHT.home - FLIGHT_Z * f.z;
+      const tx = f.x, ty = f.y + city.dy, tz = f.z;
       const tf = city.fov + FLIGHT_FOV * speed;
-      const tr = FLIGHT_ROLL * speed * scrollDirRef.current;
+      const tr = f.bank + FLIGHT_ROLL * speed * scrollDirRef.current;
+      const tp = f.pitch + city.pitch;
       cam.x = THREE.MathUtils.damp(cam.x, tx, 5, delta);
       cam.y = THREE.MathUtils.damp(cam.y, ty, 5, delta);
       cam.z = THREE.MathUtils.damp(cam.z, tz, 5, delta);
       cam.fov = THREE.MathUtils.damp(cam.fov, tf, 4, delta);
       cam.roll = THREE.MathUtils.damp(cam.roll, tr, 4, delta);
-      cam.pitch = THREE.MathUtils.damp(cam.pitch, city.pitch, 5, delta);
+      cam.pitch = THREE.MathUtils.damp(cam.pitch, tp, 5, delta);
+      cam.yaw = THREE.MathUtils.damp(cam.yaw, f.yaw, 5, delta);
       flying =
         Math.abs(cam.x - tx) + Math.abs(cam.y - ty) + Math.abs(cam.z - tz) > 0.0005 ||
         Math.abs(cam.fov - tf) > 0.01 ||
         Math.abs(cam.roll - tr) > 0.0002 ||
-        Math.abs(cam.pitch - city.pitch) > 0.0002;
+        Math.abs(cam.pitch - tp) > 0.0002 ||
+        Math.abs(cam.yaw - f.yaw) > 0.0002;
       const pc = camera as THREE.PerspectiveCamera;
       pc.position.set(cam.x, cam.y, cam.z);
-      pc.rotation.set(cam.pitch, 0, cam.roll);
+      pc.rotation.set(cam.pitch, cam.yaw, cam.roll, 'YXZ');
       below.eye.value = cam.y;
       below.amt.value = city.below;
       if (Math.abs(pc.fov - cam.fov) > 0.001) {
