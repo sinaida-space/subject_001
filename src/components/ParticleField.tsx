@@ -4,6 +4,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
+import { flightAt, pageProgress } from '@/lib/flight';
 
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
@@ -49,6 +50,8 @@ interface ParticleFieldProps {
   /** Renders a dimmer, sparser field for content-heavy pages (case studies):
    * half the stars, half the luminosity of the homepage's field. */
   subtle?: boolean;
+  /** The home page's camera flight through the field (src/lib/flight.ts). */
+  flight?: boolean;
 }
 
 interface ParticlesProps extends ParticleFieldProps {
@@ -63,6 +66,24 @@ interface ParticlesProps extends ParticleFieldProps {
 // has a soft overshoot instead of snapping flat to rest — read as an alive,
 // physical body rather than a lerp.
 const SPRING_STIFFNESS = 55;
+
+// The home page's flight (#175, src/lib/flight.ts): the camera glides left
+// while you scroll down, so the stars stream left to right, sinks a little
+// and dives into the field in surges. Scroll speed widens the lens and banks
+// the camera into the glide; both ease back to rest when the wheel stops.
+// The field is a box repeated around the camera (nearest image per star), so
+// the dive never runs out of stars; a star wraps where it cannot be seen,
+// behind the near fade or off the side.
+const FLIGHT_X = 6; // world units the camera glides left over the page
+const FLIGHT_Y = 1.6; // and sinks
+const FLIGHT_Z = 9; // and dives
+const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
+const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
+const FIELD_W = 20;
+const FIELD_H = 14;
+const FIELD_D = 8;
+const NEAR_GAP = 3; // stars keep at least this far ahead of the camera; they fade out over the last unit before it
+const REDUCED_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SPRING_DAMPING = 9.5;
 
 // Custom shader for trail particles that expand over their lifetime
@@ -142,7 +163,8 @@ function ForceViewportSize() {
   return null;
 }
 
-function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
+function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, onProbe }: ParticlesProps) {
+  const flight = flightProp && !REDUCED_MOTION;
   const particleCount = subtle ? Math.round(PARTICLE_COUNT / 2) : PARTICLE_COUNT;
   const trailCount = subtle ? Math.round(TRAIL_COUNT / 2) : TRAIL_COUNT;
   const meshRef = useRef<THREE.Points>(null);
@@ -154,6 +176,21 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const velocityRef = useRef(0);
   const scrollDirRef = useRef(0);
   const parallaxRef = useRef(0);
+  // the camera as it flies (damped toward the flight), and each star's wrap offset
+  const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0 });
+  const nearFade = useMemo(() => ({ value: 0 }), []);
+  const fadeNear = useCallback(
+    (shader: THREE.WebGLProgramParametersWithUniforms) => {
+      shader.uniforms.uNearFade = nearFade;
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nuniform float uNearFade;')
+        .replace(
+          '#include <logdepthbuf_vertex>',
+          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\n#include <logdepthbuf_vertex>`,
+        );
+    },
+    [nearFade],
+  );
   const trailIndexRef = useRef(0);
   const timeRef = useRef(0);
   // Tunnel-dive: eased 0..1 toward 1 while the hero name/role or headline is
@@ -165,7 +202,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const tunnelTargetRef = useRef(0);
   const tunnelAmountRef = useRef(0);
   const tunnelHoldStartRef = useRef<number | null>(null);
-  const { viewport, invalidate } = useThree();
+  const { viewport, invalidate, camera } = useThree();
   const firstFrameRef = useRef(false);
   const probeRef = useRef<number[] | null>(null);
 
@@ -253,6 +290,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const trailVelocitiesRef = useRef(new Float32Array(trailCount * 3).fill(0));
   // Per-star velocity for the spring-based settle (follow-through/overshoot)
   const starVelocitiesRef = useRef(new Float32Array(particleCount * 3).fill(0));
+  const wrapRef = useRef(new Float32Array(particleCount * 3).fill(0));
   // How far each star has advanced into the tunnel, independent of the eased
   // tunnelAmt above. Rendered depth is bz + travel*tunnelAmt (mirrors the X/Y
   // "outward" factor below), so releasing hover eases the dive back home in
@@ -318,8 +356,9 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     const posAttr = geo.getAttribute('position');
     const posArray = posAttr.array as Float32Array;
 
-    const mx = mouseRef.current.x * viewport.width * 0.5;
-    const my = mouseRef.current.y * viewport.height * 0.5;
+    const cam = camRef.current;
+    const mx = cam.x + mouseRef.current.x * viewport.width * 0.5;
+    const my = cam.y + mouseRef.current.y * viewport.height * 0.5;
     const mouseSpeed = mouseRef.current.speed;
 
     // Scroll velocity — amplified for visible effect
@@ -334,6 +373,34 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     const screens = parallaxScreens(scrollRef.current, window.innerHeight);
     parallaxRef.current = THREE.MathUtils.damp(parallaxRef.current, screens, 6, delta);
     const parallax = parallaxRef.current;
+
+    // ── the flight: the camera follows the page's progress, damped like the parallax
+    let flying = false;
+    if (flight) {
+      const f = flightAt(pageProgress());
+      const speed = Math.min(velocityRef.current, 1);
+      const tx = -FLIGHT_X * f.x, ty = -FLIGHT_Y * f.y, tz = 7 - FLIGHT_Z * f.z;
+      const tf = 60 + FLIGHT_FOV * speed;
+      const tr = FLIGHT_ROLL * speed * scrollDirRef.current;
+      cam.x = THREE.MathUtils.damp(cam.x, tx, 5, delta);
+      cam.y = THREE.MathUtils.damp(cam.y, ty, 5, delta);
+      cam.z = THREE.MathUtils.damp(cam.z, tz, 5, delta);
+      cam.fov = THREE.MathUtils.damp(cam.fov, tf, 4, delta);
+      cam.roll = THREE.MathUtils.damp(cam.roll, tr, 4, delta);
+      flying =
+        Math.abs(cam.x - tx) + Math.abs(cam.y - ty) + Math.abs(cam.z - tz) > 0.0005 ||
+        Math.abs(cam.fov - tf) > 0.01 ||
+        Math.abs(cam.roll - tr) > 0.0002;
+      const pc = camera as THREE.PerspectiveCamera;
+      pc.position.set(cam.x, cam.y, cam.z);
+      pc.rotation.z = cam.roll;
+      if (Math.abs(pc.fov - cam.fov) > 0.001) {
+        pc.fov = cam.fov;
+        pc.updateProjectionMatrix();
+      }
+      // the near fade comes in once the camera has left its home, so the top of the page is the field as it always was
+      nearFade.value = THREE.MathUtils.clamp((7 - cam.z) / 0.5, 0, 1);
+    }
 
     activityRef.current = THREE.MathUtils.damp(activityRef.current, 0, 2.4, delta);
     const activity = Math.max(activityRef.current, Math.min(velocityRef.current * 2, 1));
@@ -460,11 +527,30 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     // === BASE PARTICLES ===
     for (let i = 0; i < particleCount; i++) {
       const ix = i * 3;
-      const bx = basePositions[ix];
+      let bx = basePositions[ix];
       // Home position is shifted by the depth parallax, so the spring settle
       // below follows the drifting target instead of fighting it.
-      const by = basePositions[ix + 1] + parallax * parallaxFactors[i];
-      const bz = basePositions[ix + 2];
+      let by = basePositions[ix + 1] + parallax * parallaxFactors[i];
+      let bz = basePositions[ix + 2];
+      if (flight) {
+        // the star's nearest image around the camera; a wrap moves the star
+        // and its home together, so the spring never sees the jump
+        const ox = FIELD_W * Math.round((cam.x - bx) / FIELD_W);
+        const oy = FIELD_H * Math.round((cam.y - by) / FIELD_H);
+        const oz = FIELD_D * Math.floor((cam.z - NEAR_GAP - bz) / FIELD_D);
+        const w = wrapRef.current;
+        if (ox !== w[ix] || oy !== w[ix + 1] || oz !== w[ix + 2]) {
+          posArray[ix] += ox - w[ix];
+          posArray[ix + 1] += oy - w[ix + 1];
+          posArray[ix + 2] += oz - w[ix + 2];
+          w[ix] = ox;
+          w[ix + 1] = oy;
+          w[ix + 2] = oz;
+        }
+        bx += ox;
+        by += oy;
+        bz += oz;
+      }
 
       const floatX = Math.sin(timeRef.current * 0.25 + i * 0.1) * 0.012 * activity;
       const floatY = Math.cos(timeRef.current * 0.18 + i * 0.15) * 0.01 * activity;
@@ -553,7 +639,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     // Keep drawing while anything is still moving (activity, springs, live
     // trail puffs, parallax catching up, the tunnel easing) or while the
     // probe is sampling. Otherwise stop: the next input event invalidates.
-    let moving = isActive || tunneling || tunnelTargetRef.current === 1
+    let moving = isActive || tunneling || flying || tunnelTargetRef.current === 1
       || probeRef.current !== null
       || Math.abs(parallaxRef.current - screens) > 0.0005;
     if (!moving) {
@@ -603,7 +689,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
           <bufferAttribute attach="attributes-color" count={particleCount} array={colors} itemSize={3} />
           <bufferAttribute attach="attributes-size" count={particleCount} array={sizes} itemSize={1} />
         </bufferGeometry>
-        <pointsMaterial map={starSprite} size={0.04} vertexColors transparent opacity={subtle ? 0.5 : 1} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+        <pointsMaterial onBeforeCompile={fadeNear} map={starSprite} size={0.04} vertexColors transparent opacity={subtle ? 0.5 : 1} blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
       </points>
 
       {/* Trail particles — dreamy expanding steam */}
@@ -631,7 +717,7 @@ function PrecompileScene() {
   return null;
 }
 
-export default function ParticleField({ subtle = false }: ParticleFieldProps) {
+export default function ParticleField({ subtle = false, flight = false }: ParticleFieldProps) {
   const [tier, setTier] = useState<PerfTier>(readTier);
   // Hidden until the first frame is drawn, then shown with a straight cut:
   // no fade, since it is not driven by the visitor (motion law).
@@ -683,6 +769,7 @@ export default function ParticleField({ subtle = false }: ParticleFieldProps) {
           <ForceViewportSize />
           <Particles
             subtle={subtle}
+            flight={flight}
             onFirstFrame={() => setVisible(true)}
             onProbe={probing ? (reduced ? onProbeReduced : onProbe) : null}
           />

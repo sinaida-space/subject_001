@@ -65,7 +65,9 @@ const INSET = 0.985; // the resting front cell sits just inside the stage border
 interface Scene {
   xw: number; // XW angle
   zw: number; // ZW angle
-  zoom: number;
+  zoom: number; // z: the tesseract's distance, as a scale
+  dx: number; // x offset, share of the stage width (#175: it travels left to right)
+  dy: number; // y offset, share of the stage height
   aspect: number; // 0 = square tesseract, 1 = front cell stretched to the stage
   energy: number; // 0 at rest, 1 mid-turn: dust brightness and spread
   gather: number; // 0 scattered stars, 1 every point on its edge
@@ -84,6 +86,8 @@ function sceneAt(u: number): Scene {
     xw: 0,
     zw: Math.PI,
     zoom: 1,
+    dx: 0,
+    dy: 0,
     aspect: 1,
     energy: 0,
     gather: 1,
@@ -103,6 +107,10 @@ function sceneAt(u: number): Scene {
     s.zw = (Math.PI / 2) * (1 + dive); // the pane box sits in the inner cell, then comes at you
     s.zoom = START_ZOOM * Math.pow(1 / START_ZOOM, dive); // a fall: slow, then fast
     s.aspect = dive;
+    // it comes in from the far left as it falls toward you, landing centred
+    const off = 1 - smooth(-0.9, ENTRY, u);
+    s.dx = -0.34 * off;
+    s.dy = 0.08 * off;
     s.energy = smooth(-0.6, 0, u) * (1 - smooth(0.45, ENTRY, u));
     s.echo = smooth(0, 0.25, u) * (1 - smooth(0.45, ENTRY, u));
     const seen = smooth(-0.85, -0.3, u);
@@ -117,6 +125,9 @@ function sceneAt(u: number): Scene {
     s.xw = paneTheta(CELLS - 1);
     s.exit = x;
     s.zoom = 1 + 1.2 * x * x;
+    // and leaves past the viewer's right shoulder, still left to right
+    s.dx = 0.42 * x * x;
+    s.dy = -0.06 * x * x;
     s.formed = 1 - smooth(0.1, 0.8, x);
     s.energy = smooth(0, 0.3, x) * (1 - smooth(0.55, 1, x));
     s.echo = s.energy;
@@ -141,7 +152,10 @@ function sceneAt(u: number): Scene {
   const bell = Math.sin(Math.PI * t);
   s.xw = paneTheta(k + smooth(0, 1, t));
   s.zw = Math.PI + ZW_SWAY[k] * bell;
-  s.zoom = 1 - 0.1 * bell;
+  // each turn pulls it back into the room and up a little, then home
+  s.zoom = 1 - 0.22 * bell;
+  s.dy = -0.05 * bell;
+  s.scale[k] = s.zoom; // the leaving screen stays on its pane while it fades
   s.energy = bell;
   s.echo = bell;
   s.split = 4 * t * (1 - t); // the XW speed, normalised
@@ -709,7 +723,14 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
         const el = screenRefs.current[k];
         put(el, 'opacity', s.opacity[k].toFixed(3));
         put(el, 'pointerEvents', s.opacity[k] > 0.5 ? 'auto' : 'none');
-        put(el, 'transform', s.scale[k] === 1 ? '' : `scale(${s.scale[k].toFixed(4)})`);
+        const on = s.opacity[k] > 0;
+        const tx = on ? s.dx * stage.clientWidth : 0;
+        const ty = on ? s.dy * stageH : 0;
+        put(
+          el,
+          'transform',
+          s.scale[k] === 1 && !tx && !ty ? '' : `translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0) scale(${s.scale[k].toFixed(4)})`,
+        );
       }
 
       if (!gl || !res) return;
@@ -718,11 +739,11 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
       let draws = 0;
 
       // ── tesseract ──
-      const cx = W / 2;
-      const cy = H / 2 - (lift * dpr) / 2; // centred in the visible part of the stage before the pin
+      const cx = W / 2 + s.dx * W;
+      const cy = H / 2 - (lift * dpr) / 2 + s.dy * H; // centred in the visible part of the stage before the pin
       const short = Math.min(W, H) / 2;
       const kOf = (sc: Scene): [number, number] => [
-        (sc.zoom * (short + (cx * INSET - short) * sc.aspect)) / FRAME_EXTENT,
+        (sc.zoom * (short + ((W / 2) * INSET - short) * sc.aspect)) / FRAME_EXTENT,
         (sc.zoom * (short + ((H / 2) * INSET - short) * sc.aspect)) / FRAME_EXTENT,
       ];
       const [kx, ky] = kOf(s);

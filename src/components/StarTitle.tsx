@@ -323,7 +323,8 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
 
   return (
     <div ref={ref} className={`relative ${className ?? ''}`} style={REDUCED ? ({ ['--title-rule' as string]: '1' } as CSSProperties) : undefined}>
-      <div className="flex items-center gap-6" style={{ transform: 'translate3d(0, var(--title-lag, 0px), 0)' }}>
+      <div style={{ transform: 'translate3d(0, var(--title-lag, 0px), 0)' }}>
+      <div className="flex items-center gap-6">
         <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40, ...titleStyle }}>
           {text}
         </h2>
@@ -338,6 +339,7 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
         />
       </div>
       {caption}
+      </div>
     </div>
   );
 }

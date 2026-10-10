@@ -82,7 +82,7 @@ const Index = () => {
       {full && fieldReady && (
         <ErrorBoundary fallback={null} onError={(e) => console.error('ParticleField crashed:', e)}>
           <Suspense fallback={null}>
-            <ParticleField />
+            <ParticleField flight />
           </Suspense>
         </ErrorBoundary>
       )}

@@ -3,7 +3,7 @@
 // with scroll (the lines blow in one by one, "feel" flashes red, then a gust
 // carries the belief off).
 // Lite mode: a short track with a sticky screen; as you scroll, the whole
-// quote slides off to the left with a slight rise and fades while About
+// quote slides off to the right with a slight rise and fades while About
 // rises under it. One passive scroll listener, transform and opacity only,
 // nothing runs at rest. Reduced motion: one plain screen.
 //
@@ -54,7 +54,7 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
       if (q === last) return;
       last = q;
       const e = q * q; // ease-in: it leaves slowly, then goes
-      quote.style.transform = q > 0 ? `translate3d(${(-0.6 * vw * e).toFixed(1)}px, ${(-0.06 * vh * e).toFixed(1)}px, 0)` : '';
+      quote.style.transform = q > 0 ? `translate3d(${(0.6 * vw * e).toFixed(1)}px, ${(-0.06 * vh * e).toFixed(1)}px, 0)` : '';
       quote.style.opacity = q > 0 ? (1 - Math.pow(q, 1.4)).toFixed(3) : '';
     };
     const onResize = () => { measure(); last = -1; onScroll(); };
