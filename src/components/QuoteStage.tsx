@@ -4,7 +4,7 @@
 // Lite mode: one plain screen.
 //
 // Five lines, each its own block so the gate can hand them over one at a
-// time; "seen" and "connected" are spans so they can light up.
+// time; "feel", "seen" and "connected" are spans so they can light up.
 
 const NB = ' ';
 
@@ -22,7 +22,7 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
           >
             <span data-line="0" className="block">{`I${NB}believe`}</span>
             <span data-line="1" className="block">{`that technology is${NB}only meaningful${NB}when`}</span>
-            <span data-line="2" className="block">{`it${NB}helps people feel${NB}`}<span data-seen>seen</span>,</span>
+            <span data-line="2" className="block">{`it${NB}helps people `}<span data-feel>feel</span>{NB}<span data-seen>seen</span>,</span>
             <span data-line="3" className="block">heard,</span>
             <span data-line="4" className="block">{`and${NB}`}<span data-connected>connected</span>.</span>
           </p>

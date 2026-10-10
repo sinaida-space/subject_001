@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
+import { useRenderMode } from '@/hooks/useRenderMode';
 
 
 // ── Stagger fade-in helper (lite mode; in full mode QuoteGate pours About) ──
@@ -146,7 +147,7 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <p className="font-mono mt-3 m-0" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.32)', letterSpacing: '0.02em' }}>
+      <p className="font-mono mt-3 m-0" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.14)', letterSpacing: '0.02em' }}>
         Photo: Roland Gaedtgens · Zhembrovskyy
       </p>
     </div>
@@ -174,6 +175,9 @@ function Eyebrow() {
 }
 
 export default function AboutSection() {
+  // full mode, md+: the portrait sticks in its column (QuoteGate develops it
+  // there while only the text moves); the column stretches over both rows
+  const full = useRenderMode().mode === 'full';
   return (
     <section id="about" className="relative z-10 py-16 md:py-24">
       <div className="site-frame">
@@ -182,10 +186,12 @@ export default function AboutSection() {
           <h3 className="m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[12.4vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)]">
             {`Human first. Digital${NB}second.`}
           </h3>
-          <div className="md:col-span-3 md:row-start-1 md:row-span-2 md:max-w-[240px]">
-            <Reveal delay={150}>
-              <PhotoBlock />
-            </Reveal>
+          <div data-photo-col className="md:col-span-3 md:row-start-1 md:row-span-2 md:max-w-[240px] md:self-stretch">
+            <div className={full ? 'md:sticky md:top-24' : undefined}>
+              <Reveal delay={150}>
+                <PhotoBlock />
+              </Reveal>
+            </div>
           </div>
           <div className="md:col-start-4 md:col-span-9 md:row-start-2">
             <Reveal delay={100}>
