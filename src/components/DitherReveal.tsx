@@ -49,7 +49,7 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
     if (!ctx) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let img: HTMLImageElement | null = null;
+    let img: HTMLImageElement | ImageBitmap | null = null;
     let frames: DitherFrames | null = null;
     let imageData: ImageData | null = null;
     let out: Uint32Array | null = null;
@@ -93,7 +93,10 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
         const loaded = await loadDitherImage(src);
         if (disposed) return;
         img = loaded;
-        build();
+        // the strip's frames all load together: each builds in its own idle
+        // slot, so their pixel work never stacks into one long task mid-scroll
+        if (typeof requestIdleCallback === 'function') requestIdleCallback(() => { if (!disposed) build(); }, { timeout: 400 });
+        else build();
       } catch {
         // load failure: leave the empty void frame
       }

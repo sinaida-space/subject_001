@@ -125,12 +125,23 @@ export interface DitherFrames {
   dither: Uint32Array;
 }
 
-export async function loadDitherImage(src: string): Promise<HTMLImageElement> {
+/** The card image, decoded off the main thread (fetch → blob → ImageBitmap),
+ *  so building its frames mid-scroll costs no synchronous decode. Falls back
+ *  to a plain <img> where that path is missing or fails. */
+export async function loadDitherImage(src: string): Promise<HTMLImageElement | ImageBitmap> {
+  if (typeof createImageBitmap === 'function') {
+    try {
+      const res = await fetch(src);
+      if (res.ok) return await createImageBitmap(await res.blob());
+    } catch {
+      // fall through to the <img> path
+    }
+  }
   return loadImage(src);
 }
 
 /** Cover-crop `img` into w x h and return its colour and dithered pixels. */
-export function buildDitherFrames(img: HTMLImageElement, w: number, h: number): DitherFrames | null {
+export function buildDitherFrames(img: HTMLImageElement | ImageBitmap, w: number, h: number): DitherFrames | null {
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
