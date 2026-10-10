@@ -1,14 +1,12 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
-import DitherText from './DitherText';
 import SnakeEasterEgg from './SnakeEasterEgg';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { CITY, cityBus, span } from '@/lib/city';
 import { ditherMask } from '@/lib/ditherMask';
 
-// mark: the star on the ground's track this link lights (#179)
-type Item = { label: string; to?: string; href?: string; download?: boolean; toggle?: boolean; mark?: number };
+type Item = { label: string; to?: string; href?: string; download?: boolean; toggle?: boolean };
 
 // The three link columns, bottom-aligned so they step up like a skyline.
 // Navigate follows the page's own order.
@@ -16,10 +14,10 @@ const COLUMNS: { label: string; items: Item[] }[] = [
   {
     label: 'Navigate',
     items: [
-      { label: 'About', to: '#about', mark: 3 },
-      { label: 'Work', to: '#work', mark: 2 },
-      { label: 'Services', to: '#services', mark: 1 },
-      { label: 'Contact', to: '#contact', mark: 0 },
+      { label: 'About', to: '#about' },
+      { label: 'Work', to: '#work' },
+      { label: 'Services', to: '#services' },
+      { label: 'Contact', to: '#contact' },
     ],
   },
   {
@@ -50,14 +48,14 @@ const COLUMNS: { label: string; items: Item[] }[] = [
 
 const linkClass = 'block w-fit font-mono uppercase text-[14px] tracking-[0.15em] text-foreground/60 transition-colors hover:text-foreground focus-visible:text-foreground cursor-none';
 const REDUCED = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-// the held last screen wants height; shorter screens scroll on
-const TALL = '(min-height: 560px)';
+// the held last screen wants width and height; phones keep the live layout
+// and scroll on
+const HELD = '(min-width: 768px) and (min-height: 560px)';
 
-function FooterLink({ item, dither = false }: { item: Item; dither?: boolean }) {
+function FooterLink({ item }: { item: Item }) {
   const { mode, toggle } = useRenderMode();
   const { pathname } = useLocation();
-  // on the phone menu the links resolve out of dither as their group opens
-  const label = dither ? <DitherText text={item.label} /> : item.label;
+  const label = item.label;
   if (item.toggle) {
     return (
       <button
@@ -73,14 +71,7 @@ function FooterLink({ item, dither = false }: { item: Item; dither?: boolean }) 
   }
   if (item.to) {
     const to = item.to.startsWith('#') ? (pathname === '/' ? item.to : `/${item.to}`) : item.to;
-    const mark = item.mark;
-    const light = mark === undefined ? {} : {
-      onMouseEnter: () => cityBus.light(mark),
-      onMouseLeave: () => cityBus.light(-1),
-      onFocus: () => cityBus.light(mark),
-      onBlur: () => cityBus.light(-1),
-    };
-    return <Link to={to} data-ground-mask className={linkClass} {...light}>{label}</Link>;
+    return <Link to={to} data-ground-mask className={linkClass}>{label}</Link>;
   }
   const external = item.href?.startsWith('http');
   return (
@@ -126,25 +117,24 @@ const toTop = (e: React.MouseEvent) => {
 // One footer on every page, in both modes (#179). On the home page in full
 // mode it is also the last screen of the flight: tall screens hold it still
 // for CITY.runway screens while the camera dollies out of Contact and lowers
-// its eyes, and it publishes that progress to the star field, the ground and
-// Contact. Its pieces resolve out of dither as the scroll reaches them.
+// its eyes, and it publishes that progress to the star field and Contact.
+// Its pieces resolve out of dither as the scroll reaches them. Phones keep
+// the live site's layout (two columns, More under them) and scroll on.
 export default function Footer() {
   const [snakeOpen, setSnakeOpen] = useState(false);
   const { mode } = useRenderMode();
   const { pathname } = useLocation();
-  const home = pathname === '/';
-  const flight = mode === 'full' && home && !REDUCED;
+  const flight = mode === 'full' && pathname === '/' && !REDUCED;
   const rootRef = useRef<HTMLElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
   const columnsRef = useRef<HTMLElement>(null);
-  const phoneRef = useRef<HTMLElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
-  const [tall, setTall] = useState(() => typeof window !== 'undefined' && window.matchMedia(TALL).matches);
-  const held = flight && tall;
+  const [roomy, setRoomy] = useState(() => typeof window !== 'undefined' && window.matchMedia(HELD).matches);
+  const held = flight && roomy;
 
   useEffect(() => {
-    const mq = window.matchMedia(TALL);
-    const on = () => setTall(mq.matches);
+    const mq = window.matchMedia(HELD);
+    const on = () => setRoomy(mq.matches);
     mq.addEventListener('change', on);
     return () => mq.removeEventListener('change', on);
   }, []);
@@ -157,7 +147,7 @@ export default function Footer() {
   // logo, columns and the bottom line resolve out of dither, scrubbed by f
   useEffect(() => {
     if (!flight) return;
-    const groups = [[brandRef], [columnsRef, phoneRef], [barRef]];
+    const groups = [[brandRef], [columnsRef], [barRef]];
     const levels = groups.map(() => -1);
     let raf = 0;
     const frame = () => {
@@ -204,20 +194,19 @@ export default function Footer() {
       style={held ? { height: `calc(100svh + ${CITY.runway * 100}svh)` } : undefined}
     >
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
-      {/* on the home page the footer is the whole last screen in both modes,
-          so Contact has left it entirely by the end */}
       {/* held: the screen lets clicks through to Contact, receded above it */}
-      <div className={held ? 'pointer-events-none sticky top-0 flex h-[100svh] flex-col justify-end overflow-hidden pb-8' : `flex flex-col justify-end pb-8 pt-24 md:pt-32 ${home ? 'min-h-[100svh]' : ''}`}>
+      <div className={held ? 'pointer-events-none sticky top-0 flex h-[100svh] flex-col justify-end overflow-hidden pb-8' : 'pb-8 pt-24 md:pt-16'}>
         <div className="site-frame pointer-events-auto">
-          <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:items-end lg:gap-8">
-            <Columns ref={columnsRef} className="hidden items-end gap-8 md:grid md:grid-cols-3 lg:order-2 lg:col-span-7 lg:col-start-6" />
-            <PhoneMenu ref={phoneRef} />
-            <div ref={brandRef} className="lg:order-1 lg:col-span-4">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-end lg:gap-8">
+            <div ref={brandRef} className="lg:col-span-4">
               <div data-ground-mask className="w-fit"><Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={toTop} /></div>
               <div className="mt-5"><Plaque /></div>
             </div>
+            <Columns ref={columnsRef} className="grid grid-cols-2 items-start gap-8 md:grid-cols-3 md:items-end lg:col-span-7 lg:col-start-6" />
           </div>
-          <div ref={barRef} className="mt-14"><BottomBar /></div>
+          {/* phones: the live site's divider over the bottom line */}
+          <div className="section-divider mb-8 mt-14 md:hidden" />
+          <div ref={barRef} className="md:mt-14"><BottomBar /></div>
         </div>
       </div>
     </footer>
@@ -235,35 +224,6 @@ const Columns = forwardRef<HTMLElement, { className: string }>(function Columns(
           </div>
         </div>
       ))}
-    </nav>
-  );
-});
-
-// Phones: the three groups as one row of labels; a tap opens that group's
-// links above it (the footer sits on the bottom, so the row stays put), two columns, resolving out of dither. One open at a time.
-const PhoneMenu = forwardRef<HTMLElement>(function PhoneMenu(_, ref) {
-  const [open, setOpen] = useState<number | null>(null);
-  const col = open === null ? null : COLUMNS[open];
-  return (
-    <nav ref={ref} aria-label="Footer" className="flex flex-col-reverse md:hidden">
-      <div className="flex justify-between gap-4">
-        {COLUMNS.map((c, i) => (
-          <button
-            key={c.label}
-            type="button"
-            aria-expanded={open === i}
-            aria-controls="footer-group"
-            data-ground-mask
-            onClick={() => setOpen(open === i ? null : i)}
-            className={`clinical-label whitespace-nowrap border-b py-2 transition-colors ${open === i ? 'border-current text-primary-legible' : 'border-transparent text-foreground/60'}`}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
-      <div id="footer-group" className={col ? 'mb-6 grid grid-cols-2 gap-x-8 gap-y-4' : 'hidden'}>
-        {col?.items.map((item) => <FooterLink key={`${col.label}-${item.label}`} item={item} dither />)}
-      </div>
     </nav>
   );
 });

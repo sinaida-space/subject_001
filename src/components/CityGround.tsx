@@ -6,14 +6,13 @@ import { FLIGHT } from '@/lib/flight';
 
 // ── The city's lights (#179) ──
 // When the eyes lower at the end of the page, this is what they find: a
-// plane of soft lights under the last eye height, on the streets of the
-// dithered ground (DitherGround), some avenues brighter, windows scattered in
+// plane of soft lights under the last eye height, where the stars poured
+// down: street lights on a grid, some avenues brighter, windows scattered in
 // the blocks, a dark river winding through, thinning into haze at the
-// horizon. They are light, so they glow with the stars' bloom; the ground
-// under them is matter, in dither, outside it. The lights come on as the
-// ground grows, from the horizon toward the feet, and fade out around every
-// line of text so nothing glows behind a word. Static points; one uniform
-// drives the reveal.
+// horizon. They are light, so they glow with the stars' bloom. They come on
+// from the horizon toward the feet and fade out around every line of text,
+// so nothing glows behind a word. Static points; one uniform drives the
+// reveal.
 
 const COUNT = 9000;
 const BLOCK = 0.9; // world units between streets

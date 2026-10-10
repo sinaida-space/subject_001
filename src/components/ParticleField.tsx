@@ -6,7 +6,6 @@ import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
 import { FLIGHT, flightPose, pageProgress } from '@/lib/flight';
 import { GROUND_DROP, cityBus, cityCamera, endEyeY } from '@/lib/city';
-import DitherGround from '@/components/DitherGround';
 import CityGround from '@/components/CityGround';
 
 const PARTICLE_COUNT = 1400;
@@ -84,7 +83,7 @@ const SPRING_STIFFNESS = 55;
 // then the eyes lower to the horizon and the lights below.
 const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
 const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
-// the ground the stars fall to at the end (#179, DitherGround)
+// the ground the stars pour down to at the end (#179), where the city's lights lie
 const GROUND_Y = endEyeY(-FLIGHT.y) - GROUND_DROP;
 const AIM_DEPTH = 6; // world units ahead the pointer's aim is turned with the head
 const FIELD_W = 20;
@@ -187,17 +186,16 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
   // the camera as it flies (damped toward the flight), and each star's wrap offset
   const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0, pitch: 0, yaw: 0 });
   const nearFade = useMemo(() => ({ value: 0 }), []);
-  // the city's tilt (#179): stars under eye level thin away as the head lowers
-  // and the dolly's end (#179): they fall to the ground as it grows
-  const below = useMemo(() => ({ eye: { value: 0 }, amt: { value: 0 }, fall: { value: 0 } }), []);
+  // the end of the flight (#179): as the head lowers, the stars under eye
+  // level pour down to the ground and settle there, dim, among the city's lights
+  const below = useMemo(() => ({ eye: { value: 0 }, fall: { value: 0 } }), []);
   const fadeNear = useCallback(
     (shader: THREE.WebGLProgramParametersWithUniforms) => {
       shader.uniforms.uNearFade = nearFade;
       shader.uniforms.uEye = below.eye;
-      shader.uniforms.uBelow = below.amt;
       shader.uniforms.uFall = below.fall;
       shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', '#include <common>\nuniform float uNearFade;\nuniform float uEye;\nuniform float uBelow;\nuniform float uFall;')
+        .replace('#include <common>', '#include <common>\nuniform float uNearFade;\nuniform float uEye;\nuniform float uFall;')
         // under eye level a star drops to the ground, the lower ones first
         .replace(
           '#include <project_vertex>',
@@ -205,7 +203,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
         )
         .replace(
           '#include <logdepthbuf_vertex>',
-          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= mix(1.0, smoothstep(uEye - 0.9, uEye + 0.2, transformed.y), uBelow);\n#include <logdepthbuf_vertex>`,
+          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= 1.0 - 0.65 * smoothstep(0.8, 1.0, drop);\n#include <logdepthbuf_vertex>`,
         );
     },
     [nearFade, below],
@@ -421,9 +419,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
       pc.position.set(cam.x, cam.y, cam.z);
       pc.rotation.set(cam.pitch, cam.yaw, cam.roll, 'YXZ');
       below.eye.value = cam.y;
-      below.amt.value = city.below;
       below.fall.value = city.fall;
-      cityBus.setPose({ x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw, pitch: cam.pitch, roll: cam.roll, fov: cam.fov });
       if (Math.abs(pc.fov - cam.fov) > 0.001) {
         pc.fov = cam.fov;
         pc.updateProjectionMatrix();
@@ -823,8 +819,6 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
           law); the flicker is frozen under prefers-reduced-motion. Sits outside
           the blur wrapper on its own z-0 sibling so it paints crisply above the
           canvas but still behind content. */}
-      {/* the dither ground (#179): above the field, outside its bloom and blur */}
-      {flight && !REDUCED_MOTION && <DitherGround />}
       <div
         className={`crt-overlay${subtle ? ' crt-subtle' : ''}`}
         aria-hidden="true"

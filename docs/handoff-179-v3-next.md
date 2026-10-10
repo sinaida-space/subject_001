@@ -17,18 +17,19 @@ Her protocol: questions via AskUserQuestion, a short PRD, wait for approval, the
 
 ## In progress, in her order
 
-### Commit 2: the home scene (full mode), built, waiting on her eye
+### Commit 2: the home scene (full mode)
 
-- **Held on every tall screen** (`TALL` = min-height 560 in `Footer.tsx`, phones too, as she asked). `cityBus.setHeld` tells Contact. The sticky stage is `pointer-events-none` so Contact stays clickable under it.
+Her verdict on the first build (phone screenshot): the screen is fine, but the red track line and the dither ground "break the theme"; she wants stars pouring down and the city. Lite looked empty at the end, and the phone popup menu was "a catastrophe". So, now:
+
+- **Held only on tablet and up** (`HELD` = min-width 768 and min-height 560 in `Footer.tsx`). `cityBus.setHeld` tells Contact. The sticky stage is `pointer-events-none` so Contact stays clickable under it.
 - **Dolly out of Contact** (`useDolly` in `ContactChannel.tsx`): the block (question, LET'S TALK, links) soft-pins under the header, then recedes top left. Words go to 0.5 (the question never below 15 px) and the buttons to 0.85. The camera backs away 3 units while the lens narrows 60° → 36° (`cityCamera`, `CITY.dolly`). Contact publishes where its receded block ends, and the final tilt puts the horizon just under it (`cityBus.setHorizon`, `restTilt`).
-- **Light vs matter**: `CityGround` (soft glowing points, under the bloom) is back, after she said the dither-only ground was "just bad" and unreadable; she loved those lights. The lights now come on far-first with `CITY.ground` and fade out within 28 px of any text (vertex-shader masks from `textRects` in `city.ts`, which reads the `[data-ground-mask]` elements: one per line of text).
-- **`DitherGround.tsx`**: a separate WebGL2 canvas above the field, outside its bloom and blur, one pixel per 2 css px cell, pixelated. The faint street grid and river use a perspective grain (her pick): ground-space squares of 0.07 world units that widen toward the feet and fall back to screen cells near the horizon. Two dim tones, cleared around text. **The track** is one red dither line (GL line, 1 cell) bending like the flight's `SWING`, mirrored ahead, with four star marks (Contact nearest … About at the horizon). It draws from the horizon toward the feet and passes under text. A Navigate link hovered or focused lights its mark (`cityBus.light`).
-- **Stars fall**: under eye level they drop to the ground plane in the star shader (`uFall`, `CITY.fall`), the lower ones first.
-- **Footer resolves out of dither** (`src/lib/ditherMask.ts`): 17 Bayer CSS-mask tiles, scrubbed by f in three groups (`CITY.text`), red while forming, whole when focused. Unformed pieces don't clear the ground.
+- **Stars pour, the city lights**: under eye level the stars drop to the ground in the star shader (`uFall`, `CITY.fall`), the lower ones first, and settle dim. `CityGround` (soft glowing points, under the bloom) comes on from the horizon toward the feet (`CITY.ground`) and fades within 28 px of any text (vertex-shader masks from `textRects` in `city.ts`, which reads the `[data-ground-mask]` elements, one per line of text).
+- **Out**: the dither ground, the red track and its marks, the Navigate hover. `DitherGround.tsx` is deleted. Don't bring them back.
+- **Footer resolves out of dither** (`src/lib/ditherMask.ts`): 17 Bayer CSS-mask tiles, scrubbed by f in three groups (`CITY.text`), red while forming, whole when focused. Unformed pieces don't clear the lights.
+- **Phones keep the live sinaida.eu layout**: logo + plaque, then Navigate | Connect in two columns with More under them, a divider, the bottom line. `PhoneMenu` is gone. Not held, no recede; the stars still pour into the lights as the footer scrolls in.
+- **Lite**: the footer has its natural height again (no `min-h-[100svh]`), and Contact's bottom padding and the footer's top padding are tighter on md+, so the end of the page shows all of LET'S TALK above the footer.
 
-Open: her verdict on the grain's near squares (they read as grey dashes at the feet), the lights' density near the bottom, and the runway length (`CITY.runway` 1.2).
-
-### Commit 3: hovers and other pages
+### Commit 3: hovers and other pages (the track and the MORE dither hover are out with the dither ground; re-ask her before building hovers)
 - CONNECT hover: nearby stars pull into small clusters. MORE hover: the ground's dither sharpens to a finer grid. Name/logo hover: "extra bling", a glint passes through the stars. Full mode only, rewind on leave, nothing moves at rest.
 - LET'S TALK laced with star points that glint only while scrolling (MySpace-glitter memory, keep it neat).
 - Other pages, full mode: same footer with stars, dolly and dither ground; no LET'S TALK, no track. Lite: same layout, still.

@@ -90,7 +90,7 @@ export default function ContactChannel() {
   );
   // clip sideways only: the lite title runs ahead upward while it comes in
   return (
-    <section id="contact" className="relative z-10 py-16 md:py-20 overflow-x-clip">
+    <section id="contact" className="relative z-10 py-16 md:pb-10 md:pt-20 overflow-x-clip">
       <div className="site-frame">
         {/* h2/p (not div) — matches Services' and Body of Work's own
             eyebrow+caption markup, so all four sections' labels pick up

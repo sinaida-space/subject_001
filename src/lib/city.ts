@@ -2,9 +2,9 @@
 // The whole page the visitor has been looking up, into the sky. At the end
 // the camera dollies out of Contact (it backs away while the lens narrows, so
 // space flattens and the Contact block recedes into the top left), then the
-// head lowers: the stars under eye level fall to the ground and a dithered
-// city grows out of the vanishing point (DitherGround), with the track of the
-// flight laid on it, and the footer resolves out of the same dither.
+// head lowers: the stars under eye level pour down to the ground, the city's
+// soft lights come on from the horizon toward the feet (CityGround), and the
+// footer resolves out of dither.
 //
 // One progress f, 0..1, a pure function of scroll published by the Footer (0
 // as the footer comes in at the bottom of the screen, 1 at the very end of
@@ -21,9 +21,8 @@ export const CITY = {
   recede: [0.08, 0.5] as const, // Contact sinks back into the top left
   land: 0.6, // the camera has sunk to its last height by here
   tilt: [0.3, 0.85] as const, // the eyes lower to the horizon
-  fall: [0.3, 0.75] as const, // stars under eye level fall to the ground
-  ground: [0.35, 0.9] as const, // the ground grows from the vanishing point to the feet
-  track: [0.55, 0.92] as const, // the track draws itself from the horizon to the feet
+  fall: [0.25, 0.8] as const, // stars under eye level pour down to the ground
+  ground: [0.4, 0.92] as const, // the city's lights come on, from the horizon to the feet
   // the footer resolves out of dither: logo, columns, the bottom line
   text: [[0.6, 0.76], [0.66, 0.84], [0.76, 0.92]] as const,
 };
@@ -47,16 +46,14 @@ const restTilt = (horizon: number) => {
   return Math.min(0.22, Math.max(0.05, t));
 };
 
-/** the camera's offset from the flight's end pose at progress f; `below`
- * is how far the stars under eye level have thinned (0..1), `fall` how far
- * they have dropped to the ground */
+/** the camera's offset from the flight's end pose at progress f; `fall` is
+ * how far the stars under eye level have poured down to the ground (0..1) */
 export function cityCamera(f: number, horizon = DEFAULT_HORIZON) {
   const dolly = smoother(span(f, CITY.dolly));
   const dy = -LAND_Y * smoother(clamp01(f / CITY.land));
   const pitch = -restTilt(horizon) * smoother(span(f, CITY.tilt));
-  const below = smoother(span(f, [CITY.tilt[0], CITY.tilt[0] + 0.4]));
   const fall = smoother(span(f, CITY.fall));
-  return { dy, dz: DOLLY_Z * dolly, pitch, below, fall, fov: FOV + (DOLLY_FOV - FOV) * dolly };
+  return { dy, dz: DOLLY_Z * dolly, pitch, fall, fov: FOV + (DOLLY_FOV - FOV) * dolly };
 }
 /** the eye height at the end of the page, in the world */
 export const endEyeY = (flightEndY: number) => flightEndY - LAND_Y;
@@ -80,22 +77,12 @@ export function textRects(out: Float32Array): number {
   return n;
 }
 
-// ── the bus between the Footer, Contact, the star field and the ground
+// ── the bus between the Footer, Contact and the star field
 const DEFAULT_HORIZON = 0.3;
 let progressFn: (() => number) | null = null;
 let horizon = DEFAULT_HORIZON;
 let held = false;
 const heldListeners = new Set<() => void>();
-
-export interface CameraPose {
-  x: number; y: number; z: number;
-  yaw: number; pitch: number; roll: number;
-  fov: number;
-}
-let pose: CameraPose | null = null;
-let lit = -1;
-const poseListeners = new Set<() => void>();
-const ping = () => poseListeners.forEach((l) => l());
 
 export const cityBus = {
   /** the footer's progress f; null when no footer with the scene is on the page */
@@ -111,6 +98,10 @@ export const cityBus = {
     heldListeners.forEach((l) => l());
   },
   held: () => held,
+  onHeld(l: () => void) {
+    heldListeners.add(l);
+    return () => void heldListeners.delete(l);
+  },
 
   /** where the horizon comes to rest, a share of the screen from the top;
    * Contact sets it just under its receded block */
@@ -118,29 +109,6 @@ export const cityBus = {
     horizon = h ?? DEFAULT_HORIZON;
   },
   horizon: () => horizon,
-  onHeld(l: () => void) {
-    heldListeners.add(l);
-    return () => void heldListeners.delete(l);
-  },
-
-  /** the star field's camera, published each frame it moves; the ground draws from it */
-  setPose(p: CameraPose) {
-    pose = p;
-    ping();
-  },
-  pose: () => pose,
-  onPose(l: () => void) {
-    poseListeners.add(l);
-    return () => void poseListeners.delete(l);
-  },
-
-  /** the track's mark lit by a Navigate link (0 Contact … 3 About), -1 for none */
-  light(i: number) {
-    if (i === lit) return;
-    lit = i;
-    ping();
-  },
-  lit: () => lit,
 };
 
 // Je suis le spectre d'une rose que tu portais hier au bal.
