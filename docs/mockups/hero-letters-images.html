@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero, images in letters</title>
+<style>
+@font-face { font-family: 'Geist Pixel'; font-weight: 400; font-display: block;
+  src: url(/fonts/geist-pixel-latin.woff2) format('woff2'); }
+:root { --void:#050505; --chalk:#f6f6f6; --red:#cd0000; --red-text:#ff1a1a; --graphite:#262626; --fog:#999999; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--void); color: var(--chalk);
+  font-family: 'Geist Pixel', ui-monospace, Menlo, monospace; }
+
+/* One option = a tall scroll track with a sticky viewport-sized hero inside.
+   Scrolling through the track steps the projects inside the letters. */
+.track { position: relative; height: 420vh; border-top: 1px solid var(--graphite); }
+.stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+  container-type: inline-size; }
+.stage::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0, rgba(0,0,0,.045) 1.5px, rgba(0,0,0,0) 3px); }
+
+.tag { position: absolute; right: 16px; top: 16px; z-index: 6; margin: 0; font-size: 12px;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--fog); }
+.tag b { color: var(--red-text); font-weight: 400; }
+.eyebrow { position: absolute; left: 4.5cqw; right: 4.5cqw; top: max(56px, 4.2cqw); margin: 0;
+  font-size: max(12px, 2.4cqw); line-height: 1.1; text-transform: uppercase; letter-spacing: -0.01em; }
+.eyebrow .sep { color: var(--fog); }
+.caption { position: absolute; right: 4.5cqw; top: max(56px, 4.2cqw); margin: 0;
+  font-size: max(11px, 1.1cqw); text-transform: uppercase; letter-spacing: .06em; color: var(--fog); text-align: right; }
+.caption .n { color: var(--red-text); }
+
+/* The type. Each .ink layer is the same text; its fill is a dithered project
+   still clipped to the glyphs. The top layer is masked by a Bayer pattern
+   whose level follows scroll, so one project dissolves into the next.
+   Every .fit line is sized by script so it fills the measure exactly. */
+.stack { position: absolute; left: 4.5cqw; right: 4.5cqw; bottom: 2.5cqw; }
+.type { position: relative; margin: 0; text-transform: uppercase; font-weight: 400;
+  letter-spacing: -0.02em; line-height: .86; }
+.type .ink { display: block; }
+.type .ink + .ink { position: absolute; inset: 0; }
+.type span.line { display: block; white-space: nowrap; }
+.type + .type { margin-top: 1.6cqw; }
+.solid { color: var(--chalk); }
+.fill { color: transparent; -webkit-background-clip: text; background-clip: text;
+  background-size: cover; background-repeat: no-repeat; image-rendering: pixelated;
+  background-color: var(--graphite); }
+.kicker { position: absolute; left: 4.5cqw; top: max(56px, 4.2cqw); margin: 0; font-size: max(12px, 1.6cqw);
+  line-height: 1.1; text-transform: uppercase; letter-spacing: .02em; color: var(--red-text); }
+
+.note { position: absolute; left: 4.5cqw; top: calc(max(56px, 4.2cqw) + max(24px, 3.2cqw)); z-index: 6; margin: 0; max-width: 46ch;
+  font-size: 12px; line-height: 1.5; color: var(--fog); }
+@media (max-width: 600px) { .note { display: none; } }
+.intro { min-height: 60vh; padding: 32px 16px; max-width: 70ch; }
+.intro h1 { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; font-weight: 400; margin: 0 0 16px; }
+.intro p { color: var(--fog); font-size: 13px; line-height: 1.6; margin: 0 0 8px; }
+.end { height: 40vh; }
+</style></head>
+<body>
+<section class="intro">
+  <h1>Hero, images in&nbsp;letters</h1>
+  <p>Four options. A: name solid, tagline holds the&nbsp;images. B: the&nbsp;name holds the&nbsp;images. Scroll inside each block: the&nbsp;projects change inside the&nbsp;glyphs through a&nbsp;Bayer dissolve, scrubbed by&nbsp;scroll only.</p>
+  <p>Fill is the&nbsp;video poster of&nbsp;each work, dithered graphite, red and&nbsp;chalk, the&nbsp;same dither as the&nbsp;case pages.</p>
+</section>
+
+<section class="track" data-mode="block">
+  <div class="stage">
+    <p class="tag"><b>A1</b> Name solid, tagline carries the&nbsp;work</p>
+    <p class="kicker">New media artist</p>
+    <p class="caption"></p>
+    <div class="stack">
+      <p class="type solid"><span class="line fit">Sinaida Krivchenko</span></p>
+      <h1 class="type"><span class="ink fill"><span class="line fit">Visual</span><span class="line fit">Worlds for</span><span class="line fit">Stage &amp; Screen</span></span></h1>
+    </div>
+    <p class="note">Name in&nbsp;chalk on&nbsp;one line, the&nbsp;tagline below is the&nbsp;window. One project fills the&nbsp;whole block.</p>
+  </div>
+</section>
+
+<section class="track" data-mode="lines">
+  <div class="stage">
+    <p class="tag"><b>A2</b> Name solid, a&nbsp;project per line</p>
+    <p class="kicker">New media artist</p>
+    <p class="caption"></p>
+    <div class="stack">
+      <p class="type solid"><span class="line fit">Sinaida Krivchenko</span></p>
+      <h1 class="type"><span class="line fit fill">Visual</span><span class="line fit fill">Worlds for</span><span class="line fit fill">Stage &amp; Screen</span></h1>
+    </div>
+    <p class="note">Same stack, every tagline line runs its own project, like a&nbsp;split-flap board.</p>
+  </div>
+</section>
+
+<section class="track" data-mode="block">
+  <div class="stage">
+    <p class="tag"><b>B1</b> The&nbsp;name carries the&nbsp;work</p>
+    <p class="kicker">New media artist</p>
+    <p class="caption"></p>
+    <div class="stack">
+      <h1 class="type"><span class="ink fill"><span class="line fit">Sinaida</span><span class="line fit">Krivchenko</span></span></h1>
+      <p class="type solid"><span class="line fit">Visual worlds for stage &amp; screen</span></p>
+    </div>
+    <p class="note">Your name is the&nbsp;window, the&nbsp;biggest letters on&nbsp;the&nbsp;page. Tagline in&nbsp;chalk below.</p>
+  </div>
+</section>
+
+<section class="track" data-mode="lines">
+  <div class="stage">
+    <p class="tag"><b>B2</b> Name, a&nbsp;project per line</p>
+    <p class="kicker">New media artist</p>
+    <p class="caption"></p>
+    <div class="stack">
+      <h1 class="type"><span class="line fit fill">Sinaida</span><span class="line fit fill">Krivchenko</span></h1>
+      <p class="type solid"><span class="line fit">Visual worlds for stage &amp; screen</span></p>
+    </div>
+    <p class="note">Sinaida and Krivchenko each hold a&nbsp;different project and change in&nbsp;turn.</p>
+  </div>
+</section>
+
+<div class="end"></div>
+
+<script>
+// Projects with a video poster, in site order (src/data/projects.ts).
+const PROJECTS = [
+  ['Redkie Ptitsy', 'bDDAXRlz5FQ'],
+  ['The Eyes Chico', 'dvNl1G2fVLM'],
+  ['Conspace Rooms', 'oSWzQ4ds8BI'],
+  ['Aether Currents', 'fxrrSxvKp9Q'],
+  ['Ethereal Path', '15wl2Sko5GA'],
+  ['Storm Glass', 'hwFttiCKbrU'],
+];
+const N = PROJECTS.length;
+
+// Same 4x4 Bayer as src/lib/ditherPreview.ts.
+const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+// three tones: graphite keeps the glyph silhouette in shadows, red carries mids, chalk the highlights
+const TONES = [[38, 38, 38], [205, 0, 0], [246, 246, 246]];
+const DOT = 3;               // css px per dither dot, close to the font's pixel feel
+
+function load(src) {
+  return new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+}
+
+// Dither a poster at low resolution; CSS scales it up with pixelated rendering.
+async function dither(src, w, h) {
+  const img = await load(src);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  const s = Math.max(w / img.width, h / img.height);
+  ctx.drawImage(img, (w - img.width * s) / 2, (h - img.height * s) / 2, img.width * s, img.height * s);
+  const d = ctx.getImageData(0, 0, w, h); const p = d.data;
+  // auto-levels: stretch the 2nd..98th percentile to full range, posters are mostly dark stage footage
+  const L = new Float32Array(w * h);
+  for (let j = 0; j < w * h; j++) L[j] = (0.299 * p[j * 4] + 0.587 * p[j * 4 + 1] + 0.114 * p[j * 4 + 2]) / 255;
+  const sorted = Float32Array.from(L).sort();
+  const lo = sorted[Math.floor(sorted.length * 0.02)], hi = sorted[Math.floor(sorted.length * 0.98)] || 1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const j = y * w + x, i = j * 4;
+    const v = Math.min(0.999, Math.max(0, (L[j] - lo) / (hi - lo))) * (TONES.length - 1);
+    const k = Math.floor(v) + (v % 1 > (BAYER[y % 4][x % 4] + 0.5) / 16 ? 1 : 0);
+    const c2 = TONES[k];
+    p[i] = c2[0]; p[i + 1] = c2[1]; p[i + 2] = c2[2]; p[i + 3] = 255;
+  }
+  ctx.putImageData(d, 0, 0);
+  return c.toDataURL();
+}
+
+// Bayer mask levels 0..16: level k shows the cells whose threshold is below k.
+const MASKS = Array.from({ length: 17 }, (_, k) => {
+  const c = document.createElement('canvas'); c.width = c.height = 4 * DOT;
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#000';
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) if (BAYER[y][x] < k) ctx.fillRect(x * DOT, y * DOT, DOT, DOT);
+  return `url(${c.toDataURL()})`;
+});
+
+// Each fill element gets a clone on top; the clone carries the next image and the mask.
+function layered(el) {
+  const top = el.cloneNode(true);
+  top.setAttribute('aria-hidden', 'true');
+  top.style.position = 'absolute';
+  if (el.classList.contains('ink')) { el.after(top); }
+  else { el.style.position = 'relative'; top.style.inset = '0'; top.style.left = '0'; top.style.top = '0'; el.appendChild(top); top.style.width = '100%'; }
+  for (const prop of ['maskSize', 'webkitMaskSize']) top.style[prop] = `${4 * DOT}px ${4 * DOT}px`;
+  return { base: el, top };
+}
+
+const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+async function setup() {
+  await document.fonts.ready;
+  // size each .fit line so its text spans the stack width exactly
+  for (const el of document.querySelectorAll('.fit')) {
+    const target = el.closest('.stack').clientWidth;
+    el.style.display = 'inline-block'; el.style.fontSize = '100px';
+    const w = el.getBoundingClientRect().width;
+    el.style.display = ''; el.style.fontSize = `${(100 * target) / w}px`;
+  }
+  const w = Math.round(innerWidth / DOT), h = Math.round(innerHeight / DOT);
+  const urls = await Promise.all(PROJECTS.map(([, id]) => dither(`/video-posters/${id}.jpg`, w, h).then((u) => `url(${u})`)));
+
+  const tracks = [...document.querySelectorAll('.track')].map((track) => {
+    const fills = [...track.querySelectorAll('h1 .fill')].filter((e) => !e.parentElement.closest('.fill'));
+    return { track, mode: track.dataset.mode, caption: track.querySelector('.caption'), layers: fills.map(layered) };
+  });
+
+  function paint() {
+    const vh = innerHeight;
+    for (const t of tracks) {
+      const r = t.track.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / (r.height - vh)));
+      const names = [];
+      t.layers.forEach((L, i) => {
+        // per-line mode: each line runs a quarter step behind the one above and starts on its own project
+        const lag = t.mode === 'lines' ? i * 0.25 : 0;
+        const pos = Math.max(0, p * (N - 1) - lag);
+        const idx = Math.min(N - 1, Math.floor(pos));
+        const frac = pos - idx;
+        const shift = t.mode === 'lines' ? i : 0;
+        const a = (idx + shift) % N, b = (idx + 1 + shift) % N;
+        // hold the image for most of the step, dissolve in the middle third
+        const level = idx >= N - 1 ? 0 : Math.round(smooth(0.35, 0.65, frac) * 16);
+        // slow drift inside the letters, tied to scroll
+        const y = `${50 + (frac - 0.5) * 30}%`;
+        L.base.style.backgroundImage = urls[a];
+        L.top.style.backgroundImage = urls[b];
+        L.base.style.backgroundPosition = L.top.style.backgroundPosition = `50% ${y}`;
+        L.top.style.maskImage = L.top.style.webkitMaskImage = MASKS[level];
+        names.push(level > 8 ? b : a);
+      });
+      t.caption.innerHTML = [...new Set(names)]
+        .map((n) => `<span class="n">${String(n + 1).padStart(2, '0')}</span> ${PROJECTS[n][0]}`).join('<br>');
+    }
+  }
+  let raf = 0;
+  addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; paint(); }); }, { passive: true });
+  paint();
+}
+setup();
+</script>
+</body></html>
