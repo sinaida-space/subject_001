@@ -577,6 +577,15 @@
     }
   }
 
+  /* Dossier variant: hairline-ruled table, no dotted leader at any width. */
+  .bio-row.bio-row--ruled {
+    grid-template-columns: 150px 1fr;
+  }
+
+  .bio-row.bio-row--ruled > :nth-child(2) {
+    display: none;
+  }
+
   .clinical-label {
     font-family: var(--font-mono);
     /* 20px — the site-wide floor. This class carries the nav links and the
