@@ -46,7 +46,9 @@ const FLASH_AT = S0 + 130; // the hero is in: the line fires
 const LIFT_RISE = 150; // About rises to meet the line, once the hero is in it
 const POUR_FROM = S0 + 120; // About starts pouring when the hero stars have reached the line
 const FALL = 110; // a poured cell falls into its letter
-const SHED_AT = 0.92; // a letter is poured as it scrolls in at this screen height
+// a letter is poured just below the fold, so the last About line is whole
+// before the section settles; phones need more lead, their About is taller (#153)
+const SHED_AT = LIGHT ? 1.24 : 1.08;
 const HAND = 24; // a finished block fades in over this much scroll
 
 const QUAD_VS = `#version 300 es
