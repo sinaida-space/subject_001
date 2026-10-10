@@ -95,9 +95,9 @@ const Plaque = () => (
 const BottomBar = () => (
   <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
     <span className="font-mono uppercase text-[12px] tracking-[0.15em] leading-relaxed text-foreground/60">
-      © {new Date().getFullYear()} · Designed and coded by Sinaida{'\u00a0'}Krivchenko
-      <br />
       Prague
+      <br />
+      © {new Date().getFullYear()} · Designed and coded by Sinaida{'\u00a0'}Krivchenko
     </span>
     <span className="font-mono uppercase text-[12px] tracking-[0.15em] italic text-foreground/60">
       Are we more than the data we leave behind?
