@@ -281,17 +281,17 @@ export default function HeroLetters() {
           <span className="hl-line block">Krivchenko</span>
         </p>
 
-        {/* The void. Desktop: the molecule on the left edge, the whisper question
+        {/* The void. Desktop: the molecule at the centre, the whisper question
             on the right edge, both centred in the void's height, so neither
             can touch the type. Phones: the molecule at the centre, the
             question under it. */}
-        <div className="relative flex-1 min-h-0 flex items-center justify-between max-md:flex-col max-md:justify-center max-md:gap-4 md:py-4">
-          <div className="max-md:opacity-50">
+        <div className="relative flex-1 min-h-0 flex items-center max-md:flex-col max-md:justify-center max-md:gap-4 md:grid md:grid-cols-[1fr_auto_1fr] md:py-4">
+          <div className="max-md:opacity-50 md:col-start-2">
             <MoleculeNote id="noradrenaline" width={smallHero ? 150 : 220} height={smallHero ? 60 : 90} pulse={flare} />
           </div>
           <p
             aria-hidden="true"
-            className={`pointer-events-none m-0 max-w-[22ch] text-right max-md:text-center font-display uppercase tracking-tight leading-[1.1] text-[clamp(1rem,min(2vw,3.2svh),1.875rem)] hero-whisper hero-whisper-text ${whisper.visible ? 'hero-whisper-visible' : ''}`}
+            className={`pointer-events-none m-0 max-w-[22ch] md:justify-self-end text-right max-md:text-center font-display uppercase tracking-tight leading-[1.1] text-[clamp(1rem,min(2vw,3.2svh),1.875rem)] hero-whisper hero-whisper-text ${whisper.visible ? 'hero-whisper-visible' : ''}`}
           >
             {whisper.text}
           </p>
