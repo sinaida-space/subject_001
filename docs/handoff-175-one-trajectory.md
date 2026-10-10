@@ -27,10 +27,9 @@ Checks: reverse scroll rewinds, one-breath seams, 60 fps on a 5-year-old laptop,
 ## Open for her
 
 - The swirl mock above.
-- The footer city mock below.
 
-## Footer direction (proposed 2026-10-10, not built)
+## Footer: built in #179
 
-The footer is the city the stars came from: the grounding under the sky. Stars fall into the last screen and land as lit windows. The three link columns are towers built from window cells in the site's dither, set front-on on the Swiss grid (no isometric view, which reads as a stock synthwave trope). The ECG logo is the one neon sign, on the tallest roof. The camera dolly-zooms out from street level until the skyline is small and its windows read as a constellation. Then the windows breathe light upward into the sky: the universal source is people, and the stars over the page came from these lights. Hovering a link lights its floor. Canvas 2D cells in the galaxy palette, no three.js buildings; it has to run on a 5-year-old laptop. Mock a still first.
+The footer is the city the stars came from (`src/lib/city.ts`, `CityLights`, `EcgGround`, `Footer`). Wide screens: one screen held still for `CITY.runway` screens of scroll; the link columns are towers on the ECG ground line (the logo's beat, then SINAIDA, then the street), each link a floor with a window strip. A pool of stars falls onto the windows ground floors first, the text follows its windows in, grains rise from the windows, the camera sinks then cranes back (`cityCamera`). Hover or focus lights a floor. Phones: skyline strip right of the beat. Lite, reduced motion, other pages: calm footer with the ECG ground. Timing lives in `CITY`; the flight now ends where the city footer comes in (`pageProgress`). Open: the one red mast light on CONNECT is a judgment call, remove the `antenna` flag in `Footer.tsx` if it reads as decoration.
 
 Also landed after this handoff: titles hold mid-screen and condense from the fog with their section's presence (StarTitle), Body of Work is a StarTitle and the bang pours only into the globe (`TITLE_POUR = false` in WorkBuild), header links jump via `src/lib/navLand.ts`, the hypercube swings oblique mid-turn (`TURN_YAW`, `TURN_PITCH`), and the cursor is red in lite too.
