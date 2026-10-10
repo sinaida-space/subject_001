@@ -6,7 +6,7 @@ import { projectById } from '@/data/projects';
 import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
 import { constellationBus, type FocusOrigin } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
-import PlainSignalIndex from './PlainSignalIndex';
+import WorkStrip from './WorkStrip';
 import ProjectDetail from './ProjectDetail';
 import GraphHoverCard from './GraphHoverCard';
 
@@ -132,15 +132,15 @@ export default function Constellation() {
 
             {mode === 'full' && !IS_COARSE && <div data-build-room aria-hidden="true" className="hidden md:block" style={{ height: '90vh' }} />}
             </div>
-
-            {/* Plain-text reading always sits below the map in full mode; in
-               lite mode (auto-detected or manually toggled via Header/Footer)
-               it's the whole section — a fully semantic, keyboard-navigable
-               list with no canvas/WebGL dependency. */}
-            <div className={mode === 'full' ? 'mt-16' : undefined}>
-              <PlainSignalIndex />
-            </div>
           </div>
+        </div>
+
+        {/* The strip of project columns sits below the two columns at the
+           frame's full width; in lite mode (auto-detected or toggled via
+           Header/Footer) it's the whole section, a semantic, keyboard-
+           navigable list with no canvas/WebGL dependency. */}
+        <div className={mode === 'full' ? 'mt-16' : undefined}>
+          <WorkStrip />
         </div>
       </div>
     </section>
