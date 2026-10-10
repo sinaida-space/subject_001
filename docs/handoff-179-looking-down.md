@@ -65,7 +65,7 @@ Build order: commit 1 (layout, text, dither text, email reveal), commit 2 (home 
 
 ### Commit 1b: her phone feedback (done)
 
-- Phones get a second-level footer menu (`PhoneMenu` in `Footer.tsx`): NAVIGATE · CONNECT · MORE in one row; a tap opens that group below in two columns, links resolving out of dither (`FooterLink dither`). One group open at a time. Tablet and up keep the three columns.
+- Phones get a second-level footer menu (`PhoneMenu` in `Footer.tsx`): NAVIGATE · CONNECT · MORE in one row; a tap opens that group above the row in two columns (visual order only; the DOM keeps buttons first), links resolving out of dither (`FooterLink dither`). One group open at a time. Tablet and up keep the three columns.
 - The home footer is a full last screen in lite too (`min-h-[100svh]`, content at the bottom), so the page never ends on LET'S TALK cut under the header; full on wide screens is still the held screen.
 - Contact clipped its own lite title while the title ran ahead upward (the section was `overflow-hidden`); now `overflow-x-clip`, so CONTACT shows before LET'S TALK as you scroll in.
 - She loves the lights field on the phone: keep the shimmer when commit 2 turns it into the dither ground.

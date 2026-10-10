@@ -186,12 +186,12 @@ function Columns({ className }: { className: string }) {
 }
 
 // Phones: the three groups as one row of labels; a tap opens that group's
-// links below it, two columns, resolving out of dither. One open at a time.
+// links above it (the footer sits on the bottom, so the row stays put), two columns, resolving out of dither. One open at a time.
 function PhoneMenu() {
   const [open, setOpen] = useState<number | null>(null);
   const col = open === null ? null : COLUMNS[open];
   return (
-    <nav aria-label="Footer" className="md:hidden">
+    <nav aria-label="Footer" className="flex flex-col-reverse md:hidden">
       <div className="flex justify-between gap-4">
         {COLUMNS.map((c, i) => (
           <button
@@ -206,7 +206,7 @@ function PhoneMenu() {
           </button>
         ))}
       </div>
-      <div id="footer-group" className={col ? 'mt-6 grid grid-cols-2 gap-x-8 gap-y-4' : 'hidden'}>
+      <div id="footer-group" className={col ? 'mb-6 grid grid-cols-2 gap-x-8 gap-y-4' : 'hidden'}>
         {col?.items.map((item) => <FooterLink key={`${col.label}-${item.label}`} item={item} dither />)}
       </div>
     </nav>
