@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { notifyCookieBannerAcknowledged, notifyCookieBannerAway } from '@/lib/cookieBannerVisibility';
 
@@ -26,22 +26,47 @@ export function resetStorageNotice() {
 const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
   // The notice is informational (no choice is asked, nothing non-essential is
-  // stored), so scrolling is enough to move it out of the way.
+  // stored), so any sign of the visitor moving through the page is enough to
+  // move it out of the way: a scroll, the mouse travelling over the page, a
+  // touch or a key outside the notice.
   const [away, setAway] = useState(false);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isVisible || away) return;
+    const goAway = () => {
+      setAway(true);
+      notifyCookieBannerAway();
+    };
+    const outside = (e: Event) => !bannerRef.current?.contains(e.target as Node);
     // Capture phase, on document: also catches a scroll inside a nested
     // scroller, and reads every place a mobile browser may report the offset.
     const onScroll = () => {
       const y = window.scrollY || document.scrollingElement?.scrollTop || document.body.scrollTop || 0;
-      if (y > 24) {
-        setAway(true);
-        notifyCookieBannerAway();
-      }
+      if (y > 24) goAway();
+    };
+    // Real travel only: a resting cursor, or a jitter of a few px, keeps it.
+    let travel = 0;
+    let last: { x: number; y: number } | null = null;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse' || !outside(e)) return;
+      if (last) travel += Math.hypot(e.clientX - last.x, e.clientY - last.y);
+      last = { x: e.clientX, y: e.clientY };
+      if (travel > 40) goAway();
+    };
+    const onPress = (e: Event) => {
+      if (outside(e)) goAway();
     };
     document.addEventListener('scroll', onScroll, { passive: true, capture: true });
-    return () => document.removeEventListener('scroll', onScroll, true);
+    document.addEventListener('pointermove', onMove, { passive: true });
+    document.addEventListener('touchstart', onPress, { passive: true });
+    document.addEventListener('keydown', onPress);
+    return () => {
+      document.removeEventListener('scroll', onScroll, true);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('touchstart', onPress);
+      document.removeEventListener('keydown', onPress);
+    };
   }, [isVisible, away]);
 
   useEffect(() => {
@@ -83,6 +108,7 @@ const CookieBanner = () => {
 
   return (
     <div
+      ref={bannerRef}
       role="region"
       aria-label="Cookie notice"
       className={`notice-surface fixed bottom-0 left-0 right-0 z-50 py-2.5 sm:py-4${away ? ' notice-surface--away' : ''}`}
