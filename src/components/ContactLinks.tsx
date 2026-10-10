@@ -1,15 +1,25 @@
+import { useState } from 'react';
 import ObfuscatedMailto from './ObfuscatedMailto';
+import DitherText from './DitherText';
 
 const linkFocus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff1a1a] focus-visible:outline-offset-2';
 
-// The two ways in: write, or book a call. Contact shows them under LET'S
-// TALK; the city footer shows them again in its sky, where the same glyphs
-// land after the pour (#179), so both places use this one markup.
+// The two ways in under LET'S TALK: write, or book a call. EMAIL ME also
+// shows the address, resolved out of red dither beside the buttons, and copies
+// it (#179): a mailto does nothing for anyone without a mail app set up, and
+// the address still never sits in the page until someone asks for it.
 export default function ContactLinks() {
+  const [address, setAddress] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const onOpen = (a: string) => {
+    setAddress(a);
+    navigator.clipboard?.writeText(a).then(() => setCopied(true), () => setCopied(false));
+  };
   return (
     <div className="flex flex-wrap items-center gap-x-7 gap-y-4">
       <ObfuscatedMailto
         label="EMAIL ME ↗"
+        onOpen={onOpen}
         className={`font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none ${linkFocus}`}
         style={{
           border: '1px solid hsl(var(--sinaida-red))',
@@ -33,6 +43,10 @@ export default function ContactLinks() {
       >
         Book a call ↗
       </a>
+      <span role="status" className="flex items-baseline gap-3 font-mono text-[13px]">
+        {address && <DitherText text={address} className="select-all text-foreground" />}
+        {address && copied && <span className="text-[11px] uppercase tracking-[0.15em] text-primary-legible">Copied</span>}
+      </span>
     </div>
   );
 }

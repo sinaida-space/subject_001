@@ -27,16 +27,9 @@ export default function ContactChannel() {
           Let’s talk.
         </p>
 
-        {/* CTA — one bold action, plain links, base line in the same row */}
-        <div className="flex flex-wrap items-center gap-x-7 gap-y-4 mt-[6vh]">
-          {/* the two ways in; in full mode on the home page they pour into
-              the sky of the last screen as the footer comes (#179) */}
-          <div data-pour-src className="[opacity:var(--pour-out,1)] focus-within:[opacity:1]">
-            <ContactLinks />
-          </div>
-          <span className="font-mono text-[13px] w-full md:w-auto md:ml-auto" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
-            Based in Prague. Working&nbsp;globally.
-          </span>
+        {/* CTA: one bold action, plain links */}
+        <div className="mt-[6vh]">
+          <ContactLinks />
         </div>
       </div>
     </section>

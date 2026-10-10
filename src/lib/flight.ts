@@ -30,7 +30,7 @@ export interface Flight {
  * `y` and dives `z` from its home at z = `home` */
 export const FLIGHT = { x: 6, y: 1.6, z: 9, home: 7 };
 
-// the city footer (#179) takes over where it comes in: the flight ends as its
+// the held footer (#179) takes over where it comes in: the flight ends as its
 // top reaches the bottom of the screen
 let cityFooter: HTMLElement | null = null;
 

@@ -6,7 +6,6 @@ import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
 import { FLIGHT, flightAt, pageProgress } from '@/lib/flight';
 import { cityBus, cityCamera } from '@/lib/city';
-import CityLights from '@/components/CityLights';
 import CityGround from '@/components/CityGround';
 
 const PARTICLE_COUNT = 1400;
@@ -78,7 +77,7 @@ const SPRING_STIFFNESS = 55;
 // the dive never runs out of stars; a star wraps where it cannot be seen,
 // behind the near fade or off the side.
 // The footer's city (#179) adds its own offset on top: the camera sinks on,
-// the eyes lift with the pour, then lower to the horizon and the city below.
+// then the eyes lower to the horizon and the lights below.
 const { x: FLIGHT_X, y: FLIGHT_Y, z: FLIGHT_Z } = FLIGHT;
 const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
 const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
@@ -786,7 +785,6 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
             onProbe={probing ? (reduced ? onProbeReduced : onProbe) : null}
           />
           {flight && !REDUCED_MOTION && <CityGround />}
-          {flight && !REDUCED_MOTION && <CityLights />}
           {!reduced && (
             <EffectComposer>
               <Bloom

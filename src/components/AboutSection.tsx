@@ -44,6 +44,7 @@ const BIO_ROWS = [
   ['Origin', `Biomedical engineering, MSc., Bauman Moscow State Technical${NB}University`],
   ['Drift', `Ballet. General${NB}Electric IT Leadership Program. Generative${NB}systems.`],
   ['Focus', `Real-time visual worlds driven by${NB}body tracking and${NB}sound.`],
+  ['Current location', `Prague. Working${NB}globally.`],
 ];
 
 const RULE = 'pointer-events-none absolute inset-x-0 h-px bg-foreground/15';

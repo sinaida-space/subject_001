@@ -42,3 +42,23 @@ Screenshot showed the final frame on her Mac.
 
 - Red mast light on the tallest tower (`antenna` in `stripTowers`) — moot if towers go.
 - `CITY.runway` length (0.9 screens) and the final pitch (`TILT` 0.17 rad).
+
+## v3: the approved plan (PRD v4, 2026-10-10)
+
+Her answers replaced the city. Decided:
+
+- **One dither, one bloom.** Dither is matter (4x4 Bayer, 2 css px squares, white and the one red): the ground, text forming or leaving. Bloom is light: stars and glints only. Ground and track draw after the bloom pass, so the grey halo cannot come back.
+- **Home, full.** Contact stays its own section; LET'S TALK laced with star points that glint only while moving (the shimmer she liked on the city lights, her "first MySpace coding"). Then a dolly out: the Contact block recedes on z (about half size, stays clickable, top left), CONTACT clears; under the horizon stars fall and settle into dithered ground growing from the vanishing point; logo, columns and bottom line resolve out of the same dither. **The track**: one red line, four star marks (About, Work, Services, Contact), no labels; hovering a Navigate link lights its mark.
+- **Hovers (full only, rewind, still at rest).** CONNECT: nearby stars pull into small clusters. MORE: the ground's dither sharpens to a finer grid. Name/logo: a glint passes through the stars.
+- **Other pages.** Full: the same footer with stars, dolly and dither ground; no LET'S TALK, no track. Lite: same layout, still.
+- **Out:** Prague anywhere in the footer, the towers, the pour, Experiences in the footer (unclear for now), a build stamp in the footer (it is in the console egg).
+
+Build order: commit 1 (layout, text, dither text, email reveal), commit 2 (home scene), commit 3 (hovers, other pages' 3D footer).
+
+### Commit 1 (done)
+
+- `Footer.tsx`: one layout everywhere, both modes, her screenshot: logo + plaque bottom left, three columns bottom-aligned on the right (lg: cols 6-12), bottom line `© year · Designed and coded by Sinaida Krivchenko` + the question. Navigate in page order, Privacy, no arrows under CONNECT (sr-only "opens in a new tab"). Home full on wide screens still holds `CITY.runway` screens and publishes f via `cityBus.setProgress`.
+- `CityLights.tsx` deleted; `city.ts` keeps only the camera (sink, tilt) and the progress bus. `CityGround` still mounts as the interim ground until commit 2 replaces it with the dither ground (it sits under the columns for now).
+- `DitherText.tsx`: text resolving out of red dither, once per text, then crisp DOM. Reusable for the footer's assembly.
+- `ContactLinks`: EMAIL ME shows the address (DitherText) and copies it, "Copied"; mailto still opens (`ObfuscatedMailto` `onOpen`). Contact lost "Based in Prague"; About gained **Current location: Prague. Working globally.**
+- `vite.config.ts` defines `__BUILD__` (date · short sha), printed in the console egg in `main.tsx`.
