@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
+import { landOn } from '@/lib/navLand';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
@@ -73,8 +74,7 @@ export default function Header() {
       return;
     }
     setTimeout(() => {
-      const el = document.querySelector(href);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      landOn(href);
     }, menuOpen ? 300 : 0); // wait for the mobile menu to fade out first
   };
 
@@ -93,8 +93,16 @@ export default function Header() {
   return (
     <>
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : ''}`}>
-        <div className="container mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-2 sm:gap-4">
+      <header className="fixed top-0 left-0 right-0 z-50">
+        {/* No glass panel or border: once scrolled, the page's own background
+            colour fades down under the header so content slides beneath it.
+            The opacity flip is a one-off response to scroll, not a loop. */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-x-0 top-0 h-[170%] transition-opacity duration-500 ${scrolled ? 'opacity-100' : 'opacity-0'}`}
+          style={{ background: 'linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--background) / 0.9) 45%, hsl(var(--background) / 0) 100%)' }}
+        />
+        <div className="relative site-frame py-4 flex items-center justify-between gap-2 sm:gap-4">
 
           <Logo onEcgClick={() => setSnakeOpen(true)} onNameClick={scrollTop} />
 

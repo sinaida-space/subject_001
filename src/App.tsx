@@ -1,4 +1,4 @@
-import { Suspense, lazy, useLayoutEffect } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
@@ -7,6 +7,7 @@ import RouteEnhancer from "@/components/RouteEnhancer";
 import DiveHost from "@/components/dive/DiveHost";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 import { routeChunks } from "@/lib/routeChunks";
+import { startHalation } from "@/lib/halation";
 
 const PrivacyPolicy = lazy(routeChunks.privacy);
 const Licensing = lazy(routeChunks.licensing);
@@ -20,11 +21,14 @@ const RouteFallback = () => (
   <div className="min-h-screen bg-background" aria-hidden="true" />
 );
 
-// Site-wide, not per-page — every route gets the custom cursor (previously it
-// only existed on Index/NotFound, so it silently vanished on every other page).
-const SiteCursor = () => {
+// Full mode only: the red halation on large display headlines. Idle at rest.
+const SiteLight = () => {
   const { mode } = useRenderMode();
-  return mode === 'full' ? <CustomCursor /> : null;
+  useEffect(() => {
+    if (mode !== 'full') return;
+    return startHalation();
+  }, [mode]);
+  return null;
 };
 
 // A route change (e.g. clicking "View full case study") should land at the
@@ -53,7 +57,9 @@ const App = () => (
       <ScrollToTop />
       <RouteEnhancer />
       <DiveHost />
-      <SiteCursor />
+      {/* site-wide, every route: the red arrow in both modes, on Void and on Chalk (#175) */}
+      <CustomCursor />
+      <SiteLight />
       <WebMcpTools />
       <Suspense fallback={<RouteFallback />}>
         <Routes>

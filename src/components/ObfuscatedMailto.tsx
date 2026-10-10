@@ -16,6 +16,9 @@ interface ObfuscatedMailtoProps {
    * in the shipped output, e.g. ['name', '@', 'provider', '.com'].
    */
   addressParts?: string[];
+  /** prefilled subject line */
+  subject?: string;
+  children?: React.ReactNode;
   onMouseEnter?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
   onMouseLeave?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
@@ -25,6 +28,8 @@ export default function ObfuscatedMailto({
   className,
   style,
   addressParts,
+  subject,
+  children,
   onMouseEnter,
   onMouseLeave,
 }: ObfuscatedMailtoProps) {
@@ -32,7 +37,7 @@ export default function ObfuscatedMailto({
     e.preventDefault();
     // Assemble address only on click, not on render
     const resolved = (addressParts ?? ['gallant', '_mod5v', '@', 'icloud', '.com']).join('');
-    window.location.href = `mailto:${resolved}`;
+    window.location.href = `mailto:${resolved}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
   };
 
   return (
@@ -44,7 +49,7 @@ export default function ObfuscatedMailto({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {label}
+      {children ?? label}
     </a>
   );
 }

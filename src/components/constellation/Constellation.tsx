@@ -6,9 +6,10 @@ import { projectById } from '@/data/projects';
 import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
 import { constellationBus, type FocusOrigin } from '@/lib/constellationBus';
 import ConstellationLite from './ConstellationLite';
-import PlainSignalIndex from './PlainSignalIndex';
+import WorkStrip from './WorkStrip';
 import ProjectDetail from './ProjectDetail';
 import GraphHoverCard from './GraphHoverCard';
+import StarTitle, { LiteTitle } from '@/components/StarTitle';
 
 const ConstellationFull = lazy(() => import('./ConstellationFull'));
 
@@ -54,21 +55,35 @@ export default function Constellation() {
 
   return (
     <section ref={sectionRef} id="work" className="relative z-10 py-16 md:py-20">
-      <div className="container mx-auto max-w-7xl px-6">
-        <div className="flex flex-col gap-8 md:flex-row md:gap-12">
-          {/* LEFT COLUMN — label + legend */}
-          <div ref={headingRef} data-work-heading className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
-            <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
-              Body of Work
-            </h2>
-
-            <p
-              className="mt-2 max-w-[460px] font-mono uppercase leading-relaxed"
-              style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}
-            >
-              Selected works and the skills that happen to resonate.
-            </p>
-          </div>
+      <div className="site-frame">
+        <div className={mode === 'full' ? 'flex flex-col gap-8 md:gap-12' : 'flex flex-col'}>
+          {/* The heading spans the frame above the map. In full mode it is a
+              StarTitle like every section name (#175); WorkBuild times its
+              pull on the h2 inside it. */}
+          {mode === 'full' ? (
+            <div ref={headingRef} data-work-heading className="shrink-0">
+              <StarTitle
+                text="Body of Work"
+                caption={
+                  <p className="relative z-[1] mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+                    Selected works and the skills that happen to resonate.
+                  </p>
+                }
+              />
+            </div>
+          ) : (
+            <div ref={headingRef} data-work-heading>
+              <LiteTitle
+                text="Body of Work"
+                titleStyle={{ fontSize: 'clamp(26px, 7.5vw, 40px)' }}
+                caption={
+                  <p className="mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+                    Selected works and the skills that happen to resonate.
+                  </p>
+                }
+              />
+            </div>
+          )}
 
           {/* RIGHT COLUMN — the graph, always paired with its plain reading below */}
           {/* CLS fix: reserve the taller of Lite/Full's own heights here, at the
@@ -132,17 +147,19 @@ export default function Constellation() {
 
             {mode === 'full' && !IS_COARSE && <div data-build-room aria-hidden="true" className="hidden md:block" style={{ height: '90vh' }} />}
             </div>
-
-            {/* Plain-text reading always sits below the map in full mode; in
-               lite mode (auto-detected or manually toggled via Header/Footer)
-               it's the whole section — a fully semantic, keyboard-navigable
-               list with no canvas/WebGL dependency. */}
-            <div className={mode === 'full' ? 'mt-16' : undefined}>
-              <PlainSignalIndex />
-            </div>
           </div>
+        </div>
+
+        {/* The strip of project columns sits below the two columns at the
+           frame's full width; in lite mode (auto-detected or toggled via
+           Header/Footer) it's the whole section, a semantic, keyboard-
+           navigable list with no canvas/WebGL dependency. */}
+        <div className={mode === 'full' ? 'mt-16' : 'mt-8'}>
+          <WorkStrip />
         </div>
       </div>
     </section>
   );
 }
+
+// Je suis le spectre d'une rose que tu portais hier au bal.

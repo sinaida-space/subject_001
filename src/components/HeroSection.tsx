@@ -346,7 +346,7 @@ export default function HeroSection() {
       onTouchEnd={releaseTunnel}
       onTouchCancel={releaseTunnel}
     >
-      <div className={`${dimClass} container mx-auto px-6 max-w-7xl`}>
+      <div className={`${dimClass} site-frame`}>
         {/* Same face and same size as the headline. The two lines are one
             voice; only weight and the red span separate them. Both hero lines
             share the same hover behavior: a sustained glow/bloom (hero-text-
@@ -396,7 +396,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className={`${dimClass} container mx-auto px-6 max-w-7xl`}>
+      <div className={`${dimClass} site-frame`}>
         {/* Two sizing regimes: below md the headline breaks into two lines and
             can run wide; above md it must hold on a single line, so the vw
             factor is set by character count.

@@ -15,6 +15,8 @@ import workStereolove from '@/assets/work-stereolove.webp';
 import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.webp';
 import workStormGlass from '@/assets/work-storm-glass.webp';
 import workConspaceRooms from '@/assets/work-conspace-rooms.webp';
+import workConspaceRooms640 from '@/assets/work-conspace-rooms-640.webp';
+import workConspaceRooms1024 from '@/assets/work-conspace-rooms-1024.webp';
 import type { Dialect } from '@/lib/diveBus';
 
 export type ProjectKind =
@@ -97,6 +99,8 @@ export interface Project {
   kind: ProjectKind;
   /** one-line descriptor, used in lists and as constellation tooltip */
   tagline: string;
+  /** one short line under the still in the Body of Work strip */
+  short?: string;
   /** 2–3 sentences revealed when a Selected Works row expands */
   blurb?: string;
   tools?: string[];
@@ -145,6 +149,7 @@ export const PROJECTS: Project[] = [
     subtitle: 'Live Concert Visuals',
     kind: 'stage',
     tagline: 'Live at Sklad No. 3, Moscow · 9 projections, one per song',
+    short: 'Live concert visuals, nine songs',
     blurb:
       'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band Redkie Ptitsy. Nine audio-reactive projections, one for each song, ran in real time behind the band all night. Each one is a TouchDesigner system that listens to the live mix. Festivals and touring productions can book the same setup.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
@@ -299,6 +304,7 @@ export const PROJECTS: Project[] = [
     title: 'CONSPACE ROOMS',
     kind: 'installation',
     tagline: 'Walk-through labyrinth of eighteen paintings, in the browser or as a gesture-controlled projection · with UVALISS',
+    short: 'A\u00A0labyrinth of\u00A0eighteen paintings',
     blurb:
       'A walk-through web installation made with UVALISS (Alisa Feer). Eighteen works from her SOULS series hang in a labyrinth of half-lit rooms that the browser builds as you walk: hospital corridors, a grandmother\u2019s flat, pale rooms dissolving into light. The music is generated as you go, and nothing about the visitor is\u00A0kept.',
     tools: ['Three.js', 'Generative Web Audio', 'On-device hand tracking'],
@@ -306,6 +312,7 @@ export const PROJECTS: Project[] = [
     url: 'https://conspace-rooms.vercel.app/',
     video: 'oSWzQ4ds8BI',
     image: workConspaceRooms,
+    imageSrcSet: `${workConspaceRooms640} 640w, ${workConspaceRooms1024} 1024w, ${workConspaceRooms} 1344w`,
     links: [
       { label: 'Visit the experience', url: 'https://conspace-rooms.vercel.app/' },
       { label: 'Project sheet (PDF)', url: '/files/conspace-rooms-project-sheet.pdf' },
@@ -416,6 +423,7 @@ export const PROJECTS: Project[] = [
     title: 'Aether Currents',
     kind: 'game',
     tagline: 'Browser instrument played with bare hands · with Telefm',
+    short: 'An\u00A0instrument played with bare hands',
     blurb:
       'Sinaida built AETHER CURRENTS with Kamil Yegelev, known as Telefm, a musician in Belgrade. It is a browser instrument: a camera reads your hands, and their movement drives granular sound and light in real time.',
     tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
@@ -499,6 +507,7 @@ export const PROJECTS: Project[] = [
     title: 'Ethereal Path',
     kind: 'game',
     tagline: 'Off-axis descent steered by head & hand movement: the body is the controller',
+    short: 'A\u00A0descent steered by\u00A0head and\u00A0hands',
     blurb:
       "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. All tracking runs on the device, and nothing leaves the machine. Ray-based GLSL shading, no frameworks. An art experiment and a toy, and a working study in the body as controller: the same system can let a performer’s body drive the image.",
     tools: ['WebGL2 / GLSL', 'MediaPipe body tracking', 'Web Audio'],
@@ -703,6 +712,7 @@ export const PROJECTS: Project[] = [
     subtitle: 'Focus Soundscapes',
     kind: 'game',
     tagline: 'Endless generated soundscapes for focused work, with rest built into the session',
+    short: 'Endless soundscapes for focused work',
     blurb:
       'Layer noise, water, fire, places and\u00A0music into one mix, save it\u00A0as\u00A0a\u00A0preset, and\u00A0let it\u00A0run for\u00A0hours. Sinaida built it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work. An\u00A0audio-reactive tunnel breathes with the\u00A0sound. It\u00A0installs as\u00A0an\u00A0app, works offline, and\u00A0nothing you\u00A0do\u00A0in\u00A0it\u00A0is\u00A0tracked.',
     tools: ['Web Audio API', 'WebGL', 'Offline web app'],

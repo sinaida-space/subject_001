@@ -9,11 +9,13 @@ import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import MoleculeBreak, { SectionBand } from '@/components/MoleculeBreak';
 import WorkBuild from '@/components/WorkBuild';
-import HorizonGate from '@/components/HorizonGate';
+import QuoteGate from '@/components/QuoteGate';
+import QuoteStage from '@/components/QuoteStage';
 import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { landOn } from '@/lib/navLand';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 const DustReveal = lazy(() => import('@/components/DustReveal'));
@@ -56,8 +58,8 @@ const Index = () => {
   // scroll to the section once it's mounted.
   useEffect(() => {
     if (!hash) return;
-    const el = document.querySelector(hash);
-    if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+    const t = setTimeout(() => landOn(hash), 100);
+    return () => clearTimeout(t);
   }, [hash]);
 
   return (
@@ -81,7 +83,7 @@ const Index = () => {
       {full && fieldReady && (
         <ErrorBoundary fallback={null} onError={(e) => console.error('ParticleField crashed:', e)}>
           <Suspense fallback={null}>
-            <ParticleField />
+            <ParticleField flight />
           </Suspense>
         </ErrorBoundary>
       )}
@@ -94,18 +96,16 @@ const Index = () => {
         {/* The red horizon: where the cover ends and the content begins. In
             full mode scrolling turns it into the gate that opens onto About. */}
         {full ? (
-          <HorizonGate>
-            <SectionBand>
-              <div className="container mx-auto px-6 max-w-7xl">
-                <div className="section-divider" data-horizon />
-              </div>
-            </SectionBand>
+          // The belief blows in as the hero blows away; "seen" becomes the
+          // portrait and "connected" the threads into About.
+          <QuoteGate>
+            <QuoteStage pinned />
             <AboutSection />
-          </HorizonGate>
+          </QuoteGate>
         ) : (
           <>
             <SectionBand>
-              <div className="container mx-auto px-6 max-w-7xl">
+              <div className="site-frame">
                 <Suspense fallback={<div className="section-divider" />}>
                   <DustReveal>
                     <div className="section-divider" />
@@ -113,6 +113,7 @@ const Index = () => {
                 </Suspense>
               </div>
             </SectionBand>
+            <QuoteStage pinned={false} />
             <AboutSection />
           </>
         )}
@@ -127,7 +128,7 @@ const Index = () => {
         )}
         <MoleculeBreak id="serotonin" />
         <ServicesTerminal />
-        <MoleculeBreak id="oxytocin" />
+        <MoleculeBreak id="oxytocin" raised={full} />
         <ContactChannel />
       </main>
 

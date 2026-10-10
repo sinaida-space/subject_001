@@ -1,19 +1,29 @@
-// ── Portrait build for the horizon gate (#120) ──
-// The About portrait develops out of the site's own image dither (the 4x4
-// Bayer red-on-void used for every work image, lib/ditherPreview) as the
-// line's stars land on it, cell by cell from the top, then
-// resolves into the real photo the same way. A small 2D canvas laid over
-// the photo; cells are 3 css px, drawn one pixel each into a buffer and
-// scaled up without smoothing, so a frame costs two drawImage calls.
+// ── Portrait develop for the quote gate (#161) ──
+// Once the stars have settled into the portrait square, the site's own image
+// dither (the Bayer red-on-void used for every work image, lib/ditherPreview)
+// fades in over the whole square, then the photo lights up cell by cell: each
+// 3 px cell has its own Bayer threshold, and when the progress passes it the
+// cell turns from red to the photo's true colour there, with a brief bright
+// over-shoot so it reads as a pixel switching on. At the end the real <img>
+// takes over (QuoteGate flips its opacity) and this canvas hides.
+//
+// A small 2D canvas laid over the photo; the colour cells are drawn one pixel
+// each into a buffer and scaled up without smoothing, so a frame costs two
+// drawImage calls.
 
 import { getDitheredPreview } from '@/lib/ditherPreview';
 import { BAYER } from '@/components/constellation/cardBuild';
 
 const CELL = 3;
+const FLASH = 1.6; // brightness of a cell the moment it lights up
+const FLASH_FOR = 0.08; // and for how much progress it stays over-bright
+
+// the filter the <img> wears, so the lit cells match it at the hand-over
+const PHOTO_FILTER = 'contrast(1.08) brightness(0.92) saturate(0.85)';
 
 export interface PortraitBuild {
-  /** build 0..1: dither developed; resolve 0..1: real photo shows through */
-  draw(build: number, resolve: number): void;
+  /** red 0..1: the soft red dither fades in; colour 0..1: cells light up into the photo (1 = canvas hidden) */
+  draw(red: number, colour: number): void;
   destroy(): void;
 }
 
@@ -31,59 +41,77 @@ export function createPortraitBuild(host: HTMLElement, src: string): PortraitBui
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const cols = Math.ceil(w / CELL), rows = Math.ceil(h / CELL);
-  const mask = document.createElement('canvas');
-  mask.width = cols;
-  mask.height = rows;
-  const mctx = mask.getContext('2d')!;
   const front = document.createElement('canvas');
   front.width = cols;
   front.height = rows;
   const fctx = front.getContext('2d')!;
-  const mImg = mctx.createImageData(cols, rows);
   const fImg = fctx.createImageData(cols, rows);
 
   let dither: HTMLImageElement | null = null;
+  let truth: Uint8ClampedArray | null = null; // the photo's colour at each cell
   let last = [-1, -1];
   let pending: [number, number] | null = null;
+  const ready = () => {
+    if (dither && truth && pending) draw(...pending);
+  };
+
   // the same dither every work image on the site uses, at twice the shown size
   getDitheredPreview(src, w * 2, h * 2).then((url) => {
     if (!url) return;
     const img = new Image();
     img.onload = () => {
       dither = img;
-      if (pending) draw(...pending);
+      ready();
     };
     img.src = url;
   });
 
-  function draw(build: number, resolve: number) {
-    if (!dither) { pending = [build, resolve]; return; }
-    if (build === last[0] && resolve === last[1]) return;
-    last = [build, resolve];
-    const md = mImg.data, fd = fImg.data;
+  // the photo, averaged down to one pixel per cell, cropped like object-fit: cover
+  const photo = new Image();
+  photo.onload = () => {
+    const cv = document.createElement('canvas');
+    cv.width = cols;
+    cv.height = rows;
+    const c = cv.getContext('2d', { willReadFrequently: true });
+    if (!c) return;
+    const s = Math.max(cols / photo.naturalWidth, rows / photo.naturalHeight);
+    const dw = photo.naturalWidth * s, dh = photo.naturalHeight * s;
+    c.filter = PHOTO_FILTER;
+    c.imageSmoothingQuality = 'high';
+    c.drawImage(photo, (cols - dw) / 2, (rows - dh) / 2, dw, dh);
+    truth = c.getImageData(0, 0, cols, rows).data;
+    ready();
+  };
+  photo.src = src;
+
+  function draw(red: number, colour: number) {
+    if (!dither || !truth) { pending = [red, colour]; return; }
+    if (red === last[0] && colour === last[1]) return;
+    last = [red, colour];
+    // fully lit: the real photo shows, this canvas steps aside
+    const hidden = colour >= 1 || (red <= 0 && colour <= 0);
+    canvas.style.visibility = hidden ? 'hidden' : '';
+    if (hidden) return;
+
+    const fd = fImg.data;
     for (let y = 0; y < rows; y++) {
-      const dist = y / rows;
-      const grow = build * 1.3 - dist * 0.3; // develops from the top, where the stars fall in
-      const gone = resolve * 1.3 - dist * 0.3; // and resolves into the photo the same way
       for (let x = 0; x < cols; x++) {
         const i = (y * cols + x) * 4;
-        const t = BAYER[(y & 7) * 8 + (x & 7)];
-        const shown = t < grow - 0.09 && t >= gone;
-        const edge = false;
-        md[i + 3] = shown ? 255 : 0;
-        fd[i] = 255; fd[i + 1] = 40; fd[i + 2] = 34; fd[i + 3] = edge ? 255 : 0; // the hot red front
+        const lit = colour - BAYER[(y & 7) * 8 + (x & 7)];
+        if (lit <= 0) { fd[i + 3] = 0; continue; }
+        // over-bright for a moment, then its true colour
+        const k = FLASH + (1 - FLASH) * Math.min(1, lit / FLASH_FOR);
+        fd[i] = truth[i] * k; fd[i + 1] = truth[i + 1] * k; fd[i + 2] = truth[i + 2] * k; fd[i + 3] = 255;
       }
     }
-    mctx.putImageData(mImg, 0, 0);
     fctx.putImageData(fImg, 0, 0);
-    ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, w, h);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(mask, 0, 0, cols * CELL, rows * CELL);
-    ctx.globalCompositeOperation = 'source-in';
+    // the soft red dither over the whole square, by alpha
+    ctx.globalAlpha = red;
     ctx.imageSmoothingEnabled = true;
     ctx.drawImage(dither, 0, 0, w, h);
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    // the lit cells cover it
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(front, 0, 0, cols * CELL, rows * CELL);
   }

@@ -26,6 +26,8 @@ interface RNode {
   vy: number;
   depth: number; // parallax depth factor (skills drift more than heavy stars)
   r: number; // core radius (css px)
+  drawX?: number; // where the last frame drew it (after the globe and the lean), for hit tests
+  drawY?: number;
 }
 
 interface Pulse {
@@ -160,6 +162,11 @@ const CATEGORIES = Object.keys(CATEGORY_LABEL) as Category[];
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const lin = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 const easeOut = (t: number) => 1 - (1 - t) * (1 - t);
+// once the map is whole (#169): it leans up to TILT toward the pointer (desktop)
+// and turns by DRIFT_* across the rest of Work (all devices); radians
+const TILT = (4 * Math.PI) / 180;
+const DRIFT_YAW = (-3 * Math.PI) / 180;
+const DRIFT_PITCH = (2 * Math.PI) / 180;
 const bayer8 = (x: number, y: number) => {
   let v = 0;
   for (let bit = 0; bit < 3; bit++) {
@@ -301,6 +308,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // One-second full-graph bloom on every drop: ramps to 1 on trigger, eases
   // back to 0. Purely user-action-driven (a drop), so motion-law compliant.
   const shineRef = useRef(0);
+  // the formed map's lean toward the pointer, eased (radians: yaw, pitch)
+  const leanRef = useRef({ x: 0, y: 0 });
 
   const [tooltip, setTooltip] = useState<{ x: number; y: number; node: RNode } | null>(null);
   // Only used on touch/coarse devices — the wrapper's height becomes content
@@ -410,8 +419,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     let best: RNode | null = null;
     let bestD = Infinity;
     for (const n of nodesRef.current) {
-      const dx = n.x - px;
-      const dy = n.y - py;
+      const dx = (n.drawX ?? n.x) - px;
+      const dy = (n.drawY ?? n.y) - py;
       const d = Math.sqrt(dx * dx + dy * dy);
       const pad = coarse ? Math.max(44, n.r + 22) : (n.kind === 'project' ? 16 : 12) + n.r;
       if (d < pad && d < bestD) {
@@ -610,8 +619,24 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       }
       if (spin.on || spin.sph > 0) settling = true;
     }
+    // ── once whole (#169): the map leans toward the pointer (desktop, eased,
+    // settles) and turns a few degrees with the scroll across the rest of Work
+    const lean = leanRef.current;
+    const leaning = !building && !IS_COARSE && ptr.inside && !spin.on && !(drag.node && drag.moved);
+    const lx = leaning ? Math.max(-1, Math.min(1, (ptr.x - w / 2) / (w / 2 || 1))) * TILT : 0;
+    const ly = leaning ? -Math.max(-1, Math.min(1, (ptr.y - h / 2) / (h / 2 || 1))) * TILT : 0;
+    lean.x += (lx - lean.x) * 0.08;
+    lean.y += (ly - lean.y) * 0.08;
+    if (Math.abs(lx - lean.x) > 2e-4 || Math.abs(ly - lean.y) > 2e-4) settling = true;
+    else {
+      lean.x = lx;
+      lean.y = ly;
+    }
+    const driftV = building ? 0 : workBuildBus.getDrift();
+    const yaw = lean.x + driftV * DRIFT_YAW, pitch = lean.y + driftV * DRIFT_PITCH;
+    const turned = Math.abs(yaw) + Math.abs(pitch) > 1e-5;
     const sph = building ? 1 - (() => { const t = lin(B, tl!.unfold[0], tl!.unfold[1]); return t * t * (3 - 2 * t); })() : spin.sph;
-    const home = sph > 0 ? nodes.map((n) => [n.x, n.y] as const) : null;
+    const home = sph > 0 || turned ? nodes.map((n) => [n.x, n.y] as const) : null;
     const facing = new Map<string, number>(); // 1 front .. 0.2 back of the globe
     let globe: { gx: number; gy: number; R: number; F: number; rot: number; tilt: number; LON: number } | null = null;
     if (sph > 0) {
@@ -662,6 +687,36 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       }
     }
     const face = (n: RNode) => facing.get(n.id) ?? 1;
+    // the lean and the turn: the flat map as a plane in perspective, skills a
+    // little nearer than the heavy works (parallax); identity at rest
+    if (turned && sph < 1) {
+      const cyw = Math.cos(yaw), syw = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+      const Fp = Math.max(w, h) * 2;
+      for (const n of nodes) {
+        if (drag.node === n && drag.moved) continue;
+        const X = n.x - w / 2, Y = n.y - h / 2, Z = (n.depth - 0.8) * 300;
+        const X1 = X * cyw + Z * syw, Z1 = -X * syw + Z * cyw;
+        const Y1 = Y * cp - Z1 * sp, Z2 = Y * sp + Z1 * cp;
+        const k = (Fp - Z) / (Fp - Z2);
+        n.x += (w / 2 + X1 * k - n.x) * (1 - sph);
+        n.y += (h / 2 + Y1 * k - n.y) * (1 - sph);
+      }
+    }
+    for (const n of nodes) {
+      n.drawX = n.x;
+      n.drawY = n.y;
+    }
+    // ── the formed sweep (#169): a band of light crosses stars and lines once
+    // the build is whole; what it has passed stays a little brighter
+    const sweepV = building ? 0 : workBuildBus.getSweep();
+    const bandAt = -0.2 + 1.4 * sweepV;
+    const bandQ = (x: number, y: number) => (x / (w || 1)) * 0.75 + (y / (h || 1)) * 0.25;
+    const bump = (x: number, y: number) => (sweepV > 0 && sweepV < 1 ? Math.exp(-Math.pow((bandQ(x, y) - bandAt) / 0.08, 2)) : 0);
+    const passed = (x: number, y: number) => {
+      if (sweepV >= 1) return 1;
+      const t = clamp01((bandAt - bandQ(x, y)) / 0.12 + 0.5);
+      return t * t * (3 - 2 * t);
+    };
 
 
     // ── the globe's surface: dither cells on a sphere, turning with it and
@@ -671,10 +726,10 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const ct = Math.cos(tilt), st = Math.sin(tilt);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
-      // poured: while the dust falls out of About, each cell flies from the paragraph to its place
+      // the big bang out of About (WorkBuild) pulls its stars onto the globe;
+      // the globe's own cells fade in as they land
       const pour = building ? workBuildBus.getPour() : 1;
-      const src = pour < 1 ? workBuildBus.getSource() : null;
-      const cr = src ? canvasRef.current?.getBoundingClientRect() : null;
+      const landed = Math.min(1, Math.max(0, (pour - 0.85) / 0.15));
       const r0 = R;
       // the stars that lit just now send a ring across the globe
       const waves: { lat: number; lon: number; age: number }[] = [];
@@ -700,16 +755,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // as the globe flattens its cells go on a Bayer-like order
         const limb = Math.exp(-Math.pow((front - 0.5) / 0.09, 2));
         let a = Math.min(1, 0.07 + 0.75 * front * front + 0.55 * limb) * (th < sph * 1.1 ? 1 : 0);
-        let px = x, py = y, hot = 0;
-        if (src && cr) {
-          // in flight from a point of the paragraph, falling like the title's dust
-          const t0 = th * 0.62, t = lin(pour, t0, t0 + 0.36);
-          if (t <= 0) continue;
-          const sx = src.left - cr.left + src.width * ((i * 0.618) % 1), sy = src.top - cr.top + src.height * ((i * 0.381) % 1);
-          px = sx + (x - sx) * t + Math.sin(t * Math.PI) * ((th - 0.5) * 120);
-          py = sy + (y - sy) * t * t;
-          if (t < 1) a = 0.9;
-        }
+        const px = x, py = y;
+        let hot = 0;
+        a *= landed;
         for (const wv of waves) {
           // angular distance from the lit star, the ring travelling out from it
           const d = Math.acos(Math.max(-1, Math.min(1, Math.sin(lat) * Math.sin(wv.lat) + Math.cos(lat) * Math.cos(wv.lat) * Math.cos(lon0 - wv.lon))));
@@ -753,7 +801,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         }
         continue;
       }
-      ctx.strokeStyle = hexA(e.color, op);
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      ctx.strokeStyle = hexA(e.color, Math.min(1, op * (1 + 0.3 * passed(mx, my)) + 0.4 * bump(mx, my)));
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
@@ -798,6 +847,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         fy = f.a.y + (f.b.y - f.a.y) * e2;
         // the growing axon burns brighter than the finished figure
         fo = (hop && t < 1 ? 0.75 : hop ? 0.45 : 0.3 * t) + 0.3 * beat;
+      } else {
+        const mx = (f.a.x + f.b.x) / 2, my = (f.a.y + f.b.y) / 2;
+        fo = fo * (1 + 0.3 * passed(mx, my)) + 0.35 * bump(mx, my);
       }
       ctx.strokeStyle = hexA(CATEGORY_COLORS[f.cat], Math.min(1, fo) * Math.min(face(f.a), face(f.b)));
       ctx.beginPath();
@@ -842,8 +894,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         const flash = Math.exp(-Math.pow((B - at) / 0.012, 2));
         s *= 1 + 1.6 * flash + 0.9 * beat;
       }
-      ctx.globalAlpha = (n.kind === 'project' ? 0.75 : 0.4) * intensity * face(n);
-      s *= 0.6 + 0.4 * face(n);
+      const nb = building ? 0 : bump(n.x, n.y);
+      ctx.globalAlpha = Math.min(1, (n.kind === 'project' ? 0.75 : 0.4) * intensity * face(n) * (1 + 0.6 * nb));
+      s *= (0.6 + 0.4 * face(n)) * (1 + 0.7 * nb);
       ctx.drawImage(spr, n.x - s / 2, n.y - s / 2, s, s);
     }
     // the impulse itself: a hot red head with a short tail of cells
@@ -1422,7 +1475,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
   // A node's centre in client css px (the canvas lays nodes out in css px).
   const nodeClientPoint = (node: RNode) => {
     const r = canvasRef.current?.getBoundingClientRect();
-    return r ? { x: r.left + node.x, y: r.top + node.y } : undefined;
+    return r ? { x: r.left + (node.drawX ?? node.x), y: r.top + (node.drawY ?? node.y) } : undefined;
   };
 
   // Back out of a case flies into the node again: tell the dive where it is.
@@ -1431,7 +1484,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       diveBus.setNodeLocator((id) => {
         const n = nodesRef.current.find((m) => m.id === id);
         const r = canvasRef.current?.getBoundingClientRect();
-        return n && r ? { x: r.left + n.x, y: r.top + n.y } : null;
+        return n && r ? { x: r.left + (n.drawX ?? n.x), y: r.top + (n.drawY ?? n.y) } : null;
       }),
     [],
   );

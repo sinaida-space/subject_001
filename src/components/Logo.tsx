@@ -18,6 +18,9 @@ export default function Logo({
   const rafRef = useRef<number | null>(null);
   const activeRef = useRef(false);
   const decayRef = useRef(0);
+  // performance.now() of the previous frame, so the pulse decays by elapsed
+  // time and its tail is the same length on a slow device as on a fast one.
+  const lastFrameRef = useRef<number | null>(null);
 
   const drawECG = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, phase: number, intensity: number) => {
     ctx.clearRect(0, 0, w, h);
@@ -87,7 +90,10 @@ export default function Logo({
       return;
     }
 
-    const animate = () => {
+    const animate = (now: number) => {
+      // Clamped so the first frame after a long park does not jump.
+      const dt = lastFrameRef.current == null ? 1 / 60 : Math.min((now - lastFrameRef.current) / 1000, 0.1);
+      lastFrameRef.current = now;
       const scrollDelta = Math.abs(scrollRef.current - lastScrollRef.current);
       lastScrollRef.current = scrollRef.current;
 
@@ -95,7 +101,8 @@ export default function Logo({
         decayRef.current = Math.min(decayRef.current + scrollDelta * 0.02, 1);
         phaseRef.current += scrollDelta * 0.008;
       } else {
-        decayRef.current *= 0.95;
+        // 0.95 per frame at 60fps, expressed per second
+        decayRef.current *= Math.pow(0.95, dt * 60);
       }
 
       if (decayRef.current > 0.01 || activeRef.current) {
@@ -111,6 +118,7 @@ export default function Logo({
       // frames would be a perpetual idle loop. Resumes from the scroll handler.
       if (decayRef.current <= 0.01 && !activeRef.current) {
         rafRef.current = null;
+        lastFrameRef.current = null;
         return;
       }
       rafRef.current = requestAnimationFrame(animate);

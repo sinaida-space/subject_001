@@ -7,8 +7,10 @@ import type { MoleculeId } from '@/lib/molecules';
 // gaps after that each hold one attachment molecule, in the order the page
 // courts its visitor: dopamine (the wanting), serotonin (the loop), oxytocin
 // (the bond), right before Contact.
-export function SectionBand({ children }: { children?: ReactNode }) {
-  return <div className="relative flex h-32 md:h-40 flex-col items-center justify-center">{children}</div>;
+// `raised`: the band rides over the section before it (Services' exit), so it
+// stays on top and clickable there
+export function SectionBand({ children, raised = false }: { children?: ReactNode; raised?: boolean }) {
+  return <div className={`relative ${raised ? 'z-10 ' : ''}flex h-32 md:h-40 flex-col items-center justify-center`}>{children}</div>;
 }
 
 // Footnote shown beside the molecule after a click, small like a video
@@ -79,10 +81,10 @@ export function MoleculeNote({
   );
 }
 
-export default function MoleculeBreak({ id }: { id: Exclude<MoleculeId, 'noradrenaline'> }) {
+export default function MoleculeBreak({ id, raised = false }: { id: Exclude<MoleculeId, 'noradrenaline'>; raised?: boolean }) {
   const [small] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
   return (
-    <SectionBand>
+    <SectionBand raised={raised}>
       <MoleculeNote id={id} width={small ? 150 : 200} height={small ? 60 : 80} />
     </SectionBand>
   );
