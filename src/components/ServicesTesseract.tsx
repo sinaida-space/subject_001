@@ -5,7 +5,7 @@
 // front face of that service's cell. The four service screens (plain DOM) sit
 // on top. Scroll is the only clock:
 //
-//   pre 1 │ entry .7 │ rest .6 │ turn .55 │ rest │ turn │ rest │ turn │ rest │ exit .7
+//   pre 1 │ entry .7 │ rest .6 │ turn .55 │ rest │ turn │ rest │ turn │ rest │ exit .5
 //
 // Pre: while the stage scrolls up into view, the dust gathers into a
 // tesseract centred in the visible part of the stage, its four panes a box of
@@ -17,7 +17,8 @@
 // echoed at earlier angles in red, split red/cyan by speed, fogged where they
 // fall back in w); each turn also sways in ZW by its own amount so no two
 // look alike. Exit: the last pane grows past the viewer and the dust streams
-// outward and thins into the starfield.
+// outward and thins into the starfield, while the oxytocin band and Contact
+// already rise over the stage (the track's bottom margin pulls them up).
 //
 // Every frame is a pure function of scroll position: reverse scroll plays the
 // same frames backwards, and nothing draws without a scroll or resize.
@@ -40,12 +41,14 @@ const PRE = 1; // the stage scrolling up into view, before the pin
 const ENTRY = 0.7;
 const REST = 0.6;
 const TURN = 0.55;
-const EXIT = 0.7;
+const EXIT = 0.5;
+// what follows the track rises over the exit by this many stage heights
+const OVERLAP = 0.75;
 const CELLS = 4;
 const restStart = (k: number) => ENTRY + k * (REST + TURN);
 const restMid = (k: number) => restStart(k) + REST / 2;
 const EXIT_START = restStart(CELLS - 1) + REST;
-const TOTAL = EXIT_START + EXIT; // 5.45
+const TOTAL = EXIT_START + EXIT; // 5.25
 /** ZW sway per turn, alternating sign and size, so the three paths diverge */
 const ZW_SWAY = [0.3, -0.5, 0.62];
 
@@ -117,9 +120,9 @@ function sceneAt(u: number): Scene {
     s.formed = 1 - smooth(0.1, 0.8, x);
     s.energy = smooth(0, 0.3, x) * (1 - smooth(0.55, 1, x));
     s.echo = s.energy;
-    s.opacity[CELLS - 1] = 1 - smooth(0, 0.35, x);
+    s.opacity[CELLS - 1] = 1 - smooth(0.32, 0.7, x); // the copy rides the growing pane a while
     s.scale[CELLS - 1] = s.zoom; // the screen grows with its pane
-    s.pane[CELLS - 1] = 1 - smooth(0.35, 0.8, x);
+    s.pane[CELLS - 1] = 1 - smooth(0.5, 0.95, x); // it grows past the viewer before it goes
     return s;
   }
 
@@ -959,7 +962,7 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
       ref={trackRef}
       data-services-track
       className="relative mt-[7vh]"
-      style={{ height: `${Math.round((1 + TOTAL) * 100)}svh` }}
+      style={{ height: `${Math.round((1 + TOTAL) * 100)}svh`, marginBottom: `${-OVERLAP * 100}svh` }}
     >
       <div ref={stageRef} className="sticky top-0 h-[100svh] w-full overflow-hidden">
         <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" />

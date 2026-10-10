@@ -127,7 +127,7 @@ const Index = () => {
         )}
         <MoleculeBreak id="serotonin" />
         <ServicesTerminal />
-        <MoleculeBreak id="oxytocin" />
+        <MoleculeBreak id="oxytocin" raised={full} />
         <ContactChannel />
       </main>
 
