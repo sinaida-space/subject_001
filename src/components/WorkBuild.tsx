@@ -62,6 +62,8 @@ const FORM_MIN = 0.2;
 // Once About's bottom edge drops back below this, About is coming apart:
 // the map lets go of its latch and rewinds with the scroll.
 const RESET_AT = 0.95;
+// About's cells are read ahead (idle time) once its bottom edge is above this
+const READ_AT = 1.5;
 const REST_ALPHA = 0.9; // the formed BODY OF WORK stars
 const SPAN = 0.92; // the title's share of its block width, as every star title
 const SWEEP = 0.15; // screen heights of scroll the formed map's sweep of light takes
@@ -260,72 +262,127 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
     // page like the rest: where the wrapper sits, relative to About, at BANG
     let wOffBang = 0;
     const wrapTopAt = (s: number, ab: DOMRect, wb: DOMRect) => (s > BANG ? wb.top : ab.top + wOffBang);
+    // ── the readback: About's pixels as cells, in px from About's top left
+    // (anchor 0) or the portrait wrapper's (anchor 1), so they do not depend on
+    // the scroll. Read ahead in idle time, a part per idle callback, once About
+    // is on its way out; the bang then only places them (sample, below).
+    type Raw = { anchor: 0 | 1; x: number; y: number; r: number; g: number; b: number; a: number; s: number; rnd: number; depth: number };
+    type Readback = { wOff?: number; stars?: Raw[]; text?: Raw[]; credit?: Raw[]; face?: Raw[] };
+    let raw: Readback = {};
+    const readWOff = () => {
+      const ab = about.getBoundingClientRect();
+      const wb = wrap?.getBoundingClientRect();
+      if (!wrap || !wb || !photoCol) return 0;
+      const cs = getComputedStyle(wrap);
+      const top = parseFloat(cs.top);
+      const cb = photoCol.getBoundingClientRect();
+      return cs.position === 'sticky' && Number.isFinite(top)
+        ? Math.min(Math.max(top - (BANG * VH - ab.height), cb.top - ab.top), cb.bottom - ab.top - wb.height)
+        : wb.top - ab.top;
+    };
+    const textCells = (cells: Cell[], anchor: 0 | 1, box: DOMRect, a: number, seed: number) => {
+      const rand = rng(seed), sy = window.scrollY;
+      return cells.map((c): Raw => ({ anchor, x: c.x - box.left, y: c.y - sy - box.top, r: c.r, g: c.g, b: c.b, a, s: 2.4, rnd: rand(), depth: rand() }));
+    };
+    // the ABOUT title: its own stars, as StarTitle draws them formed
+    const readStars = () => {
+      const out: Raw[] = [];
+      const tbox = about.querySelector<HTMLElement>('[data-gate-skip]');
+      if (tbox) {
+        const ab = about.getBoundingClientRect(), tb = tbox.getBoundingClientRect();
+        const t = sampleStarTitle('About', tbox.clientWidth * SPAN, { light: LIGHT });
+        for (const s of t.stars) {
+          const [r, g, b] = galaxyColor(s.rnd, 0.55 + 0.45 * s.depth);
+          out.push({ anchor: 0, x: tb.left - ab.left + s.x, y: tb.top - ab.top + s.y, r, g, b, a: 0.55, s: galaxySize(s.rnd, s.depth) * (LIGHT ? 1.5 : 1), rnd: s.rnd, depth: s.depth });
+        }
+      }
+      return out;
+    };
+    // the headline, the caption and the table
+    const readText = () => textCells(sampleText(about, (el) => !!el.closest('.sr-only, [data-gate-skip], [data-photo-col]'), about.getBoundingClientRect(), false), 0, about.getBoundingClientRect(), 1, 166);
+    // the credit is drawn very faint; sampled at full colour, kept faint
+    const readCredit = () => {
+      if (!wrap) return [];
+      const wb = wrap.getBoundingClientRect();
+      const credit = wrap.querySelector<HTMLElement>(':scope p');
+      const was = credit?.style.color ?? '';
+      if (credit) credit.style.color = 'hsl(var(--foreground))';
+      const out = textCells(sampleText(wrap, (el) => !!el.closest('.photo-frame-wrapper'), wb, false), 1, wb, 0.18, 167);
+      if (credit) credit.style.color = was;
+      return out;
+    };
+    // the portrait, pixel by pixel on the 3 px grid
+    const readFace = () => {
+      const out: Raw[] = [];
+      if (!wrap || !frameEl || !img || !img.complete || !img.naturalWidth) return out;
+      const wb = wrap.getBoundingClientRect(), fb = frameEl.getBoundingClientRect();
+      const w = Math.round(fb.width), h = Math.round(fb.height);
+      const cv = document.createElement('canvas');
+      cv.width = w;
+      cv.height = h;
+      const c = cv.getContext('2d', { willReadFrequently: true });
+      if (!c || w < 1 || h < 1) return out;
+      const rand = rng(168);
+      c.drawImage(img, 0, 0, w, h);
+      const px = c.getImageData(0, 0, w, h).data;
+      for (let y = 1; y < h; y += 3) {
+        for (let x = 1; x < w; x += 3) {
+          const k = (y * w + x) * 4;
+          const r = px[k] / 255, g = px[k + 1] / 255, b = px[k + 2] / 255;
+          if (0.3 * r + 0.59 * g + 0.11 * b < 0.07) continue; // the dark ground stays dark
+          out.push({ anchor: 1, x: fb.left - wb.left + x, y: fb.top - wb.top + y, r: r * 0.92, g: g * 0.92, b: b * 0.92, a: 1, s: 2.6, rnd: rand(), depth: rand() });
+        }
+      }
+      return out;
+    };
+    // every part not read yet, now (the bang's fallback when idle time never came)
+    const readAll = (): Required<Readback> => {
+      raw.wOff ??= readWOff();
+      raw.stars ??= readStars();
+      raw.text ??= readText();
+      raw.credit ??= readCredit();
+      raw.face ??= readFace();
+      return raw as Required<Readback>;
+    };
+    // one part per idle callback, the BODY OF WORK title first
+    let idle = 0;
+    const hasIdle = typeof window.requestIdleCallback === 'function'; // Safari before 18 has none
+    const idleCall = (fn: () => void) => (hasIdle ? window.requestIdleCallback(fn, { timeout: 250 }) : window.setTimeout(fn, 16));
+    const idleCancel = (id: number) => (hasIdle ? window.cancelIdleCallback(id) : window.clearTimeout(id));
+    const readAhead = () => {
+      if (idle) return;
+      const step = () => {
+        idle = 0;
+        if (!titleStars) titleStars = placeTitle();
+        else if (raw.wOff === undefined) raw.wOff = readWOff();
+        else if (!raw.stars) raw.stars = readStars();
+        else if (!raw.text) raw.text = readText();
+        else if (!raw.credit) raw.credit = readCredit();
+        else if (!raw.face) raw.face = readFace();
+        else return;
+        idle = idleCall(step);
+      };
+      idle = idleCall(step);
+    };
+    const forget = () => {
+      raw = {};
+      if (idle) idleCancel(idle);
+      idle = 0;
+    };
+
     const sample = (): Grain[] | null => {
       titleStars = titleStars ?? placeTitle();
       if (!titleStars) return null;
       palette = [];
       palIdx = new Map();
-      const rand = rng(166);
+      const rand = rng(169);
       const vw = VW, vh = VH;
       const ab = about.getBoundingClientRect();
       const wb = wrap?.getBoundingClientRect();
-      const sy = window.scrollY;
-      if (wrap && wb && photoCol) {
-        const cs = getComputedStyle(wrap);
-        const top = parseFloat(cs.top);
-        const cb = photoCol.getBoundingClientRect();
-        wOffBang = cs.position === 'sticky' && Number.isFinite(top)
-          ? Math.min(Math.max(top - (BANG * vh - ab.height), cb.top - ab.top), cb.bottom - ab.top - wb.height)
-          : wb.top - ab.top;
-      }
-      type Raw = { anchor: 0 | 1; x: number; y: number; r: number; g: number; b: number; a: number; s: number; rnd: number; depth: number };
-      const stars: Raw[] = [];
-      const others: Raw[] = [];
-
-      // the ABOUT title: its own stars, as StarTitle draws them formed
-      const tbox = about.querySelector<HTMLElement>('[data-gate-skip]');
-      if (tbox) {
-        const tb = tbox.getBoundingClientRect();
-        const t = sampleStarTitle('About', tbox.clientWidth * SPAN, { light: LIGHT });
-        for (const s of t.stars) {
-          const [r, g, b] = galaxyColor(s.rnd, 0.55 + 0.45 * s.depth);
-          stars.push({ anchor: 0, x: tb.left - ab.left + s.x, y: tb.top - ab.top + s.y, r, g, b, a: 0.55, s: galaxySize(s.rnd, s.depth) * (LIGHT ? 1.5 : 1), rnd: s.rnd, depth: s.depth });
-        }
-      }
-      const text = (cells: Cell[], anchor: 0 | 1, box: DOMRect, a: number) => {
-        for (const c of cells) others.push({ anchor, x: c.x - box.left, y: c.y - sy - box.top, r: c.r, g: c.g, b: c.b, a, s: 2.4, rnd: rand(), depth: rand() });
-      };
-      // the headline, the caption and the table
-      text(sampleText(about, (el) => !!el.closest('.sr-only, [data-gate-skip], [data-photo-col]'), ab, false), 0, ab, 1);
-      if (wrap && wb) {
-        // the credit is drawn very faint; sampled at full colour, kept faint
-        const credit = wrap.querySelector<HTMLElement>(':scope p');
-        const was = credit?.style.color ?? '';
-        if (credit) credit.style.color = 'hsl(var(--foreground))';
-        text(sampleText(wrap, (el) => !!el.closest('.photo-frame-wrapper'), wb, false), 1, wb, 0.18);
-        if (credit) credit.style.color = was;
-        // the portrait, pixel by pixel on the 3 px grid
-        if (frameEl && img && img.complete && img.naturalWidth) {
-          const fb = frameEl.getBoundingClientRect();
-          const w = Math.round(fb.width), h = Math.round(fb.height);
-          const cv = document.createElement('canvas');
-          cv.width = w;
-          cv.height = h;
-          const c = cv.getContext('2d', { willReadFrequently: true });
-          if (c && w > 0 && h > 0) {
-            c.drawImage(img, 0, 0, w, h);
-            const px = c.getImageData(0, 0, w, h).data;
-            for (let y = 1; y < h; y += 3) {
-              for (let x = 1; x < w; x += 3) {
-                const k = (y * w + x) * 4;
-                const r = px[k] / 255, g = px[k + 1] / 255, b = px[k + 2] / 255;
-                if (0.3 * r + 0.59 * g + 0.11 * b < 0.07) continue; // the dark ground stays dark
-                others.push({ anchor: 1, x: fb.left - wb.left + x, y: fb.top - wb.top + y, r: r * 0.92, g: g * 0.92, b: b * 0.92, a: 1, s: 2.6, rnd: rand(), depth: rand() });
-              }
-            }
-          }
-        }
-      }
+      const r = readAll();
+      wOffBang = r.wOff;
+      const stars = r.stars;
+      const others = [...r.text, ...r.credit, ...r.face];
 
       // thin to the cap: the title's stars first, the rest evenly
       const keepStars = Math.min(1, (CAP * 0.45) / Math.max(1, stars.length));
@@ -592,6 +649,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const ab = about.getBoundingClientRect();
       const s = ab.bottom / vh;
       const reset = s > RESET_AT;
+      if (s < READ_AT && s > HAND_A && !raw.face) readAhead();
 
       // ── the pull: from where About opens out until the title's top reaches POUR_B
       const tt = title.getBoundingClientRect().top;
@@ -693,6 +751,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       placeTrack();
       grains = null;
       titleStars = null;
+      forget();
       schedule();
     };
     // the portrait may finish loading after the first sampling; the title needs its font
@@ -700,9 +759,14 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       grains = null;
       schedule();
     };
-    img?.addEventListener('load', resample);
+    const onImg = () => {
+      raw.face = undefined;
+      resample();
+    };
+    img?.addEventListener('load', onImg);
     document.fonts.load('100px "Geist Pixel"').then(() => {
       titleStars = null;
+      forget();
       resample();
     }, () => undefined);
 
@@ -714,7 +778,8 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
-      img?.removeEventListener('load', resample);
+      img?.removeEventListener('load', onImg);
+      forget();
       rest.remove();
       if (trackEl) trackEl.style.minHeight = '';
       heading.style.position = headingPos;
