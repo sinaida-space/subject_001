@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Dir = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
@@ -9,6 +10,10 @@ const CELL = 16;       // px per cell
 const SIZE = GRID * CELL; // 320px canvas
 
 const SPEEDS = [150, 110, 80, 60]; // ms per tick by level
+const PAD = 12; // panel gutter; the panel is SIZE + 2 * PAD, so the canvas draws 1:1
+// sharp on retina: the buffer is scaled, the drawing stays in SIZE units
+const DPR = typeof window !== 'undefined' ? Math.min(2, window.devicePixelRatio || 1) : 1;
+const PIXEL = '"Geist Pixel", ui-monospace, monospace';
 
 function randomFood(snake: Point[]): Point {
   let p: Point;
@@ -35,6 +40,8 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
   const [score, setScore] = useState(0);
   const [dead, setDead] = useState(false);
   const [started, setStarted] = useState(false);
+  // the hint names swipes on touch screens, keys on the rest
+  const [touch] = useState(() => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches);
 
   // ── Draw ────────────────────────────────────────────────────────────────────
   const draw = useCallback(() => {
@@ -43,6 +50,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const s = stateRef.current;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
     // Background — dark grid
     ctx.fillStyle = '#050505'; // Void
@@ -59,11 +67,11 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     if (!s.started && !s.dead) {
       // Start screen
       ctx.fillStyle = '#CC1414';
-      ctx.font = 'bold 13px monospace';
+      ctx.font = `16px ${PIXEL}`;
       ctx.textAlign = 'center';
       ctx.fillText('PRESS ANY KEY', SIZE / 2, SIZE / 2 - 10);
       ctx.fillStyle = '#737373'; // Slate
-      ctx.font = '10px monospace';
+      ctx.font = `12px ${PIXEL}`;
       ctx.fillText('or swipe to start', SIZE / 2, SIZE / 2 + 10);
       return;
     }
@@ -105,11 +113,11 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
       ctx.fillStyle = 'rgba(0,0,0,0.7)';
       ctx.fillRect(0, 0, SIZE, SIZE);
       ctx.fillStyle = '#CC1414';
-      ctx.font = 'bold 14px monospace';
+      ctx.font = `16px ${PIXEL}`;
       ctx.textAlign = 'center';
       ctx.fillText('FLATLINE', SIZE / 2, SIZE / 2 - 20);
       ctx.fillStyle = '#999999'; // Fog
-      ctx.font = '10px monospace';
+      ctx.font = `12px ${PIXEL}`;
       ctx.fillText(`SCORE: ${s.score}`, SIZE / 2, SIZE / 2);
       ctx.fillStyle = '#737373'; // Slate
       ctx.fillText('PRESS R OR TAP TO RESTART', SIZE / 2, SIZE / 2 + 20);
@@ -248,87 +256,79 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     return () => document.documentElement.removeAttribute('data-snake-open');
   }, []);
 
-  return (
+  // Portalled to <body>: rendered in place, the footer's stacking context
+  // kept the header above the backdrop.
+  return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}
+      className="snake-backdrop fixed inset-0 z-[9999] flex items-center justify-center px-4"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{
+      <div className="snake-window" style={{
         border: '1px solid #CC1414',
         boxShadow: '0 0 40px rgba(204,20,20,0.3)',
         background: 'hsl(var(--background))',
-        padding: '0',
-        width: SIZE,
-        maxWidth: '100vw',
+        width: SIZE + 2 * PAD,
+        maxWidth: '100%',
         boxSizing: 'border-box',
       }}>
-        {/* Header */}
+        {/* Header: title and close on one line */}
         <div style={{
           borderBottom: '1px solid hsl(var(--graphite))',
-          padding: '8px 12px',
+          padding: `8px ${PAD}px`,
           display: 'flex',
-          flexWrap: 'wrap',
           justifyContent: 'space-between',
           alignItems: 'center',
-          gap: '4px',
+          gap: '12px',
+          whiteSpace: 'nowrap',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: '#CC1414', letterSpacing: '2px' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', color: '#CC1414', letterSpacing: '1px' }}>
             SNAKE.EXE // SCORE: {score}
           </span>
           <button
             aria-label="Close"
             onClick={onClose}
             style={{
-              fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--slate))',
-              background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '1px'
+              fontFamily: 'var(--font-mono)', fontSize: '16px', color: 'hsl(var(--slate))',
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer', letterSpacing: '1px'
             }}
           >
             <span aria-hidden="true">[X]</span>
           </button>
         </div>
 
-        {/* Canvas — inset from the panel frame with the same padding as the
-            arrow-button block below, so the grid never rides over the red
-            border. The drawing buffer stays SIZE×SIZE; CSS scales it to the
-            padded width. */}
-        <div style={{ padding: '8px 12px 12px' }}>
+        {/* Canvas, inset by the panel gutter, drawn at 1:1 */}
+        <div style={{ padding: `${PAD}px` }}>
           <canvas
             ref={canvasRef}
-            width={SIZE}
-            height={SIZE}
-            style={{ display: 'block', width: '100%', height: 'auto', cursor: 'none' }}
+            width={SIZE * DPR}
+            height={SIZE * DPR}
+            style={{ display: 'block', width: '100%', aspectRatio: '1 / 1', cursor: 'none' }}
           />
         </div>
 
-        {/* Footer controls hint */}
+        {/* Controls: one hint line for the device, then the arrow pad */}
         <div style={{
           borderTop: '1px solid hsl(var(--graphite))',
-          padding: '6px 12px',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-          gap: '4px',
+          padding: `8px ${PAD}px`,
+          fontFamily: 'var(--font-mono)',
+          fontSize: '16px',
+          color: 'hsl(var(--gunmetal))',
+          whiteSpace: 'nowrap',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--gunmetal))' }}>
-            ↑ ↓ ← → or WASD
-          </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', color: 'hsl(var(--gunmetal))' }}>
-            swipe on mobile
-          </span>
+          {touch ? 'swipe or tap the arrows' : '↑ ↓ ← → or WASD'}
         </div>
 
-        {/* Arrow buttons for touch devices */}
-        <div style={{ padding: '8px 12px 12px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
+        <div style={{ padding: `0 ${PAD}px ${PAD}px`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
           <div />
-          <button onClick={() => setDir('UP')} style={btnStyle}>↑</button>
+          <button aria-label="Up" onClick={() => setDir('UP')} style={btnStyle}>↑</button>
           <div />
-          <button onClick={() => setDir('LEFT')} style={btnStyle}>←</button>
-          <button onClick={() => setDir('DOWN')} style={btnStyle}>↓</button>
-          <button onClick={() => setDir('RIGHT')} style={btnStyle}>→</button>
+          <button aria-label="Left" onClick={() => setDir('LEFT')} style={btnStyle}>←</button>
+          <button aria-label="Down" onClick={() => setDir('DOWN')} style={btnStyle}>↓</button>
+          <button aria-label="Right" onClick={() => setDir('RIGHT')} style={btnStyle}>→</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

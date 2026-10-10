@@ -859,6 +859,20 @@
     display: none;
   }
 
+  /* Snake: the backdrop dims with the page's own ground (Void, or Chalk in
+     lite), and the window opens on the click that summoned it. */
+  .snake-backdrop {
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .snake-backdrop { animation: snake-fade 180ms ease-out; }
+    .snake-window { animation: snake-open 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+  }
+  @keyframes snake-fade { from { opacity: 0; } }
+  @keyframes snake-open { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+
   @media (prefers-reduced-motion: no-preference) {
     .crt-overlay {
       animation: crt-flicker 5.4s steps(1, end) infinite;
