@@ -1159,3 +1159,55 @@ html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.5; }
   background-color: hsl(var(--foreground)); background-repeat: no-repeat;
   background-size: cover; background-position: center; image-rendering: pixelated;
 }
+
+/* Torch (src/lib/torch.ts): while the pointer moves, <html> carries
+   data-torch, and each line below carries --torch-x / --torch-y (px in its
+   own border box) and --torch-on (0..1), written on the lines only.
+   Thin lines catch it like brushed chrome: a narrow silver-white glint centred
+   on the torch, falling off over ~160px along the line and over the pool's
+   radius across it. Pure paint, no layout; gone with data-torch at rest.
+   Unlayered, so Tailwind never purges the selectors. */
+html[data-torch] :is([data-rule], .chrome-line, .photo-frame-wrapper) {
+  --torch-glint: radial-gradient(
+    ellipse 160px 22vmin at var(--torch-x, -999px) var(--torch-y, -999px),
+    hsl(0 0% 100% / calc(var(--torch-on, 0) * 0.95)) 0%,
+    hsl(0 0% 96% / calc(var(--torch-on, 0) * 0.55)) 14%,
+    hsl(210 8% 82% / calc(var(--torch-on, 0) * 0.16)) 48%,
+    transparent 100%
+  );
+}
+
+html[data-torch] :is([data-rule], .chrome-line) {
+  background-image: var(--torch-glint);
+  background-origin: border-box;
+}
+
+/* The frame's border is an inline style, so the glint rides on a ring
+   masked to the border's own 1px. */
+html[data-torch] .photo-frame-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  border: 1px solid transparent;
+  background: var(--torch-glint) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) padding-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+/* Red film halation on large white display headlines (marked by
+   src/lib/halation.ts, full mode only). Static. :where() keeps it at zero
+   specificity, so any neon or hover glow already on a headline wins. */
+@layer base {
+  :where([data-halation]) {
+    text-shadow:
+      0 0 1px hsl(var(--sinaida-red) / 0.55),
+      0 0 10px hsl(var(--sinaida-red) / 0.18);
+  }
+  /* Glyphs filled through background-clip: text would be tinted by it. */
+  :where([data-halation]) .hl-word {
+    text-shadow: none;
+  }
+}

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useLayoutEffect } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
@@ -7,6 +7,8 @@ import RouteEnhancer from "@/components/RouteEnhancer";
 import DiveHost from "@/components/dive/DiveHost";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 import { routeChunks } from "@/lib/routeChunks";
+import { startTorch } from "@/lib/torch";
+import { startHalation } from "@/lib/halation";
 
 const PrivacyPolicy = lazy(routeChunks.privacy);
 const Licensing = lazy(routeChunks.licensing);
@@ -25,6 +27,23 @@ const RouteFallback = () => (
 const SiteCursor = () => {
   const { mode } = useRenderMode();
   return mode === 'full' ? <CustomCursor /> : null;
+};
+
+// Full mode only: the torch (pointer → --torch-x/--torch-y/--torch-on for
+// the chrome glints; the starfield reads the same clock) and the red
+// halation on large display headlines. Both are idle at rest.
+const SiteLight = () => {
+  const { mode } = useRenderMode();
+  useEffect(() => {
+    if (mode !== 'full') return;
+    const stopTorch = startTorch();
+    const stopHalation = startHalation();
+    return () => {
+      stopTorch();
+      stopHalation();
+    };
+  }, [mode]);
+  return null;
 };
 
 // A route change (e.g. clicking "View full case study") should land at the
@@ -54,6 +73,7 @@ const App = () => (
       <RouteEnhancer />
       <DiveHost />
       <SiteCursor />
+      <SiteLight />
       <WebMcpTools />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
