@@ -7,6 +7,16 @@ import { heroTunnelBus } from '@/lib/heroTunnelBus';
 
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
+// Cursor trail style: 'beam' is a short long-exposure light stroke; 'stars' restores the old star/steam trail.
+const CURSOR_TRAIL = 'beam' as 'beam' | 'stars';
+
+// Beam: the pointer path of the last BEAM_LIFE_MS, drawn as a tapered ribbon.
+// Samples age out, so after the pointer stops the beam shrinks to nothing and
+// stops asking for frames.
+const BEAM_LIFE_MS = 160;
+const BEAM_MAX_SAMPLES = 32;
+const BEAM_CORE_PX = 1.5;
+const BEAM_GLOW_PX = 8;
 
 // The canvas renders on demand (frameloop="demand"): once the field has
 // settled and nothing is driving it, no frames are drawn at all, so a page
@@ -103,6 +113,58 @@ const trailFragmentShader = `
   }
 `;
 
+// Ribbon shader for the beam. aSide runs -1..1 across the ribbon, aFade is the
+// taper (1 at the head, 0 at the tail) and scales both width and alpha.
+const beamVertexShader = `
+  attribute float aSide;
+  attribute float aFade;
+  varying float vSide;
+  varying float vFade;
+  void main() {
+    vSide = aSide;
+    vFade = aFade;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const beamFragmentShader = `
+  uniform vec3 uCore;       // warm white core
+  uniform vec3 uEdge;       // site red at the glow edge
+  uniform float uCoreFrac;  // core half-width as a fraction of the glow half-width
+  uniform float uGlowAlpha; // halved on subtle pages
+  varying float vSide;
+  varying float vFade;
+  void main() {
+    float d = abs(vSide); // 0 on the centre line, 1 at the glow edge
+    // Thin hot core with a soft edge
+    float core = 1.0 - smoothstep(uCoreFrac * 0.6, uCoreFrac * 1.4, d);
+    // Soft glow, quadratic falloff to zero at the edge
+    float glow = (1.0 - d) * (1.0 - d) * uGlowAlpha;
+    // Colour shifts from warm white at the centre to red at the edge
+    vec3 col = mix(uEdge, uCore, max(core, 1.0 - smoothstep(0.0, 0.7, d)));
+    float alpha = max(core, glow) * vFade;
+    gl_FragColor = vec4(col, alpha);
+  }
+`;
+
+// --sinaida-red is stored as "H S% L%"; parse it to sRGB 0..1 for the shader.
+function readSiteRed(): THREE.Vector3 {
+  const fallback = new THREE.Vector3(0.8, 0, 0);
+  try {
+    const raw = getComputedStyle(document.documentElement).getPropertyValue('--sinaida-red').trim();
+    const [h, sPct, lPct] = raw.split(/[\s,]+/).map((v) => parseFloat(v));
+    if ([h, sPct, lPct].some((v) => Number.isNaN(v))) return fallback;
+    const sat = sPct / 100;
+    const lig = lPct / 100;
+    const k = (n: number) => (n + h / 30) % 12;
+    const a = sat * Math.min(lig, 1 - lig);
+    const f = (n: number) => lig - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return new THREE.Vector3(f(0), f(8), f(4));
+  } catch {
+    return fallback;
+  }
+}
+
 // R3F's own ResizeObserver-driven auto-sizing can get stuck on its very
 // first (sometimes 0×0, pre-layout) measurement and never re-fire even once
 // the fixed-position container settles to its real size — the canvas is
@@ -165,7 +227,9 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
   const tunnelTargetRef = useRef(0);
   const tunnelAmountRef = useRef(0);
   const tunnelHoldStartRef = useRef<number | null>(null);
-  const { viewport, invalidate } = useThree();
+  const { viewport, invalidate, size } = useThree();
+  const beamRef = useRef<THREE.Mesh>(null);
+  const beamSamplesRef = useRef<{ x: number; y: number; t: number }[]>([]);
   const firstFrameRef = useRef(false);
   const probeRef = useRef<number[] | null>(null);
 
@@ -273,6 +337,11 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     mouseRef.current.y = ny;
     mouseRef.current.active = true;
     activityRef.current = Math.min(1, activityRef.current + mouseRef.current.speed * 8);
+    if (CURSOR_TRAIL === 'beam') {
+      const samples = beamSamplesRef.current;
+      samples.push({ x: nx, y: ny, t: performance.now() });
+      if (samples.length > BEAM_MAX_SAMPLES) samples.shift();
+    }
     invalidate();
   }, [invalidate]);
 
@@ -457,6 +526,55 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
       trailAgeAttr.needsUpdate = true;
     }
 
+    // === BEAM: long-exposure light stroke along the recent pointer path ===
+    if (beamRef.current) {
+      const now = performance.now();
+      const samples = beamSamplesRef.current;
+      while (samples.length && now - samples[0].t > BEAM_LIFE_MS) samples.shift();
+      const n = samples.length;
+      const geo = beamRef.current.geometry;
+      if (n < 2) {
+        beamRef.current.visible = false;
+        geo.setDrawRange(0, 0);
+      } else {
+        beamRef.current.visible = true;
+        const beamPos = geo.getAttribute('position').array as Float32Array;
+        const beamFade = geo.getAttribute('aFade').array as Float32Array;
+        const sx = viewport.width * 0.5;
+        const sy = viewport.height * 0.5;
+        // World units per CSS pixel on the z=0 plane
+        const halfWidth = (BEAM_GLOW_PX / 2) * (viewport.width / Math.max(size.width, 1));
+        for (let i = 0; i < n; i++) {
+          const prev = samples[Math.max(i - 1, 0)];
+          const next = samples[Math.min(i + 1, n - 1)];
+          const tx = (next.x - prev.x) * sx;
+          const ty = (next.y - prev.y) * sy;
+          const len = Math.hypot(tx, ty);
+          const nx = len > 1e-6 ? -ty / len : 0;
+          const ny = len > 1e-6 ? tx / len : 1;
+          // Taper by age (whole beam fades once the pointer stops) and by
+          // position along the path (tail always closes to a point).
+          const ageFade = Math.max(0, 1 - (now - samples[i].t) / BEAM_LIFE_MS);
+          const tailFade = Math.min(1, i / ((n - 1) * 0.4));
+          const fade = ageFade * tailFade;
+          const px = samples[i].x * sx;
+          const py = samples[i].y * sy;
+          const w = halfWidth * fade;
+          beamPos[i * 6] = px - nx * w;
+          beamPos[i * 6 + 1] = py - ny * w;
+          beamPos[i * 6 + 2] = 0;
+          beamPos[i * 6 + 3] = px + nx * w;
+          beamPos[i * 6 + 4] = py + ny * w;
+          beamPos[i * 6 + 5] = 0;
+          beamFade[i * 2] = fade;
+          beamFade[i * 2 + 1] = fade;
+        }
+        geo.getAttribute('position').needsUpdate = true;
+        geo.getAttribute('aFade').needsUpdate = true;
+        geo.setDrawRange(0, (n - 1) * 6);
+      }
+    }
+
     // === BASE PARTICLES ===
     for (let i = 0; i < particleCount; i++) {
       const ix = i * 3;
@@ -555,6 +673,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     // probe is sampling. Otherwise stop: the next input event invalidates.
     let moving = isActive || tunneling || tunnelTargetRef.current === 1
       || probeRef.current !== null
+      || beamSamplesRef.current.length > 0
       || Math.abs(parallaxRef.current - screens) > 0.0005;
     if (!moving) {
       const ages = trailAgesRef.current;
@@ -595,6 +714,43 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
     });
   }, []);
 
+  // Beam ribbon: a strip of quads, two vertices per pointer sample.
+  const beamGeometry = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    const n = BEAM_MAX_SAMPLES;
+    const side = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) { side[i * 2] = -1; side[i * 2 + 1] = 1; }
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 2 * 3), 3));
+    g.setAttribute('aSide', new THREE.BufferAttribute(side, 1));
+    g.setAttribute('aFade', new THREE.BufferAttribute(new Float32Array(n * 2), 1));
+    const index: number[] = [];
+    for (let i = 0; i < n - 1; i++) {
+      const a = i * 2;
+      index.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+    g.setIndex(index);
+    g.setDrawRange(0, 0);
+    return g;
+  }, []);
+
+  const beamMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      vertexShader: beamVertexShader,
+      fragmentShader: beamFragmentShader,
+      uniforms: {
+        uCore: { value: new THREE.Vector3(1.0, 0xf1 / 255, 0xe0 / 255) },
+        uEdge: { value: readSiteRed() },
+        uCoreFrac: { value: BEAM_CORE_PX / BEAM_GLOW_PX },
+        uGlowAlpha: { value: subtle ? 0.35 : 0.7 },
+      },
+      transparent: true,
+      depthWrite: false,
+      depthTest: false,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+  }, [subtle]);
+
   return (
     <>
       <points ref={meshRef}>
@@ -607,6 +763,7 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
       </points>
 
       {/* Trail particles — dreamy expanding steam */}
+      {CURSOR_TRAIL === 'stars' && (
       <points ref={trailRef} material={trailMaterial}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" count={trailCount} array={trailPositions} itemSize={3} />
@@ -615,6 +772,11 @@ function Particles({ subtle = false, onFirstFrame, onProbe }: ParticlesProps) {
           <bufferAttribute attach="attributes-aAge" count={trailCount} array={trailAges} itemSize={1} />
         </bufferGeometry>
       </points>
+      )}
+
+      {CURSOR_TRAIL === 'beam' && (
+        <mesh ref={beamRef} geometry={beamGeometry} material={beamMaterial} frustumCulled={false} visible={false} />
+      )}
     </>
   );
 }
