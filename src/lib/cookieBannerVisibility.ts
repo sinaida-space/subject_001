@@ -6,7 +6,7 @@ const STORAGE_KEY = 'cookie-consent';
 // position UI (like the constellation's audio controls) can know whether the
 // banner is currently occupying the bottom of the viewport without coupling
 // to CookieBanner's internal state.
-// Set once the notice has slid away because the visitor scrolled. It is not an
+// Set once the notice has slid away because the visitor moved through the page. It is not an
 // acknowledgement and nothing is stored: the notice comes back on the next page
 // load until it is dismissed with GOT IT. It only tells other bottom-anchored UI
 // that the bottom of the viewport is free.

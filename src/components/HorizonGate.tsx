@@ -22,7 +22,7 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortraitBuild, type PortraitBuild } from '@/components/portraitBuild';
-import { sampleText, type Cell } from '@/lib/sampleText';
+import { primeImages, sampleText, type Cell } from '@/lib/sampleText';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (a: number, b: number, x: number) => {
@@ -46,7 +46,9 @@ const FLASH_AT = S0 + 130; // the hero is in: the line fires
 const LIFT_RISE = 150; // About rises to meet the line, once the hero is in it
 const POUR_FROM = S0 + 120; // About starts pouring when the hero stars have reached the line
 const FALL = 110; // a poured cell falls into its letter
-const SHED_AT = 0.92; // a letter is poured as it scrolls in at this screen height
+// a letter is poured just below the fold, so the last About line is whole
+// before the section settles; phones need more lead, their About is taller (#153)
+const SHED_AT = LIGHT ? 1.24 : 1.08;
 const HAND = 24; // a finished block fades in over this much scroll
 
 const QUAD_VS = `#version 300 es
@@ -305,7 +307,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
 
       // hero cells
       const heroBox = hero.getBoundingClientRect();
-      const skipHero = (el: Element) => !!el.closest('.sr-only, .hero-ghost, .hero-noise, .hero-whisper, button');
+      const skipHero = (el: Element) => !!el.closest('.sr-only, .hero-ghost, .hero-noise, .hero-whisper, button:not(.hl-word)');
       const src = sampleText(hero, skipHero, heroBox, true);
 
       // About cells, block by block, over the whole section
@@ -524,8 +526,11 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
     };
     let dead = false;
     Promise.all([document.fonts.ready, photo.decode().catch(() => undefined)]).then(() => {
-      if (!dead) rebuild(900);
+      if (!dead) primeImages(hero).then(() => { if (!dead) rebuild(900); });
     });
+    // the hero's project dither lands after the fonts; sample it again then
+    const onDither = () => primeImages(hero).then(() => { if (!dead) rebuild(0); });
+    window.addEventListener('hero-dither', onDither);
     const onResize = () => { resize(); rebuild(250); };
 
     window.addEventListener('scroll', schedule, { passive: true });
@@ -537,6 +542,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('hero-dither', onDither);
       clearDom();
       if (photoImg) photoImg.style.opacity = '';
       portrait?.destroy();
