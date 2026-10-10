@@ -176,7 +176,7 @@ function Eyebrow() {
 export default function AboutSection() {
   return (
     <section id="about" className="relative z-10 py-16 md:py-24">
-      <div className="container mx-auto px-6 max-w-7xl">
+      <div className="site-frame">
         <Eyebrow />
         <div className="mt-10 md:mt-16 grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-6 md:gap-y-16">
           <h3 className="m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[12.4vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)]">

@@ -237,6 +237,17 @@
 }
 
 @layer components {
+  /* The page frame: a share of the window, not a fixed 1280px box, so wide
+     laptops (MacBook Air in Safari) get no empty bands. Gutters grow with the
+     screen; sections place their own asymmetric whitespace inside it and keep
+     text measures in ch. */
+  .site-frame {
+    width: 100%;
+    max-width: 1920px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 4vw, 72px);
+  }
+
   /* CRT Scanlines overlay */
   .crt-scanlines {
     pointer-events: none;

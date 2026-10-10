@@ -104,7 +104,7 @@ const Index = () => {
         ) : (
           <>
             <SectionBand>
-              <div className="container mx-auto px-6 max-w-7xl">
+              <div className="site-frame">
                 <Suspense fallback={<div className="section-divider" />}>
                   <DustReveal>
                     <div className="section-divider" />

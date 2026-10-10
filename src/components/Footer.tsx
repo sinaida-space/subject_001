@@ -13,7 +13,7 @@ export default function Footer() {
   return (
     <footer className="relative z-10 border-t border-border py-16 md:py-20">
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
-      <div className="container mx-auto px-6 max-w-7xl">
+      <div className="site-frame">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-4">
             <Logo

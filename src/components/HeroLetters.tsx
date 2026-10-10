@@ -270,7 +270,7 @@ export default function HeroLetters() {
     >
       {/* One vertical rule: the gap under the header equals the gap under the
           tagline (G), and the molecule sits at the centre of the void between. */}
-      <div className="container mx-auto max-w-7xl px-6 h-full flex flex-col pt-[calc(64px+max(9vh,88px))] pb-[max(9vh,88px)] md:pt-[calc(68px+max(3vh,28px))] md:pb-[max(4vh,36px)]">
+      <div className="site-frame h-full flex flex-col pt-[calc(64px+max(9vh,88px))] pb-[max(9vh,88px)] md:pt-[calc(68px+max(3vh,28px))] md:pb-[max(4vh,36px)]">
         <p
           ref={nameRef}
           className={`${type} self-start text-foreground cursor-none ${glowing ? 'neon-glow' : ''}`}

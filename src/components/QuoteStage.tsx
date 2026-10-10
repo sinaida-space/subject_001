@@ -15,7 +15,7 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
         data-quote-stage
         className={pinned ? 'sticky top-0 flex h-[100svh] items-center' : 'flex min-h-[80svh] items-center py-24'}
       >
-        <div className="container mx-auto max-w-7xl px-6">
+        <div className="site-frame">
           <p
             data-quote
             className="mx-auto m-0 w-fit max-w-full font-display uppercase font-normal text-foreground leading-[1.05] tracking-[-0.01em] text-[7.4vw] md:text-[clamp(2rem,min(3.9vw,7svh),4.5rem)]"

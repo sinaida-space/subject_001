@@ -66,7 +66,7 @@ function ServiceRow({ service, flip }: { service: Service; flip: boolean }) {
 export default function ServicesTerminal() {
   return (
     <section id="services" className="relative z-10 py-16 md:py-20">
-      <div className="container mx-auto px-6 max-w-7xl">
+      <div className="site-frame">
         {/* h2/p (not div) — matches About's, Contact's, and Body of Work's
             own eyebrow+caption markup, so all four sections' labels pick up
             the same sitewide hover glitch/bloom (index.css). */}

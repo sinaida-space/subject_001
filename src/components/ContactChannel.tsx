@@ -5,7 +5,7 @@ const linkFocus = 'focus-visible:outline focus-visible:outline-2 focus-visible:o
 export default function ContactChannel() {
   return (
     <section id="contact" className="relative z-10 py-16 md:py-20 overflow-hidden">
-      <div className="container mx-auto px-6 max-w-7xl">
+      <div className="site-frame">
         {/* h2/p (not div) — matches Services' and Body of Work's own
             eyebrow+caption markup, so all four sections' labels pick up
             the same sitewide hover glitch/bloom (index.css). */}

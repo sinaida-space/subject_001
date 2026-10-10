@@ -115,7 +115,7 @@ const CookieBanner = () => {
     >
       {/* Same container and gutter as Footer.tsx, so the notice's text starts
           on the site's own left edge instead of a narrower one of its own. */}
-      <div className="container mx-auto px-6 max-w-7xl">
+      <div className="site-frame">
         {/* One row on phones too: stacked, the notice stood ~130px tall and
             covered the hero's positioning line in the first screen. */}
         <div className="flex flex-row items-center justify-between gap-4">

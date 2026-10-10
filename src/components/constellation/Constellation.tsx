@@ -54,7 +54,7 @@ export default function Constellation() {
 
   return (
     <section ref={sectionRef} id="work" className="relative z-10 py-16 md:py-20">
-      <div className="container mx-auto max-w-7xl px-6">
+      <div className="site-frame">
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* LEFT COLUMN — label + legend */}
           <div ref={headingRef} data-work-heading className="shrink-0 md:sticky md:top-[15vh] md:w-[300px] md:self-start">
