@@ -43,9 +43,11 @@ const S0 = 16; // the first wheel tick starts it
 const HERO_LOCK = 30; // the headline hands over to its cells
 const HERO_BLOW = 260; // how long a hero cell takes to blow off screen
 const FALL = 110; // a poured About cell falls into its letter
-const FORM = 0.25; // the portrait cells land over this much scroll before it docks (in vh)
+const FORM = 0.25; // the portrait cells land over this much scroll (in vh)
+const FORMED_AT = 0.95; // the square is whole once the frame's bottom is this far down the screen (in vh)
+const RED = 0.08, COLOUR = 0.3; // then soft red dither, then the colour, done by here (in vh of scroll)
 const FRAME_IN = 24; // the frame fades in over this much scroll once 90% have landed
-const SHED_AT = LIGHT ? 1.15 : 1.02; // poured once its letter is this far down the screen (in vh)
+const SHED_AT = LIGHT ? 1.25 : 1.14; // poured once its letter is this far down the screen (in vh)
 const HAND = 24; // a finished block fades in over this much scroll
 const DRIFT = 260; // how far the cloud rises at most, css px
 
@@ -336,30 +338,20 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       const lineFrom = g.lineSet.map((set, k) => (k === 0 ? q0 : set - g.pinLen * LINE_IN));
 
       // portrait: its cells leave the cloud from the pour on and settle into
-      // the square as the photo docks: at md+ where its column sticks (it
-      // then develops while only the text moves), below that with its centre
-      // at mid-screen. Measured on the column, which never moves.
+      // the square while the frame is still coming up the screen, so it is
+      // whole as soon as it is fully in view; then it develops in place (red,
+      // then colour) and holds still while only the text moves. At md+ its
+      // column sticks later. Measured on the column, which never moves.
       const fr = photoFrame?.getBoundingClientRect();
       g.half = { w: (fr?.width ?? 200) / 2, h: (fr?.height ?? 200) / 2 };
       const col = photoFrame?.closest<HTMLElement>('[data-photo-col]');
-      const stick = col?.firstElementChild as HTMLElement | null | undefined;
       const colBox = col?.getBoundingClientRect();
       const colTop = colBox ? colBox.top + sy : pinEnd + vh;
-      const sticky = !!stick && getComputedStyle(stick).position === 'sticky';
-      let dock: number, dev: number;
-      if (sticky && stick && colBox) {
-        dock = colTop - (parseFloat(getComputedStyle(stick).top) || 0);
-        const travel = colBox.height - stick.getBoundingClientRect().height;
-        dev = Math.min(vh * 0.6, Math.max(vh * 0.25, travel * 0.85));
-      } else {
-        dock = colTop + g.half.h - vh * 0.5;
-        dev = vh * 0.3;
-      }
       const form = vh * FORM;
-      dock = Math.max(dock, g.pour + form + 120);
-      // the soft red dither over the first third, the colour over the rest
-      g.red = [dock, dock + dev / 3];
-      g.colour = [dock + dev / 3, dock + dev];
+      // "dock" = the moment the square is whole
+      const dock = Math.max(colTop + g.half.h * 2 - vh * FORMED_AT, g.pour + form + 120);
+      g.red = [dock, dock + vh * RED];
+      g.colour = [dock + vh * RED, dock + vh * COLOUR];
       g.ruleY = rules.map((el) => el.getBoundingClientRect().top + sy);
 
       // hero cells, frozen on screen where they stand at the first tick
