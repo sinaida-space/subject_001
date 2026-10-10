@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import { useRenderMode } from '@/hooks/useRenderMode';
-import StarTitle from '@/components/StarTitle';
+import StarTitle, { LiteTitle } from '@/components/StarTitle';
 
 
 // ── Stagger fade-in helper (lite mode; in full mode QuoteGate pours About) ──
@@ -174,57 +174,11 @@ function Eyebrow({ full }: { full: boolean }) {
     </p>
   );
   if (full) return <StarTitle text="About" caption={caption} />;
-  return <LiteHeader caption={caption} />;
-}
-
-// Lite header (shared rule with the other lite headers): at md+ the label
-// starts at 25% of the frame, and a hairline runs from the frame's left edge
-// to it, drawn out as the header scrolls from the bottom of the screen up to
-// 60% of it (a CSS var the scroll writes, scaleX only). Phones: an indent, no
-// rule. Reduced motion: the rule is simply there.
-function LiteHeader({ caption }: { caption: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || REDUCED) return;
-    let top = 0, vh = 1;
-    const measure = () => {
-      top = el.getBoundingClientRect().top + window.scrollY;
-      vh = window.innerHeight || 1;
-    };
-    let last = -1;
-    const onScroll = () => {
-      // header top on screen: 1.0 → 0.6 of the screen
-      const y = (top - window.scrollY) / vh;
-      const p = Math.round(Math.min(1, Math.max(0, (1 - y) / 0.4)) * 200) / 200;
-      if (p === last) return;
-      last = p;
-      el.style.setProperty('--rule', String(p));
-    };
-    const onResize = () => { measure(); last = -1; onScroll(); };
-    measure();
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onResize);
-    };
-  }, []);
+  // the shared lite header; the fade is About's own lite entrance
   return (
-    <div ref={ref} className="relative pl-6 md:pl-[25%]" style={{ ['--rule' as string]: REDUCED ? '1' : '0' }}>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-[1.4rem] hidden h-px w-[calc(25%-1.5rem)] origin-left bg-foreground/20 md:top-[1.6rem] md:block"
-        style={{ transform: 'scaleX(var(--rule))' }}
-      />
-      <Reveal delay={0}>
-        <h2 className="font-mono uppercase text-primary text-[32px] md:text-[40px]" style={{ letterSpacing: '0.2em' }}>
-          About
-        </h2>
-        {caption}
-      </Reveal>
-    </div>
+    <Reveal delay={0}>
+      <LiteTitle text="About" caption={caption} />
+    </Reveal>
   );
 }
 

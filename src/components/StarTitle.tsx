@@ -273,15 +273,17 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
 // quarter of the frame width, and a 1px rule runs from the frame's left edge
 // to it, growing 0 → full as the header scrolls from 100vh to 60vh (a CSS var
 // set by one passive scroll listener; a pure function of scroll). Phones get
-// a small indent and no rule.
+// a small indent and no rule. Reduced motion: the rule is simply there. One
+// component for every lite header (About, Body of Work, Services, Contact).
 const MD = '(min-width: 1024px)';
+const REDUCED = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function LiteTitle({ text, caption, className, titleStyle }: { text: string; caption?: ReactNode; className?: string; titleStyle?: CSSProperties }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || REDUCED) return;
     const mq = window.matchMedia(MD);
     let raf = 0;
     let last = -1;
@@ -308,7 +310,7 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
   }, []);
 
   return (
-    <div ref={ref} className={`relative pl-6 md:pl-[25%] ${className ?? ''}`}>
+    <div ref={ref} className={`relative pl-6 md:pl-[25%] ${className ?? ''}`} style={REDUCED ? ({ ['--title-rule' as string]: '1' } as CSSProperties) : undefined}>
       <div className="relative">
         <span
           aria-hidden="true"
