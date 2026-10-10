@@ -5,17 +5,19 @@ import { BAYER_FLAT, buildDitherFrames, loadDitherImage, type DitherFrames } fro
 // mask holds the "revealed" amount; it is compared against the Bayer threshold
 // per pixel, so the edge of the reveal is dots shrinking into colour. The rAF
 // loop only runs while the mask has energy (motion law: it settles and stops).
-// With `progress` set the pointer is ignored: the caller scrubs the reveal
-// (0 red dither, 1 full colour) and pixels switch in Bayer-threshold order,
-// each flashing a little brighter for a short stretch after it switches.
+// `revealed` shows the full colour while it is true (keyboard focus on the
+// card around it). `touch={false}` keeps touch and pen out of it, so a tap only
+// opens what the image sits in; a mouse still reveals on hover.
 
 interface DitherRevealProps {
   src: string;
   alt: string;
   className?: string;
   aspect?: number;
-  /** scrubbed reveal, 0..1; undefined keeps the pointer-driven reveal */
-  progress?: number;
+  /** full colour while true (e.g. keyboard focus) */
+  revealed?: boolean;
+  /** false: touch and pen do not reveal */
+  touch?: boolean;
 }
 
 const MASK_SCALE = 4; // mask cell = 4 device px
@@ -23,28 +25,21 @@ const RADIUS = 0.22; // disc radius as a share of frame width
 const DECAY_TAU = 0.85; // seconds; the trail still reads at 1 s and is gone by ~2.5 s
 const EPS = 0.03; // below the lowest Bayer threshold, invisible
 const SMEAR_PX = 8; // max colour offset against pointer velocity
-const OVERSHOOT = 0.09; // progress band in which a just-switched pixel stays brighter
+// The dither is pixel art: one dot per css px reads the same on every screen
+// and keeps the per-pixel composite cheap on an old laptop.
+const DPR = 1;
 
-// Brighten one packed ABGR pixel for the over-shoot flash.
-const brighten = (c: number) => {
-  const r = Math.min(255, (c & 255) * 1.35 + 30);
-  const g = Math.min(255, ((c >>> 8) & 255) * 1.35 + 30);
-  const b = Math.min(255, ((c >>> 16) & 255) * 1.35 + 30);
-  return ((255 << 24) | (b << 16) | (g << 8) | r) >>> 0;
-};
-
-export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3, progress }: DitherRevealProps) {
+export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3, revealed = false, touch = true }: DitherRevealProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scrubbed = progress !== undefined;
-  const progressRef = useRef(progress ?? 0);
-  progressRef.current = progress ?? 0;
-  const paintRef = useRef<(() => void) | null>(null);
+  const revealedRef = useRef(revealed);
+  revealedRef.current = revealed;
+  const revealRef = useRef<(() => void) | null>(null);
 
-  // scrubbed mode: repaint when the caller moves the progress
+  // focus reveal: full colour on, back to dither (and any hover trail) off
   useEffect(() => {
-    paintRef.current?.();
-  }, [progress]);
+    revealRef.current?.();
+  }, [revealed]);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -71,37 +66,10 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
     let dirtyY1 = 0;
     let loading = false;
     let disposed = false;
-    let bright: Uint32Array | null = null;
-    let lastKey = -1;
-
-    // Scrubbed paint. Each of the 16 Bayer levels is dither, bright or colour,
-    // so the picture only changes when that state changes: a repaint costs one
-    // pass, and most scroll frames cost nothing.
-    const paintProgress = (force = false) => {
-      if (!frames || !out || !imageData || !bright) return;
-      const q = Math.min(1, Math.max(0, progressRef.current)) * (1 + OVERSHOOT);
-      const state = new Uint8Array(16);
-      let key = 0;
-      for (let i = 0; i < 16; i++) {
-        const d = q - BAYER_FLAT[i];
-        state[i] = d <= 0 ? 0 : d < OVERSHOOT ? 1 : 2;
-        key = key * 3 + state[i];
-      }
-      if (!force && key === lastKey) return;
-      lastKey = key;
-      const { width: w, height: h, color, dither } = frames;
-      const src = [dither, bright, color];
-      for (let y = 0; y < h; y++) {
-        const row = (y & 3) * 4;
-        const o = y * w;
-        for (let x = 0; x < w; x++) out[o + x] = src[state[row + (x & 3)]][o + x];
-      }
-      ctx.putImageData(imageData, 0, 0);
-    };
 
     const build = () => {
       if (!img) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = DPR;
       const w = Math.max(1, Math.round(wrap.clientWidth * dpr));
       const h = Math.max(1, Math.round(wrap.clientHeight * dpr));
       canvas.width = w;
@@ -110,16 +78,12 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
       if (!frames) return;
       imageData = ctx.createImageData(w, h);
       out = new Uint32Array(imageData.data.buffer);
-      out.set(frames.dither);
+      out.set(revealedRef.current ? frames.color : frames.dither);
       ctx.putImageData(imageData, 0, 0);
       mw = Math.ceil(w / MASK_SCALE);
       mh = Math.ceil(h / MASK_SCALE);
       mask = new Float32Array(mw * mh);
       dirtyY0 = dirtyY1 = 0;
-      if (scrubbed) {
-        bright = frames.color.map(brighten);
-        paintProgress(true);
-      }
     };
 
     const load = async () => {
@@ -159,6 +123,7 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
     // Composite only the rows that hold energy now or did last frame.
     const composite = () => {
       if (!frames || !out || !imageData) return false;
+      if (revealedRef.current) return false; // focus holds the full colour
       const { width: w, height: h, color, dither } = frames;
       let minRow = mh;
       let maxRow = -1;
@@ -244,6 +209,7 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
 
     const onDown = (e: PointerEvent) => {
       void load();
+      if (!touch && e.pointerType !== 'mouse') return;
       if (reduced) return showFull(true);
       const p = toCanvas(e);
       last = { x: p.x, y: p.y };
@@ -253,7 +219,7 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
     const onMove = (e: PointerEvent) => {
       if (reduced || !frames) return;
       // touch and pen only reveal while pressed; a mouse reveals on hover
-      if (e.pointerType !== 'mouse' && e.buttons === 0) return;
+      if (e.pointerType !== 'mouse' && (e.buttons === 0 || !touch)) return;
       const p = toCanvas(e);
       if (last) {
         const dx = p.x - last.x;
@@ -277,19 +243,20 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
     };
     const onLeave = () => {
       last = null;
-      if (reduced) showFull(false);
+      if (reduced && !revealedRef.current) showFull(false);
     };
 
-    if (scrubbed) {
-      paintRef.current = () => paintProgress();
-    } else {
-      wrap.addEventListener('pointerenter', onEnter);
-      wrap.addEventListener('pointerdown', onDown);
-      wrap.addEventListener('pointermove', onMove);
-      wrap.addEventListener('pointerleave', onLeave);
-      wrap.addEventListener('pointerup', onLeave);
-      wrap.addEventListener('pointercancel', onLeave);
-    }
+    revealRef.current = () => {
+      mask.fill(0);
+      dirtyY0 = dirtyY1 = 0;
+      showFull(revealedRef.current);
+    };
+    wrap.addEventListener('pointerenter', onEnter);
+    wrap.addEventListener('pointerdown', onDown);
+    wrap.addEventListener('pointermove', onMove);
+    wrap.addEventListener('pointerleave', onLeave);
+    wrap.addEventListener('pointerup', onLeave);
+    wrap.addEventListener('pointercancel', onLeave);
 
     // Load only when near the viewport.
     const io = new IntersectionObserver(
@@ -301,9 +268,9 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
       },
       { rootMargin: '200px' },
     );
-    // a scrubbed frame may sit translated off-screen inside its strip, so it
+    // a frame in a strip may sit translated off-screen or clipped, so it
     // loads with the strip around it
-    io.observe((scrubbed && wrap.closest('ul')) || wrap);
+    io.observe(wrap.closest('ul') || wrap);
 
     // Re-dither at the new size; the decoded image is reused.
     let lastW = 0;
@@ -316,7 +283,7 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
 
     return () => {
       disposed = true;
-      paintRef.current = null;
+      revealRef.current = null;
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();
@@ -327,7 +294,7 @@ export default function DitherReveal({ src, alt, className = '', aspect = 4 / 3,
       wrap.removeEventListener('pointerup', onLeave);
       wrap.removeEventListener('pointercancel', onLeave);
     };
-  }, [src, scrubbed]);
+  }, [src, touch]);
 
   return (
     <div

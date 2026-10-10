@@ -4,7 +4,7 @@ import { projectById } from '@/data/projects';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import DitherReveal from './DitherReveal';
 import ServicesTesseract from './ServicesTesseract';
-import StarTitle from './StarTitle';
+import StarTitle, { LiteTitle } from './StarTitle';
 
 const NBSP = ' ';
 
@@ -65,24 +65,24 @@ export default function ServicesTerminal() {
   const full = useRenderMode().mode === 'full';
   const caption = (
     <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
-      Digital tools for human connection.
+      {`Digital tools for human${NBSP}connection.`}
     </p>
   );
   return (
-    <section id="services" className="relative z-10 py-16 md:py-20">
+    <section id="services" className={`relative z-10 pb-16 md:pb-20 ${full ? 'pt-4 md:pt-6' : 'pt-16 md:pt-20'}`}>
       <div className="site-frame">
         {/* h2/p (not div) — matches About's, Contact's, and Body of Work's
             own eyebrow+caption markup, so all four sections' labels pick up
             the same sitewide hover glitch/bloom (index.css). */}
+        {/* full: the header takes no height and the tesseract's track rides
+            up under it, so the pin and its entry begin while the word is still
+            on screen (header top at 25vh): no empty stretch at the seam */}
         {full ? (
-          <StarTitle text="Services" caption={caption} />
+          <div className="h-0">
+            <StarTitle text="Services" caption={caption} until={0.55} />
+          </div>
         ) : (
-          <>
-            <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
-              Services
-            </h2>
-            {caption}
-          </>
+          <LiteTitle text="Services" caption={caption} />
         )}
 
         {!full &&
@@ -94,11 +94,15 @@ export default function ServicesTerminal() {
       </div>
 
       {full && (
-        <ServicesTesseract>
-          {SERVICES.map((service, i) => (
-            <ServiceScreen key={service.code} service={service} flip={i % 2 === 1} fit />
-          ))}
-        </ServicesTesseract>
+        // the track's top overlaps the strip above: it must not take its hover;
+        // the service screens switch their own pointer events back on
+        <div className="pointer-events-none" style={{ marginTop: 'calc(-7vh - 25svh)' }}>
+          <ServicesTesseract>
+            {SERVICES.map((service, i) => (
+              <ServiceScreen key={service.code} service={service} flip={i % 2 === 1} fit />
+            ))}
+          </ServicesTesseract>
+        </div>
       )}
     </section>
   );

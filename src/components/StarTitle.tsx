@@ -1,12 +1,14 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { galaxyBright, galaxyColor, galaxyKeep, galaxySize } from '@/lib/galaxy';
 
 // ── Star title ──
 // A section name as a giant word of sparse galaxy stars. The stars lie
 // scattered as dust while the title is below the screen and travel to their
-// letter cells as it scrolls in (title top at 100vh → 30vh); near stars set
-// off later and fly bigger. A pure function of scroll: reverse plays the same
-// frames back, and nothing is drawn while the scroll is still.
+// letter cells as it scrolls in (title top at 100vh → 30vh, or the caller's
+// `until`); near stars set off later and fly bigger. The word floats a little
+// behind the page: it moves at 0.85 of the scroll speed, so the content slides
+// over it. A pure function of scroll: reverse plays the same frames back, and
+// nothing is drawn while the scroll is still.
 //
 // The <h2> keeps the text for screen readers and the outline; the canvas is
 // decoration only. Callers use it in full mode; lite keeps its plain h2.
@@ -16,8 +18,10 @@ const LIGHT = typeof window !== 'undefined' && window.matchMedia('(max-width: 76
 const FONT = '"Geist Pixel", monospace';
 const SPAN = 0.92; // share of the content width the word spans
 const MAX_H = 0.38; // word height cap, share of the small viewport height
-const ALPHA = 0.55; // global alpha, so content over the lower part stays legible
+const ALPHA = 0.32; // global alpha: soft, so content over the lower part stays legible
 const OVERLAP = 0.3; // share of the word height the following content rides over
+const PARALLAX = 0.15; // the word lags the content by this share of the scroll
+const BRIGHT = 0.5; // of galaxy's bright stars, the share kept here (4% → 2%)
 
 export interface Star { x: number; y: number; rnd: number; depth: number }
 
@@ -33,7 +37,7 @@ const svh = () => (typeof document !== 'undefined' ? document.documentElement.cl
 
 /**
  * Samples `text` (uppercased, display font) as stars. The word is sized to
- * span `width` css px, its height capped at 38svh. Each grid cell (6 px, 9 px
+ * span `width` css px, its height capped at 38svh. Each grid cell (4 px, 6 px
  * light, finer for a small word) that the glyphs cover becomes one star at
  * the centroid of its ink, so thin strokes survive the coarse grid. Coordinates are in the word's own
  * box, 0..w × 0..h. `rnd` and `depth` are stable per cell.
@@ -57,7 +61,7 @@ export function sampleStarTitle(text: string, width: number, opts?: { light?: bo
   const w = Math.ceil(inkW * k);
   const h = Math.ceil(inkH * k);
   // a small word (a long name on a phone) samples finer, so it keeps ~12 rows
-  const step = Math.max(3, Math.min(light ? 9 : 6, Math.floor(h / 12)));
+  const step = Math.max(3, Math.min(light ? 6 : 4, Math.floor(h / 12)));
 
   cv.width = w;
   cv.height = h;
@@ -119,7 +123,16 @@ interface Flyer {
   color: string; bright: boolean; keep: boolean;
 }
 
-export default function StarTitle({ text, as = 'h2', caption, className }: { text: string; as?: 'h2'; caption?: ReactNode; className?: string }) {
+interface StarTitleProps {
+  text: string;
+  as?: 'h2';
+  caption?: ReactNode;
+  className?: string;
+  /** viewport share (from the top) where the title's top completes the word */
+  until?: number;
+}
+
+export default function StarTitle({ text, as = 'h2', caption, className, until = 0.3 }: StarTitleProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const Tag = as;
@@ -129,8 +142,8 @@ export default function StarTitle({ text, as = 'h2', caption, className }: { tex
     const ctx = canvas?.getContext('2d');
     if (!box || !canvas || !ctx) return;
 
-    // a few hundred squares, drawn only on scroll: crisp on phones too
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // a few thousand squares, drawn only on scroll while the word forms
+    const dpr = LIGHT ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
     let flyers: Flyer[] = [];
     let boxW = 0, boxH = 0;
     let lastP = -1;
@@ -148,7 +161,6 @@ export default function StarTitle({ text, as = 'h2', caption, className }: { tex
       canvas.width = Math.round(cw * dpr);
       canvas.height = Math.round(h * dpr);
       const vw = window.innerWidth, vh = svh();
-      const grain = LIGHT ? 1.5 : 1;
       flyers = stars.map((s) => {
         const reach = 0.3 + 0.7 * s.depth; // near stars come from further out
         const [r, g, b] = galaxyColor(s.rnd, 0.55 + 0.45 * s.depth); // formed letters sit at the bright end
@@ -157,10 +169,10 @@ export default function StarTitle({ text, as = 'h2', caption, className }: { tex
           ox: (fract(s.rnd * 7.13) * 2 - 1) * 0.55 * vw * reach,
           oy: (fract(s.rnd * 4.77) * 2 - 1) * 0.35 * vh * reach,
           delay: 0.4 * s.depth + 0.1 * fract(s.rnd * 9.41),
-          size: galaxySize(s.rnd, s.depth) * grain, // a coarser grid gets slightly larger stars
+          size: 1 + (galaxySize(s.rnd, s.depth) - 1) * 0.25, // 1..1.5 px: a fine grid wants fine stars
           depth: s.depth,
           color: `rgb(${(r * 255) | 0},${(g * 255) | 0},${(b * 255) | 0})`,
-          bright: galaxyBright(s.rnd) === 1,
+          bright: galaxyBright(s.rnd) === 1 && fract(s.rnd * 17.3) < BRIGHT,
           keep: galaxyKeep(s.rnd) === 1,
         };
       });
@@ -182,7 +194,7 @@ export default function StarTitle({ text, as = 'h2', caption, className }: { tex
         if (a <= 0.01) continue;
         ctx.globalAlpha = a;
         if (f.bright) {
-          const hs = s * 7;
+          const hs = 9; // a soft halo, the same for every bright star
           ctx.drawImage(sprite, x - hs / 2, y - hs / 2, hs, hs);
         }
         ctx.fillStyle = f.color;
@@ -191,15 +203,23 @@ export default function StarTitle({ text, as = 'h2', caption, className }: { tex
       ctx.globalAlpha = 1;
     };
 
-    // progress from the box's place on screen; drawn only when it changed
-    // and the box is on screen
+    // progress from the box's place on screen (the box itself never moves:
+    // the parallax shifts the canvas); drawn only when it changed and the box
+    // is on screen
+    let lastY = NaN;
     const frame = () => {
       raf = 0;
       if (!flyers.length) return;
       const r = box.getBoundingClientRect();
       const vh = window.innerHeight;
-      if (r.bottom < 0 || r.top > vh) return; // off screen: the next scroll in will draw
-      const p = ease(clamp01((vh - r.top) / (0.7 * vh)));
+      if (r.bottom < -0.2 * vh || r.top > vh) return; // off screen: the next scroll in will draw
+      // the word lags the page: offset grows with its distance from the centre
+      const y = Math.round(-PARALLAX * (r.top + r.height / 2 - vh / 2) * 2) / 2;
+      if (y !== lastY) {
+        lastY = y;
+        canvas.style.transform = `translate3d(0, ${y}px, 0)`;
+      }
+      const p = ease(clamp01((vh - r.top) / ((1 - until) * vh)));
       if (p === lastP) return;
       lastP = p;
       draw(p);
@@ -229,7 +249,7 @@ export default function StarTitle({ text, as = 'h2', caption, className }: { tex
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
     };
-  }, [text]);
+  }, [text, until]);
 
   return (
     <>
@@ -245,6 +265,68 @@ export default function StarTitle({ text, as = 'h2', caption, className }: { tex
       </div>
       {caption}
     </>
+  );
+}
+
+// ── Lite title ──
+// The plain section header of lite mode. From md up the label starts at a
+// quarter of the frame width, and a 1px rule runs from the frame's left edge
+// to it, growing 0 → full as the header scrolls from 100vh to 60vh (a CSS var
+// set by one passive scroll listener; a pure function of scroll). Phones get
+// a small indent and no rule.
+const MD = '(min-width: 1024px)';
+
+export function LiteTitle({ text, caption, className, titleStyle }: { text: string; caption?: ReactNode; className?: string; titleStyle?: CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const mq = window.matchMedia(MD);
+    let raf = 0;
+    let last = -1;
+    const frame = () => {
+      raf = 0;
+      if (!mq.matches) return;
+      const vh = window.innerHeight;
+      const p = Math.round(clamp01((vh - el.getBoundingClientRect().top) / (0.4 * vh)) * 400) / 400;
+      if (p === last) return;
+      last = p;
+      el.style.setProperty('--title-rule', String(p));
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+    schedule();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+    };
+  }, []);
+
+  return (
+    <div ref={ref} className={`relative pl-6 md:pl-[25%] ${className ?? ''}`}>
+      <div className="relative">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 hidden h-px md:block"
+          style={{
+            right: 'calc(100% + 24px)',
+            width: 'calc(100% / 3 - 24px)',
+            background: 'hsl(var(--foreground) / 0.2)',
+            transform: 'scaleX(var(--title-rule, 0))',
+            transformOrigin: 'left',
+          }}
+        />
+        <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40, ...titleStyle }}>
+          {text}
+        </h2>
+      </div>
+      {caption}
+    </div>
   );
 }
 

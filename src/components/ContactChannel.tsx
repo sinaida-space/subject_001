@@ -1,5 +1,5 @@
 import ObfuscatedMailto from './ObfuscatedMailto';
-import StarTitle from './StarTitle';
+import StarTitle, { LiteTitle } from './StarTitle';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NB = ' ';
@@ -20,16 +20,7 @@ export default function ContactChannel() {
         {/* h2/p (not div) — matches Services' and Body of Work's own
             eyebrow+caption markup, so all four sections' labels pick up
             the same sitewide hover glitch/bloom (index.css). */}
-        {full ? (
-          <StarTitle text="Contact" caption={question} />
-        ) : (
-          <>
-            <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
-              Contact
-            </h2>
-            {question}
-          </>
-        )}
+        {full ? <StarTitle text="Contact" caption={question} /> : <LiteTitle text="Contact" caption={question} />}
 
         <p
           className="font-mono uppercase font-normal text-foreground mt-[7vh] mb-0 text-[16vw] md:text-[clamp(64px,11vw,176px)]"
@@ -89,3 +80,5 @@ export default function ContactChannel() {
     </section>
   );
 }
+
+// Je suis le spectre d'une rose que tu portais hier au bal.

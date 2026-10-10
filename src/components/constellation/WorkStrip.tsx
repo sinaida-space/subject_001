@@ -6,10 +6,12 @@ import { getDitheredPreview } from '@/lib/ditherPreview';
 import DitherReveal from '@/components/DitherReveal';
 
 // Body of Work as a horizontal strip of tall columns, one per project.
-// Full mode on a desktop with a fine pointer: the strip pins and vertical
-// scroll carries it sideways; each still develops from red dither into colour
-// as its column reaches the centre. Lite, phones and coarse pointers get a
-// plain swipe row with plain images.
+// Every still is red dither; its colour shows under a hovering mouse and
+// while its card holds keyboard focus. Full mode on a desktop with a fine
+// pointer: the strip pins and vertical scroll carries it sideways until the
+// last column reaches the centre. Lite, phones and coarse pointers get a
+// plain swipe row. Either way the row bleeds to the viewport edges, its first
+// column on the frame's left gutter.
 const KIND_ORDER: ProjectKind[] = ['stage', 'installation', 'conceptual', 'game', 'tool', 'tutorial'];
 const KIND_LABEL: Record<ProjectKind, string> = {
   stage: 'Stage',
@@ -23,26 +25,25 @@ const KIND_LABEL: Record<ProjectKind, string> = {
 const NBSP = ' ';
 const COL_W = 'clamp(260px, 24vw, 420px)';
 const PIN_QUERY = '(min-width: 1024px) and (pointer: fine)';
-// a still starts to light up when its centre is this many column widths
-// right of the viewport centre, and is full colour once it reaches the centre
-const LIGHT_BAND = 0.9;
-const STEPS = 64; // progress resolution handed to the stills
+// the frame's content edge: its centring margin plus its gutter (.site-frame)
+const FRAME_PAD = 'calc(max(0px, 50vw - 960px) + clamp(16px, 4vw, 72px))';
+// out of the frame to the viewport edges
+const BLEED = { marginInline: 'calc(50% - 50vw)' } as const;
+const ROW_PAD = { paddingInline: FRAME_PAD, scrollPaddingInline: FRAME_PAD } as const;
 
 const ITEMS: Project[] = KIND_ORDER.flatMap((kind) =>
   PROJECTS.filter((p) => p.kind === kind && !p.unlisted && (!p.background || p.listed)),
 );
 
-const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-
 interface ColumnProps {
   project: Project;
-  progress?: number;
   onFocusColumn?: (li: HTMLLIElement) => void;
 }
 
-function Column({ project, progress, onFocusColumn }: ColumnProps) {
+function Column({ project, onFocusColumn }: ColumnProps) {
   const liRef = useRef<HTMLLIElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const [focused, setFocused] = useState(false);
   const alt = `${project.title}, project still`;
 
   return (
@@ -58,24 +59,15 @@ function Column({ project, progress, onFocusColumn }: ColumnProps) {
         onMouseEnter={() => constellationBus.highlight(project.id)}
         onMouseLeave={() => constellationBus.highlight(null)}
         onFocus={(e) => {
-          // keyboard focus only: a click must not jump the page
-          if (onFocusColumn && liRef.current && e.currentTarget.matches(':focus-visible')) onFocusColumn(liRef.current);
+          // keyboard focus only: a click must not jump the page or flood the still
+          if (!e.currentTarget.matches(':focus-visible')) return;
+          setFocused(true);
+          if (onFocusColumn && liRef.current) onFocusColumn(liRef.current);
         }}
+        onBlur={() => setFocused(false)}
         className="group block w-full text-left"
       >
-        {project.image &&
-          (progress !== undefined ? (
-            <DitherReveal src={project.image} alt={alt} aspect={4 / 5} progress={progress} />
-          ) : (
-            <img
-              src={project.image}
-              alt={alt}
-              loading="lazy"
-              decoding="async"
-              className="block aspect-[4/5] w-full object-cover"
-              style={{ border: '1px solid hsl(var(--sinaida-red) / 0.35)' }}
-            />
-          ))}
+        {project.image && <DitherReveal src={project.image} alt={alt} aspect={4 / 5} revealed={focused} touch={false} />}
         <h3
           className="mt-4 font-display uppercase text-foreground transition-colors group-hover:text-accent"
           style={{ fontSize: 'clamp(20px, 1.6vw, 28px)' }}
@@ -94,7 +86,11 @@ function Column({ project, progress, onFocusColumn }: ColumnProps) {
 // Lite, phones, coarse pointers: a plain horizontal swipe, no pin.
 function SwipeStrip() {
   return (
-    <ul aria-label="Body of Work projects" className="flex snap-x snap-mandatory gap-[3vw] overflow-x-auto pb-4">
+    <ul
+      aria-label="Body of Work projects"
+      className="flex snap-x snap-mandatory gap-[3vw] overflow-x-auto pb-4"
+      style={{ ...BLEED, ...ROW_PAD }}
+    >
       {ITEMS.map((p) => (
         <Column key={p.id} project={p} />
       ))}
@@ -102,27 +98,29 @@ function SwipeStrip() {
   );
 }
 
-// Full mode desktop: a track as tall as the strip's overflow plus one screen;
-// while it passes, the strip is pinned and scroll maps 1:1 to translateX.
+// Full mode desktop: a track as tall as the strip's travel plus the strip's
+// own height. The strip pins centred on screen while the track passes and
+// scroll maps 1:1 to translateX; it lets go the moment the last column
+// reaches the centre, so the page goes on right under it.
 function PinnedStrip() {
   const trackRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const [overflow, setOverflow] = useState(0);
-  const [progress, setProgress] = useState<number[]>(() => ITEMS.map(() => 0));
-  const overflowRef = useRef(0);
+  const [box, setBox] = useState({ travel: 0, height: 0, top: 0 });
+  const travelRef = useRef(0);
 
-  // distance the strip travels: until the last column's centre meets the
-  // viewport centre, so every still gets its turn in colour
+  // measured on mount and resize only: the travel until the last column's
+  // centre meets the viewport centre, and the pin offset that centres the row
   const measure = useCallback(() => {
     const view = viewRef.current;
     const list = listRef.current;
     const last = list?.lastElementChild as HTMLLIElement | null;
     if (!view || !list || !last) return;
-    const left = view.getBoundingClientRect().left;
-    const o = Math.max(0, Math.round(left + last.offsetLeft + last.offsetWidth / 2 - window.innerWidth / 2));
-    overflowRef.current = o;
-    setOverflow(o);
+    const travel = Math.max(0, Math.round(last.offsetLeft + last.offsetWidth / 2 - window.innerWidth / 2));
+    const height = view.offsetHeight;
+    const top = Math.max(0, Math.round((window.innerHeight - height) / 2));
+    travelRef.current = travel;
+    setBox((b) => (b.travel === travel && b.height === height && b.top === top ? b : { travel, height, top }));
   }, []);
 
   useLayoutEffect(() => {
@@ -130,57 +128,56 @@ function PinnedStrip() {
     const ro = new ResizeObserver(measure);
     if (viewRef.current) ro.observe(viewRef.current);
     if (listRef.current) ro.observe(listRef.current);
-    return () => ro.disconnect();
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, [measure]);
 
   useEffect(() => {
     let raf = 0;
+    let lastT = -1;
     const update = () => {
       raf = 0;
       const track = trackRef.current;
       const list = listRef.current;
       if (!track || !list) return;
-      const t = Math.min(overflowRef.current, Math.max(0, -track.getBoundingClientRect().top));
+      // one read, then one write: no forced layout inside the frame
+      const t = Math.min(travelRef.current, Math.max(0, box.top - track.getBoundingClientRect().top));
+      if (t === lastT) return;
+      lastT = t;
       list.style.transform = `translate3d(${-t}px, 0, 0)`;
-      const left = list.getBoundingClientRect().left;
-      const vc = window.innerWidth / 2;
-      const next = Array.from(list.children as HTMLCollectionOf<HTMLLIElement>).map((li) => {
-        const cx = left + li.offsetLeft + li.offsetWidth / 2;
-        const p = clamp01(1 - (cx - vc) / (li.offsetWidth * LIGHT_BAND));
-        return Math.round(p * STEPS) / STEPS;
-      });
-      setProgress((prev) => (prev.length === next.length && prev.every((v, i) => v === next[i]) ? prev : next));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
     };
-  }, [overflow]);
+  }, [box]);
 
   // keyboard focus on a column scrolls the page until that column is centred
-  const centreColumn = useCallback((li: HTMLLIElement) => {
-    const track = trackRef.current;
-    const view = viewRef.current;
-    if (!track || !view) return;
-    const left = view.getBoundingClientRect().left;
-    const t = Math.min(overflowRef.current, Math.max(0, left + li.offsetLeft + li.offsetWidth / 2 - window.innerWidth / 2));
-    window.scrollTo({ top: track.getBoundingClientRect().top + window.scrollY + t });
-  }, []);
+  const centreColumn = useCallback(
+    (li: HTMLLIElement) => {
+      const track = trackRef.current;
+      if (!track) return;
+      const t = Math.min(travelRef.current, Math.max(0, li.offsetLeft + li.offsetWidth / 2 - window.innerWidth / 2));
+      window.scrollTo({ top: track.getBoundingClientRect().top + window.scrollY - box.top + t });
+    },
+    [box.top],
+  );
 
   return (
-    <div ref={trackRef} data-work-strip style={{ height: `calc(${overflow}px + 100svh)` }}>
+    <div ref={trackRef} data-work-strip style={{ ...BLEED, height: box.height ? box.travel + box.height : undefined }}>
       {/* clip, not hidden: focus can't scroll a clipped box sideways */}
-      <div ref={viewRef} className="sticky top-0 flex h-[100svh] flex-col justify-center" style={{ overflow: 'clip' }}>
-        <ul ref={listRef} aria-label="Body of Work projects" className="flex w-max gap-[3vw] will-change-transform">
-          {ITEMS.map((p, i) => (
-            <Column key={p.id} project={p} progress={progress[i]} onFocusColumn={centreColumn} />
+      <div ref={viewRef} className="sticky" style={{ top: box.top, overflow: 'clip' }}>
+        <ul ref={listRef} aria-label="Body of Work projects" className="flex w-max gap-[3vw] will-change-transform" style={ROW_PAD}>
+          {ITEMS.map((p) => (
+            <Column key={p.id} project={p} onFocusColumn={centreColumn} />
           ))}
         </ul>
       </div>
