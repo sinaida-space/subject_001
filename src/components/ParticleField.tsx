@@ -7,6 +7,7 @@ import { heroTunnelBus } from '@/lib/heroTunnelBus';
 import { FLIGHT, flightAt, pageProgress } from '@/lib/flight';
 import { cityBus, cityCamera } from '@/lib/city';
 import CityLights from '@/components/CityLights';
+import CityGround from '@/components/CityGround';
 
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
@@ -76,8 +77,8 @@ const SPRING_STIFFNESS = 55;
 // The field is a box repeated around the camera (nearest image per star), so
 // the dive never runs out of stars; a star wraps where it cannot be seen,
 // behind the near fade or off the side.
-// The footer's city (#179) adds its own offset on top: the camera sinks to
-// the street as the city comes in, then cranes back while the lens narrows.
+// The footer's city (#179) adds its own offset on top: the camera sinks on,
+// the eyes lift with the pour, then lower to the horizon and the city below.
 const { x: FLIGHT_X, y: FLIGHT_Y, z: FLIGHT_Z } = FLIGHT;
 const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
 const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
@@ -179,19 +180,23 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
   const scrollDirRef = useRef(0);
   const parallaxRef = useRef(0);
   // the camera as it flies (damped toward the flight), and each star's wrap offset
-  const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0 });
+  const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0, pitch: 0 });
   const nearFade = useMemo(() => ({ value: 0 }), []);
+  // the city's tilt (#179): stars under eye level thin away as the head lowers
+  const below = useMemo(() => ({ eye: { value: 0 }, amt: { value: 0 } }), []);
   const fadeNear = useCallback(
     (shader: THREE.WebGLProgramParametersWithUniforms) => {
       shader.uniforms.uNearFade = nearFade;
+      shader.uniforms.uEye = below.eye;
+      shader.uniforms.uBelow = below.amt;
       shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', '#include <common>\nuniform float uNearFade;')
+        .replace('#include <common>', '#include <common>\nuniform float uNearFade;\nuniform float uEye;\nuniform float uBelow;')
         .replace(
           '#include <logdepthbuf_vertex>',
-          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\n#include <logdepthbuf_vertex>`,
+          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= mix(1.0, smoothstep(uEye - 0.9, uEye + 0.2, transformed.y), uBelow);\n#include <logdepthbuf_vertex>`,
         );
     },
-    [nearFade],
+    [nearFade, below],
   );
   const trailIndexRef = useRef(0);
   const timeRef = useRef(0);
@@ -382,7 +387,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
       const f = flightAt(pageProgress());
       const city = cityCamera(cityBus.progress());
       const speed = Math.min(velocityRef.current, 1);
-      const tx = -FLIGHT_X * f.x, ty = -FLIGHT_Y * f.y + city.dy, tz = FLIGHT.home - FLIGHT_Z * f.z + city.dz;
+      const tx = -FLIGHT_X * f.x, ty = -FLIGHT_Y * f.y + city.dy, tz = FLIGHT.home - FLIGHT_Z * f.z;
       const tf = city.fov + FLIGHT_FOV * speed;
       const tr = FLIGHT_ROLL * speed * scrollDirRef.current;
       cam.x = THREE.MathUtils.damp(cam.x, tx, 5, delta);
@@ -390,13 +395,17 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
       cam.z = THREE.MathUtils.damp(cam.z, tz, 5, delta);
       cam.fov = THREE.MathUtils.damp(cam.fov, tf, 4, delta);
       cam.roll = THREE.MathUtils.damp(cam.roll, tr, 4, delta);
+      cam.pitch = THREE.MathUtils.damp(cam.pitch, city.pitch, 5, delta);
       flying =
         Math.abs(cam.x - tx) + Math.abs(cam.y - ty) + Math.abs(cam.z - tz) > 0.0005 ||
         Math.abs(cam.fov - tf) > 0.01 ||
-        Math.abs(cam.roll - tr) > 0.0002;
+        Math.abs(cam.roll - tr) > 0.0002 ||
+        Math.abs(cam.pitch - city.pitch) > 0.0002;
       const pc = camera as THREE.PerspectiveCamera;
       pc.position.set(cam.x, cam.y, cam.z);
-      pc.rotation.z = cam.roll;
+      pc.rotation.set(cam.pitch, 0, cam.roll);
+      below.eye.value = cam.y;
+      below.amt.value = city.below;
       if (Math.abs(pc.fov - cam.fov) > 0.001) {
         pc.fov = cam.fov;
         pc.updateProjectionMatrix();
@@ -776,6 +785,7 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
             onFirstFrame={() => setVisible(true)}
             onProbe={probing ? (reduced ? onProbeReduced : onProbe) : null}
           />
+          {flight && !REDUCED_MOTION && <CityGround />}
           {flight && !REDUCED_MOTION && <CityLights />}
           {!reduced && (
             <EffectComposer>

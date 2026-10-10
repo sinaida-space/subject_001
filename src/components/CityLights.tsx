@@ -3,23 +3,25 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { CITY, cityBus } from '@/lib/city';
 
-// ── The city's lights (#179) ──
-// One draw call in the star field's own scene: every window, pillar and
-// rising grain of the footer city (src/lib/city.ts). A cell is a star in the
-// world until its floor's turn comes; then it falls, sideways early and down
-// late like something dropped, and lands square on its window, glued to the
-// footer's floor on screen. All of it runs in the vertex shader from one
-// uniform, the city's progress, damped like the camera so the two move as
-// one; the cells only change when the footer is measured again.
+// ── The little city and the pour (#179) ──
+// One draw call in the star field's own scene, everything screen-glued that
+// the last screen needs (src/lib/city.ts):
+//   windows  stars of the world until their floor's turn; then they fall,
+//            sideways early and down late like something dropped, and land
+//            square on the towers by the logo
+//   grains   once the towers stand, light leaves the windows and rises
+//   pour     LET'S TALK's two links as stars: they leave Contact in reading
+//            order, scatter into a cloud and close up again in the sky
+// All of it runs in the vertex shader from one uniform, the city's progress,
+// damped like the camera so the two move as one.
 
 const vertex = /* glsl */ `
   uniform float uF;
   uniform vec2 uView;
   uniform float uPx;
   uniform float uStageTop;
-  uniform float uHoverFloor;
-  uniform float uHoverT;
-  uniform float uHoverAmt;
+  uniform vec2 uFrom;
+  uniform vec2 uTo;
   attribute vec4 aWin;
   attribute vec4 aInfo;
   attribute vec3 aColor;
@@ -35,15 +37,29 @@ const vertex = /* glsl */ `
     // window light: warm white, some cool, never red
     vec3 lamp = fract(aInfo.w * 7.13) > 0.72 ? vec3(0.8, 0.88, 1.0) : vec3(1.0, 0.9, 0.74);
 
+    if (kind > 3.5) {
+      // a star of the pour: from its glyph in Contact to its glyph in the sky
+      float t = clamp((uF - aInfo.x) / ${CITY.pourDur.toFixed(3)}, 0.0, 1.0);
+      float e = t * t * (3.0 - 2.0 * t);
+      float out_ = sin(3.14159 * t);
+      vec2 px = mix(uFrom + aWin.xy, uTo + aWin.xy, e) + position.xy * out_ + vec2(0.0, -60.0 * out_);
+      gl_Position = vec4(toNdc(px), 0.0, 1.0);
+      gl_PointSize = mix(2.2, 3.0, out_) * uPx;
+      vColor = mix(aColor, vec3(1.0, 0.95, 0.88), 0.7 * out_);
+      vAlpha = smoothstep(0.0, 0.06, t) * (1.0 - smoothstep(0.92, 1.0, t));
+      vSquare = 0.0;
+      return;
+    }
+
     if (kind > 1.5 && kind < 2.5) {
       // a grain of light leaving its window, rising and thinning into the sky
       float t = clamp((uF - aInfo.x) / ${CITY.emitDur.toFixed(3)}, 0.0, 1.0);
       float up = t * (2.0 - t);
       vec2 px = winPx + vec2(position.y * t, -position.x * up);
       gl_Position = vec4(toNdc(px), 0.0, 1.0);
-      gl_PointSize = mix(2.2, 1.3, t) * uPx;
+      gl_PointSize = mix(2.0, 1.2, t) * uPx;
       vColor = mix(lamp, aColor, t);
-      vAlpha = t > 0.0 ? smoothstep(0.0, 0.05, t) * (1.0 - smoothstep(0.35, 1.0, t)) * 0.9 : 0.0;
+      vAlpha = t > 0.0 ? smoothstep(0.0, 0.05, t) * (1.0 - smoothstep(0.35, 1.0, t)) * 0.85 : 0.0;
       vSquare = 0.0;
       return;
     }
@@ -58,18 +74,15 @@ const vertex = /* glsl */ `
     float ey = e * e;
     gl_Position = vec4(mix(skyN.x, winN.x, ex), mix(skyN.y, winN.y, ey), 0.0, 1.0);
 
-    // a star of the field (its size and fade-in) until it lands as a window
+    // a star of the field (its size) until it lands as a window
     float skySize = 0.04 * uView.y * uPx * 0.5 / max(-mv.z, 0.5) * 1.2;
-    float landed = kind > 2.5 ? 2.6 : (kind > 0.5 ? 1.8 : 2.4);
-    float hover = abs(aInfo.y - uHoverFloor) < 0.5 ? uHoverAmt * smoothstep(aWin.z - 0.12, aWin.z, uHoverT * 1.15) : 0.0;
-    gl_PointSize = mix(skySize, landed * uPx * (1.0 + 0.3 * hover), e);
-    float lvl = mix(aInfo.z, 1.0, hover);
-    vec3 lit = kind > 2.5 ? vec3(1.0, 0.16, 0.12) : lamp;
-    vColor = mix(aColor, lit, e);
+    float landed = kind > 2.5 ? 2.6 : (kind > 0.5 ? 1.8 : 2.3);
+    gl_PointSize = mix(skySize, landed * uPx, e);
+    vColor = mix(aColor, kind > 2.5 ? vec3(1.0, 0.16, 0.12) : lamp, e);
     // only the galaxy's kept share is lit while it waits in the sky
     float keep = step(fract(aInfo.w * 3.17), 0.36);
-    float skyA = 0.55 * keep * smoothstep(0.08, 0.32, uF);
-    vAlpha = mix(skyA, lvl, e);
+    float skyA = 0.55 * keep * smoothstep(0.08, 0.32, uF) * (sky.w > 0.0 ? 1.0 : 0.0);
+    vAlpha = mix(skyA, aInfo.z, e);
     vSquare = e;
   }
 `;
@@ -86,13 +99,10 @@ const fragment = /* glsl */ `
   }
 `;
 
-const HOVER_SWEEP = 0.32; // seconds the light runs along a floor
-
 export default function CityLights() {
   const { gl, invalidate } = useThree();
   const [layout, setLayout] = useState(cityBus.layout);
   const fRef = useRef(0);
-  const hoverRef = useRef({ floor: -1, t: 0, amt: 0 });
 
   useEffect(
     () =>
@@ -102,8 +112,6 @@ export default function CityLights() {
       }),
     [invalidate],
   );
-  // the city's progress moves with the scroll, which the field already
-  // listens to; a resize re-measures the footer and comes through the bus
   useEffect(() => {
     const on = () => invalidate();
     window.addEventListener('scroll', on, { passive: true });
@@ -120,9 +128,8 @@ export default function CityLights() {
           uView: { value: new THREE.Vector2(1, 1) },
           uPx: { value: 1 },
           uStageTop: { value: 0 },
-          uHoverFloor: { value: -1 },
-          uHoverT: { value: 0 },
-          uHoverAmt: { value: 0 },
+          uFrom: { value: new THREE.Vector2() },
+          uTo: { value: new THREE.Vector2() },
         },
         transparent: true,
         depthTest: false,
@@ -153,24 +160,11 @@ export default function CityLights() {
     fRef.current = f;
     u.uF.value = f;
     u.uStageTop.value = cityBus.stageTop();
+    u.uFrom.value.set(...cityBus.pourFrom());
+    u.uTo.value.set(...cityBus.pourTo());
     u.uView.value.set(window.innerWidth, window.innerHeight);
     u.uPx.value = gl.getPixelRatio();
-
-    // a hovered floor lights up, the light running along it once; then still
-    const h = hoverRef.current;
-    const want = cityBus.hovered();
-    if (want >= 0 && want !== h.floor) {
-      h.floor = want;
-      h.t = 0;
-    }
-    if (want >= 0) h.t = Math.min(1, h.t + delta / HOVER_SWEEP);
-    h.amt = THREE.MathUtils.damp(h.amt, want >= 0 ? 1 : 0, 10, delta);
-    if (want < 0 && h.amt < 0.01) h.amt = 0;
-    u.uHoverFloor.value = h.floor;
-    u.uHoverT.value = h.t;
-    u.uHoverAmt.value = h.amt;
-
-    if (f !== target || (want >= 0 && h.t < 1) || (want < 0 && h.amt > 0) || (want >= 0 && h.amt < 0.99)) invalidate();
+    if (f !== target) invalidate();
   });
 
   if (!geometry) return null;

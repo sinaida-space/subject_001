@@ -2,15 +2,15 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 're
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
-import EcgGround from './EcgGround';
+import ContactLinks from './ContactLinks';
 import { useRenderMode } from '@/hooks/useRenderMode';
-import { CITY, buildCity, cityBus, floorDelay, floorLit, span, type Tower } from '@/lib/city';
+import { CITY, buildCity, cityBus, pourDom, span, stripTowers, type PourCell } from '@/lib/city';
 import { FLIGHT } from '@/lib/flight';
 
 type Item = { label: string; to?: string; href?: string; download?: boolean; toggle?: boolean };
 
-// The three link columns. In the city footer (#179) each is a tower and each
-// link a floor; CONNECT, the people, is the tallest.
+// The three link columns. In the city footer (#179) each is also one of the
+// little towers by the logo, a floor per link; CONNECT, the people, is the tallest.
 const COLUMNS: { label: string; items: Item[] }[] = [
   {
     label: 'Navigate',
@@ -52,16 +52,9 @@ const REDUCED = typeof window !== 'undefined' && window.matchMedia('(prefers-red
 // the towers want width and height; narrower or shorter screens get the strip
 const WIDE = '(min-width: 1024px) and (min-height: 640px)';
 
-function FooterLink({ item, floor }: { item: Item; floor?: number }) {
+function FooterLink({ item }: { item: Item }) {
   const { mode, toggle } = useRenderMode();
   const { pathname } = useLocation();
-  // the city lights the floor of the link under the mouse or the focus
-  const lit = floor === undefined ? {} : {
-    onPointerEnter: (e: React.PointerEvent) => { if (e.pointerType === 'mouse') cityBus.hover(floor); },
-    onPointerLeave: () => cityBus.hover(-1),
-    onFocus: () => cityBus.hover(floor),
-    onBlur: () => cityBus.hover(-1),
-  };
   if (item.toggle) {
     return (
       <button
@@ -69,7 +62,6 @@ function FooterLink({ item, floor }: { item: Item; floor?: number }) {
         onClick={() => toggle()}
         className={`${linkClass} text-left`}
         aria-label={`View: ${mode === 'full' ? 'Full' : 'Light'}. Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
-        {...lit}
       >
         View: <span className="text-primary-legible">{mode === 'full' ? 'Full' : 'Light'}</span>
       </button>
@@ -77,7 +69,7 @@ function FooterLink({ item, floor }: { item: Item; floor?: number }) {
   }
   if (item.to) {
     const to = item.to.startsWith('#') ? (pathname === '/' ? item.to : `/${item.to}`) : item.to;
-    return <Link to={to} className={linkClass} {...lit}>{item.label}</Link>;
+    return <Link to={to} className={linkClass}>{item.label}</Link>;
   }
   const external = item.href?.startsWith('http');
   return (
@@ -86,7 +78,6 @@ function FooterLink({ item, floor }: { item: Item; floor?: number }) {
       {...(item.download ? { download: true } : {})}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       className={linkClass}
-      {...lit}
     >
       {item.label}{external ? ' ↗' : ''}
     </a>
@@ -110,6 +101,54 @@ const BottomBar = () => (
   </div>
 );
 
+// The two links as cells on a 2 px grid, relative to their box: their glyphs
+// and the button's outline, in their own colours. Drawn at their rendered
+// place, so the poured stars land on the letters exactly.
+function sampleLinks(root: HTMLElement): PourCell[] {
+  const box = root.getBoundingClientRect();
+  const w = Math.ceil(box.width), h = Math.ceil(box.height);
+  const cv = document.createElement('canvas');
+  cv.width = w;
+  cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  if (!ctx || w < 1 || h < 1) return [];
+  root.querySelectorAll<HTMLElement>('*').forEach((el) => {
+    const cs = getComputedStyle(el);
+    if (parseFloat(cs.borderTopWidth) > 0) {
+      const r = el.getBoundingClientRect();
+      ctx.strokeStyle = cs.borderTopColor;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(r.left - box.left + 1, r.top - box.top + 1, r.width - 2, r.height - 2);
+    }
+  });
+  const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+    const text = n.textContent?.trim();
+    const el = n.parentElement;
+    if (!text || !el) continue;
+    const cs = getComputedStyle(el);
+    range.selectNodeContents(n);
+    const r = range.getBoundingClientRect();
+    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    (ctx as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing;
+    ctx.fillStyle = cs.color;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(cs.textTransform === 'uppercase' ? text.toUpperCase() : text, r.left - box.left, r.top - box.top + r.height / 2);
+  }
+  const px = ctx.getImageData(0, 0, w, h).data;
+  const out: PourCell[] = [];
+  for (let y = 0; y < h; y += 2) {
+    for (let x = 0; x < w; x += 2) {
+      const i = (y * w + x) * 4;
+      if (px[i + 3] < 70) continue;
+      const a = px[i + 3] / 255;
+      out.push({ x, y, r: px[i] / a, g: px[i + 1] / a, b: px[i + 2] / a });
+    }
+  }
+  return out;
+}
+
 const toTop = (e: React.MouseEvent) => {
   if (window.location.pathname === '/') {
     e.preventDefault();
@@ -128,6 +167,7 @@ export default function Footer() {
   return <CalmFooter snake={snake} onBeat={() => setSnakeOpen(true)} />;
 }
 
+
 function CalmFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void }) {
   return (
     <footer className="relative z-10 border-t border-border py-16 md:py-20">
@@ -138,36 +178,43 @@ function CalmFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void })
             <Logo onEcgClick={onBeat} onNameClick={toTop} />
             <div className="mt-5"><Plaque /></div>
           </div>
-          <div className="grid grid-cols-2 gap-8 md:col-span-8 md:grid-cols-3">
-            {COLUMNS.map((col) => (
-              <div key={col.label}>
-                <div className="clinical-label mb-5 text-primary-legible">{col.label}</div>
-                <div className="space-y-3.5">
-                  {col.items.map((item) => <FooterLink key={item.label} item={item} />)}
-                </div>
-              </div>
-            ))}
-          </div>
+          <Columns className="grid grid-cols-2 gap-8 md:col-span-8 md:grid-cols-3" />
         </div>
+        <div className="section-divider mb-8 mt-14" />
+        <BottomBar />
       </div>
-      {/* the Logo above already opens Snake; here the ground is only the line */}
-      <EcgGround className="mb-8 mt-12" />
-      <div className="site-frame"><BottomBar /></div>
     </footer>
   );
 }
 
+function Columns({ className }: { className: string }) {
+  return (
+    <nav aria-label="Footer" className={className}>
+      {COLUMNS.map((col) => (
+        <div key={col.label}>
+          <div className="clinical-label mb-5 text-primary-legible">{col.label}</div>
+          <div className="space-y-3.5">
+            {col.items.map((item) => <FooterLink key={item.label} item={item} />)}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
 // ── The city footer (#179) ──
-// Wide screens: one screen held still for CITY.runway screens of scroll, the
-// three columns standing as towers on the ECG ground; the windows are the
-// star field's (CityLights), measured here from the floors. Narrow screens: a
-// skyline strip over the ground, the links as plain lists under it.
+// The last screen: the sky with the two ways in (poured there from LET'S
+// TALK), the logo, the little towers beside it, the columns. The towers'
+// windows, the pour and the city below the horizon belong to the star field
+// (CityLights, CityGround); this measures where they land and publishes the
+// progress f. Wide screens hold the screen still for CITY.runway screens of
+// scroll; narrow ones scroll on, the towers a strip over the logo.
 function CityFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void }) {
   const rootRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const toRef = useRef<HTMLDivElement>(null);
   const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia(WIDE).matches);
-  // what the scroll needs per frame, from the last measure
-  const measured = useRef<{ floors: { el: HTMLElement; delay: number }[]; roofs: { el: HTMLElement; delay: number }[] }>({ floors: [], roofs: [] });
 
   useEffect(() => {
     const mq = window.matchMedia(WIDE);
@@ -177,8 +224,11 @@ function CityFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void })
   }, []);
 
   useLayoutEffect(() => {
-    const root = rootRef.current, stage = stageRef.current;
-    if (!root || !stage) return;
+    const root = rootRef.current, strip = stripRef.current, to = toRef.current;
+    // wide: the towers are measured in the held screen; narrow: in the strip
+    const stage = wide ? stageRef.current : strip;
+    if (!root || !stage || !strip || !to) return;
+    const from = document.querySelector<HTMLElement>('[data-pour-src]');
     // f: 0 as the footer (wide) or the strip (narrow) comes in at the bottom
     // of the screen, 1 at the end of the page (wide) or once the strip has
     // risen past the middle (narrow)
@@ -188,7 +238,7 @@ function CityFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void })
         return Math.min(1, Math.max(0, (window.innerHeight - r.top) / Math.max(1, r.height)));
       }
       : () => {
-        const r = stage.getBoundingClientRect();
+        const r = strip.getBoundingClientRect();
         const vh = window.innerHeight;
         return Math.min(1, Math.max(0, (0.92 * vh - r.bottom) / (0.5 * vh)));
       };
@@ -196,64 +246,26 @@ function CityFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void })
     const stageTopAtFall = () => {
       const vh = window.innerHeight;
       if (wide) return Math.max(0, vh - CITY.fall[0] * root.offsetHeight);
-      return 0.92 * vh - CITY.fall[0] * 0.5 * vh - stage.offsetHeight;
+      return 0.92 * vh - CITY.fall[0] * 0.5 * vh - strip.offsetHeight;
     };
 
     let version = 0;
     let raf = 0;
     let last = '';
     const measure = () => {
-      const sb = stage.getBoundingClientRect();
-      const groundEl = root.querySelector<HTMLElement>('[data-city-ground]');
-      if (!groundEl) return;
-      const ground = groundEl.getBoundingClientRect().top + 24 - sb.top;
-      const towers: Tower[] = [];
-      const floors: { el: HTMLElement; delay: number }[] = [];
-      const roofs: { el: HTMLElement; delay: number }[] = [];
-      if (wide) {
-        root.querySelectorAll<HTMLElement>('[data-city-tower]').forEach((t, ti) => {
-          const tb = t.getBoundingClientRect();
-          const roof = t.querySelector<HTMLElement>('[data-city-roof]');
-          const fl = [...t.querySelectorAll<HTMLElement>('[data-city-floor]')];
-          towers.push({
-            left: tb.left - sb.left,
-            right: tb.right - sb.left,
-            roof: (roof ? roof.getBoundingClientRect().top : tb.top) - sb.top - 14,
-            ground,
-            floors: fl.map((el) => ({ y: el.getBoundingClientRect().bottom - sb.top - 15, id: Number(el.dataset.cityFloor) })),
-            antenna: ti === 1,
-          });
-        });
-      } else {
-        // three silhouettes in the strip, right of the beat, as tall as their
-        // columns are long
-        const beat = groundEl.querySelector('svg')?.getBoundingClientRect();
-        const x0 = beat ? beat.right - sb.left + 14 : 0;
-        const room = sb.width - x0, gap = room * 0.07, tw = (room - 2 * gap) / 3;
-        let id = 0;
-        COLUMNS.forEach((col, ti) => {
-          const left = x0 + ti * (tw + gap), right = left + tw;
-          const top = ground - 6 - col.items.length * 2 * CITY.step;
-          towers.push({
-            left, right, roof: top - 8, ground,
-            floors: col.items.map((_, k) => ({ y: ground - 6 - (k + 1) * 2 * CITY.step, id: id + col.items.length - 1 - k })),
-            antenna: ti === 1,
-          });
-          id += col.items.length;
-        });
-      }
-      const height = Math.max(1, ...towers.map((t) => t.ground - t.roof));
-      if (wide) {
-        towers.forEach((t, ti) => {
-          const els = root.querySelectorAll<HTMLElement>(`[data-city-tower="${ti}"] [data-city-floor]`);
-          els.forEach((el, k) => floors.push({ el, delay: floorDelay(t.ground - t.floors[k].y, height, ti) }));
-          const roof = root.querySelector<HTMLElement>(`[data-city-tower="${ti}"] [data-city-roof]`);
-          if (roof) roofs.push({ el: roof, delay: floorDelay(t.ground - t.roof, height, ti) });
-        });
-      }
-      measured.current = { floors, roofs };
+      const sb = stage.getBoundingClientRect(), tb = strip.getBoundingClientRect();
+      const towers = stripTowers(tb.width, tb.height, COLUMNS.map((c) => c.items.length)).map((t) => {
+        const dx = tb.left - sb.left, dy = tb.top - sb.top;
+        return { ...t, left: t.left + dx, right: t.right + dx, roof: t.roof + dy, ground: t.ground + dy, floors: t.floors.map((fl) => ({ ...fl, y: fl.y + dy })) };
+      });
+      // the two links' glyphs, relative to their box in the sky
+      const box = to.getBoundingClientRect();
+      const pour = from ? sampleLinks(to) : [];
+      cityBus.setPour(from, to);
       cityBus.setLayout(buildCity(
         towers,
+        pour,
+        box.width,
         { w: window.innerWidth, h: window.innerHeight, stageTop: stageTopAtFall() },
         { x: -FLIGHT.x, y: -FLIGHT.y, z: FLIGHT.home - FLIGHT.z },
         ++version,
@@ -262,21 +274,19 @@ function CityFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void })
       paint();
     };
 
-    // the footer's own share of the scene: the ground's trace, each floor's
-    // text condensing as its windows land, the bar at the end
+    // the DOM's share: the links leave Contact and arrive in the sky as their
+    // stars do, the bar comes in at the end
     const paint = () => {
       raf = 0;
       const f = progress();
       const q = (x: number) => Math.round(x * 400) / 400;
-      const g = q(span(f, CITY.ground));
       const key = `${q(f)}`;
       if (key === last) return;
       last = key;
-      root.style.setProperty('--ground', String(g));
-      root.style.setProperty('--ground-pen', g > 0 && g < 1 ? '1' : '0');
+      const p = pourDom(f);
+      if (from) from.style.setProperty('--pour-out', String(q(p.out)));
+      root.style.setProperty('--pour-in', String(from ? q(p.in) : 1));
       root.style.setProperty('--bar', String(q(span(f, CITY.bar))));
-      for (const fl of measured.current.floors) fl.el.style.setProperty('--lit', String(q(floorLit(f, fl.delay))));
-      for (const r of measured.current.roofs) r.el.style.setProperty('--lit', String(q(floorLit(f, r.delay))));
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(paint);
@@ -298,53 +308,38 @@ function CityFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void })
       clearTimeout(timer);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
-      cityBus.hover(-1);
+      from?.style.removeProperty('--pour-out');
+      cityBus.setPour(null, null);
       cityBus.setStage(null, null);
     };
   }, [wide]);
 
-  const wordmark = (
-    <a href="/" onClick={toTop} aria-label="Sinaida: back to top" className="font-display text-lg font-light uppercase tracking-widest text-foreground cursor-none">
-      Sinaida
-    </a>
+  const contacts = (
+    <div ref={toRef} className="w-fit [opacity:var(--pour-in,1)] focus-within:[opacity:1]">
+      <ContactLinks />
+    </div>
   );
-  // a floor's text and a roof's label follow their windows in; focus always shows them
-  const litStyle = '[opacity:var(--lit,1)] focus-within:[opacity:1]';
+  const logo = (
+    <div>
+      <Logo onEcgClick={onBeat} onNameClick={toTop} />
+      <div className="mt-5"><Plaque /></div>
+    </div>
+  );
 
   if (wide) {
-    let id = 0;
     return (
       <footer ref={rootRef} data-city className="relative z-10" style={{ height: `calc(100svh + ${CITY.runway * 100}svh)` }}>
         {snake}
-        <div ref={stageRef} className="sticky top-0 flex h-[100svh] flex-col justify-end overflow-hidden pb-8">
-          <div className="site-frame">
+        <div ref={stageRef} className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pb-8">
+          {/* the sky: where the two ways in come to rest */}
+          <div className="site-frame pt-[20svh]">{contacts}</div>
+          <div className="site-frame mt-auto">
             <div className="grid grid-cols-12 items-end gap-8">
-              <div className="col-span-4 pb-3" style={{ opacity: 'var(--ground, 1)' }}>
-                <Plaque />
-              </div>
-              <nav aria-label="Footer" className="col-span-8 grid grid-cols-3 items-end gap-12">
-                {COLUMNS.map((col, ti) => (
-                  <div key={col.label} data-city-tower={ti}>
-                    <div data-city-roof className={`clinical-label mb-5 text-primary-legible ${litStyle}`}>{col.label}</div>
-                    <ul>
-                      {col.items.map((item) => {
-                        const floor = id++;
-                        return (
-                          // the text band, then room under it for the window strip
-                          <li key={item.label} data-city-floor={floor} className={`pb-[22px] ${litStyle}`}>
-                            <FooterLink item={item} floor={floor} />
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </nav>
+              <div className="col-span-3">{logo}</div>
+              <div ref={stripRef} aria-hidden="true" className="col-span-3 h-[120px]" />
+              <Columns className="col-span-6 grid grid-cols-3 items-end gap-8" />
             </div>
-          </div>
-          <EcgGround draw wordmark={wordmark} onBeat={onBeat} className="mt-1" />
-          <div className="site-frame mt-8" style={{ opacity: 'var(--bar, 1)' }}>
-            <BottomBar />
+            <div className="mt-12 [opacity:var(--bar,1)]"><BottomBar /></div>
           </div>
         </div>
       </footer>
@@ -352,26 +347,14 @@ function CityFooter({ snake, onBeat }: { snake: ReactNode; onBeat: () => void })
   }
 
   return (
-    <footer ref={rootRef} data-city className="relative z-10 pb-12 pt-24">
+    <footer ref={rootRef} data-city className="relative z-10 pb-12 pt-20">
       {snake}
       <div className="site-frame">
-        <div ref={stageRef} aria-hidden="true" className="relative h-[150px]" />
-      </div>
-      {/* no wordmark on the ground here: the skyline stands right of the beat */}
-      <EcgGround draw onBeat={onBeat} />
-      <div className="site-frame mt-10">
-        <Plaque />
-        <nav aria-label="Footer" className="mt-10 grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3">
-          {COLUMNS.map((col) => (
-            <div key={col.label}>
-              <div className="clinical-label mb-5 text-primary-legible">{col.label}</div>
-              <div className="space-y-3.5">
-                {col.items.map((item) => <FooterLink key={item.label} item={item} />)}
-              </div>
-            </div>
-          ))}
-        </nav>
-        <div className="mt-12" style={{ opacity: 'var(--bar, 1)' }}><BottomBar /></div>
+        {contacts}
+        <div ref={stripRef} aria-hidden="true" className="mt-20 h-[110px] w-full max-w-[420px]" />
+        <div className="mt-10">{logo}</div>
+        <Columns className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3" />
+        <div className="mt-12 [opacity:var(--bar,1)]"><BottomBar /></div>
       </div>
     </footer>
   );
