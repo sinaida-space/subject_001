@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
+import { landOn } from '@/lib/navLand';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
@@ -73,8 +74,7 @@ export default function Header() {
       return;
     }
     setTimeout(() => {
-      const el = document.querySelector(href);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      landOn(href);
     }, menuOpen ? 300 : 0); // wait for the mobile menu to fade out first
   };
 

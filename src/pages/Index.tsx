@@ -15,6 +15,7 @@ import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { landOn } from '@/lib/navLand';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 const DustReveal = lazy(() => import('@/components/DustReveal'));
@@ -57,8 +58,8 @@ const Index = () => {
   // scroll to the section once it's mounted.
   useEffect(() => {
     if (!hash) return;
-    const el = document.querySelector(hash);
-    if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+    const t = setTimeout(() => landOn(hash), 100);
+    return () => clearTimeout(t);
   }, [hash]);
 
   return (

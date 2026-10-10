@@ -24,6 +24,7 @@
 // same frames backwards, and nothing draws without a scroll or resize.
 
 import { Children, useEffect, useRef, type ReactNode } from 'react';
+import { registerLand } from '@/lib/navLand';
 import { EDGES, FRAME_EXTENT, TESSERACT_GLSL, VERTICES, paneTheta, project, type Projected } from '@/lib/tesseract4d';
 import { GALAXY, galaxyBright, galaxyColor, galaxyKeep, galaxySize } from '@/lib/galaxy';
 
@@ -55,6 +56,8 @@ const ZW_SWAY = [0.3, -0.5];
  * the screen surface, the first turn swings it to the side, the second up */
 const TURN_DX = [0.2, 0];
 const TURN_DY = [-0.02, -0.18];
+const TURN_YAW = [0.7, -0.45];
+const TURN_PITCH = [-0.3, 0.55];
 
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const smooth = (a: number, b: number, x: number) => {
@@ -72,6 +75,8 @@ interface Scene {
   zoom: number; // z: the tesseract's distance, as a scale
   dx: number; // x offset, share of the stage width (#175: it travels left to right)
   dy: number; // y offset, share of the stage height
+  yaw: number; // the 3D shadow turned about y, so its two cubes show (0 = a pane faces you)
+  pitch: number; // and about x
   aspect: number; // 0 = square tesseract, 1 = front cell stretched to the stage
   energy: number; // 0 at rest, 1 mid-turn: dust brightness and spread
   gather: number; // 0 scattered stars, 1 every point on its edge
@@ -92,6 +97,8 @@ function sceneAt(u: number): Scene {
     zoom: 1,
     dx: 0,
     dy: 0,
+    yaw: 0,
+    pitch: 0,
     aspect: 1,
     energy: 0,
     gather: 1,
@@ -115,6 +122,9 @@ function sceneAt(u: number): Scene {
     const off = 1 - smooth(-0.9, ENTRY, u);
     s.dx = -0.34 * off;
     s.dy = 0.08 * off;
+    // seen from the side and above as it falls in, the hypercube turns to face you
+    s.yaw = 0.62 * off;
+    s.pitch = -0.38 * off;
     s.energy = smooth(-0.6, 0, u) * (1 - smooth(0.45, ENTRY, u));
     s.echo = smooth(0, 0.25, u) * (1 - smooth(0.45, ENTRY, u));
     const seen = smooth(-0.85, -0.3, u);
@@ -132,6 +142,8 @@ function sceneAt(u: number): Scene {
     // and leaves past the viewer's right shoulder, still left to right
     s.dx = 0.42 * x * x;
     s.dy = -0.06 * x * x;
+    s.yaw = -0.5 * x * x;
+    s.pitch = 0.2 * x * x;
     s.formed = 1 - smooth(0.1, 0.8, x);
     s.energy = smooth(0, 0.3, x) * (1 - smooth(0.55, 1, x));
     s.echo = s.energy;
@@ -160,6 +172,10 @@ function sceneAt(u: number): Scene {
   s.zoom = 1 - 0.22 * bell;
   s.dx = TURN_DX[k] * bell;
   s.dy = TURN_DY[k] * bell;
+  // mid-turn the shadow swings oblique, so the inner cell visibly swells into
+  // the outer one (the classic hypercube), and squares up as the next pane arrives
+  s.yaw = TURN_YAW[k] * bell;
+  s.pitch = TURN_PITCH[k] * bell;
   s.scale[k] = s.zoom; // the leaving screen stays on its pane while it fades
   s.energy = bell;
   s.echo = bell;
@@ -243,18 +259,19 @@ const depthDim = (depth: number) => GALAXY.dimMin + (1 - GALAXY.dimMin) * depth 
 const PANE_VS = `
 attribute vec2 aAB;
 uniform float uTheta, uXW, uZW;
+uniform vec2 uView;
 uniform vec2 uK, uC, uRes; // px per tesseract unit, centre px, canvas px
 varying vec2 vUv;
 varying float vFog;
 varying float vFace;
 ${TESSERACT_GLSL}
 void main() {
-  vec4 p = tesseractProject(panePoint(aAB, uTheta), uXW, uZW);
+  vec4 p = tesseractProject(panePoint(aAB, uTheta), uXW, uZW, uView);
   // which side of the pane faces us: the screen-space cross of its a and b
   // directions, positive as at rest. Early in a turn the incoming pane (and
   // late in it the outgoing one) shows its back, which would read mirrored.
-  vec2 da = tesseractProject(panePoint(aAB + vec2(0.1, 0.0), uTheta), uXW, uZW).xy - p.xy;
-  vec2 db = tesseractProject(panePoint(aAB + vec2(0.0, 0.1), uTheta), uXW, uZW).xy - p.xy;
+  vec2 da = tesseractProject(panePoint(aAB + vec2(0.1, 0.0), uTheta), uXW, uZW, uView).xy - p.xy;
+  vec2 db = tesseractProject(panePoint(aAB + vec2(0.0, 0.1), uTheta), uXW, uZW, uView).xy - p.xy;
   vFace = da.x * db.y - da.y * db.x;
   vec2 px = uC + vec2(p.x * uK.x, -p.y * uK.y);
   gl_Position = vec4(px.x / uRes.x * 2.0 - 1.0, 1.0 - px.y / uRes.y * 2.0, 0.0, 1.0);
@@ -487,7 +504,7 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
         pane,
         edge,
         dots,
-        paneU: uniforms(g, pane, ['uTheta', 'uXW', 'uZW', 'uK', 'uC', 'uRes', 'uTex', 'uAlpha', 'uFog', 'uSplit', 'uEcho']),
+        paneU: uniforms(g, pane, ['uTheta', 'uXW', 'uZW', 'uView', 'uK', 'uC', 'uRes', 'uTex', 'uAlpha', 'uFog', 'uSplit', 'uEcho']),
         edgeU: uniforms(g, edge, ['uRes', 'uLineA', 'uGlintA', 'uGlint', 'uDpr']),
         dotsU: uniforms(g, dots, ['uRes', 'uDpr']),
         paneAB: g.getAttribLocation(pane, 'aAB'),
@@ -753,7 +770,7 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
       ];
       const [kx, ky] = kOf(s);
       for (let i = 0; i < VERTICES.length; i++) {
-        const p = project(VERTICES[i], s.xw, s.zw, verts[i]);
+        const p = project(VERTICES[i], s.xw, s.zw, verts[i], s.yaw, s.pitch);
         p.x = cx + p.x * kx;
         p.y = cy - p.y * ky;
       }
@@ -784,6 +801,7 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
           g.uniform1f(U.uTheta, paneTheta(k));
           g.uniform1f(U.uXW, sc.xw);
           g.uniform1f(U.uZW, sc.zw);
+          g.uniform2f(U.uView, sc.yaw, sc.pitch);
           g.uniform2f(U.uK, ex, ey);
           g.uniform1f(U.uAlpha, alpha);
           g.uniform1f(U.uEcho, echo ? 1 : 0);
@@ -963,6 +981,19 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
       range.detach();
     };
   }, []);
+
+  // The header's Services link lands on the first pane at rest, facing you
+  useEffect(
+    () =>
+      registerLand('services', () => {
+        const track = trackRef.current;
+        const stage = stageRef.current;
+        if (!track || !stage) return null;
+        const rect = track.getBoundingClientRect();
+        return window.scrollY + rect.top + (restMid(0) / TOTAL) * (rect.height - stage.clientHeight);
+      }),
+    [],
+  );
 
   // Keyboard: a link inside a screen that is not at rest takes you to that
   // screen's rest midpoint, so the focused copy is always readable.

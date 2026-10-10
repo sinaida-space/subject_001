@@ -43,10 +43,12 @@ export interface Projected {
 
 /**
  * Rotate in the XW plane, then in the ZW plane, then project 4D → 3D
- * (s4 = D4 / (D4 - w)) and 3D → 2D (s3 = D3 / (D3 - z)). Writes into `out`
- * so the per-frame loop allocates nothing.
+ * (s4 = D4 / (D4 - w)), turn the 3D shadow by `yaw` (about y) and `pitch`
+ * (about x) so its inner and outer cubes show side by side, and project
+ * 3D → 2D (s3 = D3 / (D3 - z)). Writes into `out` so the per-frame loop
+ * allocates nothing.
  */
-export function project(v: Vec4, angleXW: number, angleZW: number, out: Projected): Projected {
+export function project(v: Vec4, angleXW: number, angleZW: number, out: Projected, yaw = 0, pitch = 0): Projected {
   const [x, y, z, w] = v;
   const cXW = Math.cos(angleXW);
   const sXW = Math.sin(angleXW);
@@ -59,9 +61,15 @@ export function project(v: Vec4, angleXW: number, angleZW: number, out: Projecte
   const w2 = z * sZW + w1 * cZW;
 
   const s4 = D4 / (D4 - w2);
-  const X3 = x1 * s4;
-  const Y3 = y * s4;
-  const Z3 = z1 * s4;
+  const xs = x1 * s4;
+  const ys = y * s4;
+  const zs = z1 * s4;
+  const cY = Math.cos(yaw), sY = Math.sin(yaw);
+  const cP = Math.cos(pitch), sP = Math.sin(pitch);
+  const X3 = xs * cY + zs * sY;
+  const z2 = zs * cY - xs * sY;
+  const Y3 = ys * cP - z2 * sP;
+  const Z3 = ys * sP + z2 * cP;
 
   const s3 = D3 / (D3 - Z3);
   out.x = X3 * s3;
@@ -93,7 +101,7 @@ vec4 panePoint(vec2 ab, float theta) {
   float s = sin(theta);
   return vec4(ab.x * c - s, ab.y, -1.0, -ab.x * s - c);
 }
-vec4 tesseractProject(vec4 v, float angleXW, float angleZW) {
+vec4 tesseractProject(vec4 v, float angleXW, float angleZW, vec2 view) {
   float cXW = cos(angleXW);
   float sXW = sin(angleXW);
   float cZW = cos(angleZW);
@@ -103,7 +111,10 @@ vec4 tesseractProject(vec4 v, float angleXW, float angleZW) {
   float z1 = v.z * cZW - w1 * sZW;
   float w2 = v.z * sZW + w1 * cZW;
   float s4 = D4 / (D4 - w2);
-  vec3 p3 = vec3(x1, v.y, z1) * s4;
+  vec3 q = vec3(x1, v.y, z1) * s4;
+  float cY = cos(view.x), sY = sin(view.x), cP = cos(view.y), sP = sin(view.y);
+  float z2 = q.z * cY - q.x * sY;
+  vec3 p3 = vec3(q.x * cY + q.z * sY, q.y * cP - z2 * sP, q.y * sP + z2 * cP);
   float s3 = D3 / (D3 - p3.z);
   return vec4(p3.xy * s3, clamp((p3.z + 2.0) / 4.0, 0.0, 1.0), w2);
 }
