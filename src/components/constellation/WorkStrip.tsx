@@ -5,13 +5,14 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 import { getDitheredPreview } from '@/lib/ditherPreview';
 import DitherReveal from '@/components/DitherReveal';
 
-// Body of Work as a horizontal strip of tall columns, one per project.
+// Body of Work as a horizontal strip of square cards, one per project.
 // Every still is red dither; its colour shows under a hovering mouse and
-// while its card holds keyboard focus. Full mode on a desktop with a fine
-// pointer: the strip pins and vertical scroll carries it sideways until the
-// last column reaches the centre. Lite, phones and coarse pointers get a
-// plain swipe row. Either way the row bleeds to the viewport edges, its first
-// column on the frame's left gutter.
+// while its card holds keyboard focus. In every mode the strip pins and the
+// vertical wheel or swipe carries it sideways, never a scrollbar (#175).
+// Scroll down moves things left to right (the site's 3D law), so the row is
+// laid out right to left: the first project starts on the frame's left
+// gutter, the next ones come in from the left, and the strip lets go once
+// the last one reaches the centre. The row bleeds to the viewport edges.
 const KIND_ORDER: ProjectKind[] = ['stage', 'installation', 'conceptual', 'game', 'tool', 'tutorial'];
 const KIND_LABEL: Record<ProjectKind, string> = {
   stage: 'Stage',
@@ -24,7 +25,6 @@ const KIND_LABEL: Record<ProjectKind, string> = {
 
 const NBSP = ' ';
 const COL_W = 'clamp(260px, 24vw, 420px)';
-const PIN_QUERY = '(min-width: 1024px) and (pointer: fine)';
 // the frame's content edge: its centring margin plus its gutter (.site-frame)
 const FRAME_PAD = 'calc(max(0px, 50vw - 960px) + clamp(16px, 4vw, 72px))';
 // out of the frame to the viewport edges
@@ -67,7 +67,7 @@ function Column({ project, onFocusColumn }: ColumnProps) {
         onBlur={() => setFocused(false)}
         className="group block w-full text-left"
       >
-        {project.image && <DitherReveal src={project.image} alt={alt} aspect={4 / 5} revealed={focused} touch={false} />}
+        {project.image && <DitherReveal src={project.image} alt={alt} aspect={1} revealed={focused} touch={false} />}
         <h3
           className="mt-4 font-display uppercase text-foreground transition-colors group-hover:text-accent"
           style={{ fontSize: 'clamp(20px, 1.6vw, 28px)' }}
@@ -83,44 +83,38 @@ function Column({ project, onFocusColumn }: ColumnProps) {
   );
 }
 
-// Lite, phones, coarse pointers: a plain horizontal swipe, no pin.
-function SwipeStrip() {
-  return (
-    <ul
-      aria-label="Body of Work projects"
-      className="flex snap-x snap-mandatory gap-[3vw] overflow-x-auto pb-4"
-      style={{ ...BLEED, ...ROW_PAD }}
-    >
-      {ITEMS.map((p) => (
-        <Column key={p.id} project={p} />
-      ))}
-    </ul>
-  );
-}
-
-// Full mode desktop: a track as tall as the strip's travel plus the strip's
-// own height. The strip pins centred on screen while the track passes and
-// scroll maps 1:1 to translateX; it lets go the moment the last column
-// reaches the centre, so the page goes on right under it.
+// A track as tall as the strip's travel plus the strip's own height. The
+// strip pins centred on screen while the track passes and scroll maps 1:1 to
+// translateX; it lets go the moment the last column reaches the centre, so
+// the page goes on right under it.
 function PinnedStrip() {
   const trackRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const [box, setBox] = useState({ travel: 0, height: 0, top: 0 });
+  const [box, setBox] = useState({ travel: 0, height: 0, top: 0, start: 0 });
   const travelRef = useRef(0);
+  const startRef = useRef(0);
 
-  // measured on mount and resize only: the travel until the last column's
-  // centre meets the viewport centre, and the pin offset that centres the row
+  // measured on mount and resize only: the start offset that puts the first
+  // column (rightmost in the row) on the left gutter, the travel until the
+  // last column (leftmost) is centred, and the pin offset that centres the row
   const measure = useCallback(() => {
     const view = viewRef.current;
     const list = listRef.current;
+    const first = list?.firstElementChild as HTMLLIElement | null;
     const last = list?.lastElementChild as HTMLLIElement | null;
-    if (!view || !list || !last) return;
-    const travel = Math.max(0, Math.round(last.offsetLeft + last.offsetWidth / 2 - window.innerWidth / 2));
+    if (!view || !list || !first || !last) return;
+    const pad = parseFloat(getComputedStyle(list).paddingLeft) || 0;
+    const start = Math.round(pad - first.offsetLeft);
+    const end = Math.round(window.innerWidth / 2 - last.offsetWidth / 2 - last.offsetLeft);
+    const travel = Math.max(0, end - start);
     const height = view.offsetHeight;
     const top = Math.max(0, Math.round((window.innerHeight - height) / 2));
     travelRef.current = travel;
-    setBox((b) => (b.travel === travel && b.height === height && b.top === top ? b : { travel, height, top }));
+    startRef.current = start;
+    setBox((b) =>
+      b.travel === travel && b.height === height && b.top === top && b.start === start ? b : { travel, height, top, start },
+    );
   }, []);
 
   useLayoutEffect(() => {
@@ -147,7 +141,7 @@ function PinnedStrip() {
       const t = Math.min(travelRef.current, Math.max(0, box.top - track.getBoundingClientRect().top));
       if (t === lastT) return;
       lastT = t;
-      list.style.transform = `translate3d(${-t}px, 0, 0)`;
+      list.style.transform = `translate3d(${startRef.current + t}px, 0, 0)`;
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -165,7 +159,7 @@ function PinnedStrip() {
     (li: HTMLLIElement) => {
       const track = trackRef.current;
       if (!track) return;
-      const t = Math.min(travelRef.current, Math.max(0, li.offsetLeft + li.offsetWidth / 2 - window.innerWidth / 2));
+      const t = Math.min(travelRef.current, Math.max(0, window.innerWidth / 2 - li.offsetWidth / 2 - li.offsetLeft - startRef.current));
       window.scrollTo({ top: track.getBoundingClientRect().top + window.scrollY - box.top + t });
     },
     [box.top],
@@ -175,7 +169,7 @@ function PinnedStrip() {
     <div ref={trackRef} data-work-strip style={{ ...BLEED, height: box.height ? box.travel + box.height : undefined }}>
       {/* clip, not hidden: focus can't scroll a clipped box sideways */}
       <div ref={viewRef} className="sticky" style={{ top: box.top, overflow: 'clip' }}>
-        <ul ref={listRef} aria-label="Body of Work projects" className="flex w-max gap-[3vw] will-change-transform" style={ROW_PAD}>
+        <ul ref={listRef} aria-label="Body of Work projects" className="flex w-max flex-row-reverse gap-[3vw] will-change-transform" style={ROW_PAD}>
           {ITEMS.map((p) => (
             <Column key={p.id} project={p} onFocusColumn={centreColumn} />
           ))}
@@ -187,14 +181,6 @@ function PinnedStrip() {
 
 export default function WorkStrip() {
   const { mode } = useRenderMode();
-  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia(PIN_QUERY).matches);
-
-  useEffect(() => {
-    const mq = window.matchMedia(PIN_QUERY);
-    const on = () => setWide(mq.matches);
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, []);
 
   // Dither the cards' video posters (960x540, as DitheredThumb asks for them)
   // one per idle slot, so opening a card never dithers on the main thread.
@@ -219,7 +205,7 @@ export default function WorkStrip() {
     };
   }, [mode]);
 
-  return mode === 'full' && wide ? <PinnedStrip /> : <SwipeStrip />;
+  return <PinnedStrip />;
 }
 
 // Je suis le spectre d'une rose que tu portais hier au bal.

@@ -5,8 +5,8 @@ import { galaxyBright, galaxyColor, galaxyKeep, galaxySize } from '@/lib/galaxy'
 // A section name as a giant word of sparse galaxy stars. The stars lie
 // scattered as dust while the title is below the screen and travel to their
 // letter cells as it scrolls in (title top at 100vh → 30vh, or the caller's
-// `until`); near stars set off later and fly bigger. The word floats a little
-// behind the page: it moves at 0.85 of the scroll speed, so the content slides
+// `until`); near stars set off later and fly bigger. The word is its own far
+// layer: it moves at 0.3 of the scroll speed (#175), so the content slides
 // over it. A pure function of scroll: reverse plays the same frames back, and
 // nothing is drawn while the scroll is still.
 //
@@ -20,7 +20,7 @@ const SPAN = 0.92; // share of the content width the word spans
 const MAX_H = 0.38; // word height cap, share of the small viewport height
 const ALPHA = 0.32; // global alpha: soft, so content over the lower part stays legible
 const OVERLAP = 0.3; // share of the word height the following content rides over
-const PARALLAX = 0.15; // the word lags the content by this share of the scroll
+const PARALLAX = 0.7; // the word lags the content by this share of the scroll
 const BRIGHT = 0.5; // of galaxy's bright stars, the share kept here (4% → 2%)
 
 export interface Star { x: number; y: number; rnd: number; depth: number }
@@ -212,9 +212,9 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
       if (!flyers.length) return;
       const r = box.getBoundingClientRect();
       const vh = window.innerHeight;
-      if (r.bottom < -0.2 * vh || r.top > vh) return; // off screen: the next scroll in will draw
       // the word lags the page: offset grows with its distance from the centre
       const y = Math.round(-PARALLAX * (r.top + r.height / 2 - vh / 2) * 2) / 2;
+      if (r.bottom + y < -0.2 * vh || r.top + y > vh) return; // off screen: the next scroll in will draw
       if (y !== lastY) {
         lastY = y;
         canvas.style.transform = `translate3d(0, ${y}px, 0)`;
@@ -269,11 +269,14 @@ export default function StarTitle({ text, as = 'h2', caption, className, until =
 }
 
 // ── Lite title ──
-// The plain section header of lite mode. From md up the label starts at a
-// quarter of the frame width, and a 1px rule runs from the frame's left edge
-// to it, growing 0 → full as the header scrolls from 100vh to 60vh (a CSS var
-// set by one passive scroll listener; a pure function of scroll). Phones get
-// a small indent and no rule. Reduced motion: the rule is simply there. One
+// The plain section header of lite mode, on the frame's left axis like the
+// body text (#175). From md up a 1px rule runs from the label to the frame's
+// right edge, growing 0 → full as the header scrolls from 100vh to 60vh.
+// The label is a slower layer while it comes in: it moves at 0.3 of the
+// scroll speed until the header reaches its reading place (a quarter down the
+// screen), then rides with its section, so it never slides into the text
+// under it. Both are CSS vars set by one passive scroll listener, a pure
+// function of scroll. Reduced motion: no lag, the rule is simply there. One
 // component for every lite header (About, Body of Work, Services, Contact).
 const MD = '(min-width: 1024px)';
 const REDUCED = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -287,11 +290,20 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
     const mq = window.matchMedia(MD);
     let raf = 0;
     let last = -1;
+    let lastY = NaN;
     const frame = () => {
       raf = 0;
-      if (!mq.matches) return;
       const vh = window.innerHeight;
-      const p = Math.round(clamp01((vh - el.getBoundingClientRect().top) / (0.4 * vh)) * 400) / 400;
+      const top = el.getBoundingClientRect().top;
+      if (top > 1.5 * vh || top < -vh) return;
+      // the lag, capped so the label never climbs far into the section above
+      const y = Math.round(-Math.min(PARALLAX * Math.max(0, top - 0.25 * vh), 0.22 * vh));
+      if (y !== lastY) {
+        lastY = y;
+        el.style.setProperty('--title-lag', `${y}px`);
+      }
+      if (!mq.matches) return;
+      const p = Math.round(clamp01((vh - top) / (0.4 * vh)) * 400) / 400;
       if (p === last) return;
       last = p;
       el.style.setProperty('--title-rule', String(p));
@@ -310,22 +322,20 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
   }, []);
 
   return (
-    <div ref={ref} className={`relative pl-6 md:pl-[25%] ${className ?? ''}`} style={REDUCED ? ({ ['--title-rule' as string]: '1' } as CSSProperties) : undefined}>
-      <div className="relative">
+    <div ref={ref} className={`relative ${className ?? ''}`} style={REDUCED ? ({ ['--title-rule' as string]: '1' } as CSSProperties) : undefined}>
+      <div className="flex items-center gap-6" style={{ transform: 'translate3d(0, var(--title-lag, 0px), 0)' }}>
+        <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40, ...titleStyle }}>
+          {text}
+        </h2>
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 hidden h-px md:block"
+          className="pointer-events-none hidden h-px flex-1 md:block"
           style={{
-            right: 'calc(100% + 24px)',
-            width: 'calc(100% / 3 - 24px)',
             background: 'hsl(var(--foreground) / 0.2)',
             transform: 'scaleX(var(--title-rule, 0))',
             transformOrigin: 'left',
           }}
         />
-        <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40, ...titleStyle }}>
-          {text}
-        </h2>
       </div>
       {caption}
     </div>

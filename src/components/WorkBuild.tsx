@@ -58,6 +58,7 @@ const UP = 0.95;
 // The pull ends when the BODY OF WORK title's top reaches POUR_B; it takes
 // at least FORM_MIN screen heights of scroll.
 const POUR_B = 0.36;
+const TITLE_LAG = 0.7; // the formed title lags the page by this share of the scroll
 const FORM_MIN = 0.2;
 // Once About's bottom edge drops back below this, About is coming apart:
 // the map lets go of its latch and rewinds with the scroll.
@@ -642,6 +643,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
 
     let trackH = -1;
     let mapL = 0;
+    let restLag = 0;
     let raf = 0;
     const frame = () => {
       raf = 0;
@@ -655,6 +657,14 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       const tt = title.getBoundingClientRect().top;
       const fStart = Math.max(BANG * vh + (tt - ab.bottom), (POUR_B + FORM_MIN) * vh);
       const f = lin(tt, fStart, POUR_B * vh);
+      // once formed, the title is the far layer like every star title: past
+      // POUR_B it moves at 0.3 of the scroll speed and the map rides over it
+      // (#175); zero until then, so the pour still lands where it aims
+      const lag = Math.round(Math.min(TITLE_LAG * Math.max(0, POUR_B * vh - tt), 0.6 * vh));
+      if (lag !== restLag) {
+        restLag = lag;
+        rest.style.transform = lag ? `translate3d(0, ${lag}px, 0)` : '';
+      }
 
       // ── the map: the track holds still (desktop) over its room, or scrolls through (phones)
       const track = root.querySelector<HTMLElement>('[data-build-track]');
