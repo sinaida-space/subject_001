@@ -258,7 +258,7 @@ export default function HeroLetters() {
     setOpen({ project, origin: lite ? undefined : { left: r.left, top: r.top, width: r.width, height: r.height, el } });
   };
 
-  const type = 'm-0 font-display uppercase font-normal leading-[0.86] tracking-[-0.02em] text-[13vw] md:text-[clamp(2.5rem,min(7.4vw,9svh),8.25rem)]';
+  const type = 'm-0 font-display uppercase font-normal leading-[0.86] tracking-[-0.02em] text-[13vw] md:text-[clamp(2.5rem,min(10.4vw,13.5svh),11.5rem)]';
 
   return (
     <section
@@ -270,7 +270,7 @@ export default function HeroLetters() {
     >
       {/* One vertical rule: the gap under the header equals the gap under the
           tagline (G), and the molecule sits at the centre of the void between. */}
-      <div className="container mx-auto max-w-7xl px-6 h-full flex flex-col pt-[calc(64px+max(9vh,88px))] pb-[max(9vh,88px)] md:pt-[calc(68px+max(7vh,72px))] md:pb-[max(7vh,72px)]">
+      <div className="container mx-auto max-w-7xl px-6 h-full flex flex-col pt-[calc(64px+max(9vh,88px))] pb-[max(9vh,88px)] md:pt-[calc(68px+max(3vh,28px))] md:pb-[max(4vh,36px)]">
         <p
           ref={nameRef}
           className={`${type} self-start text-foreground cursor-none ${glowing ? 'neon-glow' : ''}`}

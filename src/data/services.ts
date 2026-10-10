@@ -19,6 +19,8 @@ export interface RecordPart {
 
 export interface Service {
   code: string;
+  /** oversized display word shown on the homepage */
+  word: string;
   title: string;
   description: string;
   /** one-line proof of work: a brief mention plus the linked project name */
@@ -29,6 +31,7 @@ export interface Service {
 export const SERVICES: Service[] = [
   {
     code: 'festivals',
+    word: 'SHOWS',
     title: 'For music festivals & concerts',
     description:
       'Audio-reactive stage visuals, one system per song, listening to the live mix straight from the desk. Delivered as a turnkey show or operated live.',
@@ -41,6 +44,7 @@ export const SERVICES: Service[] = [
   },
   {
     code: 'web',
+    word: 'SCREENS',
     title: 'For interactive web',
     description:
       'Sites and components that respond to the visitor. Real-time WebGL and shaders, camera and gesture control running on-device, generative sound. Delivered as a finished site, or as a single component handed to a team that already has developers.',
@@ -55,6 +59,7 @@ export const SERVICES: Service[] = [
   },
   {
     code: 'theater',
+    word: 'SCENES',
     title: 'For theater & dance',
     description:
       'Responsive scenography: real-time systems that follow the performers’ bodies and the sound, developed with the creative team from first concept onward.',
@@ -69,6 +74,7 @@ export const SERVICES: Service[] = [
   },
   {
     code: 'venues',
+    word: 'ROOMS',
     title: 'For venues, brands & institutions',
     description:
       'Immersive installations and generative visual identities, adapted to the space they run in.',

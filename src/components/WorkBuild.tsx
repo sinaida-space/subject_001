@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 // Work build (#121): About → Body of Work.
 //
-//   pour   "I build living visual systems…" stays readable and sheds a copy
+//   pour   the About table (ORIGIN / DRIFT / FOCUS) stays readable and sheds a copy
 //          of its dust: 3 px cells fall, letter by letter, into the BODY OF
 //          WORK title and the line under it, and the real type takes over
 //   map    then the map builds itself (drawn by ConstellationFull from
@@ -74,8 +74,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
 
     // the grains: sampled once the paragraph exists (it mounts with its reveal)
     let grains: Grain[] | null = null;
-    const findPara = () =>
-      Array.from(about.querySelectorAll<HTMLElement>('p')).find((p) => (p.textContent ?? '').replace(/\s+/g, ' ').trim().startsWith('I build living')) ?? null;
+    const findPara = () => about.querySelector<HTMLElement>('[data-work-source]');
     const sample = () => {
       const para = findPara();
       if (!para) return null;

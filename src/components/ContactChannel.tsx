@@ -1,159 +1,74 @@
-import { useEffect, useState } from 'react';
 import ObfuscatedMailto from './ObfuscatedMailto';
 
-// ── Signal Bars ─────────────────────────────────────────────
-function SignalBars() {
-  const [active, setActive] = useState(5);
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setActive(Math.floor(Math.random() * 3) + 3); // 3-5
-    }, 800);
-    return () => clearInterval(iv);
-  }, []);
-
-  const bars = [1, 2, 3, 4, 5];
-  const heights = [6, 10, 14, 18, 22];
-  return (
-    <div className="flex items-end gap-[3px] mt-6">
-      {bars.map((b, i) => (
-        <div
-          key={b}
-          className="transition-opacity duration-200"
-          style={{
-            width: 4,
-            height: heights[i],
-            borderRadius: 1,
-            background: b <= active ? 'hsl(var(--accent))' : 'hsl(var(--accent))',
-            opacity: b <= active ? 1 : 0.15,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ── Main Component ──────────────────────────────────────────
-// Static copy — renders instantly, no typing/reveal gating (same rule applied
-// to ServicesTerminal/HeroSection in Task 4): this section's content must not
-// be gated behind a character-by-character reveal.
-const PARA_1 =
-  'Interested in working with musicians, touring productions, cultural foundations and brands that bring technology into live performance. Send the show, the space or the idea, and let\'s talk.';
-const PARA_2 =
-  'Immersive installations  ·  Creative direction\nStage visuals  ·  Exhibition design\nGenerative art commissions\n──────────────────────────\nBased in Prague. Working globally.';
+const linkFocus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff1a1a] focus-visible:outline-offset-2';
 
 export default function ContactChannel() {
   return (
     <section id="contact" className="relative z-10 py-16 md:py-20 overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl">
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-          {/* LEFT COLUMN */}
-          <div className="md:w-[280px] shrink-0 md:self-start">
-            {/* h2/p (not div) — matches Services' and Body of Work's own
-                eyebrow+caption markup, so all four sections' labels pick up
-                the same sitewide hover glitch/bloom (index.css) instead of
-                some getting it and others silently not. */}
-            <h2
-              className="font-mono uppercase text-primary"
-              style={{ letterSpacing: '0.2em', fontSize: 40 }}
-            >
-              Contact
-            </h2>
-            <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
-              Get in touch.
-            </p>
+        {/* h2/p (not div) — matches Services' and Body of Work's own
+            eyebrow+caption markup, so all four sections' labels pick up
+            the same sitewide hover glitch/bloom (index.css). */}
+        <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
+          Contact
+        </h2>
+        <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+          Open for collaboration.
+        </p>
 
-            <SignalBars />
-          </div>
+        <p
+          className="font-mono uppercase font-normal text-foreground mt-[7vh] mb-0 text-[16vw] md:text-[clamp(64px,11vw,176px)]"
+          style={{ lineHeight: 0.9, letterSpacing: '-0.02em' }}
+        >
+          Let’s talk.
+        </p>
 
-          {/* RIGHT COLUMN */}
-          <div className="flex-1">
-
-          <div className="max-w-2xl">
-            {/* Heading — same scale as the About heading and a case study's
-                project title (WorkCase h1): one shared "section headline"
-                size sitewide, a step below the hero. */}
-            <h2 className="mb-8 font-display text-4xl md:text-5xl uppercase leading-[0.95]">
-              <span className="block text-foreground font-light">
-                Open for
-              </span>
-              <span className="block font-bold" style={{ color: 'hsl(var(--sinaida-red))' }}>
-                Collaboration
-              </span>
-            </h2>
-
-            <p className="font-mono text-[13px] leading-relaxed mb-6" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
-              {(() => {
-                const idx = PARA_1.indexOf("let's talk.");
-                if (idx === -1) return PARA_1;
-                return (
-                  <>
-                    {PARA_1.slice(0, idx)}
-                    <span style={{ color: 'hsl(var(--primary-legible))', fontWeight: 700 }}>{PARA_1.slice(idx)}</span>
-                  </>
-                );
-              })()}
-            </p>
-
-            {/* Available for */}
-            <div className="font-mono text-[12px] uppercase mb-3" style={{ color: 'hsl(var(--foreground) / 0.6)', letterSpacing: '0.1em' }}>
-              Available for
-            </div>
-
-            <div className="font-mono text-[13px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: 'hsl(var(--foreground) / 0.87)' }}>
-              {PARA_2.split('·').map((seg, i, arr) => (
-                <span key={i}>
-                  {seg}
-                  {i < arr.length - 1 && <span style={{ color: 'hsl(var(--primary-legible))' }}>·</span>}
-                </span>
-              ))}
-            </div>
-
-            {/* CTA — one bold action, two plain links (not competing for attention) */}
-            <div className="flex flex-col items-start gap-5 md:flex-row md:flex-wrap md:items-center md:gap-6 mt-10 mb-12">
-              <ObfuscatedMailto
-                label="EMAIL ME ↗"
-                className="font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none"
-                style={{
-                  border: '1px solid hsl(var(--sinaida-red))',
-                  color: 'hsl(var(--primary-legible))',
-                  background: 'hsl(var(--sinaida-red) / 0.06)',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'hsl(var(--primary-legible))';
-                  e.currentTarget.style.color = '#000';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'hsl(var(--sinaida-red) / 0.06)';
-                  e.currentTarget.style.color = 'hsl(var(--primary-legible))';
-                }}
-              />
-              <a
-                href="https://www.instagram.com/sin.ai.da/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
-              >
-                Instagram ↗
-              </a>
-              <a
-                href="https://www.linkedin.com/in/sinaida"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
-              >
-                LinkedIn ↗
-              </a>
-              <a
-                href="https://calendly.com/sinaida"
-                target="_blank"
-                rel="noopener"
-                className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
-              >
-                Book a call ↗
-              </a>
-            </div>
-          </div>
-          </div>
+        {/* CTA — one bold action, plain links, base line in the same row */}
+        <div className="flex flex-wrap items-center gap-x-7 gap-y-4 mt-[6vh]">
+          <ObfuscatedMailto
+            label="EMAIL ME ↗"
+            className={`font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none ${linkFocus}`}
+            style={{
+              border: '1px solid hsl(var(--sinaida-red))',
+              color: 'hsl(var(--primary-legible))',
+              background: 'hsl(var(--sinaida-red) / 0.06)',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'hsl(var(--primary-legible))';
+              e.currentTarget.style.color = '#000';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'hsl(var(--sinaida-red) / 0.06)';
+              e.currentTarget.style.color = 'hsl(var(--primary-legible))';
+            }}
+          />
+          <a
+            href="https://www.instagram.com/sin.ai.da/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible ${linkFocus}`}
+          >
+            Instagram ↗
+          </a>
+          <a
+            href="https://www.linkedin.com/in/sinaida"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible ${linkFocus}`}
+          >
+            LinkedIn ↗
+          </a>
+          <a
+            href="https://calendly.com/sinaida"
+            target="_blank"
+            rel="noopener"
+            className={`font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible ${linkFocus}`}
+          >
+            Book a call ↗
+          </a>
+          <span className="font-mono text-[13px] w-full md:w-auto md:ml-auto" style={{ color: 'hsl(var(--foreground) / 0.6)' }}>
+            Based in Prague. Working&nbsp;globally.
+          </span>
         </div>
       </div>
     </section>

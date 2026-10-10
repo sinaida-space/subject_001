@@ -102,3 +102,59 @@ export async function getDitheredPreview(
   inflight.set(key, promise);
   return promise;
 }
+
+// ── Raw pixel frames for DitherReveal ──
+// Same palette and 4x4 Bayer rule as getDitheredPreview, but returns the
+// colour and dither pixels as packed Uint32 so a per-frame composite can pick
+// between them without touching the canvas API.
+
+export const BAYER_FLAT = new Float32Array(16);
+for (let y = 0; y < 4; y++) {
+  for (let x = 0; x < 4; x++) BAYER_FLAT[y * 4 + x] = (BAYER_4X4[y][x] + 0.5) / 16;
+}
+
+// Little-endian ABGR packing, matches ImageData's RGBA byte order.
+const pack = (r: number, g: number, b: number) => ((255 << 24) | (b << 16) | (g << 8) | r) >>> 0;
+const PACK_DARK = pack(...COLOR_DARK);
+const PACK_RED = pack(...COLOR_RED);
+
+export interface DitherFrames {
+  width: number;
+  height: number;
+  color: Uint32Array;
+  dither: Uint32Array;
+}
+
+export async function loadDitherImage(src: string): Promise<HTMLImageElement> {
+  return loadImage(src);
+}
+
+/** Cover-crop `img` into w x h and return its colour and dithered pixels. */
+export function buildDitherFrames(img: HTMLImageElement, w: number, h: number): DitherFrames | null {
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return null;
+  const scale = Math.max(w / img.width, h / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+  ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  let data: ImageData;
+  try {
+    data = ctx.getImageData(0, 0, w, h);
+  } catch {
+    return null;
+  }
+  const color = new Uint32Array(data.data.buffer);
+  const dither = new Uint32Array(w * h);
+  const bytes = data.data;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      const lum = (0.299 * bytes[i * 4] + 0.587 * bytes[i * 4 + 1] + 0.114 * bytes[i * 4 + 2]) / 255;
+      dither[i] = lum > BAYER_FLAT[(y & 3) * 4 + (x & 3)] ? PACK_RED : PACK_DARK;
+    }
+  }
+  return { width: w, height: h, color, dither };
+}

@@ -9,7 +9,8 @@ import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import MoleculeBreak, { SectionBand } from '@/components/MoleculeBreak';
 import WorkBuild from '@/components/WorkBuild';
-import HorizonGate from '@/components/HorizonGate';
+import QuoteGate from '@/components/QuoteGate';
+import QuoteStage from '@/components/QuoteStage';
 import CookieBanner from '@/components/CookieBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
@@ -94,14 +95,12 @@ const Index = () => {
         {/* The red horizon: where the cover ends and the content begins. In
             full mode scrolling turns it into the gate that opens onto About. */}
         {full ? (
-          <HorizonGate>
-            <SectionBand>
-              <div className="container mx-auto px-6 max-w-7xl">
-                <div className="section-divider" data-horizon />
-              </div>
-            </SectionBand>
+          // The belief blows in as the hero blows away; "seen" becomes the
+          // portrait and "connected" the threads into About.
+          <QuoteGate>
+            <QuoteStage pinned />
             <AboutSection />
-          </HorizonGate>
+          </QuoteGate>
         ) : (
           <>
             <SectionBand>
@@ -113,6 +112,7 @@ const Index = () => {
                 </Suspense>
               </div>
             </SectionBand>
+            <QuoteStage pinned={false} />
             <AboutSection />
           </>
         )}

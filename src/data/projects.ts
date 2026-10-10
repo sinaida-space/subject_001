@@ -15,6 +15,8 @@ import workStereolove from '@/assets/work-stereolove.webp';
 import workInfiniteVoidsong from '@/assets/work-infinite-voidsong.webp';
 import workStormGlass from '@/assets/work-storm-glass.webp';
 import workConspaceRooms from '@/assets/work-conspace-rooms.webp';
+import workConspaceRooms640 from '@/assets/work-conspace-rooms-640.webp';
+import workConspaceRooms1024 from '@/assets/work-conspace-rooms-1024.webp';
 import type { Dialect } from '@/lib/diveBus';
 
 export type ProjectKind =
@@ -306,6 +308,7 @@ export const PROJECTS: Project[] = [
     url: 'https://conspace-rooms.vercel.app/',
     video: 'oSWzQ4ds8BI',
     image: workConspaceRooms,
+    imageSrcSet: `${workConspaceRooms640} 640w, ${workConspaceRooms1024} 1024w, ${workConspaceRooms} 1344w`,
     links: [
       { label: 'Visit the experience', url: 'https://conspace-rooms.vercel.app/' },
       { label: 'Project sheet (PDF)', url: '/files/conspace-rooms-project-sheet.pdf' },

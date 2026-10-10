@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About, Services, Contact</title>
+<style>
+@font-face { font-family: 'Geist Pixel'; font-weight: 400; font-display: block;
+  src: url(/fonts/geist-pixel-latin.woff2) format('woff2'); }
+@font-face { font-family: 'Geist Pixel'; font-weight: 400; font-display: block;
+  src: url(/fonts/geist-pixel-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+:root {
+  --void: #050505; --chalk: #f6f6f6; --fg: #e0e0e0;
+  --red: #cd0000; --red-text: #ff1a1a; --neon: #ff3b3b;
+  --graphite: #262626; --gunmetal: #4d4d4d; --slate: #737373; --fog: #999999; --haze: #cccccc;
+  --gutter: 24px; --col-gap: 24px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--void); color: var(--fg);
+  font-family: 'Geist Pixel', ui-monospace, Menlo, monospace; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+::selection { background: var(--red); color: var(--chalk); }
+
+/* static star field, drawn once; nothing here moves on its own */
+#stars { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background: repeating-linear-gradient(0deg, transparent 0, rgba(0,0,0,.045) 1.5px, transparent 3px); }
+
+.wrap { position: relative; z-index: 1; max-width: 80rem; margin: 0 auto; padding: 0 var(--gutter); }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); }
+
+/* mock furniture */
+.mockbar { position: fixed; top: 0; left: 0; right: 0; z-index: 60; display: flex; gap: 16px;
+  align-items: center; justify-content: space-between; padding: 10px var(--gutter);
+  background: rgba(5,5,5,.88); border-top: 1px solid rgba(205,0,0,.5); border-bottom: 1px solid var(--graphite);
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--fog); }
+.mockbar b { color: var(--red-text); font-weight: 400; }
+.mockbar nav { display: flex; gap: 6px; align-items: center; }
+a:focus-visible { outline: 2px solid var(--red-text); outline-offset: 3px; }
+
+section { position: relative; padding: 18vh 0 14vh; }
+section + section { border-top: 1px solid var(--graphite); }
+
+/* house heading: red letterspaced eyebrow + fog caption, as on the live site */
+.eyebrow { margin: 0; font-size: 40px; letter-spacing: .2em; text-transform: uppercase; color: var(--red); font-weight: 400; }
+.caption { margin: 8px 0 0; font-size: 20px; text-transform: uppercase; color: rgba(224,224,224,.65); }
+
+/* ── ABOUT ─────────────────────────────────────────── */
+.about-head { margin-top: 7vh; align-items: start; row-gap: 32px; }
+.portrait { grid-column: 1 / span 3; max-width: 240px; }
+.portrait .frame { position: relative; aspect-ratio: 1; border: 1px solid rgba(205,0,0,.4);
+  box-shadow: 0 0 0 1px rgba(255,26,26,.15), inset 0 0 30px rgba(0,0,0,.5); }
+.portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  filter: contrast(1.08) brightness(.92) saturate(.85); }
+.portrait .frame::after { content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(0,0,0,.08) 3px, rgba(0,0,0,.08) 4px); }
+.credit { margin: 10px 0 0; font-size: 11px; color: rgba(224,224,224,.32); }
+
+.about-title { grid-column: 4 / -1; margin: 0; font-weight: 400; text-transform: uppercase;
+  font-size: clamp(44px, 7.2vw, 112px); line-height: .92; letter-spacing: -.01em; color: var(--chalk); }
+.belief { grid-column: 4 / span 7; margin: 0; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.55; color: rgba(224,224,224,.86); max-width: 46ch; }
+
+.facts { margin-top: 12vh; border-bottom: 1px solid rgba(224,224,224,.14); }
+.row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: baseline;
+  padding: 22px 0; border-top: 1px solid rgba(224,224,224,.14); font-size: clamp(20px, 1.9vw, 28px); line-height: 1.3; }
+.row .k { grid-column: 1 / span 3; text-transform: uppercase; color: rgba(224,224,224,.6); }
+.row p { grid-column: 4 / -1; margin: 0; color: var(--chalk); max-width: 40ch; }
+
+.practice { margin-top: 12vh; }
+.practice p { grid-column: 4 / span 7; margin: 0; font-size: 20px; line-height: 1.85; color: rgba(224,224,224,.82); max-width: 52ch; }
+
+/* ── SERVICES ──────────────────────────────────────── */
+.svc-intro { margin-top: 7vh; }
+.svc { margin-top: 16vh; align-items: center; row-gap: 28px; }
+.svc .text { grid-column: 1 / span 6; }
+.svc .media { grid-column: 8 / -1; }
+.svc.flip .text { grid-column: 7 / -1; grid-row: 1; }
+.svc.flip .media { grid-column: 1 / span 5; grid-row: 1; }
+.svc .word { margin: 0; font-weight: 400; text-transform: uppercase; color: var(--chalk);
+  font-size: clamp(88px, 15vw, 216px); line-height: .82; letter-spacing: -.02em; }
+.svc .for { margin: 28px 0 0; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.6; color: var(--chalk); }
+.svc .desc { margin: 6px 0 0; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.6; color: rgba(224,224,224,.7); max-width: 40ch; }
+
+.frame-dither { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--void);
+  border: 1px solid rgba(205,0,0,.35); }
+.frame-dither canvas, .frame-dither img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.frame-dither canvas { image-rendering: pixelated; }
+.frame-dither img { object-fit: cover; opacity: 0; filter: contrast(1.05) saturate(.9); }
+.frame-dither::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(0,0,0,.1) 3px, rgba(0,0,0,.1) 4px); }
+.proof { margin: 14px 0 0; font-size: 14px; line-height: 1.6; color: var(--fog); max-width: 52ch; }
+.proof a { color: var(--haze); text-decoration-color: var(--gunmetal); text-underline-offset: 3px; }
+@media (hover: hover) { .proof a:hover { color: var(--chalk); text-decoration-color: var(--red); } }
+
+/* ── CONTACT ───────────────────────────────────────── */
+.ask { margin: 7vh 0 0; font-weight: 400; text-transform: uppercase; color: var(--chalk);
+  font-size: clamp(44px, 7.2vw, 112px); line-height: .92; letter-spacing: -.01em; max-width: 13ch; }
+.ask em { font-style: normal; color: var(--red); }
+.briefs { margin: 10vh 0 0; padding: 0; list-style: none; border-top: 1px solid rgba(224,224,224,.14); }
+.brief a { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); column-gap: var(--col-gap); align-items: center;
+  padding: 30px 0; border-bottom: 1px solid rgba(224,224,224,.14); text-decoration: none; position: relative; }
+.brief .t { grid-column: 1 / span 10; font-size: clamp(22px, 2.6vw, 38px); line-height: 1.15; color: var(--chalk); }
+.brief .go { grid-column: 11 / -1; justify-self: end; display: flex; align-items: center; gap: 12px;
+  font-size: 13px; letter-spacing: .15em; color: var(--red-text); }
+.brief svg { width: 64px; height: 20px; overflow: visible; }
+.brief svg path { fill: none; stroke: var(--red-text); stroke-width: 1.5; stroke-dasharray: 120; stroke-dashoffset: 0; }
+.brief a::before { content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0; background: var(--red); transition: width .45s ease; }
+@media (hover: hover) {
+  .brief svg path { stroke-dashoffset: 120; transition: stroke-dashoffset .5s ease; }
+  .brief a:hover::before { width: 100%; }
+  .brief a:hover svg path { stroke-dashoffset: 0; }
+}
+.outro { margin-top: 10vh; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; }
+.btn { font: inherit; font-size: 12px; letter-spacing: .15em; text-transform: uppercase; text-decoration: none;
+  padding: 12px 24px; border: 1px solid var(--red); color: var(--red-text); background: rgba(205,0,0,.06); }
+@media (hover: hover) { .btn:hover { background: var(--red-text); color: #000; } }
+.outro a.plain { font-size: 13px; color: rgba(224,224,224,.6); text-decoration: none; }
+@media (hover: hover) { .outro a.plain:hover { color: var(--red-text); } }
+.outro .base { margin-left: auto; font-size: 13px; color: var(--fog); }
+
+.note { position: relative; z-index: 1; max-width: 80rem; margin: 0 auto; padding: 8vh var(--gutter) 12vh;
+  font-size: 13px; line-height: 1.7; color: var(--slate); }
+
+/* ── PHONE ─────────────────────────────────────────── */
+@media (max-width: 767px) {
+  :root { --gutter: 16px; --col-gap: 12px; }
+  section { padding: 12vh 0 10vh; }
+  .eyebrow { font-size: 32px; }
+  .mockbar .what { display: none; }
+  .caption { font-size: 16px; }
+  .about-title { grid-column: 1 / -1; grid-row: 1; font-size: 12.4vw; }
+  .portrait { grid-column: 1 / span 5; grid-row: 2; max-width: none; }
+  .belief { grid-column: 6 / -1; grid-row: 2; font-size: 17px; align-self: end; }
+  .facts { margin-top: 8vh; }
+  .row { font-size: 19px; padding: 18px 0; }
+  .row .k, .row p { grid-column: 1 / -1; }
+  .row p { margin-top: 4px; }
+  .practice p { grid-column: 1 / -1; font-size: 17px; }
+  .svc { margin-top: 10vh; }
+  .svc .text, .svc.flip .text { grid-column: 1 / -1; grid-row: 1; }
+  .svc .media, .svc.flip .media { grid-column: 1 / -1; grid-row: 2; }
+  .svc .word { font-size: 25vw; }
+  .svc .for, .svc .desc { font-size: 17px; }
+  .ask { font-size: 12vw; }
+  .brief a { padding: 22px 0; row-gap: 8px; }
+  .brief .t { grid-column: 1 / -1; font-size: 22px; }
+  .brief .go { grid-column: 1 / -1; justify-self: start; }
+  .outro .base { margin-left: 0; width: 100%; }
+}
+@media (max-width: 420px) {
+  .portrait { grid-column: 1 / span 6; }
+  .belief { grid-column: 1 / -1; grid-row: 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brief a::before, .brief svg path { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<div class="mockbar">
+  <span><b>Mock</b><span class="what"> · About / Services / Contact · not wired into the site</span></span>
+</div>
+
+<!-- ABOUT: the hero's oversized type carries on; portrait stays small in the
+     headline's negative space; the three facts get full contrast. -->
+<section id="about">
+  <div class="wrap">
+    <h2 class="eyebrow">About</h2>
+    <p class="caption">The story so far.</p>
+
+    <div class="grid about-head">
+      <div class="portrait">
+        <div class="frame">
+          <picture>
+            <source type="image/avif" srcset="/sinaida-photo-600.avif">
+            <img src="/sinaida-photo-600.webp" alt="Sinaida Krivchenko on stage with a microphone" width="600" height="600">
+          </picture>
+        </div>
+        <p class="credit">Photo: Roland Gaedtgens · Zhembrovskyy</p>
+      </div>
+      <h3 class="about-title" data-typo>Human first. Digital second.</h3>
+      <p class="belief" data-typo>I believe that technology is only meaningful when it helps people feel seen, heard, and connected.</p>
+    </div>
+
+    <div class="facts">
+      <div class="row"><span class="k">Origin</span>
+        <p data-typo>Biomedical engineering, MSc., Bauman Moscow State Technical University</p></div>
+      <div class="row"><span class="k">Drift</span>
+        <p data-typo>Ballet. General&nbsp;Electric IT Leadership Program. Generative systems.</p></div>
+      <div class="row"><span class="k">Focus</span>
+        <p data-typo>Real-time visual worlds driven by body tracking and sound.</p></div>
+    </div>
+
+    <div class="grid practice">
+      <p data-typo>I build living visual systems for stages, concerts, and performance spaces. They breathe with sound, respond to bodies, and turn light, image, and generative code into a shared atmosphere.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES: one oversized word per client, the same four words the globe
+     lights (sound, code, body, space). Each proof frame develops from red
+     dither as it rises to mid-screen; a pure function of scroll. -->
+<section id="services">
+  <div class="wrap">
+    <h2 class="eyebrow">Services</h2>
+    <p class="caption">Digital tools for human connection.</p>
+
+    <div class="grid svc">
+      <div class="text">
+        <h3 class="word">Sound</h3>
+        <p class="for" data-typo>For music festivals &amp; concerts</p>
+        <p class="desc" data-typo>Audio-reactive stage visuals, one system per song, listening to the live mix straight from the desk. Delivered as a turnkey show or operated live.</p>
+      </div>
+      <div class="media">
+        <div class="frame-dither" data-src="/src/assets/work-redkie-ptitsy-1024.webp"></div>
+        <p class="proof" data-typo>Nine projections, one per song, performed live with <a href="/work/redkie-ptitsy">Redkie Ptitsy</a> at Sklad No. 3, Moscow, March 2026.</p>
+      </div>
+    </div>
+
+    <div class="grid svc flip">
+      <div class="text">
+        <h3 class="word">Code</h3>
+        <p class="for" data-typo>For interactive web</p>
+        <p class="desc" data-typo>Sites and components that respond to the visitor. Real-time WebGL and shaders, camera and gesture control running on-device, generative sound. Delivered as a finished site, or as a single component handed to a team that already has developers.</p>
+      </div>
+      <div class="media">
+        <div class="frame-dither" data-src="/src/assets/work-aether-currents-1024.webp"></div>
+        <p class="proof" data-typo>Every interactive piece on this site was built this way, including <a href="/work/aether-currents">Aether Currents</a> and <a href="/work/ethereal-path">Ethereal Path</a>. All live, all playable now.</p>
+      </div>
+    </div>
+
+    <div class="grid svc">
+      <div class="text">
+        <h3 class="word">Body</h3>
+        <p class="for" data-typo>For theater &amp; dance</p>
+        <p class="desc" data-typo>Responsive scenography: real-time systems that follow the performers’ bodies and the sound, developed with the creative team from first concept onward.</p>
+      </div>
+      <div class="media">
+        <div class="frame-dither" data-src="/src/assets/work-ethereal-path.webp"></div>
+        <p class="proof" data-typo>The tracking runs live and in public: hands drive sound and image in <a href="/work/aether-currents">Aether Currents</a>, head and hands steer the whole scene in <a href="/work/ethereal-path">Ethereal Path</a>.</p>
+      </div>
+    </div>
+
+    <div class="grid svc flip">
+      <div class="text">
+        <h3 class="word">Space</h3>
+        <p class="for" data-typo>For venues, brands &amp; institutions</p>
+        <p class="desc" data-typo>Immersive installations and generative visual identities, adapted to the space they run in.</p>
+      </div>
+      <div class="media">
+        <div class="frame-dither" data-src="/src/assets/work-conspace-rooms.webp"></div>
+        <p class="proof" data-typo>Prototyped as interactive projections for <a href="/work/the-eyes-chico">The Eyes Chico</a> and <a href="/work/conspace-rooms">CONSPACE ROOMS</a>, Prague 2026. Both web forms are finished and live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT: her own invitation at hero scale; the four "brief to show" lines
+     leave Services and become four ways to start an email. -->
+<section id="contact">
+  <div class="wrap">
+    <h2 class="eyebrow">Contact</h2>
+    <p class="caption">Open for collaboration.</p>
+
+    <p class="ask" data-typo>Send the show, the space or the idea.</p>
+
+    <ul class="briefs">
+      <li class="brief"><a href="#" data-subject="Sound: setlist and stage"><span class="t" data-typo>The setlist and stage dimensions</span><span class="go">EMAIL <svg viewBox="0 0 64 20" aria-hidden="true"><path d="M0 10 H24 L28 2 L33 18 L37 10 H64"/></svg></span></a></li>
+      <li class="brief"><a href="#" data-subject="Code: the site"><span class="t" data-typo>The site you have, and what should happen when someone arrives</span><span class="go">EMAIL <svg viewBox="0 0 64 20" aria-hidden="true"><path d="M0 10 H24 L28 2 L33 18 L37 10 H64"/></svg></span></a></li>
+      <li class="brief"><a href="#" data-subject="Body: script and venue"><span class="t" data-typo>The script or choreography notes and venue specs</span><span class="go">EMAIL <svg viewBox="0 0 64 20" aria-hidden="true"><path d="M0 10 H24 L28 2 L33 18 L37 10 H64"/></svg></span></a></li>
+      <li class="brief"><a href="#" data-subject="Space: photos and occasion"><span class="t" data-typo>The space (photos or plans) and the occasion</span><span class="go">EMAIL <svg viewBox="0 0 64 20" aria-hidden="true"><path d="M0 10 H24 L28 2 L33 18 L37 10 H64"/></svg></span></a></li>
+    </ul>
+
+    <div class="outro">
+      <a class="btn" href="#">Email me ↗</a>
+      <a class="plain" href="https://www.instagram.com/sin.ai.da/">Instagram ↗</a>
+      <a class="plain" href="https://www.linkedin.com/in/sinaida">LinkedIn ↗</a>
+      <a class="plain" href="https://calendly.com/sinaida">Book a call ↗</a>
+      <span class="base">Based in Prague. Working globally.</span>
+    </div>
+  </div>
+</section>
+
+<p class="note">Mock notes: Services keeps every description and proof line verbatim; only the four “brief to show” lines moved, into Contact. Each Contact row opens an email with its subject filled in. The proof frames develop from red dither as they rise to mid-screen and fall back to dither on the way up. Hover effects are desktop only.</p>
+
+<script>
+// Short words never end a line: glue every 1–2 letter word (and a few
+// function words) to the word after it, then glue the last two words.
+const SHORT = /(^|[\s (])((?:[A-Za-z’]{1,2}|&|the|and|for|per|its|but|nor|via|No\.)) /g;
+function typoText(s, last) {
+  let prev;
+  do { prev = s; s = s.replace(SHORT, '$1$2 '); } while (s !== prev);
+  if (last) s = s.replace(/ (\S+)\s*$/, ' $1');
+  return s;
+}
+function typo(el) {
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((n, i) => { n.nodeValue = typoText(n.nodeValue, i === nodes.length - 1); });
+}
+
+document.querySelectorAll('[data-typo]').forEach(typo);
+
+// ── Contact rows: subject only, no address in the mock ───────
+document.querySelectorAll('.brief a').forEach((a) => {
+  a.title = 'Opens an email: ' + a.dataset.subject;
+  a.addEventListener('click', (e) => e.preventDefault());
+});
+
+// ── Static stars, drawn once per resize ──────────────────────
+function drawStars() {
+  const c = document.getElementById('stars');
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr;
+  const g = c.getContext('2d');
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const n = Math.round(innerWidth * innerHeight / 2600);
+  for (let i = 0; i < n; i++) {
+    const red = rnd() < .12;
+    g.fillStyle = red ? `rgba(205,0,0,${.35 + rnd() * .4})` : `rgba(246,246,246,${.12 + rnd() * .55})`;
+    const s = (rnd() < .06 ? 2 : 1) * dpr;
+    g.fillRect(Math.floor(rnd() * c.width), Math.floor(rnd() * c.height), s, s);
+  }
+}
+
+// ── Proof frames: red Bayer dither that develops into the frame ──
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+const frames = [];
+function prepFrame(box) {
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = box.dataset.src;
+  img.alt = '';
+  img.onload = () => {
+    const cols = 132, rows = Math.round(cols * 3 / 4);
+    const off = document.createElement('canvas');
+    off.width = cols; off.height = rows;
+    const o = off.getContext('2d', { willReadFrequently: true });
+    // cover-crop to 4:3
+    const ar = img.naturalWidth / img.naturalHeight, target = 4 / 3;
+    let sw = img.naturalWidth, sh = img.naturalHeight, sx = 0, sy = 0;
+    if (ar > target) { sw = sh * target; sx = (img.naturalWidth - sw) / 2; } else { sh = sw / target; sy = (img.naturalHeight - sh) / 2; }
+    o.drawImage(img, sx, sy, sw, sh, 0, 0, cols, rows);
+    const px = o.getImageData(0, 0, cols, rows).data;
+    const lum = new Float32Array(cols * rows);
+    for (let i = 0; i < lum.length; i++) {
+      const l = (px[i * 4] * .299 + px[i * 4 + 1] * .587 + px[i * 4 + 2] * .114) / 255;
+      lum[i] = Math.pow(l, .8);
+    }
+    const cv = document.createElement('canvas');
+    cv.width = cols; cv.height = rows;
+    box.append(cv, img);
+    const f = { box, cv, ctx: cv.getContext('2d'), img, lum, cols, rows, data: cv.getContext('2d').createImageData(cols, rows), last: -1 };
+    frames.push(f);
+    schedule();
+  };
+}
+function renderFrame(f, p) {
+  // p: 0 = far below mid-screen, 1 = at or above it
+  const q = Math.round(p * 60) / 60;
+  if (q === f.last) return;
+  f.last = q;
+  const gain = .18 + Math.min(1, q * 1.5) * 1.05;
+  const d = f.data.data;
+  for (let y = 0; y < f.rows; y++) for (let x = 0; x < f.cols; x++) {
+    const i = y * f.cols + x, v = f.lum[i] * gain, t = (BAYER[(y & 3) * 4 + (x & 3)] + .5) / 16;
+    const k = i * 4;
+    if (v > t) {
+      if (f.lum[i] > .78) { d[k] = 246; d[k + 1] = 246; d[k + 2] = 246; }
+      else { d[k] = 205; d[k + 1] = 0; d[k + 2] = 0; }
+      d[k + 3] = 255;
+    } else { d[k + 3] = 0; }
+  }
+  f.ctx.putImageData(f.data, 0, 0);
+  const s = Math.min(1, Math.max(0, (q - .62) / .38));
+  f.img.style.opacity = (s * s * (3 - 2 * s)).toFixed(3);
+}
+let raf = 0;
+function update() {
+  raf = 0;
+  const vh = innerHeight;
+  for (const f of frames) {
+    const r = f.box.getBoundingClientRect();
+    if (r.bottom < -vh || r.top > vh * 2) continue;
+    const centre = r.top + r.height / 2;
+    renderFrame(f, Math.min(1, Math.max(0, (vh * .95 - centre) / (vh * .45))));
+  }
+}
+function schedule() { if (!raf) raf = requestAnimationFrame(update); }
+
+document.querySelectorAll('.frame-dither').forEach(prepFrame);
+addEventListener('scroll', schedule, { passive: true });
+addEventListener('resize', () => { drawStars(); schedule(); });
+drawStars();
+</script>
+</body>
+</html>
+<!-- Je suis le spectre d'une rose que tu portais hier au bal. -->
