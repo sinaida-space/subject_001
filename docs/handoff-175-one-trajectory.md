@@ -28,3 +28,9 @@ Checks: reverse scroll rewinds, one-breath seams, 60 fps on a 5-year-old laptop,
 
 - The Contact star title lags behind the footer at the very end of the page (parallax 0.3 has no room left). Cap it, or give the footer its own ground.
 - The swirl mock above.
+
+## Footer direction (proposed 2026-10-10, not built)
+
+The footer is the city the stars came from: the grounding under the sky. Stars fall into the last screen and land as lit windows. The three link columns are towers built from window cells in the site's dither, set front-on on the Swiss grid (no isometric view, which reads as a stock synthwave trope). The ECG logo is the one neon sign, on the tallest roof. The camera dolly-zooms out from street level until the skyline is small and its windows read as a constellation. Then the windows breathe light upward into the sky: the universal source is people, and the stars over the page came from these lights. Hovering a link lights its floor. Canvas 2D cells in the galaxy palette, no three.js buildings; it has to run on a 5-year-old laptop. Mock a still first.
+
+Also landed after this handoff: titles hold mid-screen and condense from the fog with their section's presence (StarTitle), Body of Work is a StarTitle and the bang pours only into the globe (`TITLE_POUR = false` in WorkBuild), header links jump via `src/lib/navLand.ts`, the hypercube swings oblique mid-turn (`TURN_YAW`, `TURN_PITCH`), and the cursor is red in lite too.
