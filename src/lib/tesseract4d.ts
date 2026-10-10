@@ -70,4 +70,43 @@ export function project(v: Vec4, angleXW: number, angleZW: number, out: Projecte
   return out;
 }
 
+// ── service panes ──
+// Cell k (k = 0..3: w-, x+, w+, x-) comes to the front at XW = -k·90°. Its
+// pane is that cell's face toward the camera (z = -1), parametrised so that
+// at the cell's own rest angle theta = -k·90° (and ZW = 180°) the point
+// (a, b) in [-1, 1]² rotates to x = a, y = b on the outer cell: the pane is
+// upright, unmirrored and fills the resting frame exactly.
+
+/** rest XW angle of cell k */
+export const paneTheta = (k: number) => (-k * Math.PI) / 2;
+
+/**
+ * GLSL ES 1.00 twin of project() plus the pane parametrisation, for a vertex
+ * shader. tesseractProject returns (screen x, screen y, depth 0..1, w after
+ * rotation: 1 = outer cell, -1 = inner); screen units match project().
+ */
+export const TESSERACT_GLSL = `
+const float D4 = ${D4.toFixed(1)};
+const float D3 = ${D3.toFixed(1)};
+vec4 panePoint(vec2 ab, float theta) {
+  float c = cos(theta);
+  float s = sin(theta);
+  return vec4(ab.x * c - s, ab.y, -1.0, -ab.x * s - c);
+}
+vec4 tesseractProject(vec4 v, float angleXW, float angleZW) {
+  float cXW = cos(angleXW);
+  float sXW = sin(angleXW);
+  float cZW = cos(angleZW);
+  float sZW = sin(angleZW);
+  float x1 = v.x * cXW - v.w * sXW;
+  float w1 = v.x * sXW + v.w * cXW;
+  float z1 = v.z * cZW - w1 * sZW;
+  float w2 = v.z * sZW + w1 * cZW;
+  float s4 = D4 / (D4 - w2);
+  vec3 p3 = vec3(x1, v.y, z1) * s4;
+  float s3 = D3 / (D3 - p3.z);
+  return vec4(p3.xy * s3, clamp((p3.z + 2.0) / 4.0, 0.0, 1.0), w2);
+}
+`;
+
 // Je suis le spectre d'une rose que tu portais hier au bal.
