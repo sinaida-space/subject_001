@@ -20,7 +20,7 @@ export default function ContactChannel() {
         {/* h2/p (not div) — matches Services' and Body of Work's own
             eyebrow+caption markup, so all four sections' labels pick up
             the same sitewide hover glitch/bloom (index.css). */}
-        {full ? <StarTitle text="Contact" caption={question} /> : <LiteTitle text="Contact" caption={question} />}
+        {full ? <StarTitle text="Contact" caption={question} clear /> : <LiteTitle text="Contact" caption={question} />}
 
         <p
           className="font-mono uppercase font-normal text-foreground mt-[7vh] mb-0 text-[16vw] md:text-[clamp(64px,11vw,176px)]"

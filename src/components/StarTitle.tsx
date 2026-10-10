@@ -23,6 +23,7 @@ const ALPHA = 0.32; // global alpha: soft, so content over the lower part stays 
 const OVERLAP = 0.3; // share of the word height the following content rides over
 const PARALLAX = 0.7; // lite titles: the label lags the content by this share of the scroll
 const BRIGHT = 0.5; // of galaxy's bright stars, the share kept here (4% → 2%)
+const PAD = 6; // css px of canvas around the word, for the jitter and the halos
 
 export interface Star { x: number; y: number; rnd: number; depth: number }
 
@@ -130,17 +131,22 @@ interface StarTitleProps {
   className?: string;
   /** kept for callers; the word now follows its section's presence */
   until?: number;
+  /** the word has thinned away before the section's end reaches its lower
+   * edge, so what follows never rides over it (Contact: the footer, #179) */
+  clear?: boolean;
 }
 
 /** how present a section is: 0 below the screen, 1 from when its top reaches
- * the middle until its bottom does, 0 again once it has gone above */
-const presence = (top: number, bottom: number, vh: number) => {
+ * the middle until its bottom does, 0 again once it has gone above. With
+ * `end` (px from the top of the screen) it leaves over `span` px of scroll and
+ * is gone once its bottom has come up to `end` */
+const presence = (top: number, bottom: number, vh: number, end = 0, span = 0.5 * vh) => {
   const inn = clamp01((vh - top) / (0.5 * vh));
-  const out = clamp01(bottom / (0.5 * vh));
+  const out = clamp01((bottom - end) / span);
   return Math.min(inn, out);
 };
 
-export default function StarTitle({ text, as = 'h2', caption, className }: StarTitleProps) {
+export default function StarTitle({ text, as = 'h2', caption, className, clear = false }: StarTitleProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const Tag = as;
@@ -153,26 +159,32 @@ export default function StarTitle({ text, as = 'h2', caption, className }: StarT
     // a few thousand squares, drawn only on scroll while the word forms
     const dpr = LIGHT ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
     let flyers: Flyer[] = [];
-    let boxW = 0, boxH = 0;
+    let boxW = 0, boxH = 0, wordW = 0;
     let lastP = -1;
     let raf = 0;
     let dead = false;
 
+    // fixed in the middle of the screen, both ways (#179); the word plus a pad
+    const place = () => {
+      const cvW = wordW + 2 * PAD, cvH = boxH + 2 * PAD;
+      canvas.style.left = `${Math.round((document.documentElement.clientWidth - cvW) / 2)}px`;
+      canvas.style.top = `${Math.round((svh() - cvH) / 2)}px`;
+    };
     const sample = () => {
       const cw = box.clientWidth;
-      if (cw === boxW && flyers.length) return;
-      const { h, stars } = sampleStarTitle(text, cw * SPAN, { light: LIGHT });
+      if (cw === boxW && flyers.length) return place();
+      const { w, h, stars } = sampleStarTitle(text, cw * SPAN, { light: LIGHT });
       boxW = cw;
       boxH = h;
+      wordW = w;
       box.style.height = `${h}px`;
       box.style.marginBottom = `${-Math.round(h * OVERLAP)}px`;
-      canvas.width = Math.round(cw * dpr);
-      canvas.height = Math.round(h * dpr);
-      // fixed in the middle of the screen, on the box's left edge
-      canvas.style.left = `${Math.round(box.getBoundingClientRect().left)}px`;
-      canvas.style.top = `${Math.round((svh() - h) / 2)}px`;
-      canvas.style.width = `${cw}px`;
-      canvas.style.height = `${h}px`;
+      const cvW = w + 2 * PAD, cvH = h + 2 * PAD;
+      canvas.width = Math.round(cvW * dpr);
+      canvas.height = Math.round(cvH * dpr);
+      canvas.style.width = `${cvW}px`;
+      canvas.style.height = `${cvH}px`;
+      place();
       flyers = stars.map((s) => {
         const [r, g, b] = galaxyColor(s.rnd, 0.55 + 0.45 * s.depth); // formed letters sit at the bright end
         return {
@@ -189,8 +201,8 @@ export default function StarTitle({ text, as = 'h2', caption, className }: StarT
     };
 
     const draw = (p: number) => {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, boxW, boxH);
+      ctx.setTransform(dpr, 0, 0, dpr, PAD * dpr, PAD * dpr);
+      ctx.clearRect(-PAD, -PAD, wordW + 2 * PAD, boxH + 2 * PAD);
       const sprite = halo();
       for (const f of flyers) {
         const e = land(clamp01((p - f.delay) / 0.25));
@@ -217,7 +229,9 @@ export default function StarTitle({ text, as = 'h2', caption, className }: StarT
       raf = 0;
       if (!flyers.length) return;
       const r = section.getBoundingClientRect();
-      const p = Math.round(ease(presence(r.top, r.bottom, window.innerHeight)) * 200) / 200;
+      const vh = window.innerHeight;
+      const pr = clear ? presence(r.top, r.bottom, vh, (svh() + boxH) / 2, 0.3 * vh) : presence(r.top, r.bottom, vh);
+      const p = Math.round(ease(pr) * 200) / 200;
       if (p === lastP) return;
       lastP = p;
       canvas.style.visibility = p > 0 ? 'visible' : 'hidden';
@@ -248,7 +262,7 @@ export default function StarTitle({ text, as = 'h2', caption, className }: StarT
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
     };
-  }, [text]);
+  }, [text, clear]);
 
   return (
     <>
