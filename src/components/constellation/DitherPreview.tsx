@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { getDitheredPreview } from '@/lib/ditherPreview';
 
 // ── Floating dithered project preview ──
@@ -17,9 +17,13 @@ interface DitherPreviewProps {
   visible: boolean;
   /** true for keyboard focus — skip the lerp trail, position instantly */
   instant?: boolean;
+  /** square side in px; the hero's project words use a larger square */
+  size?: number;
+  /** optional caption under the image (the hero names the project) */
+  caption?: ReactNode;
 }
 
-export default function DitherPreview({ src, x, y, visible, instant = false }: DitherPreviewProps) {
+export default function DitherPreview({ src, x, y, visible, instant = false, size = SIZE, caption }: DitherPreviewProps) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const elRef = useRef<HTMLDivElement>(null);
   const currentRef = useRef({ x, y });
@@ -83,10 +87,12 @@ export default function DitherPreview({ src, x, y, visible, instant = false }: D
     const { x: cx, y: cy } = currentRef.current;
 
     // Flip offset to keep the square inside the viewport.
-    const flipX = cx + OFFSET + SIZE > window.innerWidth;
-    const flipY = cy + OFFSET + SIZE > window.innerHeight;
-    const left = flipX ? cx - OFFSET - SIZE : cx + OFFSET;
-    const top = flipY ? cy - OFFSET - SIZE : cy + OFFSET;
+    const w = el.offsetWidth || size;
+    const h = el.offsetHeight || size;
+    const flipX = cx + OFFSET + w > window.innerWidth;
+    const flipY = cy + OFFSET + h > window.innerHeight;
+    const left = flipX ? cx - OFFSET - w : cx + OFFSET;
+    const top = flipY ? cy - OFFSET - h : cy + OFFSET;
 
     el.style.transform = `translate(${left}px, ${top}px)`;
   };
@@ -99,13 +105,13 @@ export default function DitherPreview({ src, x, y, visible, instant = false }: D
       aria-hidden="true"
       className="pointer-events-none fixed left-0 top-0 z-40 border border-primary/40"
       style={{
-        width: SIZE,
-        height: SIZE,
+        width: size,
         willChange: 'transform',
         boxShadow: '0 0 0 1px hsl(var(--background) / 0.6), 0 12px 32px hsl(0 0% 0% / 0.6)',
       }}
     >
-      <img src={dataUrl} alt="" width={SIZE} height={SIZE} className="block h-full w-full" draggable={false} />
+      <img src={dataUrl} alt="" width={size} height={size} className="block w-full" style={{ height: size }} draggable={false} />
+      {caption && <div className="bg-background px-3 py-2">{caption}</div>}
     </div>
   );
 }

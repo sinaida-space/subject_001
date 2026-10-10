@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero, four directions</title>
+<style>
+@font-face { font-family: 'Geist Pixel'; font-weight: 400; font-display: block;
+  src: url(/fonts/geist-pixel-latin.woff2) format('woff2'); }
+:root { --void:#050505; --chalk:#e0e0e0; --red:#cd0000; --red-text:#ff1a1a; --graphite:#262626; --fog:#8a8a8a;
+  --edge: max(24px, calc((100vw - 1280px) / 2 + 24px)); }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--void); color: var(--chalk);
+  font-family: 'Geist Pixel', ui-monospace, Menlo, monospace; }
+
+/* one direction = one screen */
+.slide { position: relative; height: 100vh; height: 100svh; overflow: hidden; border-bottom: 1px solid var(--graphite);
+  background:
+    radial-gradient(1px 1px at 12% 18%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 78% 12%, #fff6 50%, transparent 51%),
+    radial-gradient(1px 1px at 64% 72%, #fff5 50%, transparent 51%), radial-gradient(1px 1px at 33% 84%, #fff6 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 58%, #fff7 50%, transparent 51%), radial-gradient(1px 1px at 46% 34%, #fff4 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 22% 52%, #fff6 50%, transparent 51%), radial-gradient(1px 1px at 92% 88%, #fff5 50%, transparent 51%),
+    var(--void); }
+.hdr { position: absolute; left: var(--edge); right: var(--edge); top: 0; height: 72px; display: flex; align-items: center;
+  justify-content: space-between; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; z-index: 3; }
+.hdr .logo { display: flex; align-items: center; gap: 12px; }
+.hdr .logo i { display: block; width: 72px; height: 14px;
+  background: linear-gradient(var(--red), var(--red)) 0 50%/100% 1.5px no-repeat; box-shadow: 0 0 10px #cd000088; }
+.hdr nav { display: flex; gap: 28px; color: var(--chalk); }
+.hdr .cta { border: 1px solid var(--red); color: var(--red-text); padding: 6px 12px; }
+.tag { position: absolute; left: var(--edge); bottom: 14px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--fog); z-index: 3; }
+.tag b { color: var(--red-text); font-weight: 400; }
+
+.t { position: absolute; margin: 0; text-transform: uppercase; font-weight: 400; letter-spacing: -0.02em; line-height: .86; white-space: nowrap; }
+/* a project word: foreground glyph with the project's red dither laid in */
+.pw { color: transparent; -webkit-background-clip: text; background-clip: text; background-color: var(--chalk);
+  background-size: cover; background-position: center; image-rendering: pixelated; }
+.small { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--fog); }
+.mol { position: absolute; width: 200px; height: 80px; }
+.q { position: absolute; font-size: clamp(16px, 1.8vw, 28px); text-transform: uppercase; color: #b9b2b2; text-align: right;
+  text-shadow: 0 0 6px #cd00008c, 0 0 18px #cd000052; max-width: 22ch; line-height: 1.1; margin: 0; }
+
+/* A ─ Spine: the name runs up the left edge, the tagline steps down the open field */
+#a .spine { left: var(--edge); bottom: 6vh; transform-origin: 0 100%; transform: rotate(-90deg) translateY(100%); }
+#a .stair { font-size: clamp(40px, 8.4vw, 150px); }
+#a .s1 { left: 30vw; top: 20vh; } #a .s2 { left: 40vw; top: calc(20vh + 1 * 0.95em * 1); }
+#a .stairs { position: absolute; left: 26vw; top: 22vh; font-size: clamp(36px, 6.6vw, 120px); }
+#a .stairs span.l { display: block; line-height: .9; }
+#a .stairs span.l:nth-child(2) { padding-left: 1em; }
+#a .stairs span.l:nth-child(3) { padding-left: 2em; }
+#a .stairs span.l:nth-child(4) { padding-left: 3em; }
+#a .mol { right: var(--edge); top: 14vh; }
+#a .q { left: 26vw; bottom: 8vh; text-align: left; }
+
+/* B ─ Horizon: the tagline stands on the red horizon; below it, its reflection */
+#b .name { left: var(--edge); top: calc(72px + 5vh); font-size: clamp(40px, 7.4vw, 132px); }
+#b .line { position: absolute; left: 0; right: 0; top: 64vh; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--red) 12%, var(--red) 88%, transparent); box-shadow: 0 0 14px #cd0000aa; }
+#b .stand { left: var(--edge); bottom: 36vh; font-size: clamp(32px, 6.2vw, 112px); }
+#b .mirror { left: var(--edge); top: 64vh; font-size: clamp(32px, 6.2vw, 112px); transform: scaleY(-1); transform-origin: 50% 50%;
+  opacity: .45; filter: blur(.5px); -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 70%); mask-image: linear-gradient(to top, #000 0%, transparent 70%); }
+#b .stand span.l, #b .mirror span.l { display: block; }
+#b .mol { right: var(--edge); top: 22vh; }
+#b .q { right: var(--edge); top: 74vh; }
+
+/* C ─ Constellation: the four project words are stars on the map, wired in reading order */
+#c svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; }
+#c .star { font-size: clamp(30px, 5.6vw, 100px); }
+#c .c1 { left: 34vw; top: 17vh; } #c .c2 { left: 62vw; top: 30vh; } #c .c3 { left: 44vw; top: 46vh; }
+#c .c4 { left: 70vw; top: 58vh; }
+#c .glue { font-size: clamp(14px, 1.4vw, 22px); color: var(--fog); }
+#c .glue { transform: translate(-50%, -50%); background: var(--void); padding: 2px 6px; }
+#c .name { left: var(--edge); bottom: 6vh; font-size: clamp(40px, 7.4vw, 132px); }
+#c .mol { left: var(--edge); top: 18vh; }
+#c .q { right: var(--edge); bottom: 8vh; }
+
+/* D ─ Descent: the name sits high, the tagline descends to the far corner */
+#d .name { left: var(--edge); top: calc(72px + 5vh); font-size: clamp(40px, 7.4vw, 132px); }
+#d .desc { right: var(--edge); bottom: 7vh; font-size: clamp(36px, 7.4vw, 132px); text-align: right; }
+#d .desc span.l { display: block; }
+#d .mol { left: var(--edge); bottom: 12vh; }
+#d .q { right: var(--edge); top: calc(72px + 6vh); }
+
+.dots { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 10; }
+.dots a { font-size: 12px; color: var(--fog); text-decoration: none; border: 1px solid var(--graphite); padding: 4px 8px; background: var(--void); }
+.dots a:hover { color: var(--red-text); border-color: var(--red); }
+</style></head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="molecule" fill="none" stroke="#cd0000" stroke-width="1.2">
+    <polygon points="40,20 60,8 80,20 80,44 60,56 40,44"/>
+    <line x1="80" y1="20" x2="104" y2="8"/><line x1="104" y1="8" x2="128" y2="20"/>
+    <line x1="128" y1="20" x2="152" y2="8"/><line x1="152" y1="8" x2="176" y2="20"/>
+    <line x1="40" y1="44" x2="20" y2="60"/><line x1="40" y1="20" x2="20" y2="8"/>
+    <circle cx="176" cy="20" r="2.5" fill="#cd0000"/><circle cx="20" cy="60" r="2.5" fill="#cd0000"/>
+  </g></defs></svg>
+
+<section class="slide" id="a">
+  <div class="hdr"><span class="logo"><i></i>Sinaida</span><nav><span>Work</span><span>About</span><span>Services</span></nav><span class="cta">Contact</span></div>
+  <p class="t spine fit-h" data-fit="0.84">Sinaida Krivchenko</p>
+  <p class="t stairs"><span class="l"><span class="pw" data-video="fxrrSxvKp9Q">Visual</span></span><span class="l"><span class="pw" data-video="oSWzQ4ds8BI">Worlds</span></span><span class="l">For <span class="pw" data-video="bDDAXRlz5FQ">Stage</span></span><span class="l">&amp; <span class="pw" data-video="15wl2Sko5GA">Screen</span></span></p>
+  <svg class="mol" viewBox="0 0 200 70"><use href="#molecule"/></svg>
+  <p class="q">What do you see in the noise?</p>
+  <p class="tag"><b>A</b> Spine. The name climbs the left edge, the tagline steps down the open field.</p>
+</section>
+
+<section class="slide" id="b">
+  <div class="hdr"><span class="logo"><i></i>Sinaida</span><nav><span>Work</span><span>About</span><span>Services</span></nav><span class="cta">Contact</span></div>
+  <p class="t name"><span style="display:block">Sinaida</span><span style="display:block">Krivchenko</span></p>
+  <p class="t stand"><span class="l"><span class="pw" data-video="fxrrSxvKp9Q">Visual</span> <span class="pw" data-video="oSWzQ4ds8BI">Worlds</span></span><span class="l">For <span class="pw" data-video="bDDAXRlz5FQ">Stage</span> &amp; <span class="pw" data-video="15wl2Sko5GA">Screen</span></span></p>
+  <div class="line"></div>
+  <p class="t mirror" aria-hidden="true"><span class="l"><span class="pw" data-video="fxrrSxvKp9Q">Visual</span> <span class="pw" data-video="oSWzQ4ds8BI">Worlds</span></span><span class="l">For <span class="pw" data-video="bDDAXRlz5FQ">Stage</span> &amp; <span class="pw" data-video="15wl2Sko5GA">Screen</span></span></p>
+  <svg class="mol" viewBox="0 0 200 70"><use href="#molecule"/></svg>
+  <p class="q">What brought you here?</p>
+  <p class="tag"><b>B</b> Horizon. The tagline stands on the red horizon and reflects into the water below; the question surfaces in the reflection.</p>
+</section>
+
+<section class="slide" id="c">
+  <div class="hdr"><span class="logo"><i></i>Sinaida</span><nav><span>Work</span><span>About</span><span>Services</span></nav><span class="cta">Contact</span></div>
+  <svg class="wires" aria-hidden="true"></svg>
+  <p class="t star c1 pw" data-video="fxrrSxvKp9Q">Visual</p>
+  <p class="t star c2 pw" data-video="oSWzQ4ds8BI">Worlds</p>
+  <p class="t glue g1">for</p>
+  <p class="t star c3 pw" data-video="bDDAXRlz5FQ">Stage</p>
+  <p class="t glue g2">&amp;</p>
+  <p class="t star c4 pw" data-video="15wl2Sko5GA">Screen</p>
+  <p class="t name"><span style="display:block">Sinaida</span><span style="display:block">Krivchenko</span></p>
+  <svg class="mol" viewBox="0 0 200 70"><use href="#molecule"/></svg>
+  <p class="q">When did you last lose track of time?</p>
+  <p class="tag"><b>C</b> Constellation. The four project words are stars, wired in reading order like the Body of Work map.</p>
+</section>
+
+<section class="slide" id="d">
+  <div class="hdr"><span class="logo"><i></i>Sinaida</span><nav><span>Work</span><span>About</span><span>Services</span></nav><span class="cta">Contact</span></div>
+  <p class="t name"><span style="display:block">Sinaida</span><span style="display:block">Krivchenko</span></p>
+  <p class="t desc"><span class="l"><span class="pw" data-video="fxrrSxvKp9Q">Visual</span> <span class="pw" data-video="oSWzQ4ds8BI">Worlds</span></span><span class="l">For <span class="pw" data-video="bDDAXRlz5FQ">Stage</span></span><span class="l">&amp; <span class="pw" data-video="15wl2Sko5GA">Screen</span></span></p>
+  <svg class="mol" viewBox="0 0 200 70"><use href="#molecule"/></svg>
+  <p class="q">What do you keep returning to?</p>
+  <p class="tag"><b>D</b> Descent. Name high on the left, the tagline lands in the opposite corner; the diagonal is the void.</p>
+</section>
+
+<nav class="dots"><a href="#a">A</a><a href="#b">B</a><a href="#c">C</a><a href="#d">D</a></nav>
+
+<script>
+// Same 4x4 Bayer as src/lib/ditherPreview.ts; red dots on a transparent ground.
+const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+const DOT = 3;
+const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+async function ditherRed(src, w, h) {
+  const img = await load(src);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  const s = Math.max(w / img.width, h / img.height);
+  ctx.drawImage(img, (w - img.width * s) / 2, (h - img.height * s) / 2, img.width * s, img.height * s);
+  const d = ctx.getImageData(0, 0, w, h), p = d.data, L = new Float32Array(w * h);
+  for (let j = 0; j < w * h; j++) L[j] = (0.299 * p[j * 4] + 0.587 * p[j * 4 + 1] + 0.114 * p[j * 4 + 2]) / 255;
+  const so = Float32Array.from(L).sort(), lo = so[Math.floor(so.length * .02)], hi = so[Math.floor(so.length * .98)] || 1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const j = y * w + x, v = Math.min(1, Math.max(0, (L[j] - lo) / (hi - lo))) * 0.8;
+    p[j * 4] = 205; p[j * 4 + 1] = 0; p[j * 4 + 2] = 0; p[j * 4 + 3] = v > (BAYER[y % 4][x % 4] + .5) / 16 ? 255 : 0;
+  }
+  ctx.putImageData(d, 0, 0); return c.toDataURL();
+}
+
+function layout() {
+  // A: the vertical name spans a set share of the screen height
+  for (const el of document.querySelectorAll('.fit-h')) {
+    el.style.fontSize = '100px';
+    const w = el.getBoundingClientRect().width || el.scrollWidth;
+    el.style.fontSize = `${(100 * innerHeight * +el.dataset.fit) / el.scrollWidth}px`;
+  }
+  // C: wires between the stars, in reading order
+  const c = document.getElementById('c'), svg = c.querySelector('svg.wires'), box = c.getBoundingClientRect();
+  const pts = [...c.querySelectorAll('.star')].map((e) => { const r = e.getBoundingClientRect(); return [r.left - box.left + r.width / 2, r.top - box.top + r.height / 2]; });
+  svg.innerHTML = pts.slice(1).map((p, i) => `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${p[0]}" y2="${p[1]}" stroke="#cd0000" stroke-opacity=".45" stroke-width="1"/>`).join('')
+    + pts.map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="#cd0000"/>`).join('');
+  // the short words sit on the wire they join: "for" between Worlds and Stage, "&" between Stage and Screen
+  c.querySelectorAll('.glue').forEach((g, i) => {
+    const [a, b] = [pts[i + 1], pts[i + 2]];
+    g.style.left = `${(a[0] + b[0]) / 2}px`; g.style.top = `${(a[1] + b[1]) / 2}px`;
+  });
+}
+
+async function paint() {
+  const words = [...document.querySelectorAll('.pw')];
+  await Promise.all(words.map(async (el) => {
+    const url = await ditherRed(`/video-posters/${el.dataset.video}.jpg`, Math.max(8, Math.round(el.offsetWidth / DOT)), Math.max(8, Math.round(el.offsetHeight / DOT)));
+    el.style.backgroundImage = `url(${url})`;
+  }));
+}
+document.fonts.ready.then(() => { layout(); paint(); });
+addEventListener('resize', () => { layout(); paint(); });
+</script>
+</body></html>

@@ -1108,3 +1108,19 @@ html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.8; }
 .shell-hold {
   animation: shell-hold 400ms step-end;
 }
+
+/* Hero trial, ?hero=a1 (HeroLetters.tsx). One type size for every line, set
+   by script; a project word is the foreground colour with the project's red
+   dither laid into the glyphs. */
+.hl-type {
+  margin: 0; font-weight: 400; text-transform: uppercase;
+  letter-spacing: -0.02em; line-height: .86;
+}
+.hl-line { display: block; white-space: nowrap; }
+.hl-word {
+  font: inherit; letter-spacing: inherit; text-transform: inherit; line-height: inherit;
+  border: 0; padding: 0; cursor: pointer;
+  color: transparent; -webkit-background-clip: text; background-clip: text;
+  background-color: hsl(var(--foreground)); background-repeat: no-repeat;
+  background-size: cover; background-position: center; image-rendering: pixelated;
+}

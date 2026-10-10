@@ -12,7 +12,7 @@ const LINE_A = 'VISUAL WORLDS FOR ';
 const LINE_B = 'STAGE & SCREEN';
 
 // Asked one at a time during a sustained hover/hold — see useHeroWhisper.
-const WHISPER_QUESTIONS = [
+export const WHISPER_QUESTIONS = [
   "DIDN’T YOU COME HERE TO SEE WHO I AM?",
   'WHAT BROUGHT YOU HERE?',
   'WHAT DO YOU SEE IN THE NOISE?',
@@ -33,7 +33,7 @@ const WHISPER_QUESTIONS = [
 // 3s, evaporates it, then (while still active) waits 2s and asks another —
 // never repeating the immediately-previous question. Fully idle (not
 // active) the moment hover/hold ends; no timers survive a mouseleave/touchend.
-function useHeroWhisper(active: boolean, pool: string[]) {
+export function useHeroWhisper(active: boolean, pool: string[]) {
   const [text, setText] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
   const lastIndexRef = useRef<number | null>(null);

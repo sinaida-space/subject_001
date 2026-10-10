@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
+import HeroLetters from '@/components/HeroLetters';
 import AboutSection from '@/components/AboutSection';
 import Constellation from '@/components/constellation/Constellation';
 import ServicesTerminal from '@/components/ServicesTerminal';
@@ -21,7 +22,10 @@ const DustReveal = lazy(() => import('@/components/DustReveal'));
 const Index = () => {
   const { mode } = useRenderMode();
   const full = mode === 'full';
-  const { hash } = useLocation();
+  const { hash, search } = useLocation();
+  // preview-only hero trial, see HeroLetters.tsx
+  const heroParam = new URLSearchParams(search).get('hero');
+  const heroTrial = heroParam === 'd';
 
   // Same strings as the home route in scripts/lib/site-data.mjs. Needed for
   // visitors who land on another page first: arriving here client-side would
@@ -90,7 +94,7 @@ const Index = () => {
 
       <main id="main-content" tabIndex={-1}>
         {/* WHY — who she is, human first */}
-        <HeroSection />
+        {heroTrial ? <HeroLetters /> : <HeroSection />}
         {/* The red horizon: where the cover ends and the content begins. In
             full mode scrolling turns it into the gate that opens onto About. */}
         {full ? (
