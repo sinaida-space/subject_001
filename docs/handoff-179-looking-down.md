@@ -60,7 +60,7 @@ Build order: commit 1 (layout, text, dither text, email reveal), commit 2 (home 
 - `Footer.tsx`: one layout everywhere, both modes, her screenshot: logo + plaque bottom left, three columns bottom-aligned on the right (lg: cols 6-12), bottom line `© year · Designed and coded by Sinaida Krivchenko` + the question. Navigate in page order, Privacy, no arrows under CONNECT (sr-only "opens in a new tab"). Home full on wide screens still holds `CITY.runway` screens and publishes f via `cityBus.setProgress`.
 - `CityLights.tsx` deleted; `city.ts` keeps only the camera (sink, tilt) and the progress bus. `CityGround` still mounts as the interim ground until commit 2 replaces it with the dither ground (it sits under the columns for now).
 - `DitherText.tsx`: text resolving out of red dither, once per text, then crisp DOM. Reusable for the footer's assembly.
-- `ContactLinks`: EMAIL ME shows the address (DitherText) and copies it, "Copied"; mailto still opens (`ObfuscatedMailto` `onOpen`). Contact lost "Based in Prague"; About gained **Current location: Prague. Working globally.**
+- `ContactLinks`: EMAIL ME shows the address (DitherText) and copies it, "Copied"; mailto still opens (`ObfuscatedMailto` `onOpen`). Contact lost "Based in Prague". Prague now sits only on a second line under the © line in the footer (she disliked it in About; search data in index.html keeps it).
 - `vite.config.ts` defines `__BUILD__` (date · short sha), printed in the console egg in `main.tsx`.
 
 ### Commit 1b: her phone feedback (done)
