@@ -224,9 +224,16 @@ uniform float uTheta, uXW, uZW;
 uniform vec2 uK, uC, uRes; // px per tesseract unit, centre px, canvas px
 varying vec2 vUv;
 varying float vFog;
+varying float vFace;
 ${TESSERACT_GLSL}
 void main() {
   vec4 p = tesseractProject(panePoint(aAB, uTheta), uXW, uZW);
+  // which side of the pane faces us: the screen-space cross of its a and b
+  // directions, positive as at rest. Early in a turn the incoming pane (and
+  // late in it the outgoing one) shows its back, which would read mirrored.
+  vec2 da = tesseractProject(panePoint(aAB + vec2(0.1, 0.0), uTheta), uXW, uZW).xy - p.xy;
+  vec2 db = tesseractProject(panePoint(aAB + vec2(0.0, 0.1), uTheta), uXW, uZW).xy - p.xy;
+  vFace = da.x * db.y - da.y * db.x;
   vec2 px = uC + vec2(p.x * uK.x, -p.y * uK.y);
   gl_Position = vec4(px.x / uRes.x * 2.0 - 1.0, 1.0 - px.y / uRes.y * 2.0, 0.0, 1.0);
   vUv = vec2(aAB.x * 0.5 + 0.5, 0.5 - aAB.y * 0.5);
@@ -239,7 +246,9 @@ uniform sampler2D uTex;
 uniform float uAlpha, uFog, uSplit, uEcho;
 varying vec2 vUv;
 varying float vFog;
+varying float vFace;
 void main() {
+  if (vFace <= 0.0) discard; // a pane is never seen from behind
   vec4 c = texture2D(uTex, vUv);
   if (uSplit > 0.0) {
     // red/cyan split along the turn
