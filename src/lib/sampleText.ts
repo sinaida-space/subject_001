@@ -38,7 +38,10 @@ export function sampleText(root: HTMLElement, skip: (el: Element) => boolean, bo
     const cs = getComputedStyle(el);
     if (cs.visibility === 'hidden' || cs.display === 'none' || (checkOpacity && !shown(el, root))) continue;
     ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    ctx.fillStyle = cs.color;
+    // a glyph filled through background-clip: text (the hero's project words)
+    // has a transparent colour; its visible fill is the background colour
+    const clipped = (cs.backgroundClip === 'text' || cs.getPropertyValue('-webkit-background-clip') === 'text') && /^rgba\(.*,\s*0\)$/.test(cs.color);
+    ctx.fillStyle = clipped ? cs.backgroundColor : cs.color;
     ctx.textBaseline = 'alphabetic';
     if (idCtx && blockOf) {
       idCtx.font = ctx.font;

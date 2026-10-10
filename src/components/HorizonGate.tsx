@@ -305,7 +305,7 @@ export default function HorizonGate({ children }: { children: ReactNode }) {
 
       // hero cells
       const heroBox = hero.getBoundingClientRect();
-      const skipHero = (el: Element) => !!el.closest('.sr-only, .hero-ghost, .hero-noise, .hero-whisper, button');
+      const skipHero = (el: Element) => !!el.closest('.sr-only, .hero-ghost, .hero-noise, .hero-whisper, button:not(.hl-word)');
       const src = sampleText(hero, skipHero, heroBox, true);
 
       // About cells, block by block, over the whole section
