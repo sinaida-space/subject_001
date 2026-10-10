@@ -375,7 +375,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
 
       // About cells, block by block (the portrait is built apart)
       const aboutBox = about.getBoundingClientRect();
-      g.blocks = Array.from(about.querySelectorAll<HTMLElement>('h2, h3, p, span, div')).filter((el) => !el.closest('.photo-frame-wrapper') && !el.hasAttribute('data-rule'));
+      g.blocks = Array.from(about.querySelectorAll<HTMLElement>('h2, h3, p, span, div')).filter((el) => !el.closest('.photo-frame-wrapper, [data-gate-skip]') && !el.hasAttribute('data-rule'));
       const blockOf = (el: Element) => {
         const b = el.closest('h2, h3, p, span, div');
         const i = b ? g.blocks.indexOf(b as HTMLElement) : -1;

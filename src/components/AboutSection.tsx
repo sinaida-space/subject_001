@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import StarTitle from '@/components/StarTitle';
 
 
 // ── Stagger fade-in helper (lite mode; in full mode QuoteGate pours About) ──
@@ -161,15 +162,22 @@ function PhotoBlock() {
 //
 // h2/p (not div) for the eyebrow: matches Services' and Contact's markup, so
 // the labels share the sitewide hover glitch (index.css).
-function Eyebrow() {
+// Full mode: the name is a word of stars (StarTitle); the star assembly is
+// its own reveal, so no fade wrapper (its transform would lift the canvas
+// over the headline below).
+function Eyebrow({ full }: { full: boolean }) {
+  const caption = (
+    <p className="font-mono uppercase mt-2 text-[16px] md:text-[20px]" style={{ color: 'hsl(var(--foreground) / 0.65)' }}>
+      The story so far.
+    </p>
+  );
+  if (full) return <StarTitle text="About" caption={caption} />;
   return (
     <Reveal delay={0}>
       <h2 className="font-mono uppercase text-primary text-[32px] md:text-[40px]" style={{ letterSpacing: '0.2em' }}>
         About
       </h2>
-      <p className="font-mono uppercase mt-2 text-[16px] md:text-[20px]" style={{ color: 'hsl(var(--foreground) / 0.65)' }}>
-        The story so far.
-      </p>
+      {caption}
     </Reveal>
   );
 }
@@ -181,7 +189,7 @@ export default function AboutSection() {
   return (
     <section id="about" className="relative z-10 py-16 md:py-24">
       <div className="site-frame">
-        <Eyebrow />
+        <Eyebrow full={full} />
         <div className="mt-10 md:mt-16 grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-6 md:gap-y-16">
           <h3 className="m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[12.4vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)]">
             {`Human first. Digital${NB}second.`}

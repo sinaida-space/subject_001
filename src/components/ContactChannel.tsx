@@ -1,20 +1,35 @@
 import ObfuscatedMailto from './ObfuscatedMailto';
+import StarTitle from './StarTitle';
+import { useRenderMode } from '@/hooks/useRenderMode';
+
+const NB = ' ';
 
 const linkFocus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff1a1a] focus-visible:outline-offset-2';
 
 export default function ContactChannel() {
+  const full = useRenderMode().mode === 'full';
+  // the caption is the question, in both modes
+  const question = (
+    <p className="font-mono text-foreground mt-2 max-w-[28ch] text-[20px] md:text-[clamp(22px,2.2vw,34px)]" style={{ lineHeight: 1.25 }}>
+      {`Got an idea that should be seen, heard, and${NB}felt?`}
+    </p>
+  );
   return (
     <section id="contact" className="relative z-10 py-16 md:py-20 overflow-hidden">
       <div className="site-frame">
         {/* h2/p (not div) — matches Services' and Body of Work's own
             eyebrow+caption markup, so all four sections' labels pick up
             the same sitewide hover glitch/bloom (index.css). */}
-        <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
-          Contact
-        </h2>
-        <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
-          Open for collaboration.
-        </p>
+        {full ? (
+          <StarTitle text="Contact" caption={question} />
+        ) : (
+          <>
+            <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
+              Contact
+            </h2>
+            {question}
+          </>
+        )}
 
         <p
           className="font-mono uppercase font-normal text-foreground mt-[7vh] mb-0 text-[16vw] md:text-[clamp(64px,11vw,176px)]"

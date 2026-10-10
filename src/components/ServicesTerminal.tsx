@@ -4,6 +4,7 @@ import { projectById } from '@/data/projects';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import DitherReveal from './DitherReveal';
 import ServicesTesseract from './ServicesTesseract';
+import StarTitle from './StarTitle';
 
 const NBSP = ' ';
 
@@ -62,18 +63,27 @@ function ServiceScreen({ service, flip, fit }: { service: Service; flip: boolean
 
 export default function ServicesTerminal() {
   const full = useRenderMode().mode === 'full';
+  const caption = (
+    <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+      Digital tools for human connection.
+    </p>
+  );
   return (
     <section id="services" className="relative z-10 py-16 md:py-20">
       <div className="site-frame">
         {/* h2/p (not div) — matches About's, Contact's, and Body of Work's
             own eyebrow+caption markup, so all four sections' labels pick up
             the same sitewide hover glitch/bloom (index.css). */}
-        <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
-          Services
-        </h2>
-        <p className="font-mono uppercase mt-2" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
-          Digital tools for human connection.
-        </p>
+        {full ? (
+          <StarTitle text="Services" caption={caption} />
+        ) : (
+          <>
+            <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40 }}>
+              Services
+            </h2>
+            {caption}
+          </>
+        )}
 
         {!full &&
           SERVICES.map((service, i) => (
