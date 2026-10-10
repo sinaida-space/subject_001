@@ -26,8 +26,8 @@ Checks: reverse scroll rewinds, one-breath seams, 60 fps on a 5-year-old laptop,
 
 ## Open for her
 
-- The Contact star title lags behind the footer at the very end of the page (parallax 0.3 has no room left). Cap it, or give the footer its own ground.
 - The swirl mock above.
+- The footer city mock below.
 
 ## Footer direction (proposed 2026-10-10, not built)
 
