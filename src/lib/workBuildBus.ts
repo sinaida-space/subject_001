@@ -1,8 +1,9 @@
 // How far the Body of Work map has built itself, published by WorkBuild from
 // the scroll position and read by ConstellationFull on every frame.
 //   value  the map's build, 0..1 (1 is the finished map, all lite mode sees)
-//   pour   the dust pour out of About, 0..1; the globe is poured with it
-//   source where the dust comes from: About's paragraph, in client px
+//   pour   the big bang's pull out of About onto the globe, 0..1; the globe's
+//          own cells fade in as it ends
+//   source unused since the big bang (#166), kept null
 
 type Listener = () => void;
 export interface Box { left: number; top: number; width: number; height: number }

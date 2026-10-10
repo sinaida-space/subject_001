@@ -671,10 +671,10 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       const ct = Math.cos(tilt), st = Math.sin(tilt);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
-      // poured: while the dust falls out of About, each cell flies from the paragraph to its place
+      // the big bang out of About (WorkBuild) pulls its stars onto the globe;
+      // the globe's own cells fade in as they land
       const pour = building ? workBuildBus.getPour() : 1;
-      const src = pour < 1 ? workBuildBus.getSource() : null;
-      const cr = src ? canvasRef.current?.getBoundingClientRect() : null;
+      const landed = Math.min(1, Math.max(0, (pour - 0.85) / 0.15));
       const r0 = R;
       // the stars that lit just now send a ring across the globe
       const waves: { lat: number; lon: number; age: number }[] = [];
@@ -700,16 +700,9 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         // as the globe flattens its cells go on a Bayer-like order
         const limb = Math.exp(-Math.pow((front - 0.5) / 0.09, 2));
         let a = Math.min(1, 0.07 + 0.75 * front * front + 0.55 * limb) * (th < sph * 1.1 ? 1 : 0);
-        let px = x, py = y, hot = 0;
-        if (src && cr) {
-          // in flight from a point of the paragraph, falling like the title's dust
-          const t0 = th * 0.62, t = lin(pour, t0, t0 + 0.36);
-          if (t <= 0) continue;
-          const sx = src.left - cr.left + src.width * ((i * 0.618) % 1), sy = src.top - cr.top + src.height * ((i * 0.381) % 1);
-          px = sx + (x - sx) * t + Math.sin(t * Math.PI) * ((th - 0.5) * 120);
-          py = sy + (y - sy) * t * t;
-          if (t < 1) a = 0.9;
-        }
+        const px = x, py = y;
+        let hot = 0;
+        a *= landed;
         for (const wv of waves) {
           // angular distance from the lit star, the ring travelling out from it
           const d = Math.acos(Math.max(-1, Math.min(1, Math.sin(lat) * Math.sin(wv.lat) + Math.cos(lat) * Math.cos(wv.lat) * Math.cos(lon0 - wv.lon))));
