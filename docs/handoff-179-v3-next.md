@@ -13,6 +13,8 @@ Her protocol: questions via AskUserQuestion, a short PRD, wait for approval, the
 - Contact: `overflow-x-clip` so the lite title is no longer clipped as it comes in. "Based in Prague" removed. About has NO location row (she hated it).
 - Towers, pour, `CityLights` deleted; `city.ts` is camera + progress only. Build stamp lives in the console egg (`__BUILD__` in vite.config).
 
+- **The bending flight** (0eed1e2): `flightPose(p)` in `src/lib/flight.ts` is a centripetal Catmull–Rom curve through a waypoint per chapter (S-bends: `SWING`). The camera turns its head into the swing off the diagonal (`LOOK`, `MAX_YAW` 0.3, `MAX_PITCH` 0.12), banks with the turn rate (`BANK`), and settles straight at both ends (`SETTLE`), so the footer hand-off is unchanged. ParticleField uses rotation order YXZ. Waiting for her to judge it by eye; tune `SWING` and `LOOK` first. Commit 2's track could trace this same curve.
+
 ## Not done (the actual wow), in her order
 
 ### Commit 2: the home scene (full mode)
