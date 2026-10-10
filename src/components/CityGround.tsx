@@ -9,8 +9,9 @@ import { FLIGHT } from '@/lib/flight';
 // plane of soft lights under the last eye height, where the stars poured
 // down: street lights on a grid, some avenues brighter, windows scattered in
 // the blocks, a dark river winding through, thinning into haze at the
-// horizon. They are light, so they glow with the stars' bloom. They come on
-// from the horizon toward the feet and fade out around every line of text,
+// horizon. They are light, so they glow with the stars' bloom. They are the
+// CONTACT title's stars, poured down out of the word (StarTitle pour): they
+// come on as those land, from the horizon toward the feet and fade out around every line of text,
 // so nothing glows behind a word. Static points; one uniform drives the
 // reveal.
 
@@ -140,7 +141,9 @@ export default function CityGround() {
   const rects = useMemo(() => new Float32Array(MAX_MASKS * 4), []);
   useFrame(({ gl, size }) => {
     const u = material.uniforms;
-    u.uOn.value = span(cityBus.progress(), CITY.ground);
+    // the lights come on as the CONTACT title's stars land; the scroll's own
+    // progress makes sure they are all on by the end
+    u.uOn.value = Math.max(span(cityBus.pour(), [0.3, 1]), span(cityBus.progress(), CITY.ground));
     u.uScale.value = size.height * 0.5 * gl.getPixelRatio();
     if (u.uOn.value <= 0) return;
     u.uView.value.set(size.width, size.height);

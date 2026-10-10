@@ -97,7 +97,7 @@ export default function ContactChannel() {
             the same sitewide hover glitch/bloom (index.css). */}
         {full ? (
           <>
-            <StarTitle text="Contact" clear />
+            <StarTitle text="Contact" pour />
             {/* the block the dolly carries (#179); the question is the title's caption */}
             <div ref={blockRef}>
               <div ref={questionRef} data-ground-mask className="w-fit">{question}</div>

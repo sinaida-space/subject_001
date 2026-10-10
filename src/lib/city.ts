@@ -81,6 +81,7 @@ export function textRects(out: Float32Array): number {
 const DEFAULT_HORIZON = 0.3;
 let progressFn: (() => number) | null = null;
 let horizon = DEFAULT_HORIZON;
+let pour = 0;
 let held = false;
 const heldListeners = new Set<() => void>();
 
@@ -109,6 +110,13 @@ export const cityBus = {
     horizon = h ?? DEFAULT_HORIZON;
   },
   horizon: () => horizon,
+
+  /** how far the CONTACT title has poured down into the city (0..1); its
+   * stars become the city's lights as they land */
+  setPour(q: number) {
+    pour = q;
+  },
+  pour: () => pour,
 };
 
 // Je suis le spectre d'une rose que tu portais hier au bal.

@@ -144,7 +144,9 @@ export default function Footer() {
     return () => cityBus.setHeld(false);
   }, [held]);
 
-  // logo, columns and the bottom line resolve out of dither, scrubbed by f
+  // logo, columns and the bottom line resolve out of dither: on the held
+  // screen scrubbed by f; where the footer scrolls on (phones), each piece as
+  // it comes up from the bottom of the screen, so no screen is ever empty
   useEffect(() => {
     if (!flight) return;
     const groups = [[brandRef], [columnsRef], [barRef]];
@@ -153,8 +155,11 @@ export default function Footer() {
     const frame = () => {
       raf = 0;
       const f = cityBus.progress();
+      const vh = window.innerHeight;
       groups.forEach((refs, i) => {
-        const k = Math.round(span(f, CITY.text[i]) * 16);
+        const el = refs[0].current;
+        const at = held || !el ? span(f, CITY.text[i]) : span((vh - el.getBoundingClientRect().top) / vh, [0.02, 0.3]);
+        const k = Math.round(at * 16);
         if (k === levels[i]) return;
         levels[i] = k;
         refs.forEach((r) => r.current && ditherMask(r.current, k));
@@ -172,7 +177,7 @@ export default function Footer() {
       window.removeEventListener('resize', schedule);
       groups.flat().forEach((r) => r.current && ditherMask(r.current, 16));
     };
-  }, [flight]);
+  }, [flight, held]);
 
   useEffect(() => {
     const root = rootRef.current;

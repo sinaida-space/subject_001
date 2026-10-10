@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { galaxyBright, galaxyColor, galaxyKeep, galaxySize } from '@/lib/galaxy';
+import { cityBus } from '@/lib/city';
 
 // ── Star title ──
 // A section name as a giant word of sparse galaxy stars, held in the middle
@@ -122,6 +123,9 @@ interface Flyer {
   delay: number; // share of the presence it waits before it condenses
   size: number; depth: number;
   color: string; bright: boolean; keep: boolean;
+  // the pour (#179): when it leaves its fall, where it lands (0 the horizon,
+  // 1 the bottom of the screen) and how far it drifts sideways
+  fall: number; landY: number; drift: number;
 }
 
 interface StarTitleProps {
@@ -131,9 +135,10 @@ interface StarTitleProps {
   className?: string;
   /** kept for callers; the word now follows its section's presence */
   until?: number;
-  /** the word has thinned away before the section's end reaches its lower
-   * edge, so what follows never rides over it (Contact: the footer, #179) */
-  clear?: boolean;
+  /** instead of thinning away as its section leaves, the word pours down
+   * out of itself: its stars fall below the horizon and become the city's
+   * lights (Contact into the footer, #179) */
+  pour?: boolean;
 }
 
 /** how present a section is: 0 below the screen, 1 from when its top reaches
@@ -146,7 +151,12 @@ const presence = (top: number, bottom: number, vh: number, end = 0, span = 0.5 *
   return Math.min(inn, out);
 };
 
-export default function StarTitle({ text, as = 'h2', caption, className, clear = false }: StarTitleProps) {
+// the pour: the scroll it takes, as a share of the screen's height, and how
+// far down the screen the ground it lands on begins
+const POUR_SPAN = 0.8;
+const GROUND_TOP = 0.56;
+
+export default function StarTitle({ text, as = 'h2', caption, className, pour = false }: StarTitleProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const Tag = as;
@@ -160,15 +170,27 @@ export default function StarTitle({ text, as = 'h2', caption, className, clear =
     const dpr = LIGHT ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
     let flyers: Flyer[] = [];
     let boxW = 0, boxH = 0, wordW = 0;
+    let below = 0; // pour: css px the canvas runs on under the word, to the bottom of the screen
+    let cvTop = 0;
     let lastP = -1;
+    let lastQ = -1;
     let raf = 0;
     let dead = false;
 
     // fixed in the middle of the screen, both ways (#179); the word plus a pad
     const place = () => {
       const cvW = wordW + 2 * PAD, cvH = boxH + 2 * PAD;
+      cvTop = Math.round((svh() - cvH) / 2);
       canvas.style.left = `${Math.round((document.documentElement.clientWidth - cvW) / 2)}px`;
-      canvas.style.top = `${Math.round((svh() - cvH) / 2)}px`;
+      canvas.style.top = `${cvTop}px`;
+      if (!pour) return;
+      // the stars fall to the bottom of the screen, so the canvas reaches it
+      const next = Math.max(0, svh() - cvTop - cvH);
+      if (next === below) return;
+      below = next;
+      canvas.height = Math.round((cvH + below) * dpr);
+      canvas.style.height = `${cvH + below}px`;
+      lastP = -1;
     };
     const sample = () => {
       const cw = box.clientWidth;
@@ -184,6 +206,7 @@ export default function StarTitle({ text, as = 'h2', caption, className, clear =
       canvas.height = Math.round(cvH * dpr);
       canvas.style.width = `${cvW}px`;
       canvas.style.height = `${cvH}px`;
+      below = 0;
       place();
       flyers = stars.map((s) => {
         const [r, g, b] = galaxyColor(s.rnd, 0.55 + 0.45 * s.depth); // formed letters sit at the bright end
@@ -195,22 +218,42 @@ export default function StarTitle({ text, as = 'h2', caption, className, clear =
           color: `rgb(${(r * 255) | 0},${(g * 255) | 0},${(b * 255) | 0})`,
           bright: galaxyBright(s.rnd) === 1 && fract(s.rnd * 17.3) < BRIGHT,
           keep: galaxyKeep(s.rnd) === 1,
+          fall: 0.45 * fract(s.rnd * 5.17),
+          landY: Math.pow(fract(s.rnd * 3.71), 1.6), // most land far, near the horizon
+          drift: fract(s.rnd * 7.93) - 0.5,
         };
       });
       lastP = -1;
     };
 
-    const draw = (p: number) => {
+    const draw = (p: number, q: number) => {
       ctx.setTransform(dpr, 0, 0, dpr, PAD * dpr, PAD * dpr);
-      ctx.clearRect(-PAD, -PAD, wordW + 2 * PAD, boxH + 2 * PAD);
+      ctx.clearRect(-PAD, -PAD, wordW + 2 * PAD, boxH + 2 * PAD + below);
       const sprite = halo();
+      // the screen's ground, in the word's own coordinates
+      const vh = svh();
+      const top = vh * GROUND_TOP - cvTop - PAD, depth = vh * (1 - GROUND_TOP);
       for (const f of flyers) {
         const e = land(clamp01((p - f.delay) / 0.25));
-        const x = f.tx, y = f.ty;
-        const s = f.size * (1 + 1.2 * (1 - e)); // out of the fog: soft and large, then its size
+        // the pour: each star leaves on its own beat and falls, quicker and
+        // quicker, to its place on the ground, where it goes out as a light
+        // comes on
+        const t = q > 0 ? clamp01((q - f.fall) / 0.55) : 0;
+        const g = t * t;
+        const x = f.tx + f.drift * wordW * 0.35 * g;
+        const y = f.ty + (top + f.landY * depth - f.ty) * g;
+        const s = f.size * (1 + 1.2 * (1 - e)) * (1 - 0.4 * t); // out of the fog: soft and large, then its size
         // the sparse share first, the full count once the word is whole
-        const a = ALPHA * e * (f.keep ? 1 : clamp01(p * 2 - 1));
+        // falling, a star brightens (light in motion) and goes out as it lands
+        const a = Math.min(1, ALPHA + 0.55 * Math.sin(Math.PI * Math.min(t, 0.5))) * e * (f.keep ? 1 : clamp01(p * 2 - 1)) * (1 - ease(clamp01((t - 0.8) / 0.2)));
         if (a <= 0.01) continue;
+        if (t > 0.05) {
+          // a short trail above it, longer as it speeds up
+          const len = 30 * t * (1 - t * 0.4);
+          ctx.globalAlpha = a * 0.35;
+          ctx.fillStyle = f.color;
+          ctx.fillRect(x - 0.5, y - len, 1, len);
+        }
         ctx.globalAlpha = a;
         if (f.bright) {
           const hs = 9; // a soft halo, the same for every bright star
@@ -230,12 +273,19 @@ export default function StarTitle({ text, as = 'h2', caption, className, clear =
       if (!flyers.length) return;
       const r = section.getBoundingClientRect();
       const vh = window.innerHeight;
-      const pr = clear ? presence(r.top, r.bottom, vh, (svh() + boxH) / 2, 0.3 * vh) : presence(r.top, r.bottom, vh);
+      // pouring, the word does not thin as its section leaves: it falls
+      const pr = pour ? presence(r.top, Infinity, vh) : presence(r.top, r.bottom, vh);
+      // it pours once the section's end comes up past the bottom of the
+      // screen, as what follows arrives
+      const q = pour ? Math.round(clamp01((vh - r.bottom) / (POUR_SPAN * vh)) * 400) / 400 : 0;
+      if (pour) cityBus.setPour(q);
       const p = Math.round(ease(pr) * 200) / 200;
-      if (p === lastP) return;
+      if (p === lastP && q === lastQ) return;
       lastP = p;
-      canvas.style.visibility = p > 0 ? 'visible' : 'hidden';
-      if (p > 0) draw(p);
+      lastQ = q;
+      const on = p > 0 && q < 1;
+      canvas.style.visibility = on ? 'visible' : 'hidden';
+      if (on) draw(p, q);
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(frame);
@@ -261,8 +311,9 @@ export default function StarTitle({ text, as = 'h2', caption, className, clear =
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
+      if (pour) cityBus.setPour(0);
     };
-  }, [text, clear]);
+  }, [text, pour]);
 
   return (
     <>
