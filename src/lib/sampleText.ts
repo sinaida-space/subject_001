@@ -5,6 +5,21 @@ const CELL = 3; // css px, the site's dither cell
 
 export interface Cell { x: number; y: number; r: number; g: number; b: number; blk?: number }
 
+// Decoded background images (the hero's red project dither), keyed by url.
+// Sampling is synchronous, so callers prime them first.
+const images = new Map<string, HTMLImageElement>();
+const urlOf = (bg: string) => /^url\("?(.*?)"?\)$/.exec(bg)?.[1] ?? '';
+export function primeImages(root: HTMLElement): Promise<unknown> {
+  const urls = Array.from(root.querySelectorAll<HTMLElement>('*'))
+    .map((el) => urlOf(getComputedStyle(el).backgroundImage))
+    .filter((u) => u && !images.has(u));
+  return Promise.all(urls.map((u) => {
+    const img = new Image();
+    img.src = u;
+    return img.decode().then(() => { images.set(u, img); }, () => undefined);
+  }));
+}
+
 // false when the element or an ancestor up to `root` is transparent (a
 // hidden caption, a footnote waiting for its click)
 function shown(el: Element, root: Element) {
@@ -61,6 +76,16 @@ export function sampleText(root: HTMLElement, skip: (el: Element) => boolean, bo
       const base = r.top + (r.height + m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2;
       ctx.fillText(ch, r.left - box.left, base - box.top);
       idCtx?.fillText(ch, r.left - box.left, base - box.top);
+    }
+    // lay the element's dither into the glyphs just drawn, as the page does
+    const img = clipped ? images.get(urlOf(cs.backgroundImage)) : undefined;
+    if (img) {
+      const r = el.getBoundingClientRect();
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, r.left - box.left, r.top - box.top, r.width, r.height);
+      ctx.restore();
     }
   }
   const data = ctx.getImageData(0, 0, w, h).data;

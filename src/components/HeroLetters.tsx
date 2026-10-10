@@ -152,6 +152,8 @@ export default function HeroLetters() {
       words.forEach((el, i) => {
         el.style.backgroundImage = `url(${urls[i]})`;
       });
+      // the horizon gate re-samples the glyphs with their dither
+      window.dispatchEvent(new Event('hero-dither'));
     };
     document.fonts.ready.then(() => {
       if (!cancelled) paint();
