@@ -1,62 +1,59 @@
 import { Link } from 'react-router-dom';
 import { SERVICES, type Service } from '@/data/services';
 import { projectById } from '@/data/projects';
+import { useRenderMode } from '@/hooks/useRenderMode';
 import DitherReveal from './DitherReveal';
+import ServicesTesseract from './ServicesTesseract';
 
-// Proof frame per service: the project the record line points at.
-const FRAME_PROJECT: Record<string, string> = {
-  festivals: 'redkie-ptitsy',
-  web: 'aether-currents',
-  theater: 'ethereal-path',
-  venues: 'conspace-rooms',
-};
+const NBSP = ' ';
 
 const linkClass =
   'underline underline-offset-4 decoration-foreground/30 transition-colors hover:text-foreground hover:decoration-[hsl(var(--sinaida-red))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff1a1a]';
 
-function ServiceRow({ service, flip }: { service: Service; flip: boolean }) {
-  const project = projectById(FRAME_PROJECT[service.code]);
+// One service: word, title, short line, the project still and its caption.
+// `fit` sizes it to rest inside one 100svh screen (full mode, tesseract).
+function ServiceScreen({ service, flip, fit }: { service: Service; flip: boolean; fit: boolean }) {
+  const project = projectById(service.caption.project);
+  const name = (project?.title ?? service.caption.project).replace(/ /g, NBSP);
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-7 items-center mt-[10vh] md:mt-[16vh] first:mt-[7vh]">
-      <div className={flip ? 'md:col-span-7 md:col-start-6 md:row-start-1' : 'md:col-span-6'}>
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4 md:gap-y-7 items-center">
+      <div className={flip ? 'md:col-span-6 md:col-start-7 md:row-start-1' : 'md:col-span-6'}>
         <h3
-          className="font-mono uppercase font-normal text-foreground text-[25vw] md:text-[clamp(88px,15vw,216px)]"
+          className="font-mono uppercase font-normal text-foreground text-[18vw] md:text-[clamp(56px,7.5vw,132px)]"
           style={{ lineHeight: 0.82, letterSpacing: '-0.02em' }}
         >
           {service.word}
         </h3>
-        <p className="font-mono mt-7 text-[17px] md:text-[clamp(18px,1.5vw,21px)] leading-[1.6] text-foreground">
-          {service.title.replace(/ (\S+)$/, '\u00A0$1')}
+        <p className="font-mono mt-4 md:mt-6 text-[16px] md:text-[clamp(16px,1.25vw,19px)] leading-[1.55] text-foreground">
+          {service.title.replace(/ (\S+)$/, `${NBSP}$1`)}
         </p>
         <p
-          className="font-mono mt-1.5 text-[17px] md:text-[clamp(18px,1.5vw,21px)] leading-[1.6] max-w-[40ch]"
+          className="font-mono mt-1 text-[16px] md:text-[clamp(16px,1.25vw,19px)] leading-[1.55] max-w-[44ch]"
           style={{ color: 'hsl(var(--foreground) / 0.7)' }}
         >
-          {service.description}
+          {service.short}
         </p>
       </div>
       <div className={flip ? 'md:col-span-5 md:col-start-1 md:row-start-1' : 'md:col-span-5 md:col-start-8'}>
         {project?.image && (
-          <DitherReveal src={project.image} alt={`${project.title}, project still`} />
+          <DitherReveal
+            src={project.image}
+            alt={`${project.title}, project still`}
+            className={
+              fit
+                ? `w-full max-h-[34svh] max-w-[calc(34svh*4/3)] md:max-h-[58svh] md:max-w-[calc(58svh*4/3)] ${flip ? '' : 'md:ml-auto'}`
+                : ''
+            }
+          />
         )}
         <p
-          className="font-mono mt-3.5 text-sm leading-[1.6] max-w-[52ch]"
-          style={{ color: 'hsl(var(--foreground) / 0.65)' }}
+          className={`font-mono mt-2.5 text-sm leading-[1.55] ${fit && !flip ? 'md:text-right' : ''}`}
+          style={{ color: 'hsl(var(--foreground) / 0.55)' }}
         >
-          {service.record.map((part, i) =>
-            part.href && /^https?:/.test(part.href) ? (
-              // Works without a case page link straight to the live piece.
-              <a key={i} href={part.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                {part.text}
-              </a>
-            ) : part.href ? (
-              <Link key={i} to={part.href} className={linkClass}>
-                {part.text}
-              </Link>
-            ) : (
-              <span key={i}>{part.text}</span>
-            )
-          )}
+          <Link to={`/work/${service.caption.project}`} className={linkClass}>
+            {name}
+          </Link>
+          {`${NBSP}· ${service.caption.text}`}
         </p>
       </div>
     </div>
@@ -64,6 +61,7 @@ function ServiceRow({ service, flip }: { service: Service; flip: boolean }) {
 }
 
 export default function ServicesTerminal() {
+  const full = useRenderMode().mode === 'full';
   return (
     <section id="services" className="relative z-10 py-16 md:py-20">
       <div className="site-frame">
@@ -77,10 +75,23 @@ export default function ServicesTerminal() {
           Digital tools for human connection.
         </p>
 
-        {SERVICES.map((service, i) => (
-          <ServiceRow key={service.code} service={service} flip={i % 2 === 1} />
-        ))}
+        {!full &&
+          SERVICES.map((service, i) => (
+            <div key={service.code} className="mt-[10vh] md:mt-[16vh] first:mt-[7vh]">
+              <ServiceScreen service={service} flip={i % 2 === 1} fit={false} />
+            </div>
+          ))}
       </div>
+
+      {full && (
+        <ServicesTesseract>
+          {SERVICES.map((service, i) => (
+            <ServiceScreen key={service.code} service={service} flip={i % 2 === 1} fit />
+          ))}
+        </ServicesTesseract>
+      )}
     </section>
   );
 }
+
+// Je suis le spectre d'une rose que tu portais hier au bal.

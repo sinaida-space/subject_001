@@ -26,6 +26,10 @@ export interface Service {
   /** one-line proof of work: a brief mention plus the linked project name */
   record: RecordPart[];
   brief: string;
+  /** homepage line, much shorter than `description` (which /collaborate keeps) */
+  short: string;
+  /** homepage proof line: the project name links to /work/<project> */
+  caption: { project: string; text: string };
 }
 
 export const SERVICES: Service[] = [
@@ -41,6 +45,8 @@ export const SERVICES: Service[] = [
       { text: ` at Sklad${NBSP}No.${NBSP}3, Moscow, March${NBSP}2026.` },
     ],
     brief: 'Brief to show: send the setlist and stage dimensions.',
+    short: `Audio-reactive visuals, one system per${NBSP}song, listening to${NBSP}the${NBSP}live mix. Turnkey show or${NBSP}operated${NBSP}live.`,
+    caption: { project: 'redkie-ptitsy', text: `nine songs, nine live${NBSP}projections` },
   },
   {
     code: 'web',
@@ -56,6 +62,8 @@ export const SERVICES: Service[] = [
       { text: '. All live, all playable now.' },
     ],
     brief: 'Brief to launch: send the site you have, and what should happen when someone arrives.',
+    short: `Sites and${NBSP}components that respond to${NBSP}the${NBSP}visitor. WebGL, shaders, gesture control, generative${NBSP}sound.`,
+    caption: { project: 'aether-currents', text: `an${NBSP}instrument played with bare${NBSP}hands` },
   },
   {
     code: 'theater',
@@ -71,6 +79,8 @@ export const SERVICES: Service[] = [
       { text: '.' },
     ],
     brief: 'Brief to show: send the script or choreography notes and venue specs.',
+    short: `Responsive scenography that follows the${NBSP}performers’ bodies and${NBSP}the${NBSP}sound, from first concept${NBSP}on.`,
+    caption: { project: 'ethereal-path', text: `head and${NBSP}hands steer the${NBSP}scene` },
   },
   {
     code: 'venues',
@@ -86,5 +96,7 @@ export const SERVICES: Service[] = [
       { text: `, Prague${NBSP}2026. Both web forms are finished and${NBSP}live.` },
     ],
     brief: 'Brief to show: send the space (photos/plans) and the occasion.',
+    short: `Immersive installations and${NBSP}generative visual identities, adapted to${NBSP}the${NBSP}space they run${NBSP}in.`,
+    caption: { project: 'conspace-rooms', text: `a${NBSP}labyrinth of${NBSP}eighteen${NBSP}paintings` },
   },
 ];
