@@ -7,7 +7,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
+import HeroLetters from '@/components/HeroLetters';
 import { RenderModeProvider } from '@/hooks/useRenderMode';
 
 export { resolveRenderMode } from '@/lib/resolveRenderMode';
@@ -20,7 +20,7 @@ export function renderShell(): string {
           <Header />
           <main id="main-content" tabIndex={-1}>
             <div className="shell-hold" data-shell-hero="">
-              <HeroSection />
+              <HeroLetters />
             </div>
             {/* The live page is many screens tall. Without this the shell
                 has no scrollbar, and where scrollbars take layout width
