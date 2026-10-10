@@ -70,7 +70,10 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
     };
   }, [story]);
 
-  const trackClass = pinned ? 'relative z-10 h-[260svh]' : story ? 'relative z-10 h-[170svh]' : 'relative z-10';
+  // pinned: the track starts 70svh up into the hero (QuoteGate hides both the
+  // hero and the stage while the cells carry them), so the stage pins while the
+  // hero is still blowing away; it holds nothing to click
+  const trackClass = pinned ? 'pointer-events-none relative z-10 -mt-[70svh] h-[158svh]' : story ? 'relative z-10 h-[170svh]' : 'relative z-10';
   const stageClass = pinned || story ? 'sticky top-0 flex h-[100svh] items-center overflow-x-clip' : 'flex min-h-[80svh] items-center py-24';
 
   return (

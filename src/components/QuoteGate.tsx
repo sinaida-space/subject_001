@@ -55,16 +55,23 @@ const GUST = 0.45; // a belief cell crosses the screen over this share of the gu
 const WIND = 0.6; // About dust rides the wind at this many px per px of scroll before it pours
 const REBUILD_DH = 150; // a height-only resize smaller than this (mobile toolbars) keeps the build
 
-// The pinned part, as shares of the pin length (track height minus a screen).
+// The pinned part, in screen heights of scroll from the moment the stage pins.
+// The track overlaps the hero's lower part and lets go a little before the pour
+// (QuoteStage), so the belief blows in while the hero is still leaving and
+// About rises while the gust is still crossing: no empty screen either side.
 // LINES: when each line of the belief has set (line 1 sets as the stage pins).
-const LINES = [0, 0.1, 0.19, 0.27, 0.35];
-const LINE_IN = 0.12; // a line blows in over this share
+const LINES = [0, 0.09, 0.18, 0.27, 0.36];
+const LINE_IN = 0.16; // a line blows in over this much scroll
 const FEEL_ID = 5; // block id the sampler gives the cells of "feel"
 const PIN = {
-  feel: [0.535, 0.58], // "feel" flashes red (ramps in over the first quarter) until the pour
-  pour: 0.58, // the gust takes the belief apart
-  cloud: 0.92, // and every cell of it has left the screen by here
+  feel: [0.656, 0.728], // "feel" flashes red (ramps in over the first quarter) until the pour
+  pour: 0.728, // the gust takes the belief apart
+  cloud: 1.36, // and every cell of it has left the screen by here
 };
+// a hero cell stays a crisp dither cell over this share of its way off, then turns into a star
+const HERO_CRISP = 0.4;
+// a belief cell stays crisp over this share of its blow-in, and of its way out with the gust
+const BELIEF_CRISP = 0.35, GUST_CRISP = 0.5;
 
 const PT_VS = `#version 300 es
 in vec2 aA;     // hero: screen px at lock; belief: start off screen left; About: where it pours from (screen px); portrait: its way in (shares of the screen)
@@ -80,6 +87,7 @@ uniform float uDpr;
 uniform vec2 uGather;     // the gust takes the belief apart; how long a belief cell takes to leave
 uniform vec2 uSlot;       // the portrait frame's centre on screen, now (it docks and sticks)
 uniform vec2 uDev;        // the settled portrait cells give way to the red dither over these scroll px
+uniform vec2 uRel;       // the stage lets go at x (scroll px): the belief rides up with it until the pour at y, then the gust has it
 out vec3 vCol;
 out float vAlpha;
 out float vRound;
@@ -119,9 +127,9 @@ void main() {
     float t = clamp((uSy - aT.x) / ${HERO_BLOW}.0, 0.0, 1.0);
     float e = t * t;
     pos = aA + vec2(e * (uView.x * 1.15 + rnd * 300.0), sin(t * PI) * (rnd - 0.5) * 90.0 - e * 50.0 * (fract(rnd * 13.1) - 0.3));
-    flight = smoothstep(0.0, 0.25, t);
+    flight = smoothstep(${HERO_CRISP}, ${HERO_CRISP} + 0.25, t);
     col = mix(aCol, star, flight);
-    lit = mix(1.0, keep, smoothstep(0.0, 0.15, t));
+    lit = mix(1.0, keep, smoothstep(${HERO_CRISP}, ${HERO_CRISP} + 0.15, t));
     alpha = step(rnd, (uSy - ${S0}.0) / ${HERO_LOCK}.0 + 0.02) * (1.0 - smoothstep(0.7, 1.0, t));
   } else if (kind < 2.5) {
     // portrait: the gust carries it in from off screen lower left, lifts it
@@ -148,9 +156,9 @@ void main() {
     a.y += sin(t1 * PI) * (rnd - 0.5) * 70.0;
     float tc = clamp((uSy - aT.y) / uGather.y, 0.0, 1.0);
     float u = tc * tc;  // picks up speed like a leaf in a gust
-    pos = a + vec2(u * (uView.x * 1.05 + aC.x), -pow(u, 1.7) * (uView.y * 0.55 + aC.y));
+    pos = a + vec2(u * (uView.x * 1.05 + aC.x), -pow(u, 1.7) * (uView.y * 0.55 + aC.y) - clamp(uSy - uRel.x, 0.0, max(0.0, uRel.y - uRel.x)));
     pos.y += sin(tc * PI) * (rnd - 0.5) * 24.0;
-    flight = smoothstep(0.0, 0.15, tc);
+    flight = smoothstep(${GUST_CRISP}, ${GUST_CRISP} + 0.15, tc);
     lit = mix(1.0, keep, flight);
     alpha = step(uGather.x, uSy);
     // its letter's colour turns to its star colour; "feel" flies apart red
@@ -159,7 +167,7 @@ void main() {
     // blowing in, before the line sets: a star until it nears its letter
     float arriving = step(aT.x, uSy) * (1.0 - step(aK.y, uSy));
     if (arriving > 0.5) {
-      flight = 1.0 - smoothstep(0.7, 1.0, t1);
+      flight = 1.0 - smoothstep(${BELIEF_CRISP}, ${BELIEF_CRISP} + 0.4, t1);
       col = mix(aCol, star, flight);
       lit = mix(1.0, keep, flight);
       alpha = 1.0;
@@ -293,7 +301,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       return;
     }
     const U = (n: string) => gl.getUniformLocation(prog, n);
-    const u = { sy: U('uSy'), view: U('uView'), dpr: U('uDpr'), gather: U('uGather'), slot: U('uSlot'), dev: U('uDev') };
+    const u = { sy: U('uSy'), view: U('uView'), dpr: U('uDpr'), gather: U('uGather'), slot: U('uSlot'), dev: U('uDev'), rel: U('uRel') };
     const vao = gl.createVertexArray();
     const buf = gl.createBuffer();
     gl.enable(gl.BLEND);
@@ -316,7 +324,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       ruleY: [] as number[],
       blocks: [] as HTMLElement[], done: [] as number[],
     };
-    const at = (share: number) => g.pin0 + g.pinLen * share;
+    const at = (screens: number) => g.pin0 + g.vh * screens;
 
     const build = () => {
       // the pinned stage is 100svh: a screen height that mobile toolbars
@@ -336,7 +344,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       const pinEnd = g.pin0 + g.pinLen;
       // when each line starts blowing in: "I believe" while the hero blows away
       const q0 = S0 + 50;
-      const lineFrom = g.lineSet.map((set, k) => (k === 0 ? q0 : set - g.pinLen * LINE_IN));
+      const lineFrom = g.lineSet.map((set, k) => (k === 0 ? q0 : set - vh * LINE_IN));
 
       // portrait: its cells ride the gust in from the pour on and settle into
       // the square while the frame is still coming up the screen, so it is
@@ -590,6 +598,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       gl.uniform2f(u.gather, g.pour, g.gatherLen);
       gl.uniform2f(u.slot, slot ? slot.left + slot.width / 2 : vw / 2, slot ? slot.top + slot.height / 2 : vh * 2);
       gl.uniform2f(u.dev, g.red[0], g.red[1]);
+      gl.uniform2f(u.rel, g.pin0 + g.pinLen, g.pour);
       gl.drawArrays(gl.POINTS, 0, g.count);
       show(true);
     };
