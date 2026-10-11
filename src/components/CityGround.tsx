@@ -49,7 +49,9 @@ const vertex = /* glsl */ `
       vec2 snapped = (floor(g / 4.0) + 0.5) * 4.0;
       gl_Position.xy = (mix(g, snapped, uSnap) / uView * 2.0 - 1.0) * gl_Position.w;
       gl_PointSize = mix(gl_PointSize, 2.0 * uPx, uSnap);
-      vAlpha = mix(vAlpha, min(1.0, vAlpha * 1.6), uSnap);
+      // a hard square carries more light than a soft dot: dim it so the
+      // snap reads as a change of grain, never a flare under the bloom
+      vAlpha *= mix(1.0, 0.4, uSnap);
     }
     // css px on the screen; out near the text
     vec2 sp = (gl_Position.xy / gl_Position.w * 0.5 + 0.5) * uView;
@@ -160,7 +162,7 @@ export default function CityGround({ flight = true }: { flight?: boolean }) {
     const u = material.uniforms;
     // MORE eases the lights onto the grid and off it again
     const snapTo = cityBus.hover() === 'more' ? 1 : 0;
-    u.uSnap.value = THREE.MathUtils.damp(u.uSnap.value, snapTo, 9, Math.min(delta, 0.05));
+    u.uSnap.value = THREE.MathUtils.damp(u.uSnap.value, snapTo, 4, Math.min(delta, 0.05));
     if (Math.abs(u.uSnap.value - snapTo) < 0.002) u.uSnap.value = snapTo;
     else invalidate();
     u.uPx.value = gl.getPixelRatio();

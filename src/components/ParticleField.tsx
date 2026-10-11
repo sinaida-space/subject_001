@@ -217,7 +217,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
         )
         .replace(
           '#include <logdepthbuf_vertex>',
-          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= 1.0 - 0.65 * smoothstep(0.8, 1.0, drop);\nvec2 gsc = gl_Position.xy / gl_Position.w;\nfloat gband = (gsc.x * 0.5 + 0.5) + gsc.y * 0.15 - uGlint;\ngl_PointSize *= 1.0 + 2.4 * exp(-gband * gband / 0.0025) * uGlintAmt;\n#include <logdepthbuf_vertex>`,
+          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= 1.0 - 0.65 * smoothstep(0.8, 1.0, drop);\nvec2 gsc = gl_Position.xy / gl_Position.w;\nfloat gband = (gsc.x * 0.5 + 0.5) + gsc.y * 0.15 - uGlint;\ngl_PointSize *= 1.0 + 1.1 * exp(-gband * gband / 0.0025) * uGlintAmt;\n#include <logdepthbuf_vertex>`,
         );
     },
     [nearFade, below],
