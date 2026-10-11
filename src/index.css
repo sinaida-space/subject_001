@@ -931,6 +931,23 @@
 }
 
 @layer utilities {
+  /* #141: the live field fades in once over the still sky, which fades out */
+  .star-field {
+    transition: opacity 1.2s ease-out;
+  }
+  .star-still {
+    transition: opacity 1.2s ease-out;
+  }
+  html[data-field] .star-still {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .star-field,
+    .star-still {
+      transition: none;
+    }
+  }
+
   /* every project is named in capitals; the source keeps the real title (#160) */
   .project-name {
     text-transform: uppercase;
