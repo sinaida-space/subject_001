@@ -1,10 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { execSync } from "child_process";
 import { componentTagger } from "lovable-tagger";
+
+// The build's date and commit, printed in the console easter egg.
+const commit = (() => {
+  try {
+    return execSync("git rev-parse --short HEAD").toString().trim();
+  } catch {
+    return "local";
+  }
+})();
+const BUILD = `${new Date().toISOString().slice(2, 10).replace(/-/g, ".")} · ${commit}`;
 
 export default defineConfig(({ mode }) => ({
   base: "/",
+  define: { __BUILD__: JSON.stringify(BUILD) },
   server: {
     host: "::",
     port: Number(process.env.PORT) || 8080,

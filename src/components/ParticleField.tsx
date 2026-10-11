@@ -4,7 +4,9 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
-import { flightAt, pageProgress } from '@/lib/flight';
+import { FLIGHT, flightPose, pageProgress } from '@/lib/flight';
+import { cityBus, cityCamera, cityOrigin } from '@/lib/city';
+import CityGround from '@/components/CityGround';
 
 const PARTICLE_COUNT = 1400;
 const TRAIL_COUNT = 400;
@@ -74,11 +76,20 @@ const SPRING_STIFFNESS = 55;
 // The field is a box repeated around the camera (nearest image per star), so
 // the dive never runs out of stars; a star wraps where it cannot be seen,
 // behind the near fade or off the side.
-const FLIGHT_X = 6; // world units the camera glides left over the page
-const FLIGHT_Y = 1.6; // and sinks
-const FLIGHT_Z = 9; // and dives
+// Since #179 the path bends (flightPose: a Catmull–Rom curve through a
+// waypoint per chapter) and the camera turns its head into the bends and
+// banks with them; the scroll-speed bank adds on top.
+// The footer's city (#179) adds its own offset on top: the camera sinks on,
+// then the eyes lower to the horizon and the lights below.
 const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
 const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
+// the footer's hovers (#179): CONNECT gathers the stars over the cursor into
+// clusters of CLUSTER world units, within CLUSTER_R of it sideways; the name sends a
+// glint across the screen over GLINT_S seconds
+const CLUSTER = 0.9;
+const CLUSTER_R = 3.5;
+const GLINT_S = 0.9;
+const AIM_DEPTH = 6; // world units ahead the pointer's aim is turned with the head
 const FIELD_W = 20;
 const FIELD_H = 14;
 const FIELD_D = 8;
@@ -177,19 +188,39 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
   const scrollDirRef = useRef(0);
   const parallaxRef = useRef(0);
   // the camera as it flies (damped toward the flight), and each star's wrap offset
-  const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0 });
+  const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0, pitch: 0, yaw: 0 });
   const nearFade = useMemo(() => ({ value: 0 }), []);
+  // the end of the flight (#179): as the head lowers, the stars under eye
+  // level pour down to the ground and settle there, dim, among the city's lights
+  const below = useMemo(() => ({
+    eye: { value: 0 },
+    fall: { value: 0 },
+    // where they land: under the flight's end, or under the home camera
+    ground: { value: cityOrigin(flight, { x: -FLIGHT.x, y: -FLIGHT.y, z: FLIGHT.home - FLIGHT.z }).groundY },
+    glint: { value: -1 },
+    glintAmt: { value: 0 },
+  }), [flight]);
   const fadeNear = useCallback(
     (shader: THREE.WebGLProgramParametersWithUniforms) => {
       shader.uniforms.uNearFade = nearFade;
+      shader.uniforms.uEye = below.eye;
+      shader.uniforms.uFall = below.fall;
+      shader.uniforms.uGround = below.ground;
+      shader.uniforms.uGlint = below.glint;
+      shader.uniforms.uGlintAmt = below.glintAmt;
       shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', '#include <common>\nuniform float uNearFade;')
+        .replace('#include <common>', '#include <common>\nuniform float uNearFade;\nuniform float uEye;\nuniform float uFall;\nuniform float uGround;\nuniform float uGlint;\nuniform float uGlintAmt;')
+        // under eye level a star drops to the ground, the lower ones first
+        .replace(
+          '#include <project_vertex>',
+          `float under = 1.0 - smoothstep(uEye - 0.9, uEye + 0.2, transformed.y);\nfloat deep = clamp((uEye - transformed.y) / 3.0, 0.0, 1.0);\nfloat drop = clamp(uFall * 1.5 - (1.0 - deep) * 0.5, 0.0, 1.0) * under;\ntransformed.y = mix(transformed.y, uGround, drop * drop);\n#include <project_vertex>`,
+        )
         .replace(
           '#include <logdepthbuf_vertex>',
-          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\n#include <logdepthbuf_vertex>`,
+          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= 1.0 - 0.65 * smoothstep(0.8, 1.0, drop);\nvec2 gsc = gl_Position.xy / gl_Position.w;\nfloat gband = (gsc.x * 0.5 + 0.5) + gsc.y * 0.15 - uGlint;\ngl_PointSize *= 1.0 + 1.1 * exp(-gband * gband / 0.0025) * uGlintAmt;\n#include <logdepthbuf_vertex>`,
         );
     },
-    [nearFade],
+    [nearFade, below],
   );
   const trailIndexRef = useRef(0);
   const timeRef = useRef(0);
@@ -203,6 +234,18 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
   const tunnelAmountRef = useRef(0);
   const tunnelHoldStartRef = useRef<number | null>(null);
   const { viewport, invalidate, camera } = useThree();
+  // the footer's hovers (#179): how far CONNECT's clusters and the name's
+  // glint have eased in, and when the glint started
+  const connectRef = useRef(0);
+  const glintRef = useRef({ amt: 0, start: 0 });
+  useEffect(
+    () =>
+      cityBus.onHover(() => {
+        if (cityBus.hover() === 'name') glintRef.current.start = performance.now();
+        invalidate();
+      }),
+    [invalidate],
+  );
   const firstFrameRef = useRef(false);
   const probeRef = useRef<number[] | null>(null);
 
@@ -357,8 +400,9 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     const posArray = posAttr.array as Float32Array;
 
     const cam = camRef.current;
-    const mx = cam.x + mouseRef.current.x * viewport.width * 0.5;
-    const my = cam.y + mouseRef.current.y * viewport.height * 0.5;
+    // the pointer's aim, turned with the head at the stars' usual depth
+    const mx = cam.x - Math.sin(cam.yaw) * AIM_DEPTH + mouseRef.current.x * viewport.width * 0.5;
+    const my = cam.y + Math.sin(cam.pitch) * AIM_DEPTH + mouseRef.current.y * viewport.height * 0.5;
     const mouseSpeed = mouseRef.current.speed;
 
     // Scroll velocity — amplified for visible effect
@@ -377,30 +421,74 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     // ── the flight: the camera follows the page's progress, damped like the parallax
     let flying = false;
     if (flight) {
-      const f = flightAt(pageProgress());
+      const f = flightPose(pageProgress());
+      const city = cityCamera(cityBus.progress(), cityBus.horizon());
       const speed = Math.min(velocityRef.current, 1);
-      const tx = -FLIGHT_X * f.x, ty = -FLIGHT_Y * f.y, tz = 7 - FLIGHT_Z * f.z;
-      const tf = 60 + FLIGHT_FOV * speed;
-      const tr = FLIGHT_ROLL * speed * scrollDirRef.current;
+      const tx = f.x, ty = f.y + city.dy, tz = f.z + city.dz;
+      const tf = city.fov + FLIGHT_FOV * speed;
+      const tr = f.bank + FLIGHT_ROLL * speed * scrollDirRef.current;
+      const tp = f.pitch + city.pitch;
       cam.x = THREE.MathUtils.damp(cam.x, tx, 5, delta);
       cam.y = THREE.MathUtils.damp(cam.y, ty, 5, delta);
       cam.z = THREE.MathUtils.damp(cam.z, tz, 5, delta);
       cam.fov = THREE.MathUtils.damp(cam.fov, tf, 4, delta);
       cam.roll = THREE.MathUtils.damp(cam.roll, tr, 4, delta);
+      cam.pitch = THREE.MathUtils.damp(cam.pitch, tp, 5, delta);
+      cam.yaw = THREE.MathUtils.damp(cam.yaw, f.yaw, 5, delta);
       flying =
         Math.abs(cam.x - tx) + Math.abs(cam.y - ty) + Math.abs(cam.z - tz) > 0.0005 ||
         Math.abs(cam.fov - tf) > 0.01 ||
-        Math.abs(cam.roll - tr) > 0.0002;
+        Math.abs(cam.roll - tr) > 0.0002 ||
+        Math.abs(cam.pitch - tp) > 0.0002 ||
+        Math.abs(cam.yaw - f.yaw) > 0.0002;
       const pc = camera as THREE.PerspectiveCamera;
       pc.position.set(cam.x, cam.y, cam.z);
-      pc.rotation.z = cam.roll;
+      pc.rotation.set(cam.pitch, cam.yaw, cam.roll, 'YXZ');
+      below.eye.value = cam.y;
+      below.fall.value = city.fall;
       if (Math.abs(pc.fov - cam.fov) > 0.001) {
         pc.fov = cam.fov;
         pc.updateProjectionMatrix();
       }
       // the near fade comes in once the camera has left its home, so the top of the page is the field as it always was
       nearFade.value = THREE.MathUtils.clamp((7 - cam.z) / 0.5, 0, 1);
+    } else if (!REDUCED_MOTION) {
+      // the other pages (#179): the camera stays home until their footer
+      // comes in, then backs away and lowers its eyes the same way, and the
+      // stars under eye level pour down into the city's lights
+      const city = cityCamera(cityBus.progress(), cityBus.horizon());
+      const ty = city.dy, tz = 7 + city.dz;
+      cam.y = THREE.MathUtils.damp(cam.y, ty, 5, delta);
+      cam.z = THREE.MathUtils.damp(cam.z, tz, 5, delta);
+      cam.fov = THREE.MathUtils.damp(cam.fov, city.fov, 4, delta);
+      cam.pitch = THREE.MathUtils.damp(cam.pitch, city.pitch, 5, delta);
+      flying =
+        Math.abs(cam.y - ty) + Math.abs(cam.z - tz) > 0.0005 ||
+        Math.abs(cam.fov - city.fov) > 0.01 ||
+        Math.abs(cam.pitch - city.pitch) > 0.0002;
+      const pc = camera as THREE.PerspectiveCamera;
+      pc.position.set(cam.x, cam.y, cam.z);
+      pc.rotation.set(cam.pitch, 0, 0, 'YXZ');
+      below.eye.value = cam.y;
+      below.fall.value = city.fall;
+      if (Math.abs(pc.fov - cam.fov) > 0.001) {
+        pc.fov = cam.fov;
+        pc.updateProjectionMatrix();
+      }
     }
+
+    // ── the footer's hovers (#179)
+    const hover = cityBus.hover();
+    connectRef.current = THREE.MathUtils.damp(connectRef.current, hover === 'connect' ? 1 : 0, 4, delta);
+    if (connectRef.current < 0.002 && hover !== 'connect') connectRef.current = 0;
+    const connect = connectRef.current;
+    const glint = glintRef.current;
+    glint.amt = THREE.MathUtils.damp(glint.amt, hover === 'name' ? 1 : 0, 6, delta);
+    if (glint.amt < 0.002 && hover !== 'name') glint.amt = 0;
+    const sweep = hover === 'name' ? Math.min(1, (performance.now() - glint.start) / 1000 / GLINT_S) : 1;
+    below.glint.value = -0.2 + 1.5 * sweep;
+    below.glintAmt.value = glint.amt * (sweep < 1 ? 1 : 0);
+    const hovering = (connect > 0 && Math.abs(connect - (hover === 'connect' ? 1 : 0)) > 0.002) || (hover === 'name' && sweep < 1) || (glint.amt > 0 && hover !== 'name');
 
     activityRef.current = THREE.MathUtils.damp(activityRef.current, 0, 2.4, delta);
     const activity = Math.max(activityRef.current, Math.min(velocityRef.current * 2, 1));
@@ -552,6 +640,18 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
         bz += oz;
       }
 
+      if (connect > 0) {
+        // CONNECT: in the sky over the cursor a star's home moves toward the
+        // middle of its little cell, so the stars there gather into clusters
+        // (over the cursor, not around it: under the footer they have
+        // already poured down into the city)
+        const w = connect * (1 - THREE.MathUtils.smoothstep(Math.abs(bx - mx), CLUSTER_R * 0.4, CLUSTER_R));
+        if (w > 0) {
+          bx += ((Math.floor(bx / CLUSTER) + 0.5) * CLUSTER - bx) * 0.85 * w;
+          by += ((Math.floor(by / CLUSTER) + 0.5) * CLUSTER - by) * 0.85 * w;
+        }
+      }
+
       const floatX = Math.sin(timeRef.current * 0.25 + i * 0.1) * 0.012 * activity;
       const floatY = Math.cos(timeRef.current * 0.18 + i * 0.15) * 0.01 * activity;
 
@@ -639,7 +739,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     // Keep drawing while anything is still moving (activity, springs, live
     // trail puffs, parallax catching up, the tunnel easing) or while the
     // probe is sampling. Otherwise stop: the next input event invalidates.
-    let moving = isActive || tunneling || flying || tunnelTargetRef.current === 1
+    let moving = isActive || tunneling || flying || hovering || tunnelTargetRef.current === 1
       || probeRef.current !== null
       || Math.abs(parallaxRef.current - screens) > 0.0005;
     if (!moving) {
@@ -773,6 +873,7 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
             onFirstFrame={() => setVisible(true)}
             onProbe={probing ? (reduced ? onProbeReduced : onProbe) : null}
           />
+          {!REDUCED_MOTION && <CityGround flight={flight} />}
           {!reduced && (
             <EffectComposer>
               <Bloom
