@@ -17,6 +17,8 @@ import { cityBus } from '@/lib/city';
 
 const LIGHT = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
 
+const NARROW = typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)') : null;
+
 const FONT = '"Geist Pixel", monospace';
 const SPAN = 0.92; // share of the content width the word spans
 const MAX_H = 0.38; // word height cap, share of the small viewport height
@@ -177,11 +179,15 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
     let raf = 0;
     let dead = false;
 
-    // fixed in the middle of the screen, both ways (#179); the word plus a pad
+    // fixed in the middle of the screen, both ways (#179); the word plus a pad.
+    // Phones keep every header on the frame's one left axis (#189).
     const place = () => {
       const cvW = wordW + 2 * PAD, cvH = boxH + 2 * PAD;
       cvTop = Math.round((svh() - cvH) / 2);
-      canvas.style.left = `${Math.round((document.documentElement.clientWidth - cvW) / 2)}px`;
+      const left = NARROW?.matches
+        ? Math.round(box.getBoundingClientRect().left) - PAD
+        : Math.round((document.documentElement.clientWidth - cvW) / 2);
+      canvas.style.left = `${left}px`;
       canvas.style.top = `${cvTop}px`;
       if (!pour) return;
       // the stars fall to the bottom of the screen, so the canvas reaches it

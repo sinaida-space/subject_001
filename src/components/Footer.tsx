@@ -219,8 +219,10 @@ export default function Footer() {
       style={held ? { height: `calc(100svh + ${CITY.runway * 100}svh)` } : undefined}
     >
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
-      {/* held: the screen lets clicks through to Contact, receded above it */}
-      <div className={held ? 'pointer-events-none sticky top-0 flex h-[100svh] flex-col justify-end overflow-hidden pb-8' : 'pb-8 pt-24 md:pt-16'}>
+      {/* held: the screen lets clicks through to Contact, receded above it.
+          Not held, md+ keeps the top tight so the page's last screen shows
+          LET'S TALK clear of the header (#189). */}
+      <div className={held ? 'pointer-events-none sticky top-0 flex h-[100svh] flex-col justify-end overflow-hidden pb-8' : 'pb-8 pt-24 md:pt-8'}>
         <div className="site-frame pointer-events-auto">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-end lg:gap-8">
             <div ref={brandRef} className="lg:col-span-4">
@@ -231,7 +233,7 @@ export default function Footer() {
           </div>
           {/* phones: the live site's divider over the bottom line */}
           <div className="section-divider mb-8 mt-14 md:hidden" />
-          <div ref={barRef} className="md:mt-14"><BottomBar /></div>
+          <div ref={barRef} className="md:mt-10"><BottomBar /></div>
         </div>
       </div>
     </footer>
