@@ -114,7 +114,7 @@ export function buildGraph(): { nodes: GraphNode[]; edges: GraphEdge[] } {
   PROJECTS.forEach((p) => {
     // A project inherits the colour of its dominant category (first skill's).
     const firstSkill = p.skills.map(skillById).find(Boolean);
-    const category: Category = firstSkill ? firstSkill.category : 'tech';
+    const category: Category = firstSkill ? firstSkill.category : 'code';
     nodes.push({
       id: p.id,
       label: p.title, // short star label

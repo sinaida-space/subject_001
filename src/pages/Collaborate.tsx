@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { withProjectNames } from '@/lib/projectNames';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -37,10 +38,10 @@ function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
         {service.record.map((part, i) =>
           part.href ? (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
-              {part.text}
+              {withProjectNames(part.text)}
             </Link>
           ) : (
-            <span key={i}>{part.text}</span>
+            <span key={i}>{withProjectNames(part.text)}</span>
           )
         )}
       </p>
@@ -168,7 +169,7 @@ export default function Collaborate() {
           </p>
 
           <div className="font-mono text-[14px] leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
-            {BOILERPLATE}
+            {withProjectNames(BOILERPLATE)}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">

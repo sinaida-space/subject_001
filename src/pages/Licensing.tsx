@@ -3,6 +3,17 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { withProjectNames } from '@/lib/projectNames';
+
+// 'Last updated' is the date of the last commit to this file (vite.config.ts),
+// written as '7 August 2026' with non-breaking spaces.
+const LAST_UPDATED = (() => {
+  const iso = typeof __LICENSING_UPDATED__ === 'undefined' ? '' : __LICENSING_UPDATED__;
+  const date = iso ? new Date(`${iso}T12:00:00Z`) : new Date();
+  return date
+    .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+    .replace(/ /g, '\u00a0');
+})();
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -135,7 +146,7 @@ const Licensing = () => {
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
             <li>
               Source code on my GitHub is licensed under Apache&nbsp;2.0. Read it, fork
-              it, ship it commercially. Keep the notices. Aether Currents is the
+              it, ship it commercially. Keep the notices. <span className="project-name">Aether Currents</span> is the
               exception and uses AGPL&nbsp;3.0.
             </li>
             <li>
@@ -177,10 +188,10 @@ const Licensing = () => {
                             : { target: '_blank', rel: 'noopener noreferrer' })}
                           className="underline underline-offset-2 hover:text-accent transition-colors"
                         >
-                          {r.project}
+                          {withProjectNames(r.project)}
                         </a>
                       ) : (
-                        r.project
+                        withProjectNames(r.project)
                       )}
                     </td>
                     <td className="py-3 pr-4">{r.code}</td>
@@ -211,7 +222,9 @@ const Licensing = () => {
             venues and clients has to be&nbsp;held.
           </p>
 
-          <H2>Aether Currents</H2>
+          <H2>
+            <span className="project-name">Aether Currents</span>
+          </H2>
           <p className="text-muted-foreground">
             The tool&rsquo;s code is under AGPL&nbsp;3.0 rather than&nbsp;Apache. Use it,
             study it, change it, share&nbsp;it. If you run a modified version, including
@@ -226,7 +239,9 @@ const Licensing = () => {
             on the tool&rsquo;s own licence&nbsp;page.
           </p>
 
-          <H2>The painting in The Eyes,&nbsp;Chico</H2>
+          <H2>
+            The painting in <span className="project-name">The Eyes,&nbsp;Chico</span>
+          </H2>
           <p className="text-muted-foreground">
             The painting in that piece is the work of{' '}
             <strong className="text-foreground">Alisa Feer</strong> and remains her sole
@@ -250,7 +265,7 @@ const Licensing = () => {
           <H2>Live and commissioned work</H2>
           <p className="text-muted-foreground">
             Stage visuals and installations made for other people carry rights that are
-            not&nbsp;mine. Documentation of the Redkie Ptitsy set at Sklad&nbsp;No.&nbsp;3
+            not&nbsp;mine. Documentation of the <span className="project-name">Redkie Ptitsy</span> set at Sklad&nbsp;No.&nbsp;3
             contains the band&rsquo;s music and their performance, and any use of that
             footage needs their permission as well as&nbsp;mine. The same holds for
             client and venue work generally.
@@ -278,11 +293,11 @@ const Licensing = () => {
           </p>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
             <li>
-              Nebula raymarch in The Eyes,&nbsp;Chico, after a shader by Yohei
+              Nebula raymarch in <span className="project-name">The Eyes,&nbsp;Chico</span>, after a shader by Yohei
               Nishitsuji, MIT
             </li>
             <li>
-              Hash function in The Eyes,&nbsp;Chico and Ethereal&nbsp;Path, from
+              Hash function in <span className="project-name">The Eyes,&nbsp;Chico</span> and <span className="project-name">Ethereal&nbsp;Path</span>, from
               &ldquo;Hash without Sine&rdquo; by Dave&nbsp;Hoskins, MIT
             </li>
             <li>Three.js, MediaPipe Tasks and Vite, each under its own licence</li>
@@ -319,7 +334,7 @@ const Licensing = () => {
           </p>
 
           <p className="clinical-label text-muted-foreground mt-10">
-            Last updated 7&nbsp;August&nbsp;2026
+            Last updated {LAST_UPDATED}
           </p>
         </div>
       </main>

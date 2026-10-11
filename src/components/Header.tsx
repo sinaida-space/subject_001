@@ -96,11 +96,12 @@ export default function Header() {
       <header className="fixed top-0 left-0 right-0 z-50">
         {/* No glass panel or border: once scrolled, the page's own background
             colour fades down under the header so content slides beneath it.
+            The underlay is --card, a few tones above the void (#193, her pick).
             The opacity flip is a one-off response to scroll, not a loop. */}
         <div
           aria-hidden="true"
           className={`pointer-events-none absolute inset-x-0 top-0 h-[170%] transition-opacity duration-500 ${scrolled ? 'opacity-100' : 'opacity-0'}`}
-          style={{ background: 'linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--background) / 0.9) 45%, hsl(var(--background) / 0) 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, hsl(var(--card)) 0%, hsl(var(--card) / 0.9) 45%, hsl(var(--card) / 0) 100%)' }}
         />
         <div className="relative site-frame py-4 flex items-center justify-between gap-2 sm:gap-4">
 

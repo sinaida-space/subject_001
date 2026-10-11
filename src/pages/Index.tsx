@@ -16,6 +16,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { landOn } from '@/lib/navLand';
+import StarStill from '@/components/StarStill';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 const DustReveal = lazy(() => import('@/components/DustReveal'));
@@ -80,6 +81,7 @@ const Index = () => {
           failure isn't the kind of durable preference that override is meant
           to capture. (The custom cursor now mounts once at the App level,
           shared across every route, not duplicated per page.) */}
+      {full && <StarStill />}
       {full && fieldReady && (
         <ErrorBoundary fallback={null} onError={(e) => console.error('ParticleField crashed:', e)}>
           <Suspense fallback={null}>

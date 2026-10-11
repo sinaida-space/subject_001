@@ -214,13 +214,17 @@ class ConstellationSynth {
   subscribe(fn: Listener): () => void {
     this.listeners.add(fn);
     fn(this.getState());
-    return () => this.listeners.delete(fn);
+    return () => {
+      this.listeners.delete(fn);
+    };
   }
 
   /** Fires once, the first time the instrument is unlocked (first real drag). */
   onUnlock(fn: UnlockListener): () => void {
     this.unlockListeners.add(fn);
-    return () => this.unlockListeners.delete(fn);
+    return () => {
+      this.unlockListeners.delete(fn);
+    };
   }
 
   markUnlocked() {

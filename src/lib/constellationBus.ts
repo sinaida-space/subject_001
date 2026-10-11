@@ -17,7 +17,9 @@ export const constellationBus = {
   },
   subscribe(l: Listener) {
     highlightListeners.add(l);
-    return () => highlightListeners.delete(l);
+    return () => {
+      highlightListeners.delete(l);
+    };
   },
 
   // constellation → selected works
@@ -26,6 +28,8 @@ export const constellationBus = {
   },
   subscribeFocus(l: FocusListener) {
     focusListeners.add(l);
-    return () => focusListeners.delete(l);
+    return () => {
+      focusListeners.delete(l);
+    };
   },
 };

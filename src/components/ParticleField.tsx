@@ -819,9 +819,16 @@ function PrecompileScene() {
 
 export default function ParticleField({ subtle = false, flight = false }: ParticleFieldProps) {
   const [tier, setTier] = useState<PerfTier>(readTier);
-  // Hidden until the first frame is drawn, then shown with a straight cut:
-  // no fade, since it is not driven by the visitor (motion law).
+  // Hidden until the first frame is drawn, then faded in once over the still
+  // sky (StarStill) that held the screen while three.js loaded (#141, her
+  // call: arrive smoothly). html[data-field] tells the still sky to go.
   const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (!visible) return;
+    const html = document.documentElement;
+    html.setAttribute('data-field', '');
+    return () => html.removeAttribute('data-field');
+  }, [visible]);
   // Probe once per tier: after a step down, measure again, so a device that
   // is still too slow without bloom drops the field altogether.
   const [probing, setProbing] = useState(() => readTier() !== 'off');
@@ -856,8 +863,8 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
   return (
     <>
       <div
-        className="fixed inset-0 z-0"
-        style={{ filter: 'blur(0.5px)', visibility: visible ? 'visible' : 'hidden' }}
+        className="star-field fixed inset-0 z-0"
+        style={{ filter: 'blur(0.5px)', opacity: visible ? 1 : 0 }}
       >
         <Canvas
           frameloop="demand"

@@ -18,6 +18,7 @@ import {
   type ExperienceRichSection,
   type RichTextPart,
 } from '@/data/experiences';
+import { withProjectNames } from '@/lib/projectNames';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -38,11 +39,11 @@ function RichParagraph({ parts }: { parts: RichTextPart[] }) {
   return (
     <>
       {parts.map((part, i) => {
-        if (!part.href) return <span key={i}>{part.text}</span>;
+        if (!part.href) return <span key={i}>{withProjectNames(part.text)}</span>;
         if (part.href.startsWith('/')) {
           return (
             <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
-              {part.text}
+              {withProjectNames(part.text)}
             </Link>
           );
         }
@@ -54,7 +55,7 @@ function RichParagraph({ parts }: { parts: RichTextPart[] }) {
             rel="noopener noreferrer"
             className="underline hover:text-accent transition-colors"
           >
-            {part.text}
+            {withProjectNames(part.text)}
           </a>
         );
       })}
@@ -294,7 +295,7 @@ export default function Experiences() {
                 {s.scope.inScope.map((item, i) => (
                   <li key={i}>
                     <span className="text-primary-legible">{'> '}</span>
-                    {item}
+                    {withProjectNames(item)}
                   </li>
                 ))}
               </ul>
@@ -333,7 +334,7 @@ export default function Experiences() {
                 {s.resources.have.map((item, i) => (
                   <li key={i}>
                     <span className="text-primary-legible">{'> '}</span>
-                    {item}
+                    {withProjectNames(item)}
                   </li>
                 ))}
               </ul>
