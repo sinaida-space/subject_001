@@ -59,7 +59,9 @@ export default function GraphHoverCard({ project, boundsRef, avoidRef }: Props) 
       const cardH = cardRef.current?.offsetHeight ?? 0;
       if (bounds) {
         const avoidBottom = avoid ? avoid.bottom : bounds.top;
-        const visibleTop = Math.max(bounds.top, avoidBottom, 0);
+        // nor slide under the sticky site header
+        const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
+        const visibleTop = Math.max(bounds.top, avoidBottom, headerBottom, 0);
         const visibleBottom = Math.min(bounds.bottom, window.innerHeight);
         const available = Math.max(0, visibleBottom - visibleTop - GUTTER * 2);
         // A hard cap on the card's own height so, even under an unusually
@@ -117,7 +119,7 @@ export default function GraphHoverCard({ project, boundsRef, avoidRef }: Props) 
     <div
       ref={cardRef}
       aria-hidden="true"
-      className="pointer-events-none fixed z-40 hidden overflow-hidden md:block"
+      className="pointer-events-none fixed z-40 hidden flex-col overflow-hidden md:flex"
       style={{
         left,
         // Until the first clamped measurement lands, fall back to the old
@@ -132,18 +134,20 @@ export default function GraphHoverCard({ project, boundsRef, avoidRef }: Props) 
         padding: 12,
       }}
     >
+      {/* In a short viewport the still gives up height first, so the name and
+          the tagline are never cut (#152): square at most, cropped to fit. */}
       {dataUrl && (
         <img
           src={dataUrl}
           alt=""
-          className="mb-4 block aspect-square w-full border object-cover"
-          style={{ borderColor: 'hsl(var(--sinaida-red) / 0.45)' }}
+          className="mb-4 block min-h-0 w-full border object-cover"
+          style={{ borderColor: 'hsl(var(--sinaida-red) / 0.45)', flex: `0 1 ${CARD_W - 24}px` }}
           draggable={false}
         />
       )}
 
       <div
-        className="font-mono uppercase leading-tight"
+        className="shrink-0 font-mono uppercase leading-tight"
         style={{ fontSize: 20, letterSpacing: '0.08em', color: 'hsl(var(--primary-legible))' }}
       >
         {project.title}
@@ -151,7 +155,7 @@ export default function GraphHoverCard({ project, boundsRef, avoidRef }: Props) 
 
       {project.tagline && (
         <p
-          className="mt-2 font-mono leading-snug"
+          className="mt-2 shrink-0 font-mono leading-snug"
           style={{ fontSize: 16, color: 'hsl(var(--foreground) / 0.7)' }}
         >
           {project.tagline}
