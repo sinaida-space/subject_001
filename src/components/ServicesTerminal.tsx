@@ -36,16 +36,20 @@ function ServiceScreen({ service, flip, fit }: { service: Service; flip: boolean
         </p>
       </div>
       <div className={flip ? 'md:col-span-5 md:col-start-1 md:row-start-1' : 'md:col-span-5 md:col-start-8'}>
+        {/* The still opens the case too (#187). The caption's link stays the one
+            named link for keyboards and screen readers. */}
         {project?.image && (
-          <DitherReveal
-            src={project.image}
-            alt={`${project.title}, project still`}
-            className={
-              fit
-                ? `w-full max-h-[34svh] max-w-[calc(34svh*4/3)] md:max-h-[58svh] md:max-w-[calc(58svh*4/3)] ${flip ? '' : 'md:ml-auto'}`
-                : ''
-            }
-          />
+          <Link to={`/work/${service.caption.project}`} tabIndex={-1} aria-hidden="true" className="block">
+            <DitherReveal
+              src={project.image}
+              alt=""
+              className={
+                fit
+                  ? `w-full max-h-[34svh] max-w-[calc(34svh*4/3)] md:max-h-[58svh] md:max-w-[calc(58svh*4/3)] ${flip ? '' : 'md:ml-auto'}`
+                  : ''
+              }
+            />
+          </Link>
         )}
         <p
           className={`font-mono mt-2.5 text-sm leading-[1.55] ${fit && !flip ? 'md:text-right' : ''}`}

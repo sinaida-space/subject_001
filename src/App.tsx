@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useLayoutEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import WebMcpTools from "@/components/WebMcpTools";
@@ -8,6 +8,7 @@ import DiveHost from "@/components/dive/DiveHost";
 import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
 import { routeChunks } from "@/lib/routeChunks";
 import { startHalation } from "@/lib/halation";
+import { rememberHomeScroll, restoreHomeScroll, takeHomeReturn } from "@/lib/homeScroll";
 
 const PrivacyPolicy = lazy(routeChunks.privacy);
 const Licensing = lazy(routeChunks.licensing);
@@ -35,12 +36,28 @@ const SiteLight = () => {
 // top of the new page — the browser otherwise keeps whatever scroll offset
 // the previous page was at. Only fires on pathname change, not on in-page
 // hash navigation (Index handles its own #section scrolling).
+// Coming back home from a case (browser Back, or the case's own Back link)
+// returns to the spot the case was opened from (#187); see lib/homeScroll.
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  const navType = useNavigationType();
   // Layout effect, so the reset lands before paint and inside a view
   // transition's update (see RouteEnhancer) rather than after the snapshot.
   useLayoutEffect(() => {
+    const back = takeHomeReturn() || navType === "POP";
+    if (pathname === "/" && back && restoreHomeScroll()) return;
     window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only a route change resets
+  }, [pathname]);
+  // Remember where home was when a case link is followed from it.
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.("a[href]");
+      if (a && a.getAttribute("href")?.startsWith("/work/")) rememberHomeScroll();
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
   }, [pathname]);
   return null;
 };

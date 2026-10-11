@@ -11,6 +11,7 @@ import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 import { CaseDiveControls, ProcessFloor, RelatedWorks } from '@/components/dive/CaseDive';
+import { markHomeReturn } from '@/lib/homeScroll';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -121,6 +122,7 @@ export default function WorkCase() {
           <div className="md:col-span-5">
             <Link
               to="/"
+              onClick={markHomeReturn}
               className="clinical-label mb-8 inline-block text-primary-legible transition-colors hover:text-accent"
             >
               ← Back

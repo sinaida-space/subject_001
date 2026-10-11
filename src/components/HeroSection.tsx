@@ -354,7 +354,7 @@ export default function HeroSection() {
             tunnel dive (heroTunnelBus + ParticleField). */}
         <p
           ref={eyebrowRef}
-          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(1.4rem,7.6vw,5.1875rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] cursor-none`}
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={stopTunnel}
         >
@@ -425,10 +425,11 @@ export default function HeroSection() {
             capped to the same fit constraint (unlike the old face, Geist
             Pixel's width means the ceiling must also respect the max-w-7xl
             container on very wide screens, or the headline overflows there
-            too). Re-derive with the same method if the copy or the face
+            too). The below-md ceiling equals the md floor (2.1rem), so the
+            type never grows as the window narrows (#188). Re-derive with the same method if the copy or the face
             changes again. */}
         <h1
-          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(1.4rem,7.6vw,5.1875rem)] md:text-[clamp(2rem,4.4vw,3.6rem)] cursor-none`}
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseLeave={stopTunnel}
         >
