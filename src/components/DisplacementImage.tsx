@@ -70,7 +70,7 @@ export default function DisplacementImage({
 }: DisplacementImageProps) {
   const filterId = useId().replace(/:/g, '_');
   const wrapRef = useRef<HTMLDivElement>(null);
-  const bumpRef = useRef<SVGImageElement>(null);
+  const bumpRef = useRef<SVGFEImageElement>(null);
   const overlayRef = useRef<HTMLImageElement>(null);
   const rafRef = useRef<number | null>(null);
   const idleRafRef = useRef<number | null>(null);

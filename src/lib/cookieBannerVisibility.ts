@@ -41,5 +41,7 @@ export function notifyCookieBannerAway() {
 
 export function subscribeCookieBannerAcknowledged(l: Listener) {
   listeners.add(l);
-  return () => listeners.delete(l);
+  return () => {
+    listeners.delete(l);
+  };
 }

@@ -4,6 +4,16 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+// 'Last updated' is the date of the last commit to this file (vite.config.ts),
+// written as '7 August 2026' with non-breaking spaces.
+const LAST_UPDATED = (() => {
+  const iso = typeof __LICENSING_UPDATED__ === 'undefined' ? '' : __LICENSING_UPDATED__;
+  const date = iso ? new Date(`${iso}T12:00:00Z`) : new Date();
+  return date
+    .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+    .replace(/ /g, '\u00a0');
+})();
+
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 /* Licensing terms for the site and for every project shown on it.
@@ -319,7 +329,7 @@ const Licensing = () => {
           </p>
 
           <p className="clinical-label text-muted-foreground mt-10">
-            Last updated 7&nbsp;August&nbsp;2026
+            Last updated {LAST_UPDATED}
           </p>
         </div>
       </main>
