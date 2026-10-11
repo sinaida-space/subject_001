@@ -243,9 +243,11 @@ export default function NotFound() {
           className="font-mono text-left w-full space-y-1 [@media(max-height:480px)]:hidden"
           style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: 'clamp(0.95rem, 2.4dvh, 1.25rem)', marginBottom: 'min(2.5rem, 4dvh)' }}
         >
-          <div>{line1.displayed}{!line1.done && <span className="animate-terminal-cursor">█</span>}</div>
-          {line1.done && <div>{line2.displayed}{!line2.done && <span className="animate-terminal-cursor">█</span>}</div>}
-          {line2.done && <div>{line3.displayed}{!line3.done && <span className="animate-terminal-cursor">█</span>}</div>}
+          {/* typed one character at a time: read once, whole (#106) */}
+          <p className="sr-only">ERROR_CODE: 404. SIGNAL_LOST: navigating the void. awaiting_redirect.exe</p>
+          <div aria-hidden="true">{line1.displayed}{!line1.done && <span className="animate-terminal-cursor">█</span>}</div>
+          {line1.done && <div aria-hidden="true">{line2.displayed}{!line2.done && <span className="animate-terminal-cursor">█</span>}</div>}
+          {line2.done && <div aria-hidden="true">{line3.displayed}{!line3.done && <span className="animate-terminal-cursor">█</span>}</div>}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full">

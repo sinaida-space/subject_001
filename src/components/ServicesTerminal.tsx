@@ -55,7 +55,7 @@ function ServiceScreen({ service, flip, fit }: { service: Service; flip: boolean
           className={`font-mono mt-2.5 text-sm leading-[1.55] ${fit && !flip ? 'md:text-right' : ''}`}
           style={{ color: 'hsl(var(--foreground) / 0.55)' }}
         >
-          <Link to={`/work/${service.caption.project}`} className={linkClass}>
+          <Link to={`/work/${service.caption.project}`} className={`project-name ${linkClass}`}>
             {name}
           </Link>
           {`${NBSP}· ${service.caption.text}`}

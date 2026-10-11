@@ -931,6 +931,11 @@
 }
 
 @layer utilities {
+  /* every project is named in capitals; the source keeps the real title (#160) */
+  .project-name {
+    text-transform: uppercase;
+  }
+
   .font-display {
     font-family: var(--font-display);
   }

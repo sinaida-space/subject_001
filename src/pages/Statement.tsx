@@ -111,7 +111,7 @@ const Statement = () => {
             />
             <Link
               to="/work/redkie-ptitsy"
-              className="text-primary-legible underline decoration-1 underline-offset-4 hover:text-accent transition-colors"
+              className="project-name text-primary-legible underline decoration-1 underline-offset-4 hover:text-accent transition-colors"
             >
               Redkie Ptitsy
             </Link>

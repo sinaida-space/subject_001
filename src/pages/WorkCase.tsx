@@ -12,6 +12,7 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 import { CaseDiveControls, ProcessFloor, RelatedWorks } from '@/components/dive/CaseDive';
 import { markHomeReturn } from '@/lib/homeScroll';
+import { withProjectNames } from '@/lib/projectNames';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -23,7 +24,7 @@ const INLINE_LINK_CLASS =
 function linkifyCredit(text: string) {
   const parts = text.split(/(https?:\/\/[^\s]+)/g);
   return parts.flatMap((part, i) => {
-    if (!/^https?:\/\//.test(part)) return [part];
+    if (!/^https?:\/\//.test(part)) return [<Fragment key={i}>{withProjectNames(part)}</Fragment>];
     // strip trailing sentence punctuation caught by the greedy match
     const trailing = part.match(/[.,;:)]+$/)?.[0] ?? '';
     const url = trailing ? part.slice(0, -trailing.length) : part;
@@ -57,7 +58,7 @@ function renderInline(text: string) {
     if (!internal && !/^https?:\/\//i.test(href)) return [<Fragment key={i}>{label}</Fragment>];
     return internal ? (
       <Link key={i} to={href} className={INLINE_LINK_CLASS}>
-        {label}
+        {withProjectNames(label)}
       </Link>
     ) : (
       <a key={i} href={href} target="_blank" rel="noopener noreferrer" className={INLINE_LINK_CLASS}>
@@ -305,7 +306,7 @@ export default function WorkCase() {
                 )}
                 {m.caption && (
                   <p className="mt-2 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
-                    {m.caption}
+                    {withProjectNames(m.caption)}
                   </p>
                 )}
               </div>
@@ -338,7 +339,7 @@ export default function WorkCase() {
                         </a>
                       </p>
                       <p className="mt-1 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
-                        {p.bio}
+                        {withProjectNames(p.bio)}
                       </p>
                     </div>
                   ))}
@@ -380,7 +381,7 @@ export default function WorkCase() {
                 {cs.order.heading}
               </h2>
               <p className="mt-4 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/85">
-                {cs.order.body}{' '}
+                {withProjectNames(cs.order.body)}{' '}
                 <a href="https://sinaida.eu/collaborate/" className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70">
                   Get in touch
                 </a>{' '}

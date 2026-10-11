@@ -94,8 +94,11 @@ export default function ScrambleText({
   }, [runId, text, delayMs, durationMs]);
 
   return (
+    // Assistive tech gets the true text once; the scrambled frames are hidden
+    // from it (#106). Nothing changes visually.
     <span className={className} aria-busy={busy || undefined}>
-      {display}
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">{display}</span>
     </span>
   );
 }
