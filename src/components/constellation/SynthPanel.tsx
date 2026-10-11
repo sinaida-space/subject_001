@@ -66,6 +66,16 @@ export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismiss
 
   useEffect(() => subscribeCookieBannerAcknowledged(() => setBannerShowing(false)), []);
 
+  // Esc closes the unlock card, like its [X] (#147).
+  useEffect(() => {
+    if (!showUnlockCard) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onDismissCard();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showUnlockCard, onDismissCard]);
+
   return (
     // Pinned to the viewport bottom (not sticky-inside-absolute, which left it
     // stuck off-screen at the bottom of the graph's own — very tall on mobile

@@ -38,7 +38,11 @@ const CELL = 3; // css px, the site's dither cell
 // Phones get a lighter gate: fewer cells, no bloom, 1x density.
 const LIGHT = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
 const CAP = LIGHT ? { hero: 2600, quote: 3200, about: 3600 } : { hero: 9000, quote: 9000, about: 14000 };
-const PHOTO_SRC = '/sinaida-photo-600.jpg';
+// The About portrait's own AVIF (7 KB, shared with its <picture>); the JPEG
+// only where AVIF does not decode.
+const PHOTO_AVIF = '/sinaida-photo-600.avif';
+const PHOTO_JPG = '/sinaida-photo-600.jpg';
+let photoSrc = PHOTO_AVIF;
 
 // All in css px of scroll.
 const S0 = 16; // the first wheel tick starts it
@@ -311,7 +315,12 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
     const photo = new Image();
-    photo.src = PHOTO_SRC;
+    photo.onerror = () => {
+      if (photoSrc === PHOTO_JPG) return;
+      photoSrc = PHOTO_JPG;
+      photo.src = PHOTO_JPG;
+    };
+    photo.src = photoSrc;
     const photoImg = about.querySelector<HTMLImageElement>('picture img');
     const photoFrame = about.querySelector<HTMLElement>('.photo-frame-wrapper');
     const rules = Array.from(about.querySelectorAll<HTMLElement>('[data-rule]'));
@@ -487,7 +496,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       gl.bindVertexArray(null);
 
       const host = photoImg?.closest('picture')?.parentElement;
-      if (host && !portrait) portrait = createPortraitBuild(host, PHOTO_SRC);
+      if (host && !portrait) portrait = createPortraitBuild(host, photoSrc);
       g.built = true;
     };
 

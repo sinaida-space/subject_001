@@ -194,10 +194,11 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
   // ── Keyboard ────────────────────────────────────────────────────────────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return; }
       if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','r','R'].includes(e.key)) {
         e.preventDefault();
       }
-      if (!stateRef.current.started && e.key !== 'Escape') { start(); return; }
+      if (!stateRef.current.started) { start(); return; }
       if (stateRef.current.dead && (e.key === 'r' || e.key === 'R')) { reset(); return; }
       const map: Record<string, Dir> = {
         ArrowUp: 'UP', ArrowDown: 'DOWN', ArrowLeft: 'LEFT', ArrowRight: 'RIGHT',
@@ -207,7 +208,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [start, reset, setDir]);
+  }, [start, reset, setDir, onClose]);
 
   // ── Touch / Swipe ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -238,7 +239,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
       canvas.removeEventListener('touchstart', onTouchStart);
       canvas.removeEventListener('touchend', onTouchEnd);
     };
-  }, [start, reset, setDir]);
+  }, [start, reset, setDir, onClose]);
 
   // ── Initial draw ─────────────────────────────────────────────────────────────
   useEffect(() => {
