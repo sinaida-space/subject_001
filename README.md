@@ -6,7 +6,7 @@ LinkedIn: linkedin.com/in/sinaida
 Instagram: @sin.ai.da
 Contact: https://sinaida.eu/collaborate
 
-## -----
+
 
 This repo is a production mirror.
 Development and issue tracking run in a private development environment; releases are published here.
