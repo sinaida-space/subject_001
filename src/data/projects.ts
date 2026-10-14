@@ -70,6 +70,8 @@ export interface CaseStudy {
   method?: CaseMethod;
   /** original artwork the piece translates, shown as a labeled figure with a gallery-style caption */
   painting?: { image: string; title: string; attribution: string };
+  /** a collaborator's words about working together, quoted verbatim before the credits */
+  testimonial?: { paragraphs: string[]; name: string; role: string };
   /** attribution lines, rendered as a credits block */
   credits?: string[];
   /** structured collaborator credits (role, name, statement link, one-line bio), rendered instead of `credits` when present */
@@ -148,10 +150,10 @@ export const PROJECTS: Project[] = [
     title: 'Redkie Ptitsy',
     subtitle: 'Live Concert Visuals',
     kind: 'stage',
-    tagline: 'Live at Sklad No. 3, Moscow · 9 projections, one per song',
+    tagline: 'Live at Sklad No. 3, Moscow · a full set, with a fallback for every file',
     short: 'Concept design and\u00A0an\u00A0audio-reactive live\u00A0set',
     blurb:
-      'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band redkie ptitsy. Nine audio-reactive projections, one for each song, built in TouchDesigner and run live behind the band through the whole set.',
+      'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band redkie ptitsy. Audio-reactive projections built in TouchDesigner and run live behind the band through the whole set.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: ['event-design', 'audio-reactive', 'touchdesigner', 'algorithmic-systems'],
     image: workRedkiePtitsy,
@@ -167,13 +169,13 @@ export const PROJECTS: Project[] = [
     caseStudy: {
       kindLabel: 'Stage',
       intro: [
-        'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band [redkie ptitsy](https://band.link/redkieptitsy). Nine audio-reactive projections, one for each song, built in TouchDesigner and run live behind the band through the whole set.',
+        'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band [redkie ptitsy](https://band.link/redkieptitsy). Audio-reactive projections built in TouchDesigner and run live behind the band through the whole set.',
         'Sinaida developed the\u00A0concept and\u00A0the\u00A0visual world for\u00A0the\u00A0whole set, then produced all\u00A0nine systems on\u00A0a\u00A0tight deadline. She\u00A0prepared every backup herself. A\u00A0playlist runs song by\u00A0song with a\u00A0looping logo for\u00A0each pause, one\u00A0continuous video covers the\u00A0whole set\u00A0in\u00A0case nobody is\u00A0at\u00A0the\u00A0console, every file also travels separately, and\u00A0high-contrast logo files read\u00A0on\u00A0any\u00A0screen.',
       ],
       stat: {
         value: '9',
-        heading: 'Audio-reactive projections, one per song',
-        body: 'A\u00A0full-set backdrop, one\u00A0system\u00A0per\u00A0song.',
+        heading: 'Audio-reactive projections for one set',
+        body: 'A\u00A0full-set backdrop, with a\u00A0fallback for\u00A0every\u00A0file.',
       },
       sections: [
         {
@@ -216,7 +218,7 @@ export const PROJECTS: Project[] = [
         stages: [
           { label: 'Song audio in', detail: 'Each track enters the system as signal.' },
           { label: 'CHOP analysis', detail: 'Bands, beats and envelopes drive every parameter.' },
-          { label: 'Per-song patch ×9', detail: 'One visual system per song, each with its own look.' },
+          { label: 'Nine patches', detail: 'Nine visual systems for the set, each with its own look.' },
           { label: 'Projection', detail: 'Run live behind the band for the whole set, with a fallback for every file.' },
         ],
         footer: '> full-set run · Sklad No. 3, Moscow',
@@ -228,7 +230,7 @@ export const PROJECTS: Project[] = [
       order: {
         heading: 'For a stage',
         body:
-          'A visual world for a whole set: one audio-reactive TouchDesigner system per song, from the first concept to show day.',
+          'A visual world for a whole set, from the first concept to show day, with a fallback for every file.',
         suffix: 'to talk about a show.',
       },
     },
@@ -295,6 +297,13 @@ export const PROJECTS: Project[] = [
         attribution: 'Alisa Feer. Acrylic on paper, A4, 2026, St. Petersburg.',
       },
       contributors: [{ name: 'Alisa Feer', url: 'https://uvaliss.ru/', type: 'Person' }],
+      testimonial: {
+        paragraphs: [
+          'Sinaida turned our ideas into action and took on the entire technical side, so I could stay a free artist. She knows how to turn chaos into a system. And she can hear your thoughts and wishes, and your soul too, which in our world is an incredible rarity.',
+        ],
+        name: 'Alisa Feer',
+        role: 'visual artist',
+      },
       creditsPeople: [
         {
           role: 'Concept and interactive design',
@@ -413,6 +422,16 @@ export const PROJECTS: Project[] = [
         footer: '> idea and experience design: Sinaida Krivchenko · SOULS: UVALISS',
       },
       contributors: [{ name: 'Alisa Feer (UVALISS)', url: 'https://uvaliss.ru/', type: 'Person' }],
+      testimonial: {
+        paragraphs: [
+          'I worked with Sinaida on two projects. We started out talking about vibe coding, about making high-quality content across different fields, about technology. Then, step by step, her part grew into turning our shared ideas into a concept.',
+          'On both projects, CONSPACE ROOMS and THE EYES CHICO, she was the one who turned ideas into action and took on the entire technical side. Every stage ran smoothly. It was a progressive and genuinely pleasant collaboration, the kind where you barely have to finish a sentence. Sinaida set up our video calls and, right there in front of me, settled questions of layout and design, fixed bugs and kept the documentation. All I had to bring was the idea, which she then refined in her own signature style, recognisable at once. That, by the way, speaks of a rich inner world and a clear sense of who she is as an author and what her themes are.',
+          'It was fascinating to watch Sinaida work, to see how her unique mind gives things structure. She took my rough material, picked out what worked best and refined it until it held together. Every now and then she shared new programs and tools with me. She keeps up with every update and release, tests them, sorts the junk from the decent ones and knows how to fix their weak spots along the way.',
+          'I definitely want to launch more projects with Sinaida. Working with her never stands still and lets you stay a free artist, because she knows how to turn chaos into a system. And because she can hear your thoughts and wishes, and your soul too, which in our world is an incredible rarity.',
+        ],
+        name: 'Alisa Feer',
+        role: 'visual artist',
+      },
       creditsPeople: [
         {
           role: 'Idea and experience design',
@@ -447,10 +466,10 @@ export const PROJECTS: Project[] = [
     dialect: 'ascii',
     title: 'Aether Currents',
     kind: 'game',
-    tagline: 'Browser instrument played with bare hands · with Telefm',
+    tagline: 'Browser instrument played with bare hands',
     short: 'A\u00A0musical instrument played with bare\u00A0hands',
     blurb:
-      'Sinaida made AETHER CURRENTS with Kamil Yegelev, known as Telefm, a musician in Belgrade. It is a browser instrument: a camera reads your hands, and their movement drives granular sound and light in real time.',
+      'Sinaida made AETHER CURRENTS, a browser instrument, with music advice from Kamil Yegelev (TeleFM), a musician in Belgrade: a camera reads your hands, and their movement drives granular sound and light in real time.',
     tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
     skills: ['body-tracking', 'audio-reactive', 'generative-sound', 'creative-web', 'algorithmic-systems', 'perception-media'],
     url: 'https://aether-currents.sinaida.eu/',
@@ -459,7 +478,7 @@ export const PROJECTS: Project[] = [
     imageSrcSet: `${workAetherCurrents640} 640w, ${workAetherCurrents1024} 1024w, ${workAetherCurrents} 1600w`,
     links: [
       { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
-      { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
+      { label: 'TeleFM', url: 'https://telefm.bandcamp.com/' },
       { label: 'GitHub', url: 'https://github.com/sinaida-space/aether-currents' },
     ],
     badges: ['camera', 'sound'],
@@ -469,17 +488,17 @@ export const PROJECTS: Project[] = [
       paragraphs: [
         'Aether Currents is a way to feel music on your fingertips. Open it, show it your camera, and your hands become the interface. The right hand moves through position and pitch. A pinch shapes grain size. The left hand’s height sets density. Pull your hands apart and the filter opens, the space widens. Close into a fist and the sound freezes mid-air. There is no keyboard, no mouse and no MIDI controller between you and the sound, only your own sense of where your hands are.',
         'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of "move only your upper body." Ballet trains a body inside strict rules. Aether Currents has rules too: six gestures over a granular synthesis engine, with plenty of room to play inside them. The instrument does not know what you will play, and often its maker does not either.',
-        'Sinaida made it with Kamil Yegelev, known as Telefm, a musician in Belgrade. Everything runs on the device, with no server and no cloud. Sound follows movement in under a hundred milliseconds, which is fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
+        'Kamil Yegelev (TeleFM), a musician in Belgrade, advised on the music. Everything runs on the device, with no server and no cloud. Sound follows movement in under a hundred milliseconds, which is fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
       ],
       credits: [
         'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
-        'Music & collaboration: Kamil Yegelev (Telefm) · telefm.bandcamp.com',
+        'Music advisor: Kamil Yegelev (TeleFM) · telefm.bandcamp.com',
       ],
     },
     caseStudy: {
       kindLabel: 'Interactive web',
       intro: [
-        'Sinaida and Kamil Yegelev, the Belgrade musician known as Telefm, built AETHER CURRENTS on one shared belief: tools made with AI should amplify human creativity. The fun comes from the person playing, glitches and flaws included, so the human stays in the loop.',
+        'Sinaida built AETHER CURRENTS on one belief, shared with her music advisor Kamil Yegelev (TeleFM): tools made with AI should amplify human creativity. The fun comes from the person playing, glitches and flaws included, so the human stays in the loop.',
         'Movement is the signal. On-device hand tracking drives a granular synthesis engine as one direct path: position becomes pitch, a pinch shapes the grain, the distance between the hands opens the space, a fist freezes the sound mid-air. Pitch is quantized to a scale, so a trembling hand still plays in key. The visuals show the same signal as the sound. Nothing leaves the device, and a player can download their music and take it further.',
         'AETHER CURRENTS runs in a browser tab. It is released in versions, and each release comes from watching real people play.',
       ],
@@ -506,21 +525,21 @@ export const PROJECTS: Project[] = [
           { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture. Each fix traced to a specific stumble.' },
           { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
         ],
-        footer: '> instrument: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
+        footer: '> instrument: Sinaida Krivchenko · music advisor: Kamil Yegelev (TeleFM)',
       },
-      contributors: [{ name: 'Kamil Yegelev (Telefm)', url: 'https://telefm.bandcamp.com/', type: 'Person' }],
+      contributors: [{ name: 'Kamil Yegelev (TeleFM)', url: 'https://telefm.bandcamp.com/', type: 'Person' }],
       credits: [
         'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
-        'Music & collaboration: Kamil Yegelev (Telefm) · telefm.bandcamp.com',
+        'Music advisor: Kamil Yegelev (TeleFM) · telefm.bandcamp.com',
       ],
       links: [
-        { label: 'Telefm', url: 'https://telefm.bandcamp.com/' },
+        { label: 'TeleFM', url: 'https://telefm.bandcamp.com/' },
         { label: 'GitHub', url: 'https://github.com/sinaida-space/aether-currents' },
       ],
       order: {
         heading: 'For a stage',
         body:
-          'The instrument travels in a laptop and a webcam: no rig, no install, no server. It can be staged as a live gesture performance with Telefm, opened to an audience as a playable installation, or adapted for a space. The whole tech rider is a table, a camera and a projector.',
+          'The instrument travels in a laptop and a webcam: no rig, no install, no server. It can be staged as a live gesture performance, opened to an audience as a playable installation, or adapted for a space. The whole tech rider is a table, a camera and a projector.',
         suffix: 'to put it in front of an audience.',
       },
     },

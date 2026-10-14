@@ -117,7 +117,7 @@ export const SINAIDA_VIDEOS: ExperienceVideo[] = [
     id: 'bDDAXRlz5FQ',
     title: 'Redkie Ptitsy, live at Sklad No. 3',
     caseHref: '/work/redkie-ptitsy',
-    caption: 'A real-time interactive system for a live concert in Moscow: nine audio-reactive projections, one per song, built in TouchDesigner.',
+    caption: 'A real-time interactive system for a live concert in Moscow: a full set of audio-reactive projections built in TouchDesigner, with a fallback for every file.',
   },
   {
     id: 'oSWzQ4ds8BI',

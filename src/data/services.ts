@@ -37,16 +37,16 @@ export const SERVICES: Service[] = [
     word: 'STAGE',
     title: 'For musicians, dance & theater',
     description:
-      'Audio-reactive stage visuals, one TouchDesigner system per song or scene, developed with the band or the creative team from the first concept to show day.',
+      'Audio-reactive stage visuals for a whole set, developed with the band or the creative team from the first concept to show day, with a fallback for every file.',
     record: [
-      { text: 'Nine projections, one per song, performed live with ' },
+      { text: 'A full set of audio-reactive projections, performed live with ' },
       { text: `Redkie${NBSP}Ptitsy`, href: '/work/redkie-ptitsy' },
       { text: ` at Sklad${NBSP}No.${NBSP}3, Moscow, March${NBSP}2026. The body tracking grew out of${NBSP}` },
       { text: `Ethereal${NBSP}Path`, href: '/work/ethereal-path' },
       { text: `, an${NBSP}experiment where the${NBSP}body is the${NBSP}controller.` },
     ],
     brief: 'Brief to show: send the setlist or the choreography notes, and the stage dimensions.',
-    short: `Audio-reactive visuals built for${NBSP}the${NBSP}performers, one${NBSP}system per${NBSP}song.`,
+    short: `Audio-reactive visuals built for${NBSP}the${NBSP}performers, with a${NBSP}fallback for${NBSP}every${NBSP}file.`,
     caption: { project: 'redkie-ptitsy', text: `audio-reactive visuals for${NBSP}an${NBSP}indie rock set, from concept to${NBSP}show` },
   },
   {

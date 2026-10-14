@@ -202,7 +202,10 @@ export default function Experiences() {
 
         {/* Daria's work */}
         <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-6">Daria’s work</h2>
+          <h2 className="clinical-label text-primary-legible mb-3">Daria’s work</h2>
+          <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/60">
+            Stands designed and built by Daria Blokhina. Sinaida was not part of these projects; they show the physical half of a joint brief.
+          </p>
           {DARIA_PROJECTS.map((project) => (
             <ProjectGallery key={project.id} project={project} />
           ))}

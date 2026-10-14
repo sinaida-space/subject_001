@@ -1,21 +1,23 @@
 # Sinaida Krivchenko
 
+Also written as Zinaida Krivchenko; in Russian, Зинаида Кривченко.
+
 > New media artist. Interactive projections & stage visuals. Prague-based, working globally.
 
-Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500.
+Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted a ballet studio’s seasonal showcases at Schouwburg Amstelveen.
 
-She directs AI agents to build what she imagines. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.
+She comes up with the idea, the concept and the way to make it into a system. The making uses whatever the piece needs, from drawing by hand to AI-native production. She cares about integrity and a smooth experience, so every work adjusts to its environment, and each project ships with a rider, a contingency plan and her support. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.
 
 ## Services
 
-- Audio-reactive concert visuals — one TouchDesigner system per song, from the first concept to show day
+- Audio-reactive concert visuals for a whole set, from the first concept to show day, with a fallback for every file
 - Interactive web — sites and components that move, react and watch: real-time on-device camera and gesture control, generative sound
 - Theater and dance — audio- and motion-reactive visuals developed with the creative team
 - Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in
 
 ## Selected Work
 
-- Redkie Ptitsy — Live Concert Visuals (https://sinaida.eu/work/redkie-ptitsy) — 9 audio-reactive projections, one per song, live at Sklad No. 3, Moscow
+- Redkie Ptitsy — Live Concert Visuals (https://sinaida.eu/work/redkie-ptitsy) — a full set of audio-reactive projections, live at Sklad No. 3, Moscow
 - CONSPACE ROOMS (https://sinaida.eu/work/conspace-rooms) — walk-through web installation with UVALISS (Alisa Feer): works from her SOULS series in a labyrinth the browser builds as you walk, with generative music and optional on-device hand tracking; also shown as a gesture-controlled projection, live at https://conspace-rooms.vercel.app/
 - Ethereal Path (https://sinaida-space.github.io/ethereal-path/) — off-axis WebGL descent steered by head and hand movement; the body is the controller
 - Stereolove (https://sinaida-space.github.io/stereolove/) — head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume

@@ -93,6 +93,10 @@ export default function ScrambleText({
     };
   }, [runId, text, delayMs, durationMs]);
 
+  // At rest the text is in the DOM once, so scrapers and reader modes do not
+  // see every sentence twice. Only while scrambling is it split in two.
+  if (!busy && display === text) return <span className={className}>{text}</span>;
+
   return (
     // Assistive tech gets the true text once; the scrambled frames are hidden
     // from it (#106). Nothing changes visually.

@@ -31,6 +31,7 @@ const PERSON_NODE = {
   '@type': 'Person',
   '@id': PERSON_ID,
   name: AUTHOR_NAME,
+  alternateName: ['Зинаида Кривченко', 'Zinaida Krivchenko'],
   jobTitle: 'New media artist',
   description:
     'Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance and cultural institutions.',
@@ -127,6 +128,21 @@ function creativeWorkNode(route) {
     creator: ref(PERSON_ID),
     author: ref(PERSON_ID),
     ...(contributors.length ? { contributor: contributors } : {}),
+    // A collaborator's testimonial, stated as a schema.org Review so machines
+    // read it as a review of the work rather than as part of its description.
+    ...(work.testimonial
+      ? {
+          review: {
+            '@type': 'Review',
+            reviewBody: work.testimonial.paragraphs.join('\n\n'),
+            author: {
+              '@type': 'Person',
+              name: work.testimonial.name,
+              ...(work.testimonial.role ? { jobTitle: work.testimonial.role } : {}),
+            },
+          },
+        }
+      : {}),
     isPartOf: ref(WEBSITE_ID),
     mainEntityOfPage: ref(`${route.canonical}#webpage`),
     inLanguage: 'en',

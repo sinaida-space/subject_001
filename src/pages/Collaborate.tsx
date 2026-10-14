@@ -23,7 +23,7 @@ const PROCESS_STEPS = [
 // Third-person boilerplate, written to be copy-pasted verbatim into program
 // booklets and press. Facts only: no availability, timeline, or client claims
 // beyond the two real credits.
-const BOILERPLATE = `Sinaida Krivchenko is a new media artist based in Prague, working globally. Trained as a biomedical engineer, with six years of independent project work in Amsterdam’s cultural scene, she builds living visual systems for stages, concerts, and performance spaces. The work is real-time TouchDesigner and GLSL that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (live concert visuals, Moscow, 2026) and CONSPACE ROOMS (walk-through labyrinth installation and web experience, with UVALISS). She directs AI agents to build what she imagines. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.`;
+const BOILERPLATE = `Sinaida Krivchenko (she/her) is a new media artist based in Prague, working globally. Trained as a biomedical engineer, with six years of independent project work in Amsterdam’s cultural scene, she builds living visual systems for stages, concerts, and performance spaces. The work is real-time TouchDesigner and GLSL that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (live concert visuals, Moscow, 2026) and CONSPACE ROOMS (walk-through labyrinth installation and web experience, with UVALISS). She comes up with the idea, the concept and the way to make it into a system, and the making uses whatever the piece needs, from drawing by hand to AI-native production. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.`;
 
 function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
   return (
@@ -87,14 +87,11 @@ export default function Collaborate() {
           Work with <span className="text-primary font-bold">me</span>
         </h1>
         <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
-          Human first. Digital second. I build living visual systems for stages, concerts, and
+          I build living visual systems for stages, concerts, and
           performance spaces. This page is what actually happens if we work together on one.
         </p>
-        <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
-          I direct AI agents to build what I imagine. Around that work I have built my own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. I keep up with the research papers the labs publish. Even this website has a door for machines: an MCP server that lets AI assistants read my work first hand.
-        </p>
-        <p className="font-mono text-[28px] leading-relaxed mb-16 text-foreground/60">
-          Live visuals and immersive systems for stages and spaces.
+        <p className="font-mono text-[15px] leading-relaxed mb-16 text-foreground/[0.82]">
+          Around my work I have built my own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. I keep up with the research papers the labs publish. Even this website has a door for machines: an MCP server that lets AI assistants read my work first hand.
         </p>
 
         {/* Services */}
@@ -118,8 +115,10 @@ export default function Collaborate() {
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-3">Process</h2>
           <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            Structured the way I ran technical projects for years before this: brief, concept,
-            build, rehearsal, show. Nothing invented for the website.
+            I come up with the idea, the concept, and the way to make it into a system. The process
+            may include whatever the piece needs, from drawing by hand to AI-native production.
+            I care about integrity and a smooth experience, so every work adjusts to its environment.
+            Each project ships with a rider, a contingency plan and my support.
           </p>
           <div className="flex flex-col md:flex-row gap-6 md:gap-4">
             {PROCESS_STEPS.map((step, i) => (

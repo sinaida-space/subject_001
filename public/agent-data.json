@@ -1,9 +1,13 @@
 {
   "name": "Sinaida Krivchenko",
+  "alternateNames": [
+    "Зинаида Кривченко",
+    "Zinaida Krivchenko"
+  ],
   "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, working globally.",
-  "bio": "Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500. She directs AI agents to build what she imagines. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.",
+  "bio": "Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted a ballet studio’s seasonal showcases at Schouwburg Amstelveen. She comes up with the idea, the concept and the way to make it into a system. The making uses whatever the piece needs, from drawing by hand to AI-native production. She cares about integrity and a smooth experience, so every work adjusts to its environment, and each project ships with a rider, a contingency plan and her support. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.",
   "services": [
-    "Audio-reactive concert visuals — one TouchDesigner system per song, from the first concept to show day",
+    "Audio-reactive concert visuals for a whole set, from the first concept to show day, with a fallback for every file",
     "Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound",
     "Theater and dance — audio- and motion-reactive visuals developed with the creative team",
     "Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in"
@@ -27,7 +31,7 @@
       "id": "redkie-ptitsy",
       "title": "Redkie Ptitsy — Live Concert Visuals",
       "kind": "stage",
-      "tagline": "Live at Sklad No. 3, Moscow · 9 projections, one per song",
+      "tagline": "Live at Sklad No. 3, Moscow · a full set, with a fallback for every file",
       "url": "https://sinaida.eu/work/redkie-ptitsy"
     },
     {
@@ -40,28 +44,28 @@
     {
       "id": "aether-currents",
       "title": "Aether Currents",
-      "kind": "game",
-      "tagline": "Browser instrument played with bare hands, with Telefm",
+      "kind": "interactive web",
+      "tagline": "Browser instrument played with bare hands · music advisor: Kamil Yegelev (TeleFM)",
       "url": "https://sinaida.eu/work/aether-currents"
     },
     {
       "id": "ethereal-path",
       "title": "Ethereal Path",
-      "kind": "game",
+      "kind": "interactive web",
       "tagline": "Off-axis descent steered by head & hand movement — the body is the controller",
       "url": "https://sinaida-space.github.io/ethereal-path/"
     },
     {
       "id": "stereolove",
       "title": "Stereolove",
-      "kind": "game",
+      "kind": "interactive web",
       "tagline": "Head-coupled op-art — the screen becomes an unstable optical volume",
       "url": "https://sinaida-space.github.io/stereolove/"
     },
     {
       "id": "infinite-voidsong",
       "title": "Infinite Voidsong",
-      "kind": "game",
+      "kind": "web tool",
       "tagline": "Endless generated soundscapes for focused work, with rest built into the session",
       "url": "https://infinite-voidsong.vercel.app/"
     },

@@ -150,7 +150,10 @@ function PhotoBlock() {
           }}
         />
       </div>
-      <p className="font-mono mt-3 m-0" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.14)', letterSpacing: '0.02em' }}>
+      <p className="font-mono mt-3 m-0 text-[13px] text-foreground/65">
+        {`Sinaida Krivchenko${NB}(she/her)`}
+      </p>
+      <p className="font-mono mt-1 m-0" style={{ fontSize: 11, color: 'hsl(var(--foreground) / 0.14)', letterSpacing: '0.02em' }}>
         Photo: Roland Gaedtgens · Zhembrovskyy
       </p>
     </div>

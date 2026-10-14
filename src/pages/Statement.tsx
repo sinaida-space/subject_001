@@ -116,7 +116,7 @@ const Statement = () => {
               Redkie Ptitsy
             </Link>
             <ScrambleText
-              text=" I created a full set of live visuals in TouchDesigner, nine projections, one per song. "
+              text="  I created a full set of live visuals in TouchDesigner, with a fallback for every file.  "
               runId={runId}
               delayMs={400}
             />

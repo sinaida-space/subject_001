@@ -147,6 +147,16 @@ function readObject(scope, field, fields) {
   return obj;
 }
 
+/** Read `testimonial: { paragraphs: [...], name, role }`, or null. */
+function readTestimonial(scope) {
+  const body = readBlock(scope, 'testimonial', '{', '}');
+  if (!body) return null;
+  const paragraphs = readStringArray(body, 'paragraphs') ?? [];
+  const name = readString(body, 'name', { anchored: false });
+  const role = readString(body, 'role', { anchored: false });
+  return paragraphs.length && name ? { paragraphs, name, role } : null;
+}
+
 // ── projects.ts → case-study route model ─────────────────────────────────
 
 /**
@@ -247,6 +257,7 @@ export function readCaseStudies() {
       credits: (readStringArray(caseBody, 'credits') ?? []).map(stripInlineLinks),
       links: readObjectArray(caseBody, 'links', ['label', 'url']) ?? [],
       contributors: readObjectArray(caseBody, 'contributors', ['name', 'url', 'type']) ?? [],
+      testimonial: readTestimonial(caseBody),
     });
   }
 
@@ -353,7 +364,7 @@ export function buildRoutes() {
       heading: 'Sinaida Krivchenko',
       paragraphs: [
         'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
-        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band redkie ptitsy, nine projections, one per song, and CONSPACE ROOMS, which started as a question to a fellow artist: what if her artworks hung inside a labyrinth? Now they do, and candles lead the way.',
+        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band redkie ptitsy, with a fallback for every file, and CONSPACE ROOMS, which started as a question to a fellow artist: what if her artworks hung inside a labyrinth? Now they do, and candles lead the way.',
       ],
     },
   };

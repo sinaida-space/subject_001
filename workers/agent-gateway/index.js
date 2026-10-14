@@ -98,7 +98,7 @@ async function handleMcp(request) {
     let content;
     switch (toolName) {
       case 'get_bio':
-        content = { name: data.name, tagline: data.tagline, bio: data.bio, services: data.services, skills: data.skills };
+        content = { name: data.name, alternateNames: data.alternateNames, tagline: data.tagline, bio: data.bio, services: data.services, skills: data.skills };
         break;
       case 'list_projects':
         content = data.projects;

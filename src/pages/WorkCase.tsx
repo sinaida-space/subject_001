@@ -320,6 +320,29 @@ export default function WorkCase() {
               </div>
             )}
 
+            {/* ── Testimonial (review) — a collaborator's words, verbatim.
+                 Visible label is poetic; class, data attribute, aria-label
+                 and the JSON-LD Review node say plainly what it is. ── */}
+            {cs.testimonial && (
+              <figure
+                className="testimonial mt-10"
+                data-content-type="testimonial"
+                aria-label={`Testimonial from ${cs.testimonial.name}`}
+              >
+                <div className="clinical-label mb-3 text-foreground/65">A word from the other side</div>
+                <blockquote className="max-w-[62ch] border-l-2 border-primary/40 pl-4 font-mono text-[14px] italic leading-[1.85] text-foreground/[0.82]">
+                  {cs.testimonial.paragraphs.map((q) => (
+                    <p key={q.slice(0, 32)} className="[&:not(:first-child)]:mt-4">
+                      {withProjectNames(q)}
+                    </p>
+                  ))}
+                </blockquote>
+                <figcaption className="mt-3 font-mono text-[13px] text-foreground/65">
+                  {cs.testimonial.name}, {cs.testimonial.role}
+                </figcaption>
+              </figure>
+            )}
+
             {/* ── Credits ── */}
             {cs.creditsPeople ? (
               <div className="mt-10">
