@@ -76,7 +76,7 @@ const PrivacyPolicy = () => {
           </ul>
 
           <h2 className="font-display text-lg text-foreground mt-8">How do I store your data?</h2>
-          <p className="text-muted-foreground">Your data is securely stored on encrypted servers provided by GitHub Pages, my website hosting provider. I will keep your personal identification data for as long as is necessary for the purposes set out in this privacy policy, or until you request its deletion. Technical request logs held by Cloudflare, GitHub Pages, and Fastly are retained only for the short period those providers need for security and reliability purposes, per their own retention schedules. I do not extend or separately store these logs myself.</p>
+          <p className="text-muted-foreground">The website itself stores no personal data: it has no forms, accounts or database. If you write to me, your message stays in my email for as long as the conversation needs it, or until you ask me to delete it. Technical request logs held by Cloudflare, GitHub Pages, and Fastly are retained only for the short period those providers need for security and reliability purposes, per their own retention schedules. I do not extend or separately store these logs myself.</p>
 
           <h2 className="font-display text-lg text-foreground mt-8">Third-party service providers</h2>
           <p className="text-muted-foreground">
@@ -89,6 +89,9 @@ const PrivacyPolicy = () => {
           </ul>
           <p className="text-muted-foreground">
             None of these three providers is used to build an advertising profile of you. Their data is not sold or shared onward, and I don't receive or store their raw request logs myself.
+          </p>
+          <p className="text-muted-foreground">
+            The &ldquo;book a call&rdquo; link opens Calendly (Calendly, LLC, United States), a separate service with its own privacy policy. Nothing from Calendly loads on this website until you follow that link.
           </p>
 
           <h2 className="font-display text-lg text-foreground mt-8">Analytics</h2>
