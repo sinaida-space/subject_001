@@ -4,6 +4,8 @@
 
 Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500.
 
+She directs AI agents to build what she imagines. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.
+
 ## Services
 
 - Audio-reactive concert visuals — one TouchDesigner system per song, from the first concept to show day
