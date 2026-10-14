@@ -3,9 +3,9 @@
   "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, working globally.",
   "bio": "Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500.",
   "services": [
-    "Audio-reactive concert visuals — one system per song, listening to the live mix, delivered as a turnkey show or operated live",
+    "Audio-reactive concert visuals — one TouchDesigner system per song, from the first concept to show day",
     "Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound",
-    "Theater and dance scenography — real-time systems that follow the performers' bodies and the sound, developed with the creative team",
+    "Theater and dance — audio- and motion-reactive visuals developed with the creative team",
     "Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in"
   ],
   "skills": [
@@ -46,13 +46,6 @@
       "kind": "game",
       "tagline": "Browser instrument played with bare hands, with Telefm",
       "url": "https://sinaida.eu/work/aether-currents"
-    },
-    {
-      "id": "conspace-rooms",
-      "title": "CONSPACE ROOMS",
-      "kind": "installation",
-      "tagline": "Walk-through labyrinth of artworks, in the browser or as a gesture-controlled projection, with UVALISS",
-      "url": "https://conspace-rooms.vercel.app/"
     },
     {
       "id": "ethereal-path",

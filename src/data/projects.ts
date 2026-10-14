@@ -151,7 +151,7 @@ export const PROJECTS: Project[] = [
     tagline: 'Live at Sklad No. 3, Moscow · 9 projections, one per song',
     short: 'Concept design and\u00A0an\u00A0audio-reactive live\u00A0set',
     blurb:
-      'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band redkie ptitsy. Nine audio-reactive projections, one for each song, ran in real time behind the band all night. Each one is a TouchDesigner system that listens to the live mix. Festivals and touring productions can book the same setup.',
+      'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band redkie ptitsy. Nine audio-reactive projections, one for each song, built in TouchDesigner and run live behind the band through the whole set.',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: ['event-design', 'audio-reactive', 'touchdesigner', 'algorithmic-systems'],
     image: workRedkiePtitsy,
@@ -167,13 +167,13 @@ export const PROJECTS: Project[] = [
     caseStudy: {
       kindLabel: 'Stage',
       intro: [
-        'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band [redkie ptitsy](https://band.link/redkieptitsy). Nine audio-reactive projections, one for each song, ran in real time behind the band all night. Each one is a TouchDesigner system that listens to the live mix. Festivals and touring productions can book the same setup.',
-        'Sinaida developed the concept and the visual world for the whole set, then produced all nine systems on a\u00A0tight deadline. She came with a\u00A0contingency plan for everything that can fail on\u00A0site: a\u00A0machine, the\u00A0lighting, a\u00A0human.',
+        'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band [redkie ptitsy](https://band.link/redkieptitsy). Nine audio-reactive projections, one for each song, built in TouchDesigner and run live behind the band through the whole set.',
+        'Sinaida developed the concept and the visual world for the whole set, then produced all nine systems on a\u00A0tight deadline. She came with a\u00A0contingency plan for everything that can fail on\u00A0site: a\u00A0machine, the\u00A0lighting, a\u00A0human. Every projection had a\u00A0fallback, down to high-contrast logo files built to\u00A0read on\u00A0any\u00A0screen.',
       ],
       stat: {
         value: '9',
         heading: 'Audio-reactive projections, one per song',
-        body: 'A full-set backdrop: each song in the set got its own real-time TouchDesigner system, built to listen to the live mix and respond in the room.',
+        body: 'A full-set backdrop: each song in the set got its own TouchDesigner system, driven by the sound of that song.',
       },
       media: [
         {
@@ -194,10 +194,10 @@ export const PROJECTS: Project[] = [
       method: {
         trace: '> signal_path.trace() // 9 patches loaded',
         stages: [
-          { label: 'Live audio in', detail: 'Feed from the desk: the live mix enters as raw signal.' },
-          { label: 'CHOP analysis', detail: 'Bands, beats and envelopes extracted in real time.' },
+          { label: 'Song audio in', detail: 'Each track enters the system as signal.' },
+          { label: 'CHOP analysis', detail: 'Bands, beats and envelopes drive every parameter.' },
           { label: 'Per-song patch ×9', detail: 'One visual system per song, each with its own look.' },
-          { label: 'Projection', detail: 'Projected behind the band for the whole set.' },
+          { label: 'Projection', detail: 'Run live behind the band for the whole set, with a fallback for every file.' },
         ],
         footer: '> full-set run · Sklad No. 3, Moscow',
       },
@@ -206,10 +206,10 @@ export const PROJECTS: Project[] = [
         { name: 'redkie ptitsy', url: 'https://band.link/redkieptitsy', type: 'MusicGroup' },
       ],
       order: {
-        heading: 'What a festival can order',
+        heading: 'For a stage',
         body:
-          'Book the same setup for your stage: one real-time TouchDesigner system per song, listening to your live mix.',
-        suffix: 'to brief a show.',
+          'A visual world for a whole set: one audio-reactive TouchDesigner system per song, from the first concept to show day.',
+        suffix: 'to talk about a show.',
       },
     },
   },

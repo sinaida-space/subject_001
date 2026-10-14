@@ -17,7 +17,7 @@ const PROCESS_STEPS = [
   { code: '02', label: 'Concept', detail: 'A visual direction comes back for your feedback.' },
   { code: '03', label: 'Build', detail: 'Systems get built and tested in TouchDesigner.' },
   { code: '04', label: 'Rehearsal', detail: 'On-site or remote tech check against the real rig.' },
-  { code: '05', label: 'Show', detail: 'Delivered turnkey, or operated live.' },
+  { code: '05', label: 'Show', detail: 'Delivered ready to run, with a fallback for every file.' },
 ];
 
 // Third-person boilerplate, written to be copy-pasted verbatim into program

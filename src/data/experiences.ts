@@ -117,7 +117,7 @@ export const SINAIDA_VIDEOS: ExperienceVideo[] = [
     id: 'bDDAXRlz5FQ',
     title: 'Redkie Ptitsy, live at Sklad No. 3',
     caseHref: '/work/redkie-ptitsy',
-    caption: 'A real-time interactive system for a live concert in Moscow: nine audio-reactive projections, one per song, listening to the mix straight from the desk.',
+    caption: 'A real-time interactive system for a live concert in Moscow: nine audio-reactive projections, one per song, built in TouchDesigner.',
   },
   {
     id: 'oSWzQ4ds8BI',
@@ -248,7 +248,7 @@ export const EXPERIENCES_SECTIONS: {
   businessModel: {
     heading: 'How we work',
     paragraphs: [
-      'Each project is scoped and quoted as one proposal covering the structure and the interactive system together. A client can contract a single agreement with one partner as lead and the second contracted under it, or contract each scope directly, whichever suits their procurement. Invoicing is issued within the EU. Fee is on request.',
+      'Each project is scoped and quoted as one proposal covering the structure and the interactive system together. A client can contract a single agreement with one partner as lead and the second contracted under it, or contract each scope directly, whichever suits their procurement. Fee is on request.',
     ],
   },
   nextSteps: {

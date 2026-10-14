@@ -37,7 +37,7 @@ export const SERVICES: Service[] = [
     word: 'STAGE',
     title: 'For musicians, dance & theater',
     description:
-      'Stage visuals that listen to the live mix straight from the desk and follow the performers’ bodies, one system per song or scene. Developed with the band or the creative team from first concept on, delivered as a turnkey show or operated live.',
+      'Audio-reactive stage visuals, one TouchDesigner system per song or scene, developed with the band or the creative team from the first concept to show day.',
     record: [
       { text: 'Nine projections, one per song, performed live with ' },
       { text: `Redkie${NBSP}Ptitsy`, href: '/work/redkie-ptitsy' },
@@ -46,8 +46,8 @@ export const SERVICES: Service[] = [
       { text: `, an${NBSP}experiment where the${NBSP}body is the${NBSP}controller.` },
     ],
     brief: 'Brief to show: send the setlist or the choreography notes, and the stage dimensions.',
-    short: `Real-time audio- and${NBSP}motion-reactive visuals that live with${NBSP}the${NBSP}performers. Turnkey${NBSP}show or${NBSP}operated${NBSP}live.`,
-    caption: { project: 'redkie-ptitsy', text: `real-time, audio-reactive visuals for${NBSP}an${NBSP}indie rock set, from concept to${NBSP}show` },
+    short: `Audio-reactive visuals built for${NBSP}the${NBSP}performers, one${NBSP}system per${NBSP}song.`,
+    caption: { project: 'redkie-ptitsy', text: `audio-reactive visuals for${NBSP}an${NBSP}indie rock set, from concept to${NBSP}show` },
   },
   {
     code: 'web',

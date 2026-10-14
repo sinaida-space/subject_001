@@ -6,9 +6,9 @@ Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds 
 
 ## Services
 
-- Audio-reactive concert visuals — one system per song, listening to the live mix, delivered as a turnkey show or operated live
+- Audio-reactive concert visuals — one TouchDesigner system per song, from the first concept to show day
 - Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound
-- Theater and dance scenography — real-time systems that follow the performers' bodies and the sound, developed with the creative team
+- Theater and dance — audio- and motion-reactive visuals developed with the creative team
 - Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in
 
 ## Selected Work
