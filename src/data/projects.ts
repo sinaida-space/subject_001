@@ -267,7 +267,7 @@ export const PROJECTS: Project[] = [
           { label: 'Web experience', detail: 'Live in any browser; optional hand tracking runs on-device, palm to steer, fist to dive, pinch to pick.' },
           { label: 'Installation', detail: 'A room lit red, one laptop, one projector: the same field at the scale of a wall.' },
         ],
-        footer: '> concept, interactive design & code: Sinaida Krivchenko · painting: Alisa Feer',
+        footer: '> concept and interactive design: Sinaida Krivchenko · painting: Alisa Feer',
       },
       painting: {
         image: eyesChicoPainting,
@@ -277,7 +277,7 @@ export const PROJECTS: Project[] = [
       contributors: [{ name: 'Alisa Feer', url: 'https://uvaliss.ru/', type: 'Person' }],
       creditsPeople: [
         {
-          role: 'Concept, interactive design & code',
+          role: 'Concept and interactive design',
           name: 'Sinaida Krivchenko',
           url: 'https://sinaida.eu/statement/',
           bio: 'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
@@ -390,12 +390,12 @@ export const PROJECTS: Project[] = [
           { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
           { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it.' },
         ],
-        footer: '> idea, design & code: Sinaida Krivchenko · SOULS: UVALISS',
+        footer: '> idea and experience design: Sinaida Krivchenko · SOULS: UVALISS',
       },
       contributors: [{ name: 'Alisa Feer (UVALISS)', url: 'https://uvaliss.ru/', type: 'Person' }],
       creditsPeople: [
         {
-          role: 'Idea, design & code',
+          role: 'Idea and experience design',
           name: 'Sinaida Krivchenko',
           url: 'https://sinaida.eu/statement/',
           bio: 'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
@@ -452,7 +452,7 @@ export const PROJECTS: Project[] = [
         'Sinaida built it with Kamil Yegelev, known as Telefm, a musician in Belgrade. Everything runs on the device, with no server and no cloud. Sound follows movement in under a hundred milliseconds, which is fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
       ],
       credits: [
-        'Instrument & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
         'Music & collaboration: Kamil Yegelev (Telefm) · telefm.bandcamp.com',
       ],
     },
@@ -486,11 +486,11 @@ export const PROJECTS: Project[] = [
           { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture. Each fix traced to a specific stumble.' },
           { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
         ],
-        footer: '> instrument & code: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
+        footer: '> instrument: Sinaida Krivchenko · music: Kamil Yegelev (Telefm)',
       },
       contributors: [{ name: 'Kamil Yegelev (Telefm)', url: 'https://telefm.bandcamp.com/', type: 'Person' }],
       credits: [
-        'Instrument & code: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
         'Music & collaboration: Kamil Yegelev (Telefm) · telefm.bandcamp.com',
       ],
       links: [

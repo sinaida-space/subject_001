@@ -101,7 +101,7 @@ const BottomBar = () => (
     <span data-ground-mask className="font-mono uppercase text-[12px] tracking-[0.15em] leading-relaxed text-foreground/60">
       Prague
       <br />
-      © {new Date().getFullYear()} · Designed and coded by Sinaida{'\u00a0'}Krivchenko
+      © {new Date().getFullYear()} · Designed by Sinaida{'\u00a0'}Krivchenko
     </span>
     {/* The one line under the 16px floor (index.css): an
         inline size, since the floor clamps every text-[Npx] class below 16. */}
