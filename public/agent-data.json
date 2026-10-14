@@ -1,7 +1,7 @@
 {
   "name": "Sinaida Krivchenko",
   "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, working globally.",
-  "bio": "Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500. Works with performing-arts organisations, musicians, festivals, and cultural institutions.",
+  "bio": "Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500.",
   "services": [
     "Audio-reactive concert visuals — one system per song, listening to the live mix, delivered as a turnkey show or operated live",
     "Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound",
@@ -15,8 +15,6 @@
     "Body & gesture tracking (MediaPipe)",
     "WebGL and shaders",
     "Procedural animation",
-    "Post-production",
-    "Color grading",
     "Concept and experience design",
     "Visual narrative development",
     "Biomedical engineering MSc",

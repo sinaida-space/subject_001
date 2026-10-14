@@ -2,7 +2,7 @@
 
 > New media artist. Interactive projections & stage visuals. Prague-based, working globally.
 
-Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500. Works with performing-arts organisations, musicians, festivals and cultural institutions.
+Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500.
 
 ## Services
 
@@ -22,7 +22,7 @@ Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds 
 
 ## Skills
 
-TouchDesigner, Generative art, Real-time audio-reactive visuals, Body & gesture tracking (MediaPipe), WebGL and shaders, Procedural animation, Post-production, Color grading, Concept and experience design, Visual narrative development, Biomedical engineering MSc, Systems design thinking, Algorithmic visual systems, Creative web development. Agentic coding workflows, multi-agent orchestration, MCP (Model Context Protocol) integrations.
+TouchDesigner, Generative art, Real-time audio-reactive visuals, Body & gesture tracking (MediaPipe), WebGL and shaders, Procedural animation, Concept and experience design, Visual narrative development, Biomedical engineering MSc, Systems design thinking, Algorithmic visual systems, Creative web development. Agentic coding workflows, multi-agent orchestration, MCP (Model Context Protocol) integrations.
 
 ## Pages
 
