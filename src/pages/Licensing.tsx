@@ -50,26 +50,12 @@ const ROWS: Row[] = [
     files: ['LICENSE', 'LICENSE-CONTENT', 'NOTICE', 'THIRD-PARTY.md'],
 },
   {
-    project: 'Astral Drifters',
-    code: 'Apache 2.0',
-    artwork: 'CC BY-NC-ND 4.0',
-    repo: 'https://github.com/sinaida-space/astral-drifters',
-    files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE'],
-  },
-  {
     project: 'CONSPACE ROOMS',
     code: 'Apache 2.0',
     artwork: 'CC BY-NC-ND 4.0',
     repo: 'https://github.com/sinaida-space/conspace-rooms',
     files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE'],
 },
-  {
-    project: 'Eschaton Sequence',
-    code: 'All rights reserved',
-    artwork: 'All rights reserved',
-    repo: 'https://github.com/sinaida-space/eschaton_sequence',
-    files: ['LICENSE'],
-  },
   {
     project: 'Ethereal Path',
     code: 'Apache 2.0',
@@ -85,25 +71,11 @@ const ROWS: Row[] = [
     files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE', 'THIRD-PARTY.md'],
 },
   {
-    project: 'Frosted Glass',
-    code: 'Apache 2.0',
-    artwork: 'Ask first',
-    repo: 'https://github.com/sinaida-space/frosted-glass',
-    files: ['LICENSE'],
-  },
-  {
     project: 'Infinite Voidsong',
     code: 'Apache 2.0',
     artwork: 'Field recordings CC0 1.0, from their authors',
     repo: 'https://github.com/sinaida-space/infinite-voidsong',
     files: ['LICENSE'],
-},
-  {
-    project: 'Mahler',
-    code: 'Apache 2.0',
-    artwork: 'No artwork',
-    repo: 'https://github.com/sinaida-space/mahler-the-orchestrator',
-    files: ['LICENSE', 'NOTICE'],
 },
   {
     project: 'Redkie Ptitsy',
@@ -120,13 +92,6 @@ const ROWS: Row[] = [
     files: ['LICENSE', 'THIRD-PARTY.md'],
   },
   {
-    project: 'Soulstice',
-    code: 'Apache 2.0',
-    artwork: 'Ask first',
-    repo: 'https://github.com/sinaida-space/soulstice',
-    files: ['LICENSE'],
-  },
-  {
     project: 'Stereolove',
     code: 'Apache 2.0',
     artwork: 'CC BY-NC-ND 4.0',
@@ -138,19 +103,6 @@ const ROWS: Row[] = [
     code: 'Project files for Patreon members',
     artwork: 'All rights reserved',
     repo: 'https://youtu.be/hwFttiCKbrU',
-  },
-  {
-    project: 'Submerged Realities',
-    code: 'Not published',
-    artwork: 'All rights reserved',
-    repo: 'https://www.youtube.com/watch?v=7qgDlifWno0',
-  },
-  {
-    project: 'Thresherium',
-    code: 'Apache 2.0',
-    artwork: 'Texts CC BY-NC-ND 4.0',
-    repo: 'https://github.com/sinaida-space/thresherium',
-    files: ['LICENSE'],
   },
 ];
 
@@ -198,8 +150,7 @@ const Licensing = () => {
             <li>
               Most source code on my GitHub is licensed under Apache&nbsp;2.0. Read it, fork
               it, ship it commercially. Keep the notices. <span className="project-name">Aether Currents</span> uses
-              AGPL&nbsp;3.0, and the code of this website and of{' '}
-              <span className="project-name">Eschaton Sequence</span> is all rights&nbsp;reserved.
+              AGPL&nbsp;3.0, and the code of this website is all rights&nbsp;reserved.
             </li>
             <li>
               Visuals, shaders as artworks, video, audio, texts and photographs are
