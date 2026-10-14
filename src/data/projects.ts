@@ -168,7 +168,7 @@ export const PROJECTS: Project[] = [
       kindLabel: 'Stage',
       intro: [
         'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band [redkie ptitsy](https://band.link/redkieptitsy). Nine audio-reactive projections, one for each song, built in TouchDesigner and run live behind the band through the whole set.',
-        'Sinaida developed the concept and the visual world for the whole set, then produced all nine systems on a\u00A0tight deadline. She came with a\u00A0contingency plan for everything that can fail on\u00A0site: a\u00A0machine, the\u00A0lighting, a\u00A0human. Every projection had a\u00A0fallback, down to high-contrast logo files built to\u00A0read on\u00A0any\u00A0screen.',
+        'Sinaida developed the concept and the visual world for the whole set, then produced all nine systems on a\u00A0tight deadline. It\u00A0was\u00A0an\u00A0experimental artistic exchange with the\u00A0band, and\u00A0she\u00A0prepared every backup herself: a\u00A0playlist that runs song by\u00A0song with a\u00A0looping logo for\u00A0each pause, one\u00A0continuous video for\u00A0the\u00A0whole set\u00A0in\u00A0case nobody was\u00A0at\u00A0the\u00A0console, every file separately, and\u00A0high-contrast logo files built to\u00A0read on\u00A0any\u00A0screen.',
       ],
       stat: {
         value: '9',
@@ -201,7 +201,7 @@ export const PROJECTS: Project[] = [
         ],
         footer: '> full-set run · Sklad No. 3, Moscow',
       },
-      credits: ['Band: [redkie ptitsy ↗](https://band.link/redkieptitsy)'],
+      credits: ['Band: [redkie ptitsy ↗](https://band.link/redkieptitsy)', 'An experimental artistic exchange between Sinaida and the band'],
       contributors: [
         { name: 'redkie ptitsy', url: 'https://band.link/redkieptitsy', type: 'MusicGroup' },
       ],
