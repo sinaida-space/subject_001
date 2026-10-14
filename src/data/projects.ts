@@ -168,18 +168,18 @@ export const PROJECTS: Project[] = [
       kindLabel: 'Stage',
       intro: [
         'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band [redkie ptitsy](https://band.link/redkieptitsy). Nine audio-reactive projections, one for each song, built in TouchDesigner and run live behind the band through the whole set.',
-        'Sinaida developed the concept and the visual world for the whole set, then produced all nine systems on a\u00A0tight deadline. It\u00A0was\u00A0an\u00A0experimental artistic exchange with the\u00A0band, and\u00A0she\u00A0prepared every backup herself: a\u00A0playlist that runs song by\u00A0song with a\u00A0looping logo for\u00A0each pause, one\u00A0continuous video for\u00A0the\u00A0whole set\u00A0in\u00A0case nobody was\u00A0at\u00A0the\u00A0console, every file separately, and\u00A0high-contrast logo files built to\u00A0read on\u00A0any\u00A0screen.',
+        'Sinaida developed the\u00A0concept and\u00A0the\u00A0visual world for\u00A0the\u00A0whole set, then produced all\u00A0nine systems on\u00A0a\u00A0tight deadline. She\u00A0prepared every backup herself. A\u00A0playlist runs song by\u00A0song with a\u00A0looping logo for\u00A0each pause, one\u00A0continuous video covers the\u00A0whole set\u00A0in\u00A0case nobody is\u00A0at\u00A0the\u00A0console, every file also travels separately, and\u00A0high-contrast logo files read\u00A0on\u00A0any\u00A0screen.',
       ],
       stat: {
         value: '9',
         heading: 'Audio-reactive projections, one per song',
-        body: 'A full-set backdrop: each song in the set got its own TouchDesigner system, driven by the sound of that song.',
+        body: 'A\u00A0full-set backdrop, one\u00A0system\u00A0per\u00A0song.',
       },
       sections: [
         {
           heading: 'Light first',
           paragraphs: [
-            'The\u00A0light came first. Sinaida asked what the\u00A0rig\u00A0would do\u00A0before choosing a\u00A0single colour: washes or\u00A0spots, from the\u00A0stage or\u00A0from the\u00A0house. A\u00A0blue wash from the\u00A0house turns a\u00A0red-and-yellow screen green, so\u00A0the\u00A0set\u00A0went to\u00A0high-contrast red\u00A0and\u00A0monochrome, tested against coloured light at\u00A0home before\u00A0the\u00A0show.',
+            'Before choosing a\u00A0single colour, Sinaida asked what the\u00A0rig\u00A0would do: washes or\u00A0spots, from the\u00A0stage or\u00A0from the\u00A0house. A\u00A0blue wash from the\u00A0house turns a\u00A0red-and-yellow screen green, so\u00A0the\u00A0set\u00A0went to\u00A0high-contrast red\u00A0and\u00A0monochrome, tested in\u00A0a\u00A0projection with coloured light before\u00A0the\u00A0show.',
           ],
         },
         {
@@ -197,10 +197,10 @@ export const PROJECTS: Project[] = [
       ],
       media: [
         {
-          label: 'All nine, rendered',
+          label: 'All nine, clean',
           video: '13gl94oG4WU',
           caption:
-            'No audio: the songs are the label’s masters, rights unclear for redistribution. This is the visual system running clean, without the room mix.',
+            'No\u00A0audio: the\u00A0music belongs to\u00A0the\u00A0band. This is\u00A0the\u00A0visual system running clean, without the\u00A0room\u00A0mix.',
         },
         { label: 'Live at Sklad No. 3', video: 'bDDAXRlz5FQ', date: '26 March 2026' },
         {
@@ -208,7 +208,7 @@ export const PROJECTS: Project[] = [
           video: 'qpXGjDI2N64',
           date: '26 March 2026',
           caption:
-            'The logo animations were performed in between the songs. Those are logo variations that run through nine different TouchDesigner treatments, all driven by one signal: the band name, redkie ptitsy (meaning, “rare birds”) encoded in Morse code.',
+            'Logo animations played between the\u00A0songs: nine TouchDesigner treatments of\u00A0one\u00A0signal, the\u00A0band’s\u00A0name, redkie ptitsy (“rare birds”), in\u00A0Morse\u00A0code.',
         },
       ],
       method: {
