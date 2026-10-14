@@ -13,10 +13,10 @@ import { withProjectNames } from '@/lib/projectNames';
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 const PROCESS_STEPS = [
-  { code: '01', label: 'Brief', detail: 'You send the occasion, space, and constraints.' },
+  { code: '01', label: 'Brief', detail: 'You send the occasion and the space: a setlist with tempos and stems, or plans and photos, and what the room’s light does.' },
   { code: '02', label: 'Concept', detail: 'A visual direction comes back for your feedback.' },
   { code: '03', label: 'Build', detail: 'Systems get built and tested in TouchDesigner.' },
-  { code: '04', label: 'Rehearsal', detail: 'On-site or remote tech check against the real rig.' },
+  { code: '04', label: 'Rehearsal', detail: 'Colours and timing tested against the venue’s light and rig before the show.' },
   { code: '05', label: 'Show', detail: 'Delivered ready to run, with a fallback for every file.' },
 ];
 

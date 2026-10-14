@@ -175,6 +175,26 @@ export const PROJECTS: Project[] = [
         heading: 'Audio-reactive projections, one per song',
         body: 'A full-set backdrop: each song in the set got its own TouchDesigner system, driven by the sound of that song.',
       },
+      sections: [
+        {
+          heading: 'Light first',
+          paragraphs: [
+            'The\u00A0light came first. Sinaida asked what the\u00A0rig\u00A0would do\u00A0before choosing a\u00A0single colour: washes or\u00A0spots, from the\u00A0stage or\u00A0from the\u00A0house. A\u00A0blue wash from the\u00A0house turns a\u00A0red-and-yellow screen green, so\u00A0the\u00A0set\u00A0went to\u00A0high-contrast red\u00A0and\u00A0monochrome, tested against coloured light at\u00A0home before\u00A0the\u00A0show.',
+          ],
+        },
+        {
+          heading: 'A world per song',
+          paragraphs: [
+            'Every song got\u00A0its\u00A0own\u00A0world, taken from the\u00A0song itself: a\u00A0cyclist for\u00A0Velosipedista, water for\u00A0Okean, birds for\u00A0the\u00A0band’s\u00A0name. Movement is\u00A0driven by\u00A0the\u00A0sound of\u00A0each track, by\u00A0a\u00A0sine, a\u00A0Gaussian bell\u00A0or\u00A0by\u00A0chance.',
+          ],
+        },
+        {
+          heading: 'A moving setlist',
+          paragraphs: [
+            'The\u00A0setlist changed three times before the\u00A0night, two\u00A0songs arrived late, and\u00A0one\u00A0came in\u00A0two\u00A0versions so\u00A0the\u00A0band could choose on\u00A0the\u00A0day. Every file carried a\u00A0fifteen-second tail to\u00A0cover the\u00A0pause between\u00A0songs.',
+          ],
+        },
+      ],
       media: [
         {
           label: 'All nine, rendered',
