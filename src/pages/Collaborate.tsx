@@ -58,7 +58,7 @@ export default function Collaborate() {
   usePageMeta({
     title: 'Work with me | Sinaida Krivchenko',
     description:
-      'She takes commissions for audio-reactive concert visuals, interactive web, theater and dance scenography, and installations for venues, brands and institutions, based in Prague and touring for installs.',
+      'Have a stage, a space or a site that should answer people? Let’s talk. Audio-reactive concert visuals, interactive web and installations, from Prague.',
     canonical: 'https://sinaida.eu/collaborate/',
   });
 

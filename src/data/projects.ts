@@ -295,10 +295,10 @@ export const PROJECTS: Project[] = [
         { label: 'GitHub', url: 'https://github.com/sinaida-space/the-eyes-chico' },
       ],
       order: {
-        heading: 'What a space can commission',
+        heading: 'For a space',
         body:
           'The installation is ready for its first public room, and the full tech rider fits five lines: a room that can be darkened, red ambient light, one laptop running the web experience, one projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands, or brief an adaptation for their space.',
-        suffix: 'to book its first room.',
+        suffix: 'to find its first room.',
       },
     },
   },
@@ -414,7 +414,7 @@ export const PROJECTS: Project[] = [
         { label: 'Project sheet (PDF)', url: '/files/conspace-rooms-project-sheet.pdf' },
       ],
       order: {
-        heading: 'What a space can commission',
+        heading: 'For a space',
         body:
           'A gallery mode turns the labyrinth into an installation with a projector or a screen, a webcam and speakers. A face in front of the camera starts the walk, the visitor steers with their hands, and once they step away the labyrinth resets into a new one for the next person. The rider is ready in English and Russian.',
         suffix: 'to bring it into a room.',
@@ -498,7 +498,7 @@ export const PROJECTS: Project[] = [
         { label: 'GitHub', url: 'https://github.com/sinaida-space/aether-currents' },
       ],
       order: {
-        heading: 'What a stage can book',
+        heading: 'For a stage',
         body:
           'The instrument travels in a laptop and a webcam: no rig, no install, no server. It can be staged as a live gesture performance with Telefm, opened to an audience as a playable installation, or adapted for a space. The whole tech rider is a table, a camera and a projector.',
         suffix: 'to put it in front of an audience.',
@@ -601,7 +601,7 @@ export const PROJECTS: Project[] = [
       credits: ['Concept, code & artwork: Sinaida Krivchenko · sinaida.eu · @sin.ai.da'],
       links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/ethereal-path' }],
       order: {
-        heading: 'What a space can commission',
+        heading: 'For a space',
         body:
           'Picture a\u00A0gallery with an\u00A0empty room and\u00A0a\u00A0question it\u00A0wants visitors to\u00A0carry out of\u00A0it. Sinaida designs the\u00A0experience around the\u00A0body: which movements the\u00A0room asks for\u00A0and\u00A0how the\u00A0light answers them. Underneath sits a\u00A0tracking system she builds to\u00A0run in\u00A0that room, with nothing in\u00A0the\u00A0visitors’\u00A0hands.',
         suffix: 'to plan a body-driven piece for your space.',
@@ -702,7 +702,7 @@ export const PROJECTS: Project[] = [
       ],
       links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/stereolove' }],
       order: {
-        heading: 'What an exhibition or a stage can commission',
+        heading: 'For an exhibition or a stage',
         body:
           'Stereolove works at\u00A0the\u00A0scale of\u00A0one viewer and\u00A0one screen. Scale it\u00A0up: a\u00A0stage that wants its audience to\u00A0doubt what they see for\u00A0a\u00A0few minutes. Sinaida starts from what the\u00A0viewer should believe, then designs the\u00A0illusion and\u00A0the\u00A0system that holds\u00A0it\u00A0in\u00A0place.',
         suffix: 'to talk about a perception piece.',
@@ -805,7 +805,7 @@ export const PROJECTS: Project[] = [
         { label: 'GitHub', url: 'https://github.com/sinaida-space/infinite-voidsong' },
       ],
       order: {
-        heading: 'What a space can commission',
+        heading: 'For a space',
         body:
           'Infinite Voidsong is\u00A0a\u00A0sound environment for\u00A0one person at\u00A0a\u00A0desk. Now take a\u00A0reading room where people come to\u00A0work for\u00A0hours. The\u00A0same engine can be shaped for\u00A0that room, down to\u00A0the\u00A0moment it\u00A0invites a\u00A0break. Sinaida designs the\u00A0sound and\u00A0the\u00A0session around what people do\u00A0there.',
         suffix: 'to talk about a sound environment.',
@@ -908,7 +908,7 @@ export const PROJECTS: Project[] = [
         { label: 'YouTube channel', url: 'https://www.youtube.com/@theSwansAreNotWhatTheySeem' },
       ],
       order: {
-        heading: 'What a team can book',
+        heading: 'For a team',
         body:
           'Say a\u00A0studio has a\u00A0TouchDesigner network that grew faster than anyone could document it, and\u00A0a\u00A0team that has to\u00A0run it. Sinaida opens it\u00A0up, works out what each part does and\u00A0hands it\u00A0back as\u00A0a\u00A0system the\u00A0team can run and\u00A0explain. A\u00A0group that wants to\u00A0learn the\u00A0tool can start from a\u00A0working network the\u00A0same\u00A0way.',
         suffix: 'to talk about a network or a session.',
