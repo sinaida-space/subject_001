@@ -53,9 +53,8 @@ sections:
     heading: Selected skills
     body: |
       TouchDesigner
-      Real-time audio-reactive visuals
+      Audio- and motion-reactive visuals
       Body and hand tracking
-      Projection mapping
       Interactive installation
       Live event visuals
 
@@ -72,8 +71,6 @@ sections:
       - {label: "Website", value: "sinaida.eu", url: "https://sinaida.eu/"}
       - {label: "Instagram", value: "@sin.ai.da", url: "https://www.instagram.com/sin.ai.da/"}
       - {label: "Email", value: "gallant_mod5v@icloud.com", url: "mailto:gallant_mod5v@icloud.com"}
-      - {label: "Phone", value: "+420 727 887 979"}
-      - {label: "WhatsApp", value: "wa.me/420727887979", url: "https://wa.me/420727887979"}
       - {label: "Based in", value: "Prague, CZ"}
 
 cards:

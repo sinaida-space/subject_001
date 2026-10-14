@@ -46,7 +46,6 @@ const PERSON_NODE = {
     'TouchDesigner',
     'Generative Art',
     'Motion-Reactive Visuals',
-    'Projection Mapping',
     'Interactive Installations',
     'Audio-Reactive Visuals',
     'Stage Visuals',
