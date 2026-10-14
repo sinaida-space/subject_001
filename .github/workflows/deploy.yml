@@ -10,6 +10,11 @@ permissions:
   pages: write
   id-token: write
 
+# Queue deploys so back-to-back pushes never race for the Pages environment.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-24.04
