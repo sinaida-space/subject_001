@@ -61,9 +61,11 @@ sections:
   - track: right
     heading: Background
     body: |
-      Before working under my own name I spent six years in Amsterdam’s cultural sector: concept, audience building, fundraising and live events for an independent ballet foundation, and hosting a ballet studio’s showcases for audiences of around 500.
+      Before working under my own name I spent six years in Amsterdam’s cultural sector, including concept, audience building, fundraising and live events for an independent ballet foundation, and hosting a ballet studio’s showcases for audiences of around 500.
 
       I trained as a biomedical engineer, with an MSc in Biomedical Engineering from Bauman Moscow State Technical University, and graduated from the IT Leadership Program at General Electric.
+
+      I direct AI agents to build what I imagine, with my own instruments for them, from a typography checker to a multi-agent orchestrator.
 
   - track: left
     heading: Contacts
