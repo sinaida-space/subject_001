@@ -91,7 +91,7 @@ export default function Collaborate() {
           performance spaces. This page is what actually happens if we work together on one.
         </p>
         <p className="font-mono text-[28px] leading-relaxed mb-16 text-foreground/60">
-          Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
+          Live visuals and immersive systems for stages and spaces.
         </p>
 
         {/* Services */}
