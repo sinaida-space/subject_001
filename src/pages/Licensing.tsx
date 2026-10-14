@@ -36,6 +36,8 @@ type Row = {
      `external: false` keeps in-site routes in the same tab. */
   repo?: string;
   external?: boolean;
+  /* Licence files in the repository, linked so the reader checks the source. */
+  files?: string[];
 };
 
 // Alphabetical by project name, ignoring a leading "The".
@@ -45,37 +47,64 @@ const ROWS: Row[] = [
     code: 'AGPL 3.0',
     artwork: 'Recordings CC BY 4.0, attribution required',
     repo: 'https://github.com/sinaida-space/aether-currents',
+    files: ['LICENSE', 'LICENSE-CONTENT', 'NOTICE', 'THIRD-PARTY.md'],
+},
+  {
+    project: 'Astral Drifters',
+    code: 'Apache 2.0',
+    artwork: 'CC BY-NC-ND 4.0',
+    repo: 'https://github.com/sinaida-space/astral-drifters',
+    files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE'],
   },
   {
     project: 'CONSPACE ROOMS',
     code: 'Apache 2.0',
     artwork: 'CC BY-NC-ND 4.0',
     repo: 'https://github.com/sinaida-space/conspace-rooms',
+    files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE'],
+},
+  {
+    project: 'Eschaton Sequence',
+    code: 'All rights reserved',
+    artwork: 'All rights reserved',
+    repo: 'https://github.com/sinaida-space/eschaton_sequence',
+    files: ['LICENSE'],
   },
   {
     project: 'Ethereal Path',
     code: 'Apache 2.0',
     artwork: 'CC BY-NC-ND 4.0',
     repo: 'https://github.com/sinaida-space/ethereal-path',
-  },
+    files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE', 'THIRD-PARTY.md'],
+},
   {
     project: 'The Eyes, Chico',
     code: 'Apache 2.0',
     artwork: 'All rights reserved',
     repo: 'https://github.com/sinaida-space/the-eyes-chico',
+    files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE', 'THIRD-PARTY.md'],
+},
+  {
+    project: 'Frosted Glass',
+    code: 'Apache 2.0',
+    artwork: 'Ask first',
+    repo: 'https://github.com/sinaida-space/frosted-glass',
+    files: ['LICENSE'],
   },
   {
     project: 'Infinite Voidsong',
     code: 'Apache 2.0',
-    artwork: 'Sound CC0 1.0',
+    artwork: 'Field recordings CC0 1.0, from their authors',
     repo: 'https://github.com/sinaida-space/infinite-voidsong',
-  },
+    files: ['LICENSE'],
+},
   {
     project: 'Mahler',
     code: 'Apache 2.0',
     artwork: 'No artwork',
     repo: 'https://github.com/sinaida-space/mahler-the-orchestrator',
-  },
+    files: ['LICENSE', 'NOTICE'],
+},
   {
     project: 'Redkie Ptitsy',
     code: 'Not published',
@@ -84,11 +113,26 @@ const ROWS: Row[] = [
     external: false,
   },
   {
+    project: 'sinaida.eu',
+    code: 'All rights reserved',
+    artwork: 'All rights reserved',
+    repo: 'https://github.com/sinaida-space/subject_001',
+    files: ['LICENSE', 'THIRD-PARTY.md'],
+  },
+  {
+    project: 'Soulstice',
+    code: 'Apache 2.0',
+    artwork: 'Ask first',
+    repo: 'https://github.com/sinaida-space/soulstice',
+    files: ['LICENSE'],
+  },
+  {
     project: 'Stereolove',
     code: 'Apache 2.0',
     artwork: 'CC BY-NC-ND 4.0',
     repo: 'https://github.com/sinaida-space/stereolove',
-  },
+    files: ['LICENSE', 'LICENSE-ARTWORK', 'NOTICE', 'THIRD-PARTY.md'],
+},
   {
     project: 'Storm Glass',
     code: 'Project files for Patreon members',
@@ -100,6 +144,13 @@ const ROWS: Row[] = [
     code: 'Not published',
     artwork: 'All rights reserved',
     repo: 'https://www.youtube.com/watch?v=7qgDlifWno0',
+  },
+  {
+    project: 'Thresherium',
+    code: 'Apache 2.0',
+    artwork: 'Texts CC BY-NC-ND 4.0',
+    repo: 'https://github.com/sinaida-space/thresherium',
+    files: ['LICENSE'],
   },
 ];
 
@@ -138,16 +189,17 @@ const Licensing = () => {
         <div className="prose prose-invert font-clinical text-sm text-secondary-foreground space-y-6 leading-relaxed">
           <p>
             My projects carry two licences, because they are two&nbsp;things. The
-            software is open and you are welcome to&nbsp;it. The artwork is how
-            I&nbsp;make a&nbsp;living, and it moves only with my&nbsp;permission.
+            software is open and you are welcome to&nbsp;it. The artwork is
+            mine, and it moves only with my&nbsp;permission.
           </p>
 
           <H2>The short version</H2>
           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
             <li>
-              Source code on my GitHub is licensed under Apache&nbsp;2.0. Read it, fork
-              it, ship it commercially. Keep the notices. <span className="project-name">Aether Currents</span> is the
-              exception and uses AGPL&nbsp;3.0.
+              Most source code on my GitHub is licensed under Apache&nbsp;2.0. Read it, fork
+              it, ship it commercially. Keep the notices. <span className="project-name">Aether Currents</span> uses
+              AGPL&nbsp;3.0, and the code of this website and of{' '}
+              <span className="project-name">Eschaton Sequence</span> is all rights&nbsp;reserved.
             </li>
             <li>
               Visuals, shaders as artworks, video, audio, texts and photographs are
@@ -192,6 +244,23 @@ const Licensing = () => {
                         </a>
                       ) : (
                         withProjectNames(r.project)
+                      )}
+                      {r.files && r.repo && (
+                        <span className="mt-1 block text-[12px] text-muted-foreground">
+                          {r.files.map((f, i) => (
+                            <span key={f}>
+                              {i > 0 && ' · '}
+                              <a
+                                href={`${r.repo}/blob/HEAD/${f}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline underline-offset-2 hover:text-accent transition-colors"
+                              >
+                                {f}
+                              </a>
+                            </span>
+                          ))}
+                        </span>
                       )}
                     </td>
                     <td className="py-3 pr-4">{r.code}</td>

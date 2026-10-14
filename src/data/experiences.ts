@@ -162,17 +162,17 @@ export const EXPERIENCES_SECTIONS: {
     after: 'One team is briefed once. The spatial plan and the interactive system are designed together from the first sketch, with materials and sensor placement chosen already knowing what will run through them.',
   },
   clientBenefit: {
-    heading: 'What the client gets',
+    heading: 'What it gives a project',
     paragraphs: [
       'One point of contact for both the structure and the interactive layer. One timeline. Content designed from the first sketch for the specific surfaces and sightlines of the space.',
     ],
   },
   goal: {
-    statement: 'Deliver exhibition and event spaces where the physical structure and the real-time interactive system are designed as one integrated brief.',
+    statement: 'Design exhibition and event spaces where the physical structure and the real-time interactive system are designed as one integrated brief.',
     ctqs: [
       { description: 'Single integrated brief', target: 'One combined proposal covering structure and interaction', measure: 'Delivered as one document, one timeline, one point of contact' },
       { description: 'On-time installation', target: 'Structure and interactive system both operational before doors open', measure: 'Confirmed on-site ahead of event start' },
-      { description: 'System reliability on the floor', target: 'Interactive system runs for the full event window without manual restarts', measure: 'Monitored during event hours' },
+      { description: 'Rehearsed on the floor', target: 'Interactive system tested on site in the real light and hardware', measure: 'Run through before doors open' },
     ],
   },
   scope: {
@@ -248,13 +248,13 @@ export const EXPERIENCES_SECTIONS: {
   businessModel: {
     heading: 'How we work',
     paragraphs: [
-      'Each project is scoped and quoted as one proposal covering the structure and the interactive system together. A client can contract a single agreement with one partner as lead and the second contracted under it, or contract each scope directly, whichever suits their procurement. Fee is on request.',
+      'Every project starts with a conversation about the space and the occasion. From there the two of us shape one proposal for the structure and the interactive layer together.',
     ],
   },
   nextSteps: {
     heading: 'Next steps',
     paragraphs: [
-      'Reply by email to set up a short call.',
+      'Have a stand or an event space that should answer people? Let’s talk: reply by email to set up a short call.',
     ],
   },
 };
