@@ -430,7 +430,7 @@ export const PROJECTS: Project[] = [
     tagline: 'Browser instrument played with bare hands · with Telefm',
     short: 'A\u00A0musical instrument played with bare\u00A0hands',
     blurb:
-      'Sinaida built AETHER CURRENTS with Kamil Yegelev, known as Telefm, a musician in Belgrade. It is a browser instrument: a camera reads your hands, and their movement drives granular sound and light in real time.',
+      'Sinaida made AETHER CURRENTS with Kamil Yegelev, known as Telefm, a musician in Belgrade. It is a browser instrument: a camera reads your hands, and their movement drives granular sound and light in real time.',
     tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
     skills: ['body-tracking', 'audio-reactive', 'generative-sound', 'creative-web', 'algorithmic-systems', 'perception-media'],
     url: 'https://aether-currents.sinaida.eu/',
@@ -449,7 +449,7 @@ export const PROJECTS: Project[] = [
       paragraphs: [
         'Aether Currents is a way to feel music on your fingertips. Open it, show it your camera, and your hands become the interface. The right hand moves through position and pitch. A pinch shapes grain size. The left hand’s height sets density. Pull your hands apart and the filter opens, the space widens. Close into a fist and the sound freezes mid-air. There is no keyboard, no mouse and no MIDI controller between you and the sound, only your own sense of where your hands are.',
         'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of "move only your upper body." Ballet trains a body inside strict rules. Aether Currents has rules too: six gestures over a granular synthesis engine, with plenty of room to play inside them. The instrument does not know what you will play, and often its maker does not either.',
-        'Sinaida built it with Kamil Yegelev, known as Telefm, a musician in Belgrade. Everything runs on the device, with no server and no cloud. Sound follows movement in under a hundred milliseconds, which is fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
+        'Sinaida made it with Kamil Yegelev, known as Telefm, a musician in Belgrade. Everything runs on the device, with no server and no cloud. Sound follows movement in under a hundred milliseconds, which is fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
       ],
       credits: [
         'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
@@ -719,7 +719,7 @@ export const PROJECTS: Project[] = [
     tagline: 'Endless generated soundscapes for focused work, with rest built into the session',
     short: 'Endless soundscapes for focused work',
     blurb:
-      'Layer noise, water, fire, places and\u00A0music into one mix, save it\u00A0as\u00A0a\u00A0preset, and\u00A0let it\u00A0run for\u00A0hours. Sinaida built it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work. An\u00A0audio-reactive tunnel breathes with the\u00A0sound. It\u00A0installs as\u00A0an\u00A0app, works offline, and\u00A0nothing you\u00A0do\u00A0in\u00A0it\u00A0is\u00A0tracked.',
+      'Layer noise, water, fire, places and\u00A0music into one mix, save it\u00A0as\u00A0a\u00A0preset, and\u00A0let it\u00A0run for\u00A0hours. Sinaida made it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work. An\u00A0audio-reactive tunnel breathes with the\u00A0sound. It\u00A0installs as\u00A0an\u00A0app, works offline, and\u00A0nothing you\u00A0do\u00A0in\u00A0it\u00A0is\u00A0tracked.',
     tools: ['Web Audio API', 'WebGL', 'Offline web app'],
     skills: ['generative-sound', 'audio-reactive', 'creative-web', 'perception-media'],
     url: 'https://infinite-voidsong.vercel.app/',
@@ -734,7 +734,7 @@ export const PROJECTS: Project[] = [
       kindLabel: 'Web tool',
       intro: [
         'Brown noise, rain over it, a\u00A0few chords moving underneath. Infinite Voidsong generates sound for\u00A0focused work and\u00A0keeps playing for\u00A0as\u00A0long as\u00A0you need. You layer sounds from six families into one mix, save it\u00A0as\u00A0a\u00A0preset and\u00A0leave\u00A0it\u00A0running.',
-        'Sinaida built it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work, and\u00A0a\u00A0session ends with a\u00A0slow fade and\u00A0a\u00A0soft\u00A0chime.',
+        'Sinaida made it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work, and\u00A0a\u00A0session ends with a\u00A0slow fade and\u00A0a\u00A0soft\u00A0chime.',
         'A\u00A0tunnel drawn in\u00A0WebGL moves with the\u00A0sound. The\u00A0tool installs as\u00A0an\u00A0app, works offline, has no\u00A0accounts and\u00A0tracks\u00A0nothing.',
       ],
       heroCta: { label: 'Open Infinite Voidsong', url: 'https://infinite-voidsong.vercel.app/' },

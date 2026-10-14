@@ -30,7 +30,7 @@ const Statement = () => {
   usePageMeta({
     title: 'Statement | Sinaida Krivchenko',
     description:
-      'Why she builds responsive visual systems: a language that needs no translation, engineering structure and ballet listening, and the audience that completes the work.',
+      'Why she makes responsive visual systems: a language that needs no translation, engineering structure and ballet listening, and the audience that completes the work.',
     canonical: 'https://sinaida.eu/statement/',
   });
 
