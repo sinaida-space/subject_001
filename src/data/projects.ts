@@ -330,7 +330,7 @@ export const PROJECTS: Project[] = [
     caseStudy: {
       kindLabel: 'Installation',
       intro: [
-        'A labyrinth of half-lit rooms where an artist’s cycle meets two artists’ memories of their grandparents. Eighteen works from the SOULS cycle by UVALISS hang in corridors that the browser builds anew for every visit, so no two visitors walk the same one. It opens from a link on a laptop or a phone, and in a gallery visitors steer it with their bare\u00A0hands.',
+        'A labyrinth of half-lit rooms where an artist’s cycle meets two artists’ memories of their grandparents. Eighteen works from the SOULS cycle by UVALISS hang in corridors that the browser builds anew for every visit. It opens from a link on a laptop or a phone, and in a gallery visitors steer it with their bare\u00A0hands.',
         'A collaboration with UVALISS (Alisa Feer, https://uvaliss.ru/).',
       ],
       heroCta: { label: 'Walk the labyrinth', url: 'https://conspace-rooms.vercel.app/?lang=en' },
@@ -385,7 +385,7 @@ export const PROJECTS: Project[] = [
         stages: [
           { label: 'Any browser', detail: 'Artworks usually wait in rooms people have to travel to. This one opens from a link, on a laptop or a phone, with nothing to install.' },
           { label: 'Made in code', detail: 'Walls, light and most of the furniture are generated on the spot. The piece stays light on an ordinary connection and rebuilds itself for every visit.' },
-          { label: 'Generated sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The only recordings are Alisa’s voice at seven of the works.' },
+          { label: 'Generated sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The recordings are Alisa’s voice at seven of the works and a few short sounds from the yard.' },
           { label: 'A steady walk', detail: 'The target is 60 fps on an average laptop; every passage between rooms was measured frame by frame, and phones get a lighter version automatically.' },
           { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
           { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it.' },
