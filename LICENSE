@@ -1,0 +1,37 @@
+Copyright (c) 2026 Sinaida Krivchenko (https://sinaida.eu)
+
+ALL RIGHTS RESERVED.
+
+This repository holds the source, design and written content of sinaida.eu.
+It is public so the work can be read. It is not open source, and no license
+to use, copy, modify, publish or distribute any part of it is granted.
+
+This applies in particular to the biography, artist statement, project
+descriptions and case study texts in src/data/ and src/pages/, and to every
+image, video still and photograph in the repository. Those are written and
+made by Sinaida Krivchenko.
+
+WHAT IS PERMITTED WITHOUT ASKING
+
+  Reading the code, and learning from it.
+
+  Press and education: journalists, curators, students and researchers may
+  reproduce stills and quoted text in articles, reviews, catalogues and
+  academic writing, with credit to Sinaida Krivchenko and a link to
+  https://sinaida.eu. Advertising is commercial use and is not covered.
+
+THIRD-PARTY CODE AND FONTS
+
+  This repository depends on open source libraries and fonts that keep
+  their own licenses. See THIRD-PARTY.md.
+
+THE PROJECTS THEMSELVES
+
+  The artworks documented on this site are licensed individually, and most
+  of their source code is open under Apache 2.0. See
+  https://sinaida.eu/licensing and the repositories at
+  https://github.com/sinaida-space
+
+ASKING
+
+  https://sinaida.eu/collaborate — most answers are yes.

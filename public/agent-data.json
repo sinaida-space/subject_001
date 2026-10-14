@@ -1,0 +1,97 @@
+{
+  "name": "Sinaida Krivchenko",
+  "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, working globally.",
+  "bio": "Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500. Works with performing-arts organisations, musicians, festivals, and cultural institutions.",
+  "services": [
+    "Audio-reactive concert visuals — one system per song, listening to the live mix, delivered as a turnkey show or operated live",
+    "Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound",
+    "Theater and dance scenography — real-time systems that follow the performers' bodies and the sound, developed with the creative team",
+    "Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in"
+  ],
+  "skills": [
+    "TouchDesigner",
+    "Generative art",
+    "Real-time audio-reactive visuals",
+    "Body & gesture tracking (MediaPipe)",
+    "WebGL and shaders",
+    "Procedural animation",
+    "Post-production",
+    "Color grading",
+    "Concept and experience design",
+    "Visual narrative development",
+    "Biomedical engineering MSc",
+    "Systems design thinking",
+    "Algorithmic visual systems",
+    "Creative web development",
+    "Agentic coding workflows",
+    "Multi-agent orchestration",
+    "MCP (Model Context Protocol) integrations"
+  ],
+  "projects": [
+    {
+      "id": "redkie-ptitsy",
+      "title": "Redkie Ptitsy — Live Concert Visuals",
+      "kind": "stage",
+      "tagline": "Live at Sklad No. 3, Moscow · 9 projections, one per song",
+      "url": "https://sinaida.eu/work/redkie-ptitsy"
+    },
+    {
+      "id": "conspace-rooms",
+      "title": "CONSPACE ROOMS",
+      "kind": "installation",
+      "tagline": "Walk-through labyrinth of artworks, in the browser or as a gesture-controlled projection, with UVALISS",
+      "url": "https://sinaida.eu/work/conspace-rooms"
+    },
+    {
+      "id": "aether-currents",
+      "title": "Aether Currents",
+      "kind": "game",
+      "tagline": "Browser instrument played with bare hands, with Telefm",
+      "url": "https://sinaida.eu/work/aether-currents"
+    },
+    {
+      "id": "conspace-rooms",
+      "title": "CONSPACE ROOMS",
+      "kind": "installation",
+      "tagline": "Walk-through labyrinth of artworks, in the browser or as a gesture-controlled projection, with UVALISS",
+      "url": "https://conspace-rooms.vercel.app/"
+    },
+    {
+      "id": "ethereal-path",
+      "title": "Ethereal Path",
+      "kind": "game",
+      "tagline": "Off-axis descent steered by head & hand movement — the body is the controller",
+      "url": "https://sinaida-space.github.io/ethereal-path/"
+    },
+    {
+      "id": "stereolove",
+      "title": "Stereolove",
+      "kind": "game",
+      "tagline": "Head-coupled op-art — the screen becomes an unstable optical volume",
+      "url": "https://sinaida-space.github.io/stereolove/"
+    },
+    {
+      "id": "infinite-voidsong",
+      "title": "Infinite Voidsong",
+      "kind": "game",
+      "tagline": "Endless generated soundscapes for focused work, with rest built into the session",
+      "url": "https://infinite-voidsong.vercel.app/"
+    },
+    {
+      "id": "storm-glass",
+      "title": "Storm Glass — TouchDesigner Tutorial",
+      "kind": "tutorial",
+      "tagline": "A thunderstorm behind rainy glass, built in TouchDesigner: the bass fires the lightning",
+      "url": "https://youtu.be/hwFttiCKbrU"
+    }
+  ],
+  "contact": {
+    "website": "https://sinaida.eu/",
+    "collaborate": "https://sinaida.eu/collaborate",
+    "cv": "https://sinaida.eu/files/sinaida-krivchenko-cv.pdf",
+    "instagram": "https://www.instagram.com/sin.ai.da/",
+    "youtube": "https://www.youtube.com/@theSwansAreNotWhatTheySeem",
+    "linkedin": "https://www.linkedin.com/in/sinaida",
+    "location": "Prague, CZ"
+  }
+}

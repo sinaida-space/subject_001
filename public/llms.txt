@@ -1,0 +1,38 @@
+# Sinaida Krivchenko
+
+> New media artist. Interactive projections & stage visuals. Prague-based, working globally.
+
+Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted ballet showcases for audiences of around 500. Works with performing-arts organisations, musicians, festivals and cultural institutions.
+
+## Services
+
+- Audio-reactive concert visuals — one system per song, listening to the live mix, delivered as a turnkey show or operated live
+- Interactive web — sites and components that move, react and watch: real-time WebGL and shaders, on-device camera and gesture control, generative sound
+- Theater and dance scenography — real-time systems that follow the performers' bodies and the sound, developed with the creative team
+- Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in
+
+## Selected Work
+
+- Redkie Ptitsy — Live Concert Visuals (https://sinaida.eu/work/redkie-ptitsy) — 9 audio-reactive projections, one per song, live at Sklad No. 3, Moscow
+- CONSPACE ROOMS (https://sinaida.eu/work/conspace-rooms) — walk-through web installation with UVALISS (Alisa Feer): works from her SOULS series in a labyrinth the browser builds as you walk, with generative music and optional on-device hand tracking; also shown as a gesture-controlled projection, live at https://conspace-rooms.vercel.app/
+- Ethereal Path (https://sinaida-space.github.io/ethereal-path/) — off-axis WebGL descent steered by head and hand movement; the body is the controller
+- Stereolove (https://sinaida-space.github.io/stereolove/) — head-coupled op-art: on-device face tracking turns the screen into an unstable optical volume
+- Infinite Voidsong (https://infinite-voidsong.vercel.app/) — endless generated soundscapes for focused work, with rest built into the session; Web Audio, WebGL, offline, no tracking
+- Storm Glass (https://youtu.be/hwFttiCKbrU) — TouchDesigner tutorial: a thunderstorm behind rainy glass, audio onsets fire the lightning, drops refract the sky through GLSL
+
+## Skills
+
+TouchDesigner, Generative art, Real-time audio-reactive visuals, Body & gesture tracking (MediaPipe), WebGL and shaders, Procedural animation, Post-production, Color grading, Concept and experience design, Visual narrative development, Biomedical engineering MSc, Systems design thinking, Algorithmic visual systems, Creative web development. Agentic coding workflows, multi-agent orchestration, MCP (Model Context Protocol) integrations.
+
+## Pages
+
+- Work with me — https://sinaida.eu/collaborate — services, process, press kit, and contact for festivals, theaters, and institutions
+
+## Contact
+
+- Website: https://sinaida.eu/
+- Artist CV (PDF): https://sinaida.eu/files/sinaida-krivchenko-cv.pdf
+- Instagram: https://www.instagram.com/sin.ai.da/
+- YouTube (TouchDesigner tutorials): https://www.youtube.com/@theSwansAreNotWhatTheySeem
+- LinkedIn: https://www.linkedin.com/in/sinaida
+- Location: Prague, CZ

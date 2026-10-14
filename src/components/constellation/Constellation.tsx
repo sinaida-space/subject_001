@@ -1,0 +1,165 @@
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { useRenderMode } from '@/hooks/useRenderMode';
+import { buildGraph } from '@/data/graph';
+import type { GraphNode } from '@/data/graph';
+import { projectById } from '@/data/projects';
+import { diveBus, DIVE_LAND_AT } from '@/lib/diveBus';
+import { constellationBus, type FocusOrigin } from '@/lib/constellationBus';
+import ConstellationLite from './ConstellationLite';
+import WorkStrip from './WorkStrip';
+import ProjectDetail from './ProjectDetail';
+import GraphHoverCard from './GraphHoverCard';
+import StarTitle, { LiteTitle } from '@/components/StarTitle';
+
+const ConstellationFull = lazy(() => import('./ConstellationFull'));
+
+const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
+// Mirrors ConstellationFull's own mobile band-height formula (one connected
+// web, not one band per project — see ConstellationFull's `layout()`) so this
+// CLS estimate doesn't reserve far more space than the graph actually renders.
+const MOBILE_BAND_HEIGHT = 640;
+const MOBILE_RESERVED_HEIGHT = Math.max(MOBILE_BAND_HEIGHT, Math.round(buildGraph().nodes.length * 58));
+
+export default function Constellation() {
+  const { mode } = useRenderMode();
+  const [active, setActive] = useState<GraphNode['project'] | null>(null);
+  const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
+  const [openId, setOpenId] = useState<string | null>(null);
+  const openedByDive = useRef(false);
+  const [openOrigin, setOpenOrigin] = useState<FocusOrigin | undefined>();
+  const sectionRef = useRef<HTMLElement>(null);
+  const graphBoundsRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const unsub = constellationBus.subscribeFocus((id, viaDive, origin) => {
+      openedByDive.current = !!viaDive;
+      setOpenOrigin(origin);
+      setOpenId(id);
+    });
+    return () => unsub();
+  }, []);
+
+  const openProject = openId ? projectById(openId) : undefined;
+
+  // A card that rose out of a dive sinks back into it: the reverse dive
+  // closes over the card and flies back into the node.
+  const closeProject = () => {
+    const p = openProject;
+    const close = () => setOpenId(null);
+    if (!p || !openedByDive.current) return close();
+    openedByDive.current = false;
+    const dived = diveBus.dive({ close, landAt: DIVE_LAND_AT, dialect: p.dialect, image: p.image, anchor: `node:${p.id}` });
+    if (!dived) close();
+  };
+
+  return (
+    <section ref={sectionRef} id="work" className="relative z-10 py-16 md:py-20">
+      <div className="site-frame">
+        <div className={mode === 'full' ? 'flex flex-col gap-8 md:gap-12' : 'flex flex-col'}>
+          {/* The heading spans the frame above the map. In full mode it is a
+              StarTitle like every section name (#175); WorkBuild times its
+              pull on the h2 inside it. */}
+          {mode === 'full' ? (
+            <div ref={headingRef} data-work-heading className="shrink-0">
+              <StarTitle
+                text="Body of Work"
+                caption={
+                  <p className="relative z-[1] mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+                    Selected works and the skills that happen to resonate.
+                  </p>
+                }
+              />
+            </div>
+          ) : (
+            <div ref={headingRef} data-work-heading>
+              <LiteTitle
+                text="Body of Work"
+                titleStyle={{ fontSize: 'clamp(26px, 7.5vw, 40px)' }}
+                caption={
+                  <p className="mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+                    Selected works and the skills that happen to resonate.
+                  </p>
+                }
+              />
+            </div>
+          )}
+
+          {/* RIGHT COLUMN — the graph, always paired with its plain reading below */}
+          {/* CLS fix: reserve the taller of Lite/Full's own heights here, at the
+              outer wrapper, so swapping the Suspense fallback (Lite) for the
+              loaded ConstellationFull never shifts anything below this section.
+              Purely a height-reservation wrapper — no motion/physics touched. */}
+          <div
+            className="relative flex-1"
+            style={
+              mode === 'full'
+                ? { minHeight: IS_COARSE ? `${MOBILE_RESERVED_HEIGHT}px` : 'clamp(560px, 90vh, 1000px)' }
+                : undefined
+            }
+          >
+            {/* Bounds the hover card to the graph's own footprint, not the
+               whole flex-1 wrapper below — that wrapper also contains the
+               plain list, which would let the card's clamp range extend
+               down into that list's text. */}
+            {/* In full mode on desktop the graph holds still while it builds
+                itself (WorkBuild): sticky over its own scroll room below. */}
+            {/* the graph and its build room share one box, so the graph lets go where the room ends */}
+            <div>
+            <div
+              ref={graphBoundsRef}
+              data-build-track
+              className={mode === 'full' && !IS_COARSE ? 'md:sticky md:top-[5vh]' : undefined}
+            >
+              {mode === 'full' && (
+                <Suspense fallback={<ConstellationLite onActiveProject={setActive} />}>
+                  <ConstellationFull onActiveProject={setActive} onPointerPosition={(x, y) => setPointerPos({ x, y })} />
+                </Suspense>
+              )}
+            </div>
+
+            {/* Hover readout — preview, name and one-line context for the
+               hovered project. Anchored bottom-left, clamped to the graph's
+               own bounds below and to the heading's bottom edge above (the
+               heading sits in the sticky left column, at the same row as
+               the graph's own top — clamping to the graph's top alone once
+               let a tall card sit flush against it and cover the heading
+               text). Also capped to a max-height so an oversized card
+               shrinks instead of breaching either edge. Desktop mouse only. */}
+            {mode === 'full' && !IS_COARSE && (
+              <GraphHoverCard project={active} boundsRef={graphBoundsRef} avoidRef={headingRef} />
+            )}
+
+            {/* announce the hovered/opened project to screen readers only — a
+               second visible caption here duplicated the project's name and
+               tagline that the map/list already show directly, so it's
+               sr-only now instead of a second visible line. */}
+            <div className="sr-only" aria-live="polite">
+              {active ? `${active.title}${active.tagline ? `. ${active.tagline}` : ''}` : ''}
+            </div>
+            <div className="sr-only" aria-live="polite">
+              {openProject ? `Opened ${openProject.title}. ${openProject.tagline}` : ''}
+            </div>
+
+            {/* Readout opens as a fixed-position modal window (ProjectDetail) —
+               same treatment on every screen size, doesn't affect page layout. */}
+            {openProject && <ProjectDetail project={openProject} onClose={closeProject} origin={mode === 'full' ? openOrigin : undefined} />}
+
+            {mode === 'full' && !IS_COARSE && <div data-build-room aria-hidden="true" className="hidden md:block" style={{ height: '90vh' }} />}
+            </div>
+          </div>
+        </div>
+
+        {/* The strip of project columns sits below the two columns at the
+           frame's full width; in lite mode (auto-detected or toggled via
+           Header/Footer) it's the whole section, a semantic, keyboard-
+           navigable list with no canvas/WebGL dependency. */}
+        <div className={mode === 'full' ? 'mt-16' : 'mt-8'}>
+          <WorkStrip />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Je suis le spectre d'une rose que tu portais hier au bal.

@@ -1,0 +1,1209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Self-hosted Geist Pixel — avoids sending visitor IPs to Google Fonts' CDN
+   on every page load (previously fired before cookie consent). */
+@font-face {
+  font-family: 'Geist Pixel';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/geist-pixel-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Pixel';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/geist-pixel-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@layer base {
+  :root {
+    /* Void */
+    --background: 0 0% 2%;
+    --foreground: 0 0% 88%;
+
+    --card: 240 8% 6%;
+    --card-foreground: 0 0% 88%;
+
+    --popover: 240 8% 6%;
+    --popover-foreground: 0 0% 88%;
+
+    /* cd0000 — THE single brand red. Every other red token/hardcoded value
+       in the codebase should point back to this one. */
+    --sinaida-red: 0 100% 40%;
+
+    --primary: var(--sinaida-red);
+    --primary-foreground: 0 0% 100%;
+    /* Same hue/saturation as --sinaida-red, lightness raised to clear WCAG AA
+       4.5:1 against --background for SMALL informational text only (labels,
+       eyebrows, ~12px). Large text/headings, buttons, and decorative accents
+       must keep using --primary/--sinaida-red — do not replace those.
+       Confirmed 5.14:1. */
+    --primary-legible: 0 100% 52%;
+    /* Molecule dividers (MoleculeBreak): star-cluster atoms that sit barely
+       above the starfield. Grey carbon, muted-red oxygen/nitrogen/sulfur. */
+    --molecule-atom: 0 0% 47%;
+    --molecule-hetero: 0 60% 37%;
+    /* One step brighter still — hover state for a --primary-legible link
+       (e.g. the cookie notice, see .notice-surface a:hover). Was a bare
+       #ff6b6b with no token backing it. */
+    --primary-hover: 0 100% 71%;
+
+    --secondary: 240 6% 10%;
+    --secondary-foreground: 0 0% 75%;
+
+    --muted: 240 5% 12%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: var(--sinaida-red);
+    --accent-foreground: 240 10% 3%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: var(--sinaida-red);
+
+    --radius: 0px;
+
+    --neon-magenta: 320 100% 55%;
+    --neon-glow: var(--sinaida-red);
+    /* Cathode — was --clinical, same value. */
+    --cathode: 180 15% 70%;
+    --particle-white: 40 67% 96%;
+    --bloom-cyan: 0 100% 49%;
+
+    /* Gray scale — Graphite → Haze. */
+    --graphite: 0 0% 15%;
+    --gunmetal: 0 0% 30%;
+    --slate: 0 0% 45%;
+    --fog: 0 0% 60%;
+    --haze: 0 0% 80%;
+
+    /* System fallbacks paint text immediately while Geist Pixel loads
+       (font-display: swap above; the latin file is preloaded in index.html,
+       so on most connections the swap lands before first paint anyway). */
+    --font-display: 'Geist Pixel', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'Geist Pixel', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+    --font-clinical: 'Geist Pixel', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+    --scanline-opacity: 0.04;
+    --glitch-intensity: 0;
+
+    --sidebar-background: 240 8% 5%;
+    --sidebar-foreground: 0 0% 88%;
+    --sidebar-primary: 0 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5% 12%;
+    --sidebar-accent-foreground: 0 0% 88%;
+    --sidebar-border: 240 6% 15%;
+    --sidebar-ring: 0 100% 55%;
+  }
+}
+
+@layer base {
+  /* Keyboard focus: one red ring everywhere, so a tabbing visitor never loses
+     their place on Void. Components that draw their own ring keep it. */
+  :focus-visible {
+    outline: 1px solid hsl(var(--sinaida-red));
+    outline-offset: 3px;
+  }
+}
+
+@layer base {
+  /* Lite mode — flat black-on-white read mode, no motion. Repaints the same
+     HSL tokens everything else already renders through, so it doesn't need
+     a parallel set of components. */
+  html[data-mode="lite"] {
+    /* Chalk */
+    --background: 0 0% 96%;
+    --foreground: 0 0% 8%;
+    --card: 0 0% 96%;
+    --card-foreground: 0 0% 8%;
+    --popover: 0 0% 96%;
+    --popover-foreground: 0 0% 8%;
+    /* --sinaida-red, same red as dark mode — confirmed 5.35:1 against Chalk. */
+    --primary: var(--sinaida-red);
+    --primary-foreground: 0 0% 100%;
+    --primary-legible: var(--sinaida-red);
+    /* Lighter than the ink on Chalk, so the molecules stay a whisper. */
+    --molecule-atom: 0 0% 76%;
+    --molecule-hetero: 0 40% 74%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 8%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 15%;
+    /* Deliberately not the brand red: lite mode is a flat black-and-white
+       read mode with no color and no motion by design. */
+    --accent: 0 0% 8%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+  }
+
+  html[data-mode="lite"] *,
+  html[data-mode="lite"] *::before,
+  html[data-mode="lite"] *::after {
+    animation: none !important;
+    transition: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  html[data-mode="lite"] .crt-scanlines,
+  html[data-mode="lite"] .vhs-noise-bars,
+  html[data-mode="lite"] .glitch-text::before,
+  html[data-mode="lite"] .glitch-text::after {
+    display: none;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-timeline: --page-scroll block;
+    /* clip, not hidden: hidden on both html and body made body a scroll
+       container, and every position: sticky on the page stopped sticking */
+    overflow-x: hidden;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* iOS/macOS Safari paints its own default (white) behind the rubber-band
+       overscroll area at the top/bottom of the page — that's the "white
+       tabs" edge, not the browser chrome. theme-color alone doesn't cover
+       it; the html element itself needs a matching background. */
+    background-color: hsl(var(--background));
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-mono);
+    overflow-x: hidden;
+    overflow-x: clip;
+    background: radial-gradient(circle at center, hsl(var(--background)), hsl(var(--background) / 0.85));
+  }
+
+  /* Tinted arrow cursor — a plain OS-style pointer recolored in the site's
+     red, not a custom JS-driven cursor. Zero runtime cost: it's a static
+     image the browser paints itself, no rAF loop, no pointer listeners. */
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
+    cursor:
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M1 1 L1 16 L5 12.7 L7.6 18.4 L10.3 17.1 L7.7 11.4 L13 11.4 Z" fill="%23CC1414" stroke="%231a0000" stroke-width="1" stroke-linejoin="round"/></svg>')
+      1 1,
+      auto !important;
+  }
+
+  body:not(.has-custom-cursor) .cursor-none {
+    cursor: inherit !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  /* Line-breaking hygiene. Short function words and numbers are glued to what
+     follows them with real non-breaking spaces in the copy itself (see
+     src/data/projects.ts and the section components) — that is the part that
+     has to be exact. Gluing the longer ones ("the", "and", "for", "with") the
+     same way would freeze most lines in a paragraph and overflow narrow
+     viewports, so they are left to the browser here instead: `pretty` biases
+     the last line away from a single word, `balance` evens out short headings.
+     Both are hints, which is why the nbsp pass exists as well. */
+  p, li, dd, blockquote, figcaption {
+    text-wrap: pretty;
+  }
+
+  h1, h2, h3, h4, h5, h6, button, .clinical-label {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: hsl(var(--primary-foreground));
+  }
+}
+
+@layer components {
+  /* The page frame: a share of the window, not a fixed 1280px box, so wide
+     laptops (MacBook Air in Safari) get no empty bands. Gutters grow with the
+     screen; sections place their own asymmetric whitespace inside it and keep
+     text measures in ch. */
+  .site-frame {
+    width: 100%;
+    max-width: 1920px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 4vw, 72px);
+  }
+
+  /* CRT Scanlines overlay */
+  .crt-scanlines {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(0 0% 0% / var(--scanline-opacity)) 2px,
+      hsl(0 0% 0% / var(--scanline-opacity)) 4px
+    );
+  }
+
+  /* VHS Glitch effect */
+  .vhs-glitch {
+    animation: vhs-distort 0.15s steps(2) infinite;
+  }
+
+  .glitch-text {
+    position: relative;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch-text::before {
+    color: hsl(var(--accent));
+    clip-path: inset(0 0 60% 0);
+    transform: translateX(-2px);
+    opacity: 0;
+  }
+
+  .glitch-text::after {
+    color: hsl(var(--primary));
+    clip-path: inset(40% 0 0 0);
+    transform: translateX(2px);
+    opacity: 0;
+  }
+
+  .glitch-text:hover::before,
+  .glitch-text:hover::after {
+    opacity: 0.8;
+    animation: glitch-shift 0.3s steps(3) infinite;
+  }
+
+  /* Hero name/role + headline hover effect — sustained for exactly as long
+     as hovered (JS-state-driven via .hero-glow-active, see HeroSection.tsx),
+     not CSS :hover. Replaces the old shake-based sitewide hover-glitch for
+     the hero specifically (hero opts out via .no-hover-fx below): letters
+     drift slowly in 3D space (Y axis locked, X/Z free — "version 5" of the
+     hover exploration), a soft heartbeat-rhythm glow breathes on the base
+     layer, and on each beat a brief red/white double-vision ghost passes
+     through. Zero animation at all while idle — every rule below is scoped
+     under .hero-glow-active, nothing runs unhovered. */
+  .hero-layer {
+    display: block;
+  }
+
+  .hero-layer-base {
+    position: relative;
+    z-index: 3;
+  }
+
+  .hero-ghost {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-ghost-red {
+    color: hsl(var(--sinaida-red));
+  }
+
+  .hero-ghost-white {
+    color: #fff;
+    mix-blend-mode: screen;
+  }
+
+  .hero-ltr {
+    display: inline-block;
+    white-space: pre;
+    will-change: transform;
+  }
+
+  /* While a glyph is still scramble noise, the settled character keeps the
+     layout (hidden) and the noise is drawn over it, so the line never re-wraps. */
+  .hero-ltr { position: relative; }
+  .hero-sizer { visibility: hidden; }
+  .hero-noise { position: absolute; left: 0; top: 0; }
+
+  /* Each glyph above is its own inline-block so the hover drift can animate
+     characters independently — and an inline-block is a line-break
+     opportunity, so a bare run of them lets the browser break between ANY two
+     characters. That is how the eyebrow rendered as "SINAIDA KRIVCHENKO | NE"
+     / "W MEDIA ARTIST" at ~676px wide: nothing in the markup said a word was
+     a unit, so the line simply filled to the pixel and broke.
+
+     .hero-word restores the break rule the design assumes: words are atomic,
+     the spaces between them are the only place a line may break. Anything
+     rendering .hero-ltr runs must group words this way (see Letters in
+     HeroSection.tsx). */
+  .hero-word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /* The space between two words: kept literal (the glyph spans do their own
+     spacing) but still breakable, which plain `pre` would forbid. */
+  .hero-space {
+    white-space: pre-wrap;
+  }
+  /* A glued run (HeroSection HeadlineRuns) never breaks inside itself. */
+  .hero-glue {
+    white-space: nowrap;
+  }
+  .hero-glue .hero-space {
+    white-space: nowrap;
+  }
+
+  @keyframes hero-drift-v5-a { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(4px,0,10px); } }
+  @keyframes hero-drift-v5-b { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(-5px,0,-12px); } }
+  @keyframes hero-drift-v5-c { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(6px,0,14px); } }
+  @keyframes hero-drift-v5-d { 0%, 100% { transform: perspective(700px) translate3d(0,0,0); } 50% { transform: perspective(700px) translate3d(-4px,0,-10px); } }
+
+  .hero-glow-active .hero-ltr {
+    animation: hero-drift-v5-a 6.2s ease-in-out infinite;
+  }
+  /* Which of the four drift paths a letter takes. This used to be
+     :nth-child(4n+2..4), which counted glyphs among their siblings — once
+     .hero-word groups them, that counter restarts at every word and the
+     cycle breaks up. The variant is now stamped on from the letter's index
+     within the whole run (see Letters in HeroSection.tsx), so the pattern
+     stays continuous across a line no matter how it is grouped. */
+  .hero-glow-active .hero-ltr-b { animation-name: hero-drift-v5-b; }
+  .hero-glow-active .hero-ltr-c { animation-name: hero-drift-v5-c; }
+  .hero-glow-active .hero-ltr-d { animation-name: hero-drift-v5-d; }
+
+  @keyframes hero-beat-glow {
+    0%, 6%, 100% { filter: drop-shadow(0 0 0px transparent); }
+    8%  { filter: drop-shadow(0 0 10px hsl(var(--primary) / 0.6)) brightness(1.08); }
+    16% { filter: drop-shadow(0 0 0px transparent) brightness(1); }
+    24% { filter: drop-shadow(0 0 18px hsl(var(--primary) / 0.6)) brightness(1.15); }
+    36% { filter: drop-shadow(0 0 0px transparent) brightness(1); }
+  }
+
+  @keyframes hero-flash-red {
+    0%, 6%, 100% { opacity: 0; transform: translate(0,0); }
+    8%  { opacity: 0.55; transform: translate(-3px,0.5px); }
+    12% { opacity: 0; }
+    22% { opacity: 0; }
+    24% { opacity: 0.7; transform: translate(-4px,-0.5px); }
+    29% { opacity: 0; transform: translate(0,0); }
+  }
+
+  @keyframes hero-flash-white {
+    0%, 6%, 100% { opacity: 0; transform: translate(0,0); }
+    8%  { opacity: 0.4; transform: translate(3px,-0.5px); }
+    12% { opacity: 0; }
+    22% { opacity: 0; }
+    24% { opacity: 0.55; transform: translate(4px,0.5px); }
+    29% { opacity: 0; transform: translate(0,0); }
+  }
+
+  .hero-glow-active .hero-layer-base { animation: hero-beat-glow 1.1s ease-in-out infinite; }
+  .hero-glow-active .hero-ghost-red { animation: hero-flash-red 1.1s ease-in-out infinite; }
+  .hero-glow-active .hero-ghost-white { animation: hero-flash-white 1.1s ease-in-out infinite; }
+
+  /* Whisper question — surfaces mid-hover/hold over the starfield (see
+     useHeroWhisper in HeroSection.tsx). Evaporates via blur+scale rather
+     than a plain fade so it reads as dissolving into the galaxy, not a UI
+     toast appearing/disappearing. */
+  .hero-whisper {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(6px);
+    transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+  }
+  .hero-whisper-visible {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  .hero-whisper-text {
+    /* Haze, not white — the questions are meant to surface out of the
+       starfield and sink back into it, and pure white read as UI. */
+    color: hsl(var(--haze));
+    text-shadow:
+      0 0 6px hsl(var(--primary) / 0.55),
+      0 0 18px hsl(var(--primary) / 0.32),
+      0 0 34px hsl(var(--primary) / 0.16);
+  }
+
+  /* ECG lock pulse — traces a hovered target's outline once, never loops */
+  .cursor-lock-pulse {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: cursor-lock-trace 320ms ease-out 1;
+  }
+
+  @keyframes cursor-lock-trace {
+    from {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+      opacity: 0.35;
+    }
+  }
+
+  /* Dithered image effect */
+  .dither-image {
+    filter: contrast(1.5) grayscale(0.8) brightness(0.6);
+    transition: filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    image-rendering: auto;
+  }
+
+  .dither-image:hover {
+    filter: contrast(1) grayscale(0) brightness(1);
+  }
+
+  /* VHS noise bars on project images */
+  .vhs-noise-bars {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0%,
+      transparent 3%,
+      hsl(var(--foreground) / 0.04) 3%,
+      hsl(var(--foreground) / 0.04) 3.5%,
+      transparent 3.5%,
+      transparent 8%,
+      hsl(var(--foreground) / 0.06) 8%,
+      hsl(var(--foreground) / 0.06) 8.3%,
+      transparent 8.3%,
+      transparent 15%,
+      hsl(var(--foreground) / 0.03) 15%,
+      hsl(var(--foreground) / 0.03) 15.5%,
+      transparent 15.5%
+    );
+    animation: vhs-drift 12s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.001ms !important;
+    }
+
+    .crt-scanlines,
+    .vhs-noise-bars {
+      opacity: 0.35;
+      animation: none !important;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+      display: none;
+    }
+  }
+
+  @keyframes vhs-drift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-20px); }
+  }
+
+  /* Neon glow — Safari renders stacked text-shadow blur noticeably heavier
+     than Chrome/Firefox at the same radii, so these are tuned conservatively
+     (checked in Safari, not just Chrome) rather than maximized for either. */
+  .neon-glow {
+    text-shadow:
+      0 0 4px hsl(var(--primary) / 0.5),
+      0 0 10px hsl(var(--primary) / 0.28),
+      0 0 20px hsl(var(--primary) / 0.14);
+  }
+
+  /* Hero-scale bloom. The base .neon-glow radii are tuned for body-size text;
+     at 7rem the same values read as a thin outline, so the hero gets its own
+     hotter stack with a wider outer falloff. Still Safari-checked. */
+  .neon-glow-hero {
+    text-shadow:
+      0 0 6px hsl(var(--primary) / 0.62),
+      0 0 16px hsl(var(--primary) / 0.38),
+      0 0 34px hsl(var(--primary) / 0.2),
+      0 0 62px hsl(var(--primary) / 0.1);
+  }
+
+  .neon-glow-accent {
+    text-shadow:
+      0 0 10px hsl(var(--accent) / 0.7),
+      0 0 20px hsl(var(--accent) / 0.3),
+      0 0 35px hsl(var(--accent) / 0.15);
+  }
+
+  /* Grid lines */
+  .grid-overlay {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* ORIGIN / DIVERGENCE / CURRENT STATE readout in AboutSection. On a phone
+     the 140px label column left the value column too narrow to read, so the
+     label column shrinks and wraps instead ("CURRENT STATE" takes two lines)
+     and the value gets the width back. The dotted leader also collapses,
+     since there is nothing left for it to span. */
+  .bio-row {
+    grid-template-columns: 88px 1fr;
+    align-items: start;
+  }
+
+  .bio-row > :nth-child(2) {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .bio-row {
+      grid-template-columns: 140px 20px 1fr;
+    }
+
+    .bio-row > :nth-child(2) {
+      display: block;
+    }
+  }
+
+  /* Dossier variant: hairline-ruled table, no dotted leader at any width. */
+  .bio-row.bio-row--ruled {
+    grid-template-columns: 150px 1fr;
+  }
+
+  .bio-row.bio-row--ruled > :nth-child(2) {
+    display: none;
+  }
+
+  .clinical-label {
+    font-family: var(--font-mono);
+    /* 20px — the site-wide floor. This class carries the nav links and the
+       small all-caps labels, which were the least readable text on a phone. */
+    font-size: 1.25rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Body of Work / Constellation section (graph + plain list + project
+     detail modal, all rendered inside #work) — every text node in caps. */
+  #work {
+    text-transform: uppercase;
+  }
+
+  /* ── Scrollbars, site-wide ──
+     The OS default is a grey chrome bar sitting on a black field full of red
+     signal, and it broke the page every time it appeared. These draw the track
+     as a hairline red rule with a glowing thumb, in the same signal language as
+     the ECG mark and the constellation.
+
+     Firefox supports only scrollbar-width and scrollbar-color, so it gets the
+     red colouring at thin width and none of the bloom. Deliberate degradation.
+
+     The gutter stays 12px wide even though the drawn line is 1px: the bar has
+     to remain grabbable with a mouse. Never shrink the hit area to match the
+     drawing. The thumb's length is set by the browser from the content ratio
+     and cannot be forced to a circle, so it reads as a dot on long pages and a
+     lozenge on short ones. */
+  /* Firefox only. This must NOT apply in Chromium: once scrollbar-width is set
+     there, the whole ::-webkit-scrollbar family below is ignored and the bloom
+     silently disappears. Measured it doing exactly that before this guard. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--primary-legible)) transparent;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    background-image: linear-gradient(
+      to right,
+      transparent calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  ::-webkit-scrollbar-track:horizontal {
+    background-image: linear-gradient(
+      to bottom,
+      transparent calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% - 0.5px),
+      hsl(var(--sinaida-red) / 0.28) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  /* The transparent border plus background-clip keeps the lit core at 8px
+     inside the 12px gutter, so the bloom has room to fall off inside the
+     track rather than being clipped at the edge. */
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--primary-legible));
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+    box-shadow:
+      0 0 6px hsl(var(--sinaida-red) / 0.85),
+      0 0 14px hsl(var(--sinaida-red) / 0.5);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--primary-hover));
+    box-shadow:
+      0 0 8px hsl(var(--sinaida-red)),
+      0 0 20px hsl(var(--sinaida-red) / 0.7);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-rail {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
+    touch-action: pan-x pan-y;
+    scroll-padding-inline: 1.5rem;
+  }
+
+  /* Hover reveal */
+  .hover-reveal {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hover-reveal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.1),
+      hsl(var(--accent) / 0.05)
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .hover-reveal:hover::after {
+    opacity: 1;
+  }
+
+  /* Section divider */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.4),
+      hsl(var(--accent) / 0.2),
+      transparent
+    );
+  }
+
+  /* Cookie notice surface. The bar previously used a flat --card fill, which
+     sat at almost the same value as the page and read as part of the layout.
+     Now it's a translucent pane over a blurred backdrop, lit from its top edge
+     so it reads as a separate plane floating above the page. Static: the glow
+     is a gradient, never an animation. */
+  .notice-surface {
+    position: relative;
+    /* 0.86 rather than something more see-through: whatever shows through is
+       page behind live text, and the starfield's bright pixels raise the
+       composited background under it. At 0.86 the backdrop can shift the
+       effective background by only a few points, which keeps the contrast
+       ratios below predictable instead of dependent on what scrolled past. */
+    background: hsl(var(--card) / 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.25);
+    backdrop-filter: blur(14px) saturate(1.25);
+    border-top: 1px solid hsl(var(--accent) / 0.55);
+    /* Tight. The hairline carries the accent; the shadow only softens the seam
+       so the edge doesn't look cut with scissors. */
+    box-shadow:
+      0 -1px 4px -1px hsl(var(--accent) / 0.30),
+      0 -4px 10px -6px hsl(var(--accent) / 0.16);
+  }
+
+  /* --sinaida-red measures ~3.5:1 on the opaque card, which leaves no room
+     once a translucent surface lifts the background further. --primary-legible
+     is the token already built for exactly this — same hue, raised lightness,
+     confirmed ~5:1 even against a noticeably lit backdrop. */
+  .notice-surface a {
+    color: hsl(var(--primary-legible));
+  }
+
+  .notice-surface a:hover {
+    color: hsl(var(--primary-hover));
+  }
+
+  /* A short light leak off the top edge. Kept to ~16px: the point is to hint
+     that the bar is lit from its own seam, not to wash the page above it. */
+  .notice-surface::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 16px;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      hsl(var(--accent) / 0.10),
+      transparent 85%
+    );
+  }
+
+  /* Lite mode inverts to a white page, where a red bloom would be wrong and a
+     backdrop blur costs GPU on exactly the devices lite exists to protect.
+     --accent resolves to near-black here, so this stays a plain soft shadow. */
+  /* Slides down and fades once the visitor scrolls (CookieBanner.tsx).
+     visibility flips after the slide so the hidden notice leaves the tab order
+     and the accessibility tree. Lite mode already strips transitions sitewide,
+     so there it simply disappears. */
+  .notice-surface {
+    transition: transform 0.35s ease, opacity 0.35s ease, visibility 0s;
+  }
+  .notice-surface--away {
+    transform: translateY(100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.35s ease, opacity 0.35s ease, visibility 0s linear 0.35s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .notice-surface,
+    .notice-surface--away {
+      transition: none;
+    }
+  }
+
+  html[data-mode="lite"] .notice-surface {
+    background: hsl(var(--card) / 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-top: 1px solid hsl(var(--border));
+    box-shadow: 0 -6px 22px -10px hsl(var(--accent) / 0.28);
+  }
+
+  html[data-mode="lite"] .notice-surface::before {
+    display: none;
+  }
+
+  /* Lite is a white page, where the raised --primary-legible would fail. Back to the token, which
+     resolves near-black here and measured 18:1 on white. */
+  html[data-mode="lite"] .notice-surface a,
+  html[data-mode="lite"] .notice-surface a:hover {
+    color: hsl(var(--accent));
+  }
+
+  /* CRT/VHS pass over the star field (ParticleField renders the <div>). Ported
+     from the Soulstice backdrop's drawCRT: scanlines + vignette + grain as
+     stacked backgrounds, plus a slow flicker on the whole layer. Constant and
+     low-amplitude on purpose; the flicker is gated on prefers-reduced-motion so
+     a reduced-motion visitor gets one frozen frame. .crt-subtle dims the whole
+     layer for the content-heavy pages that already use the sparser star field. */
+  .crt-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 1;
+    background-image:
+      /* grain */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E"),
+      /* scanlines — 3px period, one dark row */
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.18) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+      /* vignette */
+      radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 34%, rgba(0, 0, 0, 0.16) 66%, rgba(0, 0, 0, 0.5) 100%);
+    background-repeat: repeat, repeat, no-repeat;
+    background-size: 160px 160px, 100% 3px, 100% 100%;
+  }
+
+  /* High-DPI: the 160px grain tile is drawn from a 480-unit SVG, so the
+     noise lands on device pixels instead of 1x pixels stretched into little
+     blocks on a phone. Same visual scale, finer grain. */
+  @media (min-resolution: 2dppx) {
+    .crt-overlay {
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E"),
+        repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.18) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+        radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 34%, rgba(0, 0, 0, 0.16) 66%, rgba(0, 0, 0, 0.5) 100%);
+    }
+  }
+
+  .crt-overlay.crt-subtle {
+    opacity: 0.55;
+  }
+
+  /* Snake easter egg open: its backdrop-filter blur would pull this layer's
+     grain into the frosted glass and wash out the panel's border. Hide it. */
+  :root[data-snake-open] .crt-overlay {
+    display: none;
+  }
+
+  /* Snake: the backdrop dims with the page's own ground (Void, or Chalk in
+     lite), and the window opens on the click that summoned it. */
+  .snake-backdrop {
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .snake-backdrop { animation: snake-fade 180ms ease-out; }
+    .snake-window { animation: snake-open 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+  }
+  @keyframes snake-fade { from { opacity: 0; } }
+  @keyframes snake-open { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .crt-overlay {
+      animation: crt-flicker 5.4s steps(1, end) infinite;
+    }
+  }
+
+  /* Hover glitch-bloom effect — desktop only, on elements without existing hover.
+     1024px matches the site's own lg breakpoint (see Header's lg:hidden split) —
+     keeping every hover-gated rule on the same threshold matters here because
+     heroTunnelBus's JS-side hover check (ParticleField/HeroSection) has to
+     agree with this breakpoint too, or the starfield tunnel and this text
+     effect fall out of sync at in-between viewport widths. */
+  @media (hover: hover) and (min-width: 1024px) {
+    main h1:not(.no-hover-fx),
+    main h2,
+    main h3,
+    main p:not(.no-hover-fx),
+    main img:not(.no-hover-fx),
+    main .clinical-label,
+    footer p,
+    footer .clinical-label {
+      transition: filter 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    main h1:not(.no-hover-fx):hover,
+    main h2:hover,
+    main h3:hover,
+    main p:not(.no-hover-fx):hover,
+    main img:not(.no-hover-fx):hover,
+    main .clinical-label:hover,
+    footer p:hover,
+    footer .clinical-label:hover {
+      animation: hover-glitch 0.15s steps(2) 1, hover-bloom 1s ease-out 1;
+    }
+  }
+}
+
+@layer utilities {
+  /* #141: the live field fades in once over the still sky, which fades out */
+  .star-field {
+    transition: opacity 1.2s ease-out;
+  }
+  .star-still {
+    transition: opacity 1.2s ease-out;
+  }
+  html[data-field] .star-still {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .star-field,
+    .star-still {
+      transition: none;
+    }
+  }
+
+  /* every project is named in capitals; the source keeps the real title (#160) */
+  .project-name {
+    text-transform: uppercase;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .font-clinical {
+    font-family: var(--font-clinical);
+  }
+}
+
+/* CRT flicker — a low-frequency brightness dip on the overlay's own paint, a
+   couple of quick blinks per cycle. filter (not opacity) so .crt-subtle keeps
+   its dim. */
+@keyframes crt-flicker {
+  0%, 100% { filter: brightness(1); }
+  7% { filter: brightness(0.94); }
+  8% { filter: brightness(1); }
+  42% { filter: brightness(0.985); }
+  43% { filter: brightness(1); }
+  71% { filter: brightness(0.93); }
+  72% { filter: brightness(1); }
+}
+
+@keyframes vhs-distort {
+  0% { transform: translateX(0) skewX(0deg); }
+  25% { transform: translateX(-2px) skewX(0.5deg); }
+  50% { transform: translateX(1px) skewX(-0.3deg); }
+  75% { transform: translateX(-1px) skewX(0.2deg); }
+  100% { transform: translateX(0) skewX(0deg); }
+}
+
+@keyframes glitch-shift {
+  0% { transform: translateX(-2px); clip-path: inset(20% 0 40% 0); }
+  33% { transform: translateX(2px); clip-path: inset(50% 0 10% 0); }
+  66% { transform: translateX(-1px); clip-path: inset(10% 0 60% 0); }
+  100% { transform: translateX(1px); clip-path: inset(40% 0 20% 0); }
+}
+
+@keyframes flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+    opacity: 1;
+  }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes tracking-distort {
+  0% { transform: translateX(0); }
+  10% { transform: translateX(-3px); }
+  20% { transform: translateX(2px); }
+  30% { transform: translateX(0); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes terminal-cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.animate-terminal-cursor {
+  animation: terminal-cursor-blink 0.6s infinite step-end;
+}
+
+@keyframes hover-glitch {
+  0% { transform: translate(0); filter: none; }
+  25% { transform: translate(-2px, 1px); filter: hue-rotate(20deg); }
+  50% { transform: translate(1px, -1px); filter: hue-rotate(-15deg) saturate(1.5); }
+  75% { transform: translate(-1px, 0); filter: hue-rotate(10deg); }
+  100% { transform: translate(0); filter: none; }
+}
+
+@keyframes hover-bloom {
+  0% {
+    filter: brightness(1) blur(0px);
+    text-shadow: none;
+  }
+  15% {
+    filter: brightness(1.4) blur(1px);
+    text-shadow: 0 0 8px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--accent) / 0.3);
+  }
+  100% {
+    filter: brightness(1) blur(0px);
+    text-shadow: none;
+  }
+}
+
+/* Hero tag "launch" cue on click — squash on takeoff, stretch as it settles.
+   Full mode + click-triggered only. */
+@keyframes tag-launch-squash {
+  0% { transform: scale(1, 1); }
+  20% { transform: scale(1.05, 0.94); }
+  45% { transform: scale(0.96, 1.05); }
+  70% { transform: scale(1.02, 0.99); }
+  100% { transform: scale(1, 1); }
+}
+
+.animate-tag-launch {
+  animation: tag-launch-squash 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Geist Pixel reads fuller than the previous pixel face at the same px
+   (measured cap-height ratio ~0.72 vs ~0.56, see tailwind.config.ts), so
+   unlike that face this one needs no upscaling, only a floor. The named
+   scale (text-sm, text-5xl, ...) is redefined in tailwind.config.ts at
+   Tailwind's stock defaults with a 16px floor. Tailwind emits arbitrary
+   values like text-[13px] verbatim and the config cannot reach them, so
+   the same floor is applied here: anything under 16px is clamped to 16px
+   (the readable minimum for this face on a phone); 17px and up are left
+   at their declared value, no scaling. !important is needed only because
+   these utilities already sit at maximum specificity for their own class. */
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\],
+.text-\[12px\],
+.text-\[13px\],
+.text-\[14px\],
+.text-\[15px\] {
+  font-size: 16px !important;
+}
+
+/* Route changes: a raster scan, started by the visitor's click in
+   RouteEnhancer.tsx. The old page holds still while the new one is painted
+   in top to bottom behind a soft beam, the way a CRT draws its frame. The
+   beam is a real element (.raster-beam) with its own view-transition-name,
+   so it rides above both snapshots. Lite gets it too, in ink. Skipped under
+   reduced motion, where navigation is an instant cut. */
+:root {
+  --raster-duration: 450ms;
+  --raster-ease: cubic-bezier(0.45, 0, 0.25, 1);
+}
+::view-transition-old(root) {
+  animation: none;
+}
+::view-transition-new(root) {
+  animation: raster-reveal var(--raster-duration) var(--raster-ease) both;
+}
+::view-transition-group(raster-beam) {
+  animation: raster-sweep var(--raster-duration) var(--raster-ease) both;
+}
+::view-transition-new(raster-beam) {
+  animation: none;
+}
+@keyframes raster-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes raster-sweep {
+  from { transform: translateY(-5px); opacity: 1; }
+  95% { opacity: 1; }
+  to { transform: translateY(calc(100vh - 5px)); opacity: 0; }
+}
+.raster-beam {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 11px;
+  pointer-events: none;
+  view-transition-name: raster-beam;
+  /* 1px bright line on a faint red band: the beam and its bloom. */
+  background: linear-gradient(
+    to bottom,
+    transparent 0,
+    hsl(var(--sinaida-red) / 0.22) 0,
+    hsl(var(--sinaida-red) / 0.22) 5px,
+    hsl(var(--foreground)) 5px,
+    hsl(var(--foreground)) 6px,
+    hsl(var(--sinaida-red) / 0.22) 6px,
+    hsl(var(--sinaida-red) / 0.22) 100%
+  );
+}
+/* Lite is black on Chalk with no color: the same beam in ink. */
+html[data-mode="lite"] .raster-beam {
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--foreground) / 0.06) 0,
+    hsl(var(--foreground) / 0.06) 5px,
+    hsl(var(--foreground)) 5px,
+    hsl(var(--foreground)) 6px,
+    hsl(var(--foreground) / 0.06) 6px,
+    hsl(var(--foreground) / 0.06) 100%
+  );
+}
+
+/* MoleculeBreak / StarMolecule: the same slow 4s breath the old section
+   node had, on the whole molecule. Opacity only, compositor-cheap. */
+@keyframes molecule-breath {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.molecule-breath { animation: molecule-breath 4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .molecule-breath { animation: none; opacity: 0.8; }
+}
+/* on Chalk the molecules rest as texture, well under the ink (#154) */
+html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.5; }
+
+/* Static shell (scripts/prerender-shell.mjs): the prerendered hero stays
+   hidden for its first 400ms. A fast load replaces it with the live hero in
+   that window, so the decode reveal plays; a slow load shows the settled
+   text instead of an empty screen. Lite mode drops all animation, so there
+   the text shows at once. */
+@keyframes shell-hold {
+  from, to { visibility: hidden; }
+}
+.shell-hold {
+  animation: shell-hold 400ms step-end;
+}
+
+/* Hero trial, ?hero=a1 (HeroLetters.tsx). One type size for every line, set
+   by script; a project word is the foreground colour with the project's red
+   dither laid into the glyphs. */
+.hl-type {
+  margin: 0; font-weight: 400; text-transform: uppercase;
+  letter-spacing: -0.02em; line-height: .86;
+}
+.hl-line { display: block; white-space: nowrap; }
+.hl-word {
+  font: inherit; letter-spacing: inherit; text-transform: inherit; line-height: inherit;
+  border: 0; padding: 0; cursor: pointer;
+  color: transparent; -webkit-background-clip: text; background-clip: text;
+  background-color: hsl(var(--foreground)); background-repeat: no-repeat;
+  background-size: cover; background-position: center; image-rendering: pixelated;
+}
+
+/* Red film halation on large white display headlines (marked by
+   src/lib/halation.ts, full mode only). Static. :where() keeps it at zero
+   specificity, so any neon or hover glow already on a headline wins. */
+@layer base {
+  :where([data-halation]) {
+    text-shadow:
+      0 0 1px hsl(var(--sinaida-red) / 0.55),
+      0 0 10px hsl(var(--sinaida-red) / 0.18);
+  }
+  /* Glyphs filled through background-clip: text would be tinted by it. */
+  :where([data-halation]) .hl-word {
+    text-shadow: none;
+  }
+}
+
+/* The footer resolving out of dither (#179, src/lib/ditherMask.ts): red while
+   it forms; a piece that holds focus shows whole. */
+.dither-forming,
+.dither-forming * {
+  color: hsl(var(--primary-legible)) !important;
+}
+.dither-forming:focus-within {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}

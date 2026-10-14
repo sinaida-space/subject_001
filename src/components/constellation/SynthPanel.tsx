@@ -1,0 +1,200 @@
+import { useEffect, useState } from 'react';
+import { synth, type SynthState } from '@/lib/constellationSynth';
+import { isCookieBannerAcknowledged, subscribeCookieBannerAcknowledged } from '@/lib/cookieBannerVisibility';
+
+// ── The instrument's control surface ────────────────────────
+// Revealed only after the visitor drags a star (see ConstellationFull). Styled
+// like an activated edge in the graph — a thin red-lit frame that hums. Sound
+// is OFF until the visitor presses play: grace first, curiosity rewarded.
+
+interface Props {
+  onReset: () => void;
+  onClose: () => void;
+  showUnlockCard: boolean;
+  onDismissCard: () => void;
+  visible: boolean;
+}
+
+function Slider({
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+  format,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (v: number) => void;
+  format: (v: number) => string;
+}) {
+  return (
+    <label className="flex items-center gap-2">
+      <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-foreground/50">{label}</span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="h-1 w-16 cursor-pointer appearance-none rounded-full bg-foreground/20 sm:w-20"
+        // pan-y lets a vertical swipe on the slider scroll the page; horizontal
+        // still drags the thumb. Without this the range input eats the gesture.
+        style={{ accentColor: 'hsl(var(--primary))', touchAction: 'pan-y' }}
+        aria-label={label}
+      />
+      <span className="w-7 text-right font-mono text-[9px] tabular-nums text-primary/80">{format(value)}</span>
+    </label>
+  );
+}
+
+export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismissCard, visible }: Props) {
+  const [state, setState] = useState<SynthState>(synth.getState());
+  // Undismissed cookie notice sits fixed at the very bottom of the viewport
+  // (z-50) — without this, this panel's own bottom-4 position lands right
+  // behind it. Bumping past the banner's z-index alone would still leave the
+  // controls visually overlapping its text, so this also lifts the panel
+  // clear of the banner's height while it's showing.
+  const [bannerShowing, setBannerShowing] = useState(() => !isCookieBannerAcknowledged());
+
+  useEffect(() => synth.subscribe(setState), []);
+
+  useEffect(() => subscribeCookieBannerAcknowledged(() => setBannerShowing(false)), []);
+
+  // Esc closes the unlock card, like its [X] (#147).
+  useEffect(() => {
+    if (!showUnlockCard) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onDismissCard();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showUnlockCard, onDismissCard]);
+
+  return (
+    // Pinned to the viewport bottom (not sticky-inside-absolute, which left it
+    // stuck off-screen at the bottom of the graph's own — very tall on mobile
+    // — box instead of the visible viewport). Gated by `visible`, which the
+    // parent derives from an IntersectionObserver on the graph wrapper, so the
+    // bar only shows while a meaningful chunk of the graph is on screen and
+    // never blocks anything once it's scrolled away.
+    <div
+      className={`pointer-events-none fixed inset-x-0 z-[60] flex flex-col items-center gap-3 px-3 transition-[opacity,bottom] duration-300 ${bannerShowing ? 'bottom-24 sm:bottom-20' : 'bottom-4'}`}
+      style={{ opacity: visible ? 1 : 0, visibility: visible ? 'visible' : 'hidden' }}
+    >
+        {/* "You found it" window — retro-OS framing, matches the project readout */}
+      {showUnlockCard && (
+        <div
+          className="pointer-events-auto w-[min(92vw,380px)] border border-primary/60 bg-black/85 font-mono backdrop-blur-md"
+          style={{ boxShadow: '0 0 24px hsl(var(--primary) / 0.28)' }}
+          role="dialog"
+          aria-label="Audio unlocked"
+        >
+          <div className="flex items-center justify-between border-b border-primary/40 px-3 py-1.5">
+            <span className="text-[10px] uppercase tracking-[0.18em] text-primary">SIGNAL // AUDIO UNLOCKED</span>
+            <button
+              type="button"
+              onClick={onDismissCard}
+              className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 hover:text-primary"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">[X]</span>
+            </button>
+          </div>
+          <div className="space-y-3 px-4 py-3">
+            <p className="text-[12px] leading-relaxed text-foreground/75">
+              You pulled a star out of place, and the map answered. This constellation is also an instrument.
+            </p>
+            <p className="text-[12px] leading-relaxed text-foreground/60">
+              Project stars are drums and bass. Left/right sets when they fire, up/down sets their pitch. Skill stars
+              never sound; they bend the signal by where you leave them. Drag, drop, listen. [RESET] returns the stars to their places.
+            </p>
+            <button
+              type="button"
+              onClick={onDismissCard}
+              className="w-full border border-primary/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-primary transition-colors hover:bg-primary/10"
+            >
+              OK · compose
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Transport / control bar */}
+      <div
+        className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border border-primary/50 bg-black/75 px-3 py-2 backdrop-blur-md"
+        style={{ boxShadow: '0 0 18px hsl(var(--primary) / 0.22)', touchAction: 'pan-y' }}
+      >
+        <button
+          type="button"
+          onClick={() => {
+            // Redundant with the pointerdown-level prime in ConstellationFull,
+            // but cheap and harmless — a second guaranteed unlock point in case
+            // the visitor's first touch on the whole page happens to be this
+            // button rather than a drag.
+            synth.primeFromGesture();
+            synth.toggle();
+          }}
+          className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-primary transition-colors hover:bg-primary/10"
+          aria-pressed={state.playing}
+        >
+          <span className="text-[11px] leading-none">{state.playing ? '❚❚' : '▶'}</span>
+          {state.playing ? 'Playing' : 'Play'}
+        </button>
+
+        <Slider
+          label="BPM"
+          value={state.tempo}
+          min={60}
+          max={140}
+          step={1}
+          onChange={(v) => synth.setTempo(v)}
+          format={(v) => String(Math.round(v))}
+        />
+        <Slider
+          label="Tone"
+          value={state.tone}
+          min={0}
+          max={1}
+          step={0.01}
+          onChange={(v) => synth.setTone(v)}
+          format={(v) => String(Math.round(v * 9))}
+        />
+        <Slider
+          label="Vol"
+          value={state.volume}
+          min={0}
+          max={0.6}
+          step={0.01}
+          onChange={(v) => synth.setVolume(v)}
+          format={(v) => String(Math.round((v / 0.6) * 9))}
+        />
+
+        <button
+          type="button"
+          onClick={onReset}
+          className="border border-foreground/25 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
+          aria-label="Reset stars to their places"
+          title="Reset stars to their places"
+        >
+          [RESET]
+        </button>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="border border-foreground/25 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary/50 hover:text-primary"
+          aria-label="Close synth and restore everything"
+          title="Close synth and restore everything"
+        >
+          [CLOSE]
+        </button>
+      </div>
+    </div>
+  );
+}
