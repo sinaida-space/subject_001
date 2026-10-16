@@ -1,310 +1,111 @@
-import { lazy, Suspense, useEffect, useState, useRef, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
-import VHSOverlay from '@/components/VHSOverlay';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SnakeEasterEgg from '@/components/SnakeEasterEgg';
 import { useNoIndex } from '@/hooks/usePageMeta';
 
-const ParticleField = lazy(() => import('@/components/ParticleField'));
+// The first song a computer ever sang (IBM 7094, 1961), public domain since
+// long before: "Daisy Bell" by Harry Dacre, 1892.
+const DAISY = 'Daisy, Daisy, give me your answer, do.';
+const BLOCKS = '░▒▓█';
+const PLAYLIST = 'https://open.spotify.com/playlist/2Hs1OUJppCUNZRxZh5bppa';
+const REDUCED = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const GLITCH_CHARS = '█▓▒░⣿⠿╗╔║═╬▄▀';
 
-function useGlitch(text: string, active: boolean) {
-  const [display, setDisplay] = useState(text);
 
+// The line runs down like a machine's voice slowing on a record: the letters
+// towards its end drift apart and fade into the blue.
+function DaisyLine() {
+  const decay = 1;
+
+  // the tail of the line also stutters on its own: a few letters flick to
+  // block glyphs and back, a different fault from the 404's slices
+  const [stutter, setStutter] = useState<number[]>([]);
   useEffect(() => {
-    if (!active) return;
-    let count = 0;
-    const interval = setInterval(() => {
-      if (count >= 4) {
-        setDisplay(text);
-        clearInterval(interval);
-        return;
-      }
-      const chars = text.split('');
-      const numReplace = Math.floor(Math.random() * 2) + 1;
-      for (let i = 0; i < numReplace; i++) {
-        const idx = Math.floor(Math.random() * chars.length);
-        chars[idx] = GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
-      }
-      setDisplay(chars.join(''));
-      count++;
-    }, 80);
-    return () => clearInterval(interval);
-  }, [active, text]);
-
-  return display;
-}
-
-function useTyper(text: string, speed: number, delay: number) {
-  const [displayed, setDisplayed] = useState('');
-  const [done, setDone] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    let i = 0;
-    timeoutRef.current = setTimeout(() => {
-      const tick = () => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) { setDone(true); return; }
-        timeoutRef.current = setTimeout(tick, speed * (0.6 + Math.random() * 0.8));
-      };
-      timeoutRef.current = setTimeout(tick, 0);
-    }, delay);
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [text, speed, delay]);
-
-  return { displayed, done };
-}
-
-function PulsingECG({ onClick }: { onClick: () => void }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const phaseRef = useRef(0);
-  const rafRef = useRef<number | null>(null);
-  const [hovered, setHovered] = useState(false);
-
-  const drawECG = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, phase: number, bright: boolean) => {
-    ctx.clearRect(0, 0, w, h);
-    const mid = h / 2;
-    const segments = 120;
-    const intensity = bright ? 1 : 0.7;
-
-    ctx.beginPath();
-    ctx.strokeStyle = `hsl(0 100% 52%)`; // primary-legible — canvas needs a literal, not var()
-    ctx.lineWidth = 1.5;
-    ctx.shadowColor = `hsl(0 100% 52%)`;
-    ctx.shadowBlur = bright ? 14 : 6;
-
-    for (let i = 0; i <= segments; i++) {
-      const x = (i / segments) * w;
-      const t = (i / segments) * Math.PI * 4 + phase;
-      let y = mid;
-      const pos = ((t % (Math.PI * 2)) / (Math.PI * 2));
-
-      if (pos > 0.35 && pos < 0.40) {
-        y = mid - 3 * intensity * Math.sin((pos - 0.35) / 0.05 * Math.PI);
-      } else if (pos > 0.42 && pos < 0.44) {
-        y = mid + 4 * intensity;
-      } else if (pos > 0.44 && pos < 0.48) {
-        const rPos = (pos - 0.44) / 0.04;
-        y = mid - (18 + intensity * 8) * Math.sin(rPos * Math.PI);
-      } else if (pos > 0.48 && pos < 0.50) {
-        y = mid + 5 * intensity;
-      } else if (pos > 0.55 && pos < 0.65) {
-        y = mid - 5 * intensity * Math.sin((pos - 0.55) / 0.10 * Math.PI);
-      }
-
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.strokeStyle = `hsla(0, 100%, 52%, ${bright ? 0.25 : 0.12})`; // primary-legible
-    ctx.lineWidth = 3;
-    ctx.shadowBlur = 0;
-    ctx.moveTo(0, mid);
-    ctx.lineTo(w, mid);
-    ctx.stroke();
+    if (REDUCED) return;
+    const id = window.setInterval(() => {
+      if (Math.random() < 0.55) return setStutter([]);
+      const n = 1 + Math.floor(Math.random() * 3);
+      setStutter(Array.from({ length: n }, () => DAISY.length - 1 - Math.floor(Math.random() * 9)));
+    }, 160);
+    return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Motion only on interaction: the pulse scrolls its phase while the mystery
-    // button is hovered. When not hovered, draw a single static rest frame and
-    // stop scheduling — no perpetual idle loop. Hovering re-runs this effect
-    // (hovered is a dep) and restarts the pulse.
-    if (hovered) {
-      const animate = () => {
-        phaseRef.current += 0.028;
-        drawECG(ctx, canvas.width, canvas.height, phaseRef.current, true);
-        rafRef.current = requestAnimationFrame(animate);
-      };
-      rafRef.current = requestAnimationFrame(animate);
-      return () => {
-        if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      };
-    }
-
-    // Rest frame at the current (frozen) phase, un-hovered intensity.
-    drawECG(ctx, canvas.width, canvas.height, phaseRef.current, false);
-  }, [drawECG, hovered]);
-
+  const chars = DAISY.split('').map((ch, i) => (decay > 0.5 && stutter.includes(i) && ch !== ' ' ? BLOCKS[i % BLOCKS.length] : ch));
   return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      title="[ ??? ]"
-      style={{
-        cursor: 'pointer',
-        background: 'none',
-        border: 'none',
-        padding: 0,
-        opacity: hovered ? 1 : 0.45,
-        transition: 'opacity 0.3s',
-      }}
-    >
-      <canvas
-        ref={canvasRef}
-        width={160}
-        height={32}
-        className="h-8"
-        style={{ imageRendering: 'auto' }}
-      />
-    </button>
+    <p className="font-mono text-[clamp(18px,2.2vw,28px)] leading-[1.3]" aria-label={DAISY}>
+      {chars.map((ch, i) => {
+        const t = i / (chars.length - 1);
+        const k = decay * t * t;
+        return (
+          <span
+            key={i}
+            aria-hidden="true"
+            style={{
+              display: 'inline-block',
+              whiteSpace: 'pre',
+              marginRight: `${(k * 0.55).toFixed(3)}em`,
+              opacity: 1 - k * 0.75,
+              transform: `translateY(${(k * 0.18).toFixed(3)}em)`,
+            }}
+          >
+            {ch}
+          </span>
+        );
+      })}
+    </p>
   );
 }
 
+// A crash screen, the one place the site leaves its own palette: the blue of
+// an old system failure, in the site's own type. Enter goes home.
 export default function NotFound() {
-  const location = useLocation();
-  const [glitchActive, setGlitchActive] = useState(false);
+  const navigate = useNavigate();
   const [snakeOpen, setSnakeOpen] = useState(false);
-  const glitched404 = useGlitch('404', glitchActive);
   useNoIndex();
 
-  const line1 = useTyper('> ERROR_CODE: 404', 6, 300);
-  const line2 = useTyper('> SIGNAL_LOST: navigating the void', 6, 300 + 18 * 6 + 120);
-  const line3 = useTyper('> awaiting_redirect.exe', 8, 300 + 18 * 6 + 120 + 37 * 6 + 200);
-
-  // Motion law: the 404 glitches only while the visitor points at it.
-  useEffect(() => setGlitchActive(false), [location.pathname]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' || snakeOpen) return;
+      e.preventDefault();
+      navigate('/');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [navigate, snakeOpen]);
 
   return (
-    <div
-      id="main-content"
-      tabIndex={-1}
-      className="relative h-[100dvh] flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: 'hsl(var(--background))' }}
-    >
+    <div className="bsod relative flex h-[100svh] flex-col justify-center overflow-hidden px-6 md:px-16">
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
-
-      <Suspense fallback={null}>
-        <div className="absolute inset-0 z-0">
-          <ParticleField />
-        </div>
-      </Suspense>
-
-      <VHSOverlay />
-
-      <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-2xl">
-
-        <div
-          className="font-mono uppercase tracking-widest text-xs [@media(max-height:480px)]:hidden"
-          style={{ color: 'hsl(var(--foreground) / 0.35)', letterSpacing: '0.3em', marginBottom: 'min(1.5rem, 2.5dvh)' }}
-        >
-          SINAIDA_OS v3.1.1: NAVIGATION ERROR
-        </div>
-
-        <h1
-          className="font-mono select-none"
-          style={{
-            // Sized by both axes so the whole page, ECG included, fits one screen
-            // on short landscape viewports without scrolling.
-            fontSize: 'min(22vw, 30dvh, 22.5rem)',
-            lineHeight: 1,
-            color: 'transparent',
-            WebkitTextStroke: '1.5px hsl(var(--sinaida-red))',
-            letterSpacing: '-0.04em',
-            textShadow: glitchActive
-              ? '3px 0 hsl(var(--sinaida-red)), -3px 0 #ffffff'
-              : '0 0 60px hsl(var(--sinaida-red) / 0.15)',
-            transition: glitchActive ? 'none' : 'text-shadow 0.3s ease',
-          }}
-        >
+      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-5xl">
+        <div className="bsod-bar mb-10 inline-block px-3 py-1 font-mono text-[15px] uppercase tracking-[0.2em]">sinaida.eu</div>
+        {/* broken on purpose: the one thing on the site that glitches by itself */}
+        <h1>
           <button
             type="button"
             onClick={() => setSnakeOpen(true)}
-            onPointerEnter={(e) => e.pointerType === 'mouse' && setGlitchActive(true)}
-            onPointerLeave={() => setGlitchActive(false)}
-            aria-label="404"
             title="[ ??? ]"
-            className="focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4"
-            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit', letterSpacing: 'inherit', cursor: 'pointer' }}
+            data-text="404"
+            className="glitch-404 cursor-pointer border-0 bg-transparent p-0 font-display text-[clamp(120px,22vw,300px)] font-light leading-[0.85] text-inherit"
           >
-            {glitched404}
+            404
           </button>
         </h1>
 
-        <div style={{ color: 'hsl(var(--foreground) / 0.6)', margin: '0.5rem 0 min(2rem, 3.5dvh)' }}>
-          <span className="font-mono" style={{ fontSize: '1.375rem', letterSpacing: '0.12em' }}>
-            Lost in the void.
-          </span>
+        <div className="mt-6">
+          <DaisyLine />
         </div>
 
-        <div
-          className="font-mono text-left w-full space-y-1 [@media(max-height:480px)]:hidden"
-          style={{ color: 'hsl(var(--foreground) / 0.45)', fontSize: 'clamp(0.95rem, 2.4dvh, 1.25rem)', marginBottom: 'min(2.5rem, 4dvh)' }}
-        >
-          {/* typed one character at a time: read once, whole (#106) */}
-          <p className="sr-only">ERROR_CODE: 404. SIGNAL_LOST: navigating the void. awaiting_redirect.exe</p>
-          <div aria-hidden="true">{line1.displayed}{!line1.done && <span className="animate-terminal-cursor">█</span>}</div>
-          {line1.done && <div aria-hidden="true">{line2.displayed}{!line2.done && <span className="animate-terminal-cursor">█</span>}</div>}
-          {line2.done && <div aria-hidden="true">{line3.displayed}{!line3.done && <span className="animate-terminal-cursor">█</span>}</div>}
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 w-full">
-          <a
-            href="/"
-            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 [@media(max-height:480px)]:py-2 px-6 flex items-center justify-center transition-all duration-200"
-            style={{
-              border: '1px solid hsl(var(--sinaida-red))',
-              color: 'hsl(var(--primary-legible))',
-              letterSpacing: '0.2em',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.background = 'hsl(var(--primary-legible))';
-              (e.currentTarget as HTMLAnchorElement).style.color = '#000';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-              (e.currentTarget as HTMLAnchorElement).style.color = 'hsl(var(--primary-legible))';
-            }}
-          >
-            → Return to Home
+        <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 font-mono text-[15px] uppercase tracking-[0.15em]">
+          <a href="/" className="bsod-bar px-5 py-3 transition-opacity hover:opacity-80">
+            Reboot → home
           </a>
-          <a
-            href="https://open.spotify.com/playlist/2Hs1OUJppCUNZRxZh5bppa"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 font-mono text-sm uppercase tracking-widest py-3 [@media(max-height:480px)]:py-2 px-6 flex items-center justify-center transition-all duration-200"
-            style={{
-              border: '1px solid hsl(var(--foreground) / 0.25)',
-              color: 'hsl(var(--foreground) / 0.6)',
-              letterSpacing: '0.2em',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'hsl(var(--sinaida-red))';
-              (e.currentTarget as HTMLAnchorElement).style.color = 'hsl(var(--primary-legible))';
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 20px hsl(var(--sinaida-red) / 0.15)';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'hsl(var(--foreground) / 0.25)';
-              (e.currentTarget as HTMLAnchorElement).style.color = 'hsl(var(--foreground) / 0.6)';
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none';
-            }}
-          >
-            ♪ drift into space ↗
+          <a href={PLAYLIST} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:underline">
+            A bicycle built for two ↗
           </a>
         </div>
-
-        <div className="flex flex-col items-center gap-4" style={{ marginTop: 'min(4rem, 5dvh)' }}>
-          <PulsingECG onClick={() => setSnakeOpen(true)} />
-          <div
-            className="font-mono text-xs uppercase tracking-widest [@media(max-height:480px)]:hidden"
-            style={{ color: 'hsl(var(--foreground) / 0.2)', letterSpacing: '0.25em' }}
-          >
-            sinaida · prague · {new Date().getFullYear()}
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
+
+// Je suis le spectre d'une rose que tu portais hier au bal.

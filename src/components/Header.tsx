@@ -6,8 +6,8 @@ import { landOn } from '@/lib/navLand';
 import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
-  { label: 'Work', href: '#work' },
   { label: 'About', href: '#about' },
+  { label: 'Work', href: '#work' },
   { label: 'Services', href: '#services' },
   { label: 'Contact', href: '#contact' },
 ];

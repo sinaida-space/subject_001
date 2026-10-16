@@ -41,9 +41,9 @@ export const SERVICES: Service[] = [
     record: [
       { text: 'A full set of audio-reactive projections, performed live with ' },
       { text: `Redkie${NBSP}Ptitsy`, href: '/work/redkie-ptitsy' },
-      { text: ` at Sklad${NBSP}No.${NBSP}3, Moscow, March${NBSP}2026. The body tracking grew out of${NBSP}` },
+      { text: ` at Sklad${NBSP}No.${NBSP}3, Moscow, March${NBSP}2026. Separately, ` },
       { text: `Ethereal${NBSP}Path`, href: '/work/ethereal-path' },
-      { text: `, an${NBSP}experiment where the${NBSP}body is the${NBSP}controller.` },
+      { text: ` explores the${NBSP}body as the${NBSP}controller, an${NBSP}idea that grows out of${NBSP}dance.` },
     ],
     brief: 'Brief to show: send the setlist or the choreography notes, and the stage dimensions.',
     short: `Audio-reactive visuals built for${NBSP}the${NBSP}performers, with a${NBSP}fallback for${NBSP}every${NBSP}file.`,
