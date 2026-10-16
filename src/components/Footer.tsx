@@ -149,7 +149,10 @@ export default function Footer() {
   const columnsRef = useRef<HTMLElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const [roomy, setRoomy] = useState(() => typeof window !== 'undefined' && window.matchMedia(HELD).matches);
-  const held = flight && roomy;
+  // every page closes with Contact, so every page, in both modes, holds the last
+  // screen and dollies out of it like the home page; the galaxy flight and the
+  // city under the footer stay full mode
+  const held = !REDUCED && roomy;
 
   useEffect(() => {
     const mq = window.matchMedia(HELD);
@@ -202,7 +205,7 @@ export default function Footer() {
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!scene || !root) return;
+    if ((!scene && !held) || !root) return;
     // f: 0 as the footer comes in at the bottom of the screen, 1 at the end
     // of the page
     cityBus.setProgress(() => {
@@ -210,7 +213,7 @@ export default function Footer() {
       return Math.min(1, Math.max(0, (window.innerHeight - r.top) / Math.max(1, r.height)));
     });
     return () => cityBus.setProgress(null);
-  }, [scene]);
+  }, [scene, held]);
 
   return (
     <footer

@@ -1207,3 +1207,93 @@ html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.5; }
   -webkit-mask-image: none !important;
   mask-image: none !important;
 }
+
+/* ── Subpage scroll motion (#198) ──
+   --p is the element's scroll progress, written by src/lib/scrollProgress.ts
+   only while the page scrolls. Unset (lite mode, no JS) means the end state. */
+
+/* A hairline drawing left to right; the red head rides the tip while it draws */
+.drawn-rule {
+  background: linear-gradient(90deg, hsl(var(--foreground) / 0.15) 0 calc(var(--p, 1) * 100%), transparent 0);
+}
+.drawn-rule::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 72px;
+  height: 1px;
+  left: max(0px, calc(var(--p, 1) * 100% - 72px));
+  background: linear-gradient(90deg, transparent, hsl(var(--sinaida-red)));
+  box-shadow: 0 0 6px hsl(var(--sinaida-red) / 0.8);
+  opacity: calc((1 - var(--p, 1)) * 8);
+}
+
+/* A title that is matter first: white dots on a 4px grid with red dots between
+   them, swelling into solid light as --p reaches 1 */
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .dither-head {
+    --r: calc(22% + var(--p, 1) * 78%);
+    background-image:
+      radial-gradient(circle, hsl(var(--foreground)) var(--r), transparent calc(var(--r) + 0.6px)),
+      radial-gradient(circle, hsl(var(--sinaida-red) / calc(1 - var(--p, 1))) 30%, transparent calc(30% + 0.6px));
+    background-size: 4px 4px, 4px 4px;
+    background-position: 0 0, 2px 2px;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* 404: the one thing on the site that glitches by itself, a light rattle of
+   two offset slices (one red), never a strobe. Still for reduced motion. */
+.glitch-404 {
+  position: relative;
+}
+.glitch-404::before,
+.glitch-404::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch-404::before {
+  color: hsl(var(--sinaida-red));
+  opacity: 0.7;
+  animation: glitch-404-a 2.6s steps(1) infinite;
+}
+.glitch-404::after {
+  color: hsl(var(--foreground));
+  animation: glitch-404-b 3.1s steps(1) infinite;
+}
+@keyframes glitch-404-a {
+  0%, 86%, 100% { clip-path: inset(100% 0 0 0); transform: none; }
+  87% { clip-path: inset(18% 0 62% 0); transform: translateX(-0.03em); }
+  90% { clip-path: inset(55% 0 28% 0); transform: translateX(0.02em); }
+  93% { clip-path: inset(72% 0 10% 0); transform: translateX(-0.015em); }
+}
+@keyframes glitch-404-b {
+  0%, 78%, 100% { clip-path: inset(100% 0 0 0); transform: none; }
+  79% { clip-path: inset(36% 0 48% 0); transform: translateX(0.025em); }
+  83% { clip-path: inset(8% 0 80% 0); transform: translateX(-0.02em); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glitch-404::before,
+  .glitch-404::after {
+    animation: none;
+  }
+}
+
+/* 404 as a crash screen: the blue of an old system failure, white type, the
+   bar inverted. The site's own palette everywhere else. */
+.bsod {
+  background: #0000aa;
+  color: #ffffff;
+}
+.bsod-bar {
+  background: #ffffff;
+  color: #0000aa;
+}
+.bsod .glitch-404::after {
+  color: #ffffff;
+}
+

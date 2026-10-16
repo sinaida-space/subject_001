@@ -7,7 +7,7 @@
 
 import { useEffect, useLayoutEffect, useRef, type MouseEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { PROJECTS, type Project } from '@/data/projects';
+import { PROJECTS, DEFAULT_ROLE, type Project } from '@/data/projects';
 import { SKILLS } from '@/data/graph';
 import { diveBus, isDiveState, type DiveRequest } from '@/lib/diveBus';
 import DitheredThumb from '@/components/DitheredThumb';
@@ -264,8 +264,12 @@ export function ProcessFloor({ project, full }: { project: Project; full: boolea
           </div>
         )}
 
+        <div className="mt-10">
+          <h2 className="clinical-label mb-3 text-foreground/65">Role</h2>
+          <p className="font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/85">{project.role ?? DEFAULT_ROLE}</p>
+        </div>
         {project.tools && project.tools.length > 0 && (
-          <div className="mt-10">
+          <div className="mt-6">
             <h2 className="clinical-label mb-3 text-foreground/65">Tools</h2>
             {full && <ToolNetwork tools={project.tools} />}
             <ol className="mt-3 flex flex-col gap-1 font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/85">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import ObfuscatedMailto from '@/components/ObfuscatedMailto';
 import VideoEmbed from '@/components/VideoEmbed';
 import Header from '@/components/Header';
+import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import SectionBreak from '@/components/SectionBreak';
 import SignalMark from '@/components/SignalMark';
@@ -162,7 +163,7 @@ export default function Experiences() {
     <div className="relative min-h-screen bg-background">
       {mode === 'full' && (
         <Suspense fallback={null}>
-          <ParticleField subtle />
+          <ParticleField />
         </Suspense>
       )}
       <Header />
@@ -402,6 +403,7 @@ export default function Experiences() {
           </div>
         </section>
       </main>
+      <ContactChannel question="Planning a space people should step into?" />
       <Footer />
     </div>
   );

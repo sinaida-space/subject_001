@@ -1,7 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
-import ObfuscatedMailto from '@/components/ObfuscatedMailto';
-import DitheredThumb from '@/components/DitheredThumb';
+import ContactChannel from '@/components/ContactChannel';
 import { SERVICES } from '@/data/services';
 import { FEATURED_WORKS } from '@/data/projects';
 import Header from '@/components/Header';
@@ -9,50 +8,56 @@ import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { withProjectNames } from '@/lib/projectNames';
+import { BackLink, BODY_CLASS, H1_CLASS, KICKER_CLASS, LEAD_CLASS, PAGE_MAIN_CLASS, PageSection, RuledRows, StillsRow } from '@/components/PageParts';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
 const PROCESS_STEPS = [
-  { code: '01', label: 'Brief', detail: 'You send the occasion and the space: a setlist with tempos and stems, or plans and photos, and what the room’s light does.' },
-  { code: '02', label: 'Concept', detail: 'A visual direction comes back for your feedback.' },
-  { code: '03', label: 'Build', detail: 'Systems get built and tested in TouchDesigner.' },
-  { code: '04', label: 'Rehearsal', detail: 'Colours and timing tested against the venue’s light and rig before the show.' },
-  { code: '05', label: 'Show', detail: 'Delivered ready to run, with a fallback for every file.' },
+  { label: 'Brief', detail: 'You send the occasion and the space: a setlist with tempos and stems, or plans and photos, and what the room’s light does.' },
+  { label: 'Concept', detail: 'A visual direction comes back for your feedback.' },
+  { label: 'Build', detail: 'Whatever the piece needs: pencil and paper, procedural graphics in TouchDesigner, or agentic coding.' },
+  { label: 'Rehearsal', detail: 'Colours and timing tested against the venue’s light and rig before the show.' },
+  { label: 'Handoff', detail: 'Before the live run: final tests, a contingency plan built on a risk check, and my support on the day.' },
+  { label: 'Show', detail: 'Delivered ready to run, with a fallback for every file.' },
 ];
 
 // Third-person boilerplate, written to be copy-pasted verbatim into program
 // booklets and press. Facts only: no availability, timeline, or client claims
 // beyond the two real credits.
-const BOILERPLATE = `Sinaida Krivchenko (she/her) is a new media artist based in Prague, working globally. Trained as a biomedical engineer, with six years of independent project work in Amsterdam’s cultural scene, she builds living visual systems for stages, concerts, and performance spaces. The work is real-time TouchDesigner and GLSL that listens to sound and responds to bodies. Recent work includes Redkie Ptitsy (live concert visuals, Moscow, 2026) and CONSPACE ROOMS (walk-through labyrinth installation and web experience, with UVALISS). She comes up with the idea, the concept and the way to make it into a system, and the making uses whatever the piece needs, from drawing by hand to AI-native production. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.`;
+const BOILERPLATE = `Sinaida Krivchenko (she/her) is a new media artist based in Prague, working globally. She designs visual worlds for stages, concerts and performance spaces that respond to sound and to the bodies in the room. Recent work: Redkie Ptitsy, nine audio-reactive projections for a live concert in Moscow (2026), and CONSPACE ROOMS, a walk-through labyrinth installation and web experience with UVALISS. She chooses the tools each piece needs, from pencil and paper to procedural graphics in TouchDesigner and agentic coding. Before her art practice: six years of independent cultural projects in Amsterdam, the General Electric IT Leadership Program, and a bachelor’s and a master’s in biomedical engineering from Bauman Moscow State Technical University.`;
 
-function ServiceRow({ service }: { service: (typeof SERVICES)[number] }) {
+// Copies the boilerplate as plain text, so it pastes clean into a programme.
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
   return (
-    <div className="font-mono text-sm leading-relaxed" style={{ paddingBottom: '1rem' }}>
-      <h3 className="font-mono uppercase text-base font-medium mt-2 mb-2 text-foreground">
-        {service.title}
-      </h3>
-      <p className="font-mono text-[13px] leading-relaxed text-foreground/[0.87]">
-        {service.description}
-      </p>
-      <p className="font-mono text-[13px] leading-relaxed mt-2 text-foreground/60">
-        {service.record.map((part, i) =>
-          part.href ? (
-            <Link key={i} to={part.href} className="underline hover:text-accent transition-colors">
-              {withProjectNames(part.text)}
-            </Link>
-          ) : (
-            <span key={i}>{withProjectNames(part.text)}</span>
-          )
-        )}
-      </p>
-      <p className="font-mono text-[13px] leading-relaxed text-foreground/60">
-        {service.brief}
-      </p>
-    </div>
+    <button
+      type="button"
+      onClick={() => navigator.clipboard?.writeText(text).then(() => setCopied(true), () => setCopied(false))}
+      className="clinical-label text-primary-legible transition-opacity hover:opacity-70"
+    >
+      {copied ? 'Copied' : 'Copy boilerplate'}
+    </button>
   );
 }
 
-const SEPARATOR = '────────────────────────────────────────────';
+const serviceRows = SERVICES.map((service) => ({
+  label: service.title,
+  value: service.description,
+  note: (
+    <>
+      {service.record.map((part, i) =>
+        part.href ? (
+          <Link key={i} to={part.href} className="underline transition-colors hover:text-accent">
+            {withProjectNames(part.text)}
+          </Link>
+        ) : (
+          <span key={i}>{withProjectNames(part.text)}</span>
+        ),
+      )}{' '}
+      {service.brief}
+    </>
+  ),
+}));
 
 export default function Collaborate() {
   usePageMeta({
@@ -67,171 +72,106 @@ export default function Collaborate() {
 
   return (
     <div className="relative min-h-screen bg-background">
-      {/* Same starfield as the case study template, dialed down for a subtle
-          sense of continuity behind a page that's mostly here to be read. */}
       {mode === 'full' && (
         <Suspense fallback={null}>
-          <ParticleField subtle />
+          <ParticleField />
         </Suspense>
       )}
       <Header />
-      <main id="main-content" tabIndex={-1} className="container relative z-10 mx-auto px-6 max-w-4xl pt-40 pb-24 md:pt-32 lg:pt-36">
-        <a href="/" className="clinical-label text-primary-legible hover:text-accent transition-colors mb-8 inline-block">
-          ← Back
-        </a>
-
-        <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.2em', fontSize: 30 }}>
-          Collaborate
+      <main id="main-content" tabIndex={-1} className={PAGE_MAIN_CLASS}>
+        <BackLink />
+        <div className={KICKER_CLASS}>Collaborate</div>
+        <h1 className={H1_CLASS}>Work with me</h1>
+        {/* The principle in the site's own physics: the human line is light
+            (solid, a soft bloom), the digital line is matter (dither dots), set
+            a step to the right so it reads as second. No red: red is for action. */}
+        <p className="mt-14 font-display uppercase font-light leading-[1.05] tracking-[-0.01em] text-[clamp(28px,3.4vw,48px)]">
+          <span className="block text-foreground [text-shadow:0_0_18px_hsl(var(--foreground)/0.35)]">Human first.</span>
+          <span className="dither-head block md:ml-[calc(100%*2/12)]" style={{ '--p': 0.3 } as React.CSSProperties}>
+            Digital second.
+          </span>
+        </p>
+        <div className="relative isolate">
+          <p className={LEAD_CLASS}>
+            I build living visual systems for stages, concerts, and performance spaces.
+          </p>
+          <p className={`${LEAD_CLASS} !mt-4 text-foreground/70`}>
+            This page is what actually happens when we work together on&nbsp;one.
+          </p>
+          <p className={`${BODY_CLASS} mt-8 md:ml-[calc(100%*5/12)]`}>
+            Around my work I have built my own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. I keep up with the research papers the labs publish. Even this website has a door for machines: an MCP server that lets AI assistants read my work first hand.
+          </p>
+          <p className={`${BODY_CLASS} mt-8 md:ml-[calc(100%*5/12)]`}>
+            Live visuals and immersive systems for festivals, theaters, dance, venues, and institutions.
+          </p>
         </div>
-        <h1 className="font-display text-7xl md:text-8xl uppercase font-light mb-4">
-          Work with <span className="text-primary font-bold">me</span>
-        </h1>
-        <p className="font-mono text-[15px] leading-relaxed mb-4 text-foreground/[0.82]">
-          I build living visual systems for stages, concerts, and
-          performance spaces. This page is what actually happens if we work together on one.
-        </p>
-        <p className="font-mono text-[15px] leading-relaxed mb-16 text-foreground/[0.82]">
-          Around my work I have built my own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. I keep up with the research papers the labs publish. Even this website has a door for machines: an MCP server that lets AI assistants read my work first hand.
-        </p>
 
-        {/* Services */}
-        <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-6">Services</h2>
-          <div className="space-y-2">
-            {SERVICES.map((service, i) => (
-              <div key={service.code}>
-                <ServiceRow service={service} />
-                {i < SERVICES.length - 1 && (
-                  <div className="my-4 font-mono text-sm" style={{ opacity: 0.12 }}>
-                    {SEPARATOR}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+        <PageSection title="Services">
+          <RuledRows rows={serviceRows} className="mt-0" wide={false} />
+        </PageSection>
 
-        {/* Process */}
-        <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-3">Process</h2>
-          <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
+        <PageSection title="Process">
+          <p className={BODY_CLASS}>
             I come up with the idea, the concept, and the way to make it into a system. The process
             may include whatever the piece needs, from drawing by hand to AI-native production.
             I care about integrity and a smooth experience, so every work adjusts to its environment.
             Each project ships with a rider, a contingency plan and my support.
           </p>
-          <div className="flex flex-col md:flex-row gap-6 md:gap-4">
-            {PROCESS_STEPS.map((step, i) => (
-              <div key={step.code} className="flex-1 font-mono">
-                <div className="text-primary-legible" style={{ fontSize: 20 }}>{step.code}</div>
-                <div className="text-base font-medium mt-1 mb-1 text-foreground">
-                  {step.label}
-                </div>
-                <p className="text-[13px] leading-relaxed text-foreground/60">
-                  {step.detail}
-                </p>
-                {i < PROCESS_STEPS.length - 1 && (
-                  <div className="hidden md:block mt-4 text-foreground/20">
-                    →
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+          <RuledRows rows={PROCESS_STEPS.map((step) => ({ label: step.label, value: step.detail }))} wide={false} />
+        </PageSection>
 
-        {/* Practicalities */}
-        <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-6">Practicalities</h2>
-          <div className="font-mono text-[13px] leading-relaxed space-y-4 text-foreground/75">
-            <p>
-              <span className="text-foreground">Travel: </span>
-              Based in Prague, working globally. Touring and international bookings are welcome;
-              travel and accommodation are arranged case by case.
-            </p>
-            <p>
-              <span className="text-foreground">Tech rider: </span>
-              Typical requirements are a projector or LED surface, a dedicated playback/render machine,
-              and a feed from the live audio mix where the work is audio-reactive. Exact specs are
-              confirmed once the venue and format are known.
-            </p>
-            <p>
-              <span className="text-foreground">Lead time: </span>
-              Depends on set length and scope, confirmed once the brief is in. Earlier is always better.
-            </p>
-          </div>
-        </section>
-
-        {/* Press kit */}
-        <section className="mb-20">
-          <h2 className="clinical-label text-primary-legible mb-3">Press kit</h2>
-          <p className="font-mono text-[13px] leading-relaxed mb-6 text-foreground/55">
-            For programmers, promoters, and journalists: boilerplate and stills ready to
-            paste, plus the artist CV as a PDF.
-          </p>
-
-          <div className="font-mono text-[14px] leading-[1.85] mb-8 text-foreground/[0.82] border-l-2 border-primary/40 pl-4">
-            {withProjectNames(BOILERPLATE)}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            {stills.map((project) => (
-              <div key={project.id}>
-                {project.image && (
-                  <Link to={`/work/${project.id}`} aria-label={`View case study: ${project.title}`}>
-                    <DitheredThumb
-                      src={project.image}
-                      alt={project.title}
-                      loading="lazy"
-                      className="w-full aspect-square object-cover border border-primary/30"
-                    />
-                  </Link>
-                )}
-                <Link
-                  to={`/work/${project.id}`}
-                  className="block font-mono uppercase mt-2 text-foreground/60 hover:text-accent transition-colors"
-                  style={{ fontSize: 20 }}
-                >
-                  {project.title}
-                </Link>
-                <div className="font-mono mt-1 text-foreground/60" style={{ fontSize: 20 }}>
-                  {project.tagline}
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="font-mono text-[12px] mb-8 text-foreground/60">
-            Click a still for the case study.
-          </p>
-          <a
-            href="/files/sinaida-krivchenko-cv.pdf"
-            download
-            className="font-mono text-[12px] uppercase tracking-[0.12em] text-primary-legible transition-opacity hover:opacity-70"
-          >
-            Artist CV (PDF) ↓
-          </a>
-        </section>
-
-        {/* Contact */}
-        <section>
-          <h2 className="clinical-label text-primary-legible mb-6">Contact</h2>
-          <p className="font-mono text-[13px] leading-relaxed mb-4 text-foreground/75">
-            Send the occasion, space, and timeline. A reply follows with next steps.
-          </p>
-          <ObfuscatedMailto
-            label="EMAIL ME ↗"
-            className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
+        <PageSection title="Practicalities">
+          <RuledRows
+            className="mt-0"
+            wide={false}
+            rows={[
+              {
+                label: 'Travel',
+                value: 'Based in Prague, working globally.',
+                note: 'Touring and international bookings are welcome; travel and accommodation are arranged case by case.',
+              },
+              {
+                label: 'Tech rider',
+                value: 'A projector or LED surface, a dedicated playback/render machine, and a feed from the live audio mix where the work is audio-reactive.',
+                note: 'Exact specs are confirmed once the venue and format are known.',
+              },
+              {
+                label: 'Lead time',
+                value: 'Depends on set length and scope, confirmed once the brief is in.',
+                note: 'Earlier is always better.',
+              },
+            ]}
           />
-          <a
-            href="https://calendly.com/sinaida"
-            target="_blank"
-            rel="noopener"
-            className="mt-4 block font-mono text-[13px] text-foreground/60 transition-colors hover:text-primary-legible"
-          >
-            Book a call ↗
-          </a>
-        </section>
+        </PageSection>
+
+        <PageSection title="Press kit">
+          <p className={BODY_CLASS}>
+            For programmers, promoters, and journalists: boilerplate and stills ready to
+            paste, plus the artist CV as a PDF.
+          </p>
+          {/* the boilerplate reads as a quotation to copy: set apart, smaller, the name in bold */}
+          <blockquote className="mt-8 max-w-[62ch] border-l border-foreground/30 pl-5 font-mono text-[16px] leading-[1.6] text-foreground/90">
+            <strong className="font-bold text-foreground">Sinaida Krivchenko</strong>
+            {withProjectNames(BOILERPLATE.slice('Sinaida Krivchenko'.length))}
+          </blockquote>
+          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3">
+            <CopyButton text={BOILERPLATE} />
+            <a
+              href="/files/sinaida-krivchenko-cv.pdf"
+              download
+              className="clinical-label text-primary-legible transition-opacity hover:opacity-70"
+            >
+              Artist CV (PDF) ↓
+            </a>
+          </div>
+        </PageSection>
+
+        <div className="mt-16">
+          <StillsRow projects={stills} />
+        </div>
+
       </main>
+      <ContactChannel question="Read this far? Then you probably have something in mind." />
       <Footer />
     </div>
   );

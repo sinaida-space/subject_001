@@ -90,6 +90,9 @@ export interface CaseStudy {
   order: { heading: string; body: string; suffix: string };
 }
 
+/** Role line for case pages: the tools list is tools, not a claim of engineering craft (studio#1). */
+export const DEFAULT_ROLE = 'Concept design and agentic coding';
+
 export interface Project {
   id: string;
   /** surface the case dive resolves in (#119): crt = stage, dither = image, ascii = code */
@@ -105,6 +108,8 @@ export interface Project {
   short?: string;
   /** 2–3 sentences revealed when a Selected Works row expands */
   blurb?: string;
+  /** what Sinaida did on the piece, shown before the tools; defaults to DEFAULT_ROLE */
+  role?: string;
   tools?: string[];
   /** ids of the skill nodes this project connects to in the graph */
   skills: string[];
@@ -154,6 +159,7 @@ export const PROJECTS: Project[] = [
     short: 'Concept design and\u00A0an\u00A0audio-reactive live\u00A0set',
     blurb:
       'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band redkie ptitsy. Audio-reactive projections built in TouchDesigner and run live behind the band through the whole set.',
+    role: 'Concept design and live visuals in TouchDesigner',
     tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
     skills: ['event-design', 'audio-reactive', 'touchdesigner', 'algorithmic-systems'],
     image: workRedkiePtitsy,
@@ -415,7 +421,7 @@ export const PROJECTS: Project[] = [
           { label: 'Any browser', detail: 'Artworks usually wait in rooms people have to travel to. This one opens from a link, on a laptop or a phone, with nothing to install.' },
           { label: 'Made in code', detail: 'Walls, light and most of the furniture are generated on the spot. The piece stays light on an ordinary connection and rebuilds itself for every visit.' },
           { label: 'Generated sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The recordings are Alisa’s voice at seven of the works and a few short sounds from the yard.' },
-          { label: 'A steady walk', detail: 'The target is 60 fps on an average laptop; every passage between rooms was measured frame by frame, and phones get a lighter version automatically.' },
+          { label: 'A steady walk', detail: 'The target is 60 fps on an average laptop; every passage between rooms was checked for smoothness, and phones get a lighter version automatically.' },
           { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
           { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it.' },
         ],
@@ -488,7 +494,7 @@ export const PROJECTS: Project[] = [
       paragraphs: [
         'Aether Currents is a way to feel music on your fingertips. Open it, show it your camera, and your hands become the interface. The right hand moves through position and pitch. A pinch shapes grain size. The left hand’s height sets density. Pull your hands apart and the filter opens, the space widens. Close into a fist and the sound freezes mid-air. There is no keyboard, no mouse and no MIDI controller between you and the sound, only your own sense of where your hands are.',
         'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of "move only your upper body." Ballet trains a body inside strict rules. Aether Currents has rules too: six gestures over a granular synthesis engine, with plenty of room to play inside them. The instrument does not know what you will play, and often its maker does not either.',
-        'Kamil Yegelev (TeleFM), a musician in Belgrade, advised on the music. Everything runs on the device, with no server and no cloud. Sound follows movement in under a hundred milliseconds, which is fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
+        'Kamil Yegelev (TeleFM), a musician in Belgrade, advised on the music. Everything runs on the device, with no server and no cloud. The target is sound that follows movement in under a hundred milliseconds, fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
       ],
       credits: [
         'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
@@ -498,7 +504,7 @@ export const PROJECTS: Project[] = [
     caseStudy: {
       kindLabel: 'Interactive web',
       intro: [
-        'Sinaida built AETHER CURRENTS on one belief, shared with her music advisor Kamil Yegelev (TeleFM): tools made with AI should amplify human creativity. The fun comes from the person playing, glitches and flaws included, so the human stays in the loop.',
+        'Sinaida made AETHER CURRENTS on one belief, shared with her music advisor Kamil Yegelev (TeleFM): tools made with AI should amplify human creativity. The fun comes from the person playing, glitches and flaws included, so the human stays in the loop.',
         'Movement is the signal. On-device hand tracking drives a granular synthesis engine as one direct path: position becomes pitch, a pinch shapes the grain, the distance between the hands opens the space, a fist freezes the sound mid-air. Pitch is quantized to a scale, so a trembling hand still plays in key. The visuals show the same signal as the sound. Nothing leaves the device, and a player can download their music and take it further.',
         'AETHER CURRENTS runs in a browser tab. It is released in versions, and each release comes from watching real people play.',
       ],
@@ -520,10 +526,10 @@ export const PROJECTS: Project[] = [
         stages: [
           { label: 'The conviction', detail: 'A practice instrument, built from a dancer’s training in gesture and an engineer’s training in signal.' },
           { label: 'Gesture vocabulary', detail: 'Six gestures, deliberately few: position, pinch, height, distance, fist, burst. All of them are movements the body already knows.' },
-          { label: 'Signal engineering', detail: 'Camera → on-device tracking at 40Hz → granular engine → WebGL. One signal drives both the sound and the light.' },
+          { label: 'Signal path', detail: 'Camera → on-device tracking at 40Hz → granular engine → WebGL. One signal drives both the sound and the light.' },
           { label: 'Musicality guardrails', detail: 'Pitch is quantized to a scale, so every note stays in key.' },
           { label: 'The play-test loop', detail: 'Versions grow from watching people fail: upload removed, mic-review flow, BPM in the UI, a two-hand chord gesture. Each fix traced to a specific stumble.' },
-          { label: 'PLAYABLE', detail: 'The current cycle: measured sub-100ms motion-to-sound, an instrument that survives GPU loss and never silently drops a recording.' },
+          { label: 'PLAYABLE', detail: 'The current cycle: working toward a measured motion-to-sound delay under 100ms, an instrument that survives GPU loss and never silently drops a recording.' },
         ],
         footer: '> instrument: Sinaida Krivchenko · music advisor: Kamil Yegelev (TeleFM)',
       },
@@ -635,9 +641,9 @@ export const PROJECTS: Project[] = [
           { label: 'Light and sound', detail: 'Closed-form tunnel shading with bloom, and\u00A0procedural sound with no\u00A0audio files. Three quality tiers keep the\u00A0frame rate steady on\u00A0weaker graphics\u00A0cards.' },
           { label: 'The questions', detail: 'A\u00A0shuffled deck of\u00A054 reflection questions, drawn one at\u00A0a\u00A0time as\u00A0the\u00A0rings\u00A0close.' },
         ],
-        footer: '> code & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
+        footer: '> concept & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
       },
-      credits: ['Concept, code & artwork: Sinaida Krivchenko · sinaida.eu · @sin.ai.da'],
+      credits: ['Concept, artwork & agentic coding: Sinaida Krivchenko · sinaida.eu · @sin.ai.da'],
       links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/ethereal-path' }],
       order: {
         heading: 'For a space',
@@ -713,7 +719,7 @@ export const PROJECTS: Project[] = [
           heading: 'What it taught',
           paragraphs: [
             'Sinaida tested it\u00A0on\u00A0a\u00A0projection, with friends around. The\u00A0piece made the\u00A0frame budget part of\u00A0the\u00A0design: a\u00A0renderer that watches its own cost and\u00A0sheds detail before it\u00A0drops\u00A0the\u00A0experience.',
-            'The\u00A0same habit of\u00A0measuring on\u00A0ordinary machines runs through [CONSPACE ROOMS](/work/conspace-rooms), where every passage between rooms was measured frame\u00A0by\u00A0frame.',
+            'The\u00A0same habit of\u00A0checking on\u00A0ordinary machines runs through [CONSPACE ROOMS](/work/conspace-rooms), where every passage between rooms was checked for\u00A0smoothness.',
           ],
         },
       ],
@@ -733,10 +739,10 @@ export const PROJECTS: Project[] = [
           { label: 'Tracking', detail: 'On-device face and\u00A0hand landmarks. The\u00A0first stable face becomes neutral. MediaPipe loads only when the\u00A0camera\u00A0starts.' },
           { label: 'Frame budget', detail: 'The\u00A0renderer watches its own frame cost and\u00A0sheds detail, frame rate and\u00A0glow before it\u00A0drops\u00A0the\u00A0experience.' },
         ],
-        footer: '> code & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
+        footer: '> concept & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
       },
       credits: [
-        'Concept, code & artwork: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Concept, artwork & agentic coding: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
         'Title typeface: Bitmgothic, 1001Fonts',
       ],
       links: [{ label: 'GitHub', url: 'https://github.com/sinaida-space/stereolove' }],
@@ -833,10 +839,10 @@ export const PROJECTS: Project[] = [
           { label: 'Rest on a timer', detail: 'Work and\u00A0break presets of\u00A025/5, 50/10 and\u00A090/15, or\u00A0your own minutes. The\u00A0session ends with a\u00A0slow\u00A0fade.' },
           { label: 'The tunnel', detail: 'A\u00A0WebGL2 tunnel with ordered dither reacts to\u00A0the\u00A0sound, and\u00A0its color follows the\u00A0sound you\u00A0pick.' },
         ],
-        footer: '> code & artwork: Sinaida Krivchenko · Apache 2.0 · field recordings CC0 (BigSoundBank)',
+        footer: '> concept & design: Sinaida Krivchenko · Apache 2.0 · field recordings CC0 (BigSoundBank)',
       },
       credits: [
-        'Concept, code & design: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
+        'Concept, design & agentic coding: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
         'Field recordings: CC0, BigSoundBank',
         'Typeface: Geist Pixel',
       ],
@@ -860,6 +866,7 @@ export const PROJECTS: Project[] = [
     tagline: 'A thunderstorm behind rainy glass, built in TouchDesigner: the bass fires the lightning',
     blurb:
       'Rain on\u00A0a\u00A0window with a\u00A0storm behind it, built in\u00A0TouchDesigner, with a\u00A023-minute video that walks through the\u00A0finished network. Raindrops are spheres moving along a\u00A0line grid, the\u00A0lightning follows a\u00A0geometry path built with custom code, and\u00A0the\u00A0view comes from one of\u00A0TouchDesigner\u2019s example files. The .toe and\u00A0the\u00A0sound file are on\u00A0Patreon for\u00A0every\u00A0subscriber.',
+    role: 'Tutorial author, built in TouchDesigner',
     tools: ['TouchDesigner', 'GLSL shader', 'Audio analysis'],
     skills: ['touchdesigner', 'audio-reactive', 'algorithmic-systems', 'creative-web'],
     url: 'https://youtu.be/hwFttiCKbrU',

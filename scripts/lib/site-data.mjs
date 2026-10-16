@@ -363,8 +363,9 @@ export function buildRoutes() {
     fallback: {
       heading: 'Sinaida Krivchenko',
       paragraphs: [
-        'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
-        'Her work is structured by code and amplified by the people who interact with it. She builds motion-reactive and audio-responsive experiences: a full set of live visuals in TouchDesigner for the band redkie ptitsy, with a fallback for every file, and CONSPACE ROOMS, which started as a question to a fellow artist: what if her artworks hung inside a labyrinth? Now they do, and candles lead the way.',
+        'Sinaida Krivchenko works in concept and experience design: visual worlds where light, sound, movement and people meet in one room.',
+        'Her background in engineering gave her a fascination with systems; ballet has taught her to listen to her body and to feel the space around her. Today she creates experiences where technology and the human soul share one world. She builds the structure, and the audience completes the work.',
+        'Technology is her material, and people are her subject. In practice, the machines draft and she decides what stays. What she aims for are new meanings that neither people nor machines would reach alone.',
       ],
     },
   };

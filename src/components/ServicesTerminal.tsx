@@ -52,7 +52,7 @@ function ServiceScreen({ service, flip, fit }: { service: Service; flip: boolean
           </Link>
         )}
         <p
-          className={`font-mono mt-2.5 text-sm leading-[1.55] ${fit && !flip ? 'md:text-right' : ''}`}
+          className={`font-mono mt-2.5 text-sm leading-[1.55] [text-wrap:balance] ${fit && !flip ? 'md:text-right' : ''}`}
           style={{ color: 'hsl(var(--foreground) / 0.55)' }}
         >
           <Link to={`/work/${service.caption.project}`} className={`project-name ${linkClass}`}>

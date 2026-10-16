@@ -1,18 +1,20 @@
 import { Fragment, lazy, Suspense, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { projectById, PROJECTS } from '@/data/projects';
+import { projectById, PROJECTS, DEFAULT_ROLE } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
 import DisplacementImage from '@/components/DisplacementImage';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import SignalChain from '@/components/SignalChain';
 import NotFound from '@/pages/NotFound';
 import Header from '@/components/Header';
+import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 import { CaseDiveControls, ProcessFloor, RelatedWorks } from '@/components/dive/CaseDive';
 import { markHomeReturn } from '@/lib/homeScroll';
 import { withProjectNames } from '@/lib/projectNames';
+import { DitherHeading, DrawnRule } from '@/components/PageParts';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -94,6 +96,12 @@ export default function WorkCase() {
 
   const intro = cs.intro ?? (project.blurb ? [project.blurb] : []);
 
+  // one entry per line, so a list never breaks mid-separator
+  // Role first: the tools are tools, not a claim of engineering craft (studio#1).
+  const facts: [string, string[]][] = [['Role', [project.role ?? DEFAULT_ROLE]]];
+  if (cs.contributors?.length) facts.push(['With', cs.contributors.map((c) => c.name)]);
+  if (project.tools?.length) facts.push(['Tools', project.tools]);
+
   // Case pages form a loop, in PROJECTS order, so a reader who reaches the
   // end of one case always has somewhere to go besides back.
   const cases = PROJECTS.filter((p) => p.caseStudy);
@@ -107,7 +115,7 @@ export default function WorkCase() {
           continuity behind a page that's mostly here to be read. */}
       {mode === 'full' && (
         <Suspense fallback={null}>
-          <ParticleField subtle />
+          <ParticleField />
         </Suspense>
       )}
       <Header />
@@ -129,26 +137,10 @@ export default function WorkCase() {
               ← Back
             </Link>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <span
-                style={{
-                  border: '1px solid hsl(var(--sinaida-red))',
-                  padding: '3px 8px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '20px',
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: 'hsl(var(--primary-legible))',
-                }}
-              >
-                {cs.kindLabel}
-              </span>
-              <span className="font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/65">
-                {project.tagline}
-              </span>
-            </div>
+            {/* Home's heading law: a red kicker over a solid white headline */}
+            <div className="clinical-label text-primary-legible">{cs.kindLabel}</div>
 
-            <h1 className="mt-4 font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl">
+            <h1 className="mt-3 font-display text-5xl uppercase font-light leading-[0.95] text-foreground md:text-6xl">
               {project.title}
               {project.subtitle && (
                 <span className="mt-1 block text-2xl text-foreground/60 md:text-3xl">
@@ -156,6 +148,9 @@ export default function WorkCase() {
                 </span>
               )}
             </h1>
+            <p className="mt-5 max-w-[40ch] font-mono text-[19px] leading-[1.3] text-foreground/70">
+              {project.tagline}
+            </p>
           </div>
           <div className="hidden md:block md:col-span-7" aria-hidden="true" />
 
@@ -201,28 +196,20 @@ export default function WorkCase() {
               </a>
             )}
 
-            {/* ── Tech stack ── */}
-            {project.tools && (
-              <div className="mt-8">
-                <div className="clinical-label mb-3 text-foreground/65">Tech stack</div>
-                <div className="flex flex-wrap gap-2">
-                  {project.tools.map((t) => (
-                    <span
-                      key={t}
-                      style={{
-                        border: '1px solid hsl(var(--graphite))',
-                        padding: '4px 8px',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '20px',
-                        letterSpacing: '0.15em',
-                        color: 'hsl(var(--foreground) / 0.55)',
-                      }}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
+            {/* ── Facts — a ruled table, label and fact at one size (as About) ── */}
+            {facts.length > 0 && (
+              <dl className="relative mt-8">
+                {facts.map(([key, val]) => (
+                  <div key={key} className="relative grid grid-cols-[7rem_1fr] gap-4 py-3 font-mono text-[17px] leading-[1.3]">
+                    <DrawnRule className="top-0" />
+                    <dt className="uppercase text-foreground/60">{key}</dt>
+                    <dd className="text-foreground">
+                      {val.map((v) => <span key={v} className="block">{v}</span>)}
+                    </dd>
+                  </div>
+                ))}
+                <DrawnRule className="bottom-0" />
+              </dl>
             )}
           </div>
           </div>
@@ -259,32 +246,27 @@ export default function WorkCase() {
               </div>
             )}
 
-            {/* ── Big-number stat card ── */}
+            {/* ── Big number between hairlines; the number is the one red ── */}
             {cs.stat && (
-              <div
-                className="mt-8 flex flex-col gap-4 sm:flex-row"
-                style={{ border: '1px solid hsl(var(--sinaida-red))', background: 'hsl(var(--sinaida-red) / 0.05)', padding: '20px' }}
-              >
-                <div className="font-display text-5xl leading-none text-primary">{cs.stat.value}</div>
+              <div className="relative mt-10 flex flex-col gap-4 py-6 sm:flex-row sm:items-baseline sm:gap-8">
+                <DrawnRule className="top-0" />
+                <div className="font-display text-6xl leading-none text-primary">{cs.stat.value}</div>
                 <div>
-                  {/* text-foreground, not text-white: this sits on a 5%-red
-                      tint, which in lite mode is a near-white plate, and a
-                      hardcoded white heading disappeared into it. The token
-                      flips to near-black there and stays Chalk in dark mode. */}
-                  <div className="font-mono text-[14px] uppercase tracking-[0.12em] text-foreground">
+                  <div className="font-mono text-[17px] uppercase tracking-[0.12em] text-foreground">
                     {cs.stat.heading}
                   </div>
-                  <p className="mt-2 max-w-[55ch] font-mono text-[14px] leading-relaxed text-foreground/65">
+                  <p className="mt-2 max-w-[55ch] font-mono text-[17px] leading-relaxed text-foreground/65">
                     {cs.stat.body}
                   </p>
                 </div>
+                <DrawnRule className="bottom-0" />
               </div>
             )}
 
             {/* ── Headed story sections — long cases stay scannable ── */}
             {cs.sections?.map((s) => (
               <section key={s.heading} className="mt-10">
-                <h2 className="clinical-label mb-3 text-foreground/65">{s.heading}</h2>
+                <h2 className="clinical-label mb-3 text-primary-legible">{s.heading}</h2>
                 {s.paragraphs.map((p) => (
                   <p
                     key={p.slice(0, 32)}
@@ -400,10 +382,10 @@ export default function WorkCase() {
 
             {/* ── Conversion block ── */}
             <div className="mt-14" style={{ borderTop: '1px solid hsl(var(--graphite))', paddingTop: '32px' }}>
-              <h2 className="font-display text-2xl uppercase font-light text-foreground">
+              <DitherHeading className="font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl">
                 {cs.order.heading}
-              </h2>
-              <p className="mt-4 max-w-[70ch] font-mono text-[16px] leading-relaxed text-foreground/85">
+              </DitherHeading>
+              <p className="mt-6 max-w-[60ch] font-mono text-[19px] leading-relaxed text-foreground/85">
                 {withProjectNames(cs.order.body)}{' '}
                 <a href="https://sinaida.eu/collaborate/" className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70">
                   Get in touch
@@ -429,6 +411,7 @@ export default function WorkCase() {
         </div>
         )}
       </main>
+      <ContactChannel question="Still here? I like that." />
       <Footer />
     </div>
   );

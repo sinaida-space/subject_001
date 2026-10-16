@@ -4,6 +4,7 @@ import GlitterText from './GlitterText';
 import StarTitle, { LiteTitle } from './StarTitle';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { CITY, cityBus, smoother, span } from '@/lib/city';
+import { landPreview, registerLand } from '@/lib/navLand';
 
 const NB = ' ';
 
@@ -71,14 +72,24 @@ function useDolly(enabled: boolean) {
   return { blockRef, questionRef, linksRef };
 }
 
-export default function ContactChannel() {
+/** `question` is the page's own lead-in above LET'S TALK; the home's line is the default. */
+export default function ContactChannel({ question: lead = `Got an idea that should be seen, heard, and${NB}felt?` }: { question?: string } = {}) {
   const full = useRenderMode().mode === 'full';
   const held = useSyncExternalStore(cityBus.onHeld, cityBus.held, () => false);
-  const { blockRef, questionRef, linksRef } = useDolly(full && held);
+  const { blockRef, questionRef, linksRef } = useDolly(held);
+  // land above the section top, where the star word is whole and LET'S TALK
+  // is already on screen; at the top itself the word is falling apart into dust
+  useEffect(() => {
+    if (!landPreview()) return;
+    return registerLand('contact', () => {
+      const el = document.getElementById('contact');
+      return el ? el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.375 : null;
+    });
+  }, []);
   // the caption is the question, in both modes
   const question = (
     <p className="font-mono text-foreground mt-2 max-w-[28ch] text-[20px] md:text-[clamp(22px,2.2vw,34px)]" style={{ lineHeight: 1.25 }}>
-      {`Got an idea that should be seen, heard, and${NB}felt?`}
+      {lead}
     </p>
   );
   const headline = (
@@ -113,11 +124,15 @@ export default function ContactChannel() {
           </>
         ) : (
           <>
-            <LiteTitle text="Contact" caption={question} />
-            {headline}
-            {/* CTA: one bold action, plain links */}
-            <div className="mt-[6vh]">
-              <ContactLinks />
+            {/* the same dolly as full mode, without the stars */}
+            <LiteTitle text="Contact" />
+            <div ref={blockRef}>
+              <div ref={questionRef} className="w-fit">{question}</div>
+              <div className="w-fit">{headline}</div>
+              {/* CTA: one bold action, plain links */}
+              <div ref={linksRef} className="mt-[6vh] w-fit">
+                <ContactLinks />
+              </div>
             </div>
           </>
         )}
