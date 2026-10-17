@@ -1297,3 +1297,39 @@ html[data-mode="lite"] .molecule-breath { animation: none; opacity: 0.5; }
   color: #ffffff;
 }
 
+/* Statement room: the phrase that glints. A light runs through its letters
+   now and then, and two small sparks open and close beside it. No bloom: a
+   brighter letter and a thin halo, a few pixels wide. */
+.room-glint [data-c] {
+  animation: room-glint 6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+@keyframes room-glint {
+  0%, 82%, 100% { color: inherit; text-shadow: none; }
+  88% { color: #fffaf2; text-shadow: 0 0 2px rgba(255, 250, 242, 0.9), 0 0 6px rgba(255, 250, 242, 0.35); }
+}
+.room-spark {
+  position: absolute;
+  width: 0.42em;
+  height: 0.42em;
+  pointer-events: none;
+  background: #fffaf2;
+  clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+  transform: scale(0);
+  animation: room-spark 6s ease-in-out infinite;
+}
+@keyframes room-spark {
+  0%, 84%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  90% { transform: scale(1) rotate(45deg); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-glint [data-c], .room-spark { animation: none; }
+}
+
+/* Footer's small print: on a phone it keeps the 16px floor, on a wide screen
+   it steps down to the question's size beside it. */
+@media (min-width: 768px) {
+  .footer-fine.text-\[12px\] {
+    font-size: 12px !important;
+  }
+}
