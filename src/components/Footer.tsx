@@ -17,7 +17,7 @@ const COLUMNS: { label: string; items: Item[]; hover?: CityHover }[] = [
     label: 'Navigate',
     items: [
       { label: 'About', to: '#about' },
-      { label: 'Work', to: '#work' },
+      { label: 'Works', to: '#work' },
       { label: 'Services', to: '#services' },
       { label: 'Contact', to: '#contact' },
     ],

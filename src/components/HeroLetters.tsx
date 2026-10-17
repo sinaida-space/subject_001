@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
+import { pointerArmed } from '@/lib/pointerIntent';
 import { MoleculeNote } from '@/components/MoleculeBreak';
 import { useHeroWhisper, WHISPER_QUESTIONS } from '@/components/HeroSection';
 import DitherPreview from '@/components/constellation/DitherPreview';
@@ -175,7 +176,7 @@ export default function HeroLetters() {
     !lite && typeof window !== 'undefined' && window.matchMedia?.('(hover: hover) and (min-width: 1024px)').matches;
   const [glowing, setGlowing] = useState(false);
   const enterTunnel = () => {
-    if (canHover()) {
+    if (canHover() && pointerArmed()) {
       heroTunnelBus.setActive(true);
       setGlowing(true);
     }
@@ -275,6 +276,7 @@ export default function HeroLetters() {
           ref={nameRef}
           className={`${type} self-start text-foreground cursor-none ${glowing ? 'neon-glow' : ''}`}
           onMouseEnter={enterTunnel}
+          onMouseMove={glowing ? undefined : enterTunnel}
           onMouseLeave={stopTunnel}
         >
           <span className="hl-line block">Sinaida</span>

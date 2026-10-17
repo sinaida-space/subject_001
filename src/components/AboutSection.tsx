@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import StarTitle, { LiteTitle } from '@/components/StarTitle';
@@ -209,6 +210,12 @@ export default function AboutSection() {
           <div className="md:col-start-4 md:col-span-9 md:row-start-2">
             <Reveal delay={100}>
               <BioRows />
+              {/* one quiet step deeper for whoever About convinced */}
+              <div className="md:grid md:grid-cols-[minmax(8rem,1fr)_3fr] md:gap-6">
+                <Link to="/statement" className="clinical-label inline-block mt-12 md:mt-16 md:col-start-2 justify-self-start text-foreground/65 hover:text-primary-legible transition-colors duration-300 cursor-none">
+                  Read the statement →
+                </Link>
+              </div>
             </Reveal>
           </div>
         </div>

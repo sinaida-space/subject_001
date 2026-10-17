@@ -29,6 +29,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { sampleText, type Cell } from '@/lib/sampleText';
 import { workBuildBus } from '@/lib/workBuildBus';
+import { registerLand } from '@/lib/navLand';
 import { galaxyBright, galaxyColor, galaxyKeep, galaxySize } from '@/lib/galaxy';
 import { sampleStarTitle } from '@/components/StarTitle';
 
@@ -136,6 +137,26 @@ interface TitleStars { w: number; h: number; stars: { x: number; y: number; rnd:
 export default function WorkBuild({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // A link to Works lands where the map has finished building (#2), never on
+  // the half-built globe at the section's top: same sums as the build below,
+  // solved for the scroll where it reaches 1.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    return registerLand('work', () => {
+      const track = root.querySelector<HTMLElement>('[data-build-track]');
+      if (!track) return null;
+      const vh = window.innerHeight;
+      const room = root.querySelector<HTMLElement>('[data-build-room]');
+      const trackTop = track.getBoundingClientRect().top + window.scrollY;
+      if (room && room.offsetHeight > 0) {
+        const roomTop = room.getBoundingClientRect().top + window.scrollY;
+        return roomTop - (vh * 0.05 + track.offsetHeight - room.offsetHeight) + 4;
+      }
+      return trackTop - vh * 0.5 + track.offsetHeight / 2 + 4;
+    });
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;

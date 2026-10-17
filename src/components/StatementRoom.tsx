@@ -35,7 +35,7 @@ const BEAT_VH = 210;
 // how long the move from each beat to the next lasts, in beats: the title
 // goes quickly; the story ends standing on the cases, which then scroll away
 // with the page into the contact, so there is never an empty sky
-const WEIGHTS = [0.7, 1, 1, 1, 1, 0.45];
+const WEIGHTS = [0.7, 2.0, 1, 1, 1, 0.45];
 const TOTAL = WEIGHTS.reduce((a, b) => a + b, 0);
 /** scroll progress 0..1 to beats, each beat as long as its weight */
 function beatsOf(f: number) {
@@ -52,6 +52,9 @@ function beatsOf(f: number) {
 const HOLD = 0.55;
 // the title does not wait: the first scroll already starts the move
 const TITLE_HOLD = 0;
+// the world holds only briefly: most of its beat is the flare and the flight
+// through it, slow enough to watch the shell open
+const LEAD_HOLD = 0.22;
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -62,7 +65,7 @@ function story(raw: number) {
   const k = Math.floor(raw);
   if (k >= BEATS) return BEATS;
   // the last move, into the sky, has nothing to hold
-  const hold = k === 0 ? TITLE_HOLD : k === BEATS - 1 ? 1 : HOLD;
+  const hold = k === 0 ? TITLE_HOLD : k === 1 ? LEAD_HOLD : k === BEATS - 1 ? 1 : HOLD;
   return k + smooth(clamp((raw - k - hold) / (1 - hold)));
 }
 

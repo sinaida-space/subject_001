@@ -328,6 +328,7 @@ const RAY_VERT = /* glsl */ `
   varying float vA;
   varying vec2 vCorner;
   varying float vPhase;
+  varying float vDepth;
   ${COMMON_GLSL}
   void main() {
     vec3 d = rotX(rotY(aDir, uTurn), uPitch);
@@ -342,6 +343,7 @@ const RAY_VERT = /* glsl */ `
     vec4 mv = mix(b, e, aCorner.x);
     mv.xy += vec2(-dir.y, dir.x) * aCorner.y * aRay.y * uRadius * (1.0 - 0.6 * aCorner.x) * (1.0 + uOpen);
     gl_Position = projectionMatrix * mv;
+    vDepth = -mv.z;
     float lit = mix(0.3 + 0.7 * smoothstep(-0.2, 0.7, dot(d, uLight)), 1.0, uOpen);
     vA = uGlow * lit * (0.8 + 0.2 * sin(uTime * 1.1 + aRay.z * 9.0));
     vCorner = aCorner;
@@ -354,11 +356,17 @@ const RAY_FRAG = /* glsl */ `
   varying float vA;
   varying vec2 vCorner;
   varying float vPhase;
+  varying float vDepth;
   ${BAYER_GLSL}
   void main() {
     // light running outwards along the ray
     float run = 0.55 + 0.45 * sin(vCorner.x * 9.0 - uTime * 1.3 + vPhase * 6.283);
-    float a = vA * pow(1.0 - vCorner.x, 1.4) * (1.0 - vCorner.y * vCorner.y) * 0.9 * run;
+    // no hard ends: the ray rises out of the surface instead of starting at
+    // full light, and fades before the camera's near plane cuts it as the
+    // reader flies through the burst
+    float rise = smoothstep(0.0, 0.22, vCorner.x);
+    float near = smoothstep(0.4, 3.0, vDepth);
+    float a = vA * rise * near * pow(1.0 - vCorner.x, 1.4) * (1.0 - vCorner.y * vCorner.y) * 0.9 * run;
     a = floor(a * 8.0 + bayer(gl_FragCoord.xy)) / 8.0;
     if (a <= 0.0) discard;
     gl_FragColor = vec4(uColor * a, a);

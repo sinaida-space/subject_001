@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroLetters from '@/components/HeroLetters';
@@ -57,9 +57,13 @@ const Index = () => {
 
   // Arriving from another page via a Header/Footer nav link (/#work etc.) —
   // scroll to the section once it's mounted.
+  // The first landing jumps; a later hash change (a footer link on this page) flies.
+  const landedRef = useRef(false);
   useEffect(() => {
     if (!hash) return;
-    const t = setTimeout(() => landOn(hash), 100);
+    const fly = landedRef.current;
+    landedRef.current = true;
+    const t = setTimeout(() => landOn(hash, fly), fly ? 0 : 100);
     return () => clearTimeout(t);
   }, [hash]);
 

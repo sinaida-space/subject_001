@@ -7,7 +7,7 @@ import { useRenderMode } from '@/hooks/useRenderMode';
 
 const NAV_ITEMS = [
   { label: 'About', href: '#about' },
-  { label: 'Work', href: '#work' },
+  { label: 'Works', href: '#work' },
   { label: 'Services', href: '#services' },
   { label: 'Contact', href: '#contact' },
 ];
@@ -74,7 +74,7 @@ export default function Header() {
       return;
     }
     setTimeout(() => {
-      landOn(href);
+      landOn(href, true);
     }, menuOpen ? 300 : 0); // wait for the mobile menu to fade out first
   };
 
