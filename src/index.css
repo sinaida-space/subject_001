@@ -194,6 +194,22 @@
     background: radial-gradient(circle at center, hsl(var(--background)), hsl(var(--background) / 0.85));
   }
 
+  /* Lite: a light gaussian grain over the whole picture, multiplied in, so it
+     sits in the paper and the ink alike, with a rare grain of the site's red
+     in it (2026-10-18). One static 256px tile on a fixed layer: nothing
+     moves, nothing redraws on scroll. */
+  html[data-mode="lite"] body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    background: url('/grain-lite.png') repeat;
+    background-size: 256px 256px;
+    mix-blend-mode: multiply;
+    opacity: 0.28;
+  }
+
   /* Tinted arrow cursor — a plain OS-style pointer recolored in the site's
      red, not a custom JS-driven cursor. Zero runtime cost: it's a static
      image the browser paints itself, no rAF loop, no pointer listeners. */

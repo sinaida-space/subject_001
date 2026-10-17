@@ -534,6 +534,13 @@ export const PROJECTS: Project[] = [
         footer: '> instrument: Sinaida Krivchenko · music advisor: Kamil Yegelev (TeleFM)',
       },
       contributors: [{ name: 'Kamil Yegelev (TeleFM)', url: 'https://telefm.bandcamp.com/', type: 'Person' }],
+      testimonial: {
+        paragraphs: [
+          'It was fun being the music advisor on this project. I’ve always wanted to get my hands on creating music tools. This project was an exciting challenge, making an actual instrument that one can play using only gestures. The tech behind it is cool, and Sinaida brilliantly managed to put it all together, bringing Aether Currents from just an idea to life.',
+        ],
+        name: 'Kamil Yegelev',
+        role: 'musician, TeleFM',
+      },
       credits: [
         'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
         'Music advisor: Kamil Yegelev (TeleFM) · telefm.bandcamp.com',

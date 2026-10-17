@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { useScrambleReveal } from '@/hooks/useScrambleReveal';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
+import { pointerArmed } from '@/lib/pointerIntent';
 import { MoleculeNote } from '@/components/MoleculeBreak';
 import { heroShellWasVisible } from '@/lib/staticShell';
 
@@ -261,7 +262,7 @@ export default function HeroSection() {
   // on for exactly as long as the pointer is over the text, matching the
   // tunnel's own hover-held duration.
   const [glowing, setGlowing] = useState(false);
-  const enterTunnel = () => { if (canHover()) { heroTunnelBus.setActive(true); setGlowing(true); } };
+  const enterTunnel = () => { if (canHover() && pointerArmed()) { heroTunnelBus.setActive(true); setGlowing(true); } };
   // Releasing never checks canHover(): a resize or media change between
   // enter and leave must not leave the stream stuck on.
   const stopTunnel = () => { heroTunnelBus.setActive(false); setGlowing(false); };
@@ -356,6 +357,7 @@ export default function HeroSection() {
           ref={eyebrowRef}
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
+          onMouseMove={glowing ? undefined : enterTunnel}
           onMouseLeave={stopTunnel}
         >
           {/* The scramble writes noise into the DOM for the length of the reveal,
@@ -431,6 +433,7 @@ export default function HeroSection() {
         <h1
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
+          onMouseMove={glowing ? undefined : enterTunnel}
           onMouseLeave={stopTunnel}
         >
           {/* Same reason as the eyebrow above (audit 2026-08-02, F-006): this is
