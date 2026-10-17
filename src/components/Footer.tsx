@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import SnakeEasterEgg from './SnakeEasterEgg';
+import DataLeftBehind from './DataLeftBehind';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { CITY, cityBus, span, type CityHover } from '@/lib/city';
 import { ditherMask } from '@/lib/ditherMask';
@@ -98,7 +99,7 @@ const Plaque = () => (
 
 const BottomBar = () => (
   <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-    <span data-ground-mask className="font-mono uppercase text-[12px] tracking-[0.15em] leading-relaxed text-foreground/60">
+    <span data-ground-mask className="footer-fine font-mono uppercase text-[12px] tracking-[0.15em] leading-relaxed text-foreground/60">
       Prague
       <br />
       © {new Date().getFullYear()} · Designed by Sinaida{'\u00a0'}Krivchenko
@@ -106,7 +107,7 @@ const BottomBar = () => (
     {/* The one line under the 16px floor (index.css): an
         inline size, since the floor clamps every text-[Npx] class below 16. */}
     <span data-ground-mask className="font-mono uppercase tracking-[0.15em] italic text-foreground/60" style={{ fontSize: 12 }}>
-      Are we more than the data we leave behind?
+      <DataLeftBehind>Are we more than the data we leave behind?</DataLeftBehind>
     </span>
   </div>
 );
