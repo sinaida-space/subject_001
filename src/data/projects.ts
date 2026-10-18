@@ -733,7 +733,7 @@ export const PROJECTS: Project[] = [
         {
           heading: 'How it was made',
           paragraphs: [
-            'The\u00A0first prototype went up\u00A0in\u00A0May 2026, and\u00A0within days it\u00A0had a\u00A0question chamber, the\u00A0starflight reveal, sound cues and\u00A0a\u00A0mobile layout. Tracking runs on\u00A0the\u00A0device: the\u00A0MediaPipe face model for\u00A0head position and\u00A0the\u00A0hand model for\u00A0one gesture, an\u00A0open hand near the\u00A0face. The\u00A0first stable face position counts as\u00A0neutral. MediaPipe loads only when the\u00A0camera mode starts, so\u00A0a\u00A0blocked camera never breaks\u00A0the\u00A0piece.',
+            'The\u00A0first prototype went up\u00A0in\u00A0May 2026, and\u00A0within days it\u00A0had a\u00A0question chamber, the\u00A0starflight reveal, sound cues and\u00A0a\u00A0mobile layout. Tracking runs on\u00A0the\u00A0device: the\u00A0MediaPipe face model for\u00A0head position and\u00A0the\u00A0hand model for\u00A0one gesture, an\u00A0open hand near the\u00A0face. The\u00A0first stable face position counts as\u00A0neutral. MediaPipe runs only when the\u00A0camera mode starts, so\u00A0a\u00A0blocked camera never breaks\u00A0the\u00A0piece.',
             'Then came the\u00A0frame budget. The\u00A0renderer measures its own cost and, when it\u00A0has to, lowers the\u00A0frame rate and\u00A0pixel density, thins the\u00A0points and\u00A0drops glow passes. Face and\u00A0hand detection are throttled and\u00A0never run in\u00A0the\u00A0same animation frame. All sound is\u00A0generated in\u00A0the\u00A0browser after the\u00A0visitor picks a\u00A0mode, and\u00A0no\u00A0audio file\u00A0is\u00A0loaded.',
           ],
         },
@@ -758,7 +758,7 @@ export const PROJECTS: Project[] = [
           { label: 'The premise', detail: 'A\u00A0stereogram withholds depth from some viewers. Reverse it: the\u00A0image adapts\u00A0to\u00A0the\u00A0viewer.' },
           { label: 'Head-coupled projection', detail: 'A\u00A0virtual eye in\u00A0front of\u00A0the\u00A0screen, every point projected through it. Pure math, unit\u00A0tested.' },
           { label: 'Anamorphic points', detail: 'Question text sampled into points and\u00A0placed along sightlines from a\u00A0reveal eye, readable from one angle\u00A0only.' },
-          { label: 'Tracking', detail: 'On-device face and\u00A0hand landmarks. The\u00A0first stable face becomes neutral. MediaPipe loads from third-party CDNs only when the\u00A0camera\u00A0starts.' },
+          { label: 'Tracking', detail: 'On-device face and\u00A0hand landmarks. The\u00A0first stable face becomes neutral. MediaPipe downloads from third-party CDNs in\u00A0the\u00A0background after the\u00A0page loads.' },
           { label: 'Frame budget', detail: 'The\u00A0renderer watches its own frame cost and\u00A0sheds detail, frame rate and\u00A0glow before it\u00A0drops\u00A0the\u00A0experience.' },
         ],
         footer: '> concept & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
