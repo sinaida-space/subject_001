@@ -271,7 +271,7 @@ export const PROJECTS: Project[] = [
       intro: [
         'It began as a conversation between two artists, each searching for her own way forward. Alisa Feer painted the first answer: a lit figure standing in a field of eyes, all the judging gazes that can throw a person off her own path, held still in acrylic on a single A4 sheet.',
         'Sinaida translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way, all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface recalls old computers, which slows a person down enough to look.',
-        'The work exists twice. As a web experience it is finished and live, playable now in any browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Everything runs on-device; nothing is recorded. As an installation it is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026.',
+        'The work exists twice. As a web experience it is finished and live, playable now in any browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Hand tracking runs in the browser with Google’s MediaPipe; the camera image stays on the device and nothing is recorded. As an installation it is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026.',
       ],
       heroCta: { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
       stat: {
@@ -423,9 +423,9 @@ export const PROJECTS: Project[] = [
           { label: 'Generated sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The recordings are Alisa’s voice at seven of the works and a few short sounds from the yard.' },
           { label: 'A steady walk', detail: 'The target is 60 fps on an average laptop; every passage between rooms was checked for smoothness, and phones get a lighter version automatically.' },
           { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
-          { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it.' },
+          { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it. Even the tracking files come from the piece’s own server.' },
         ],
-        footer: '> idea and experience design: Sinaida Krivchenko · SOULS: UVALISS',
+        footer: '> idea, experience design & game mechanics: Sinaida Krivchenko · SOULS: UVALISS',
       },
       contributors: [{ name: 'Alisa Feer (UVALISS)', url: 'https://uvaliss.ru/', type: 'Person' }],
       testimonial: {
@@ -440,7 +440,7 @@ export const PROJECTS: Project[] = [
       },
       creditsPeople: [
         {
-          role: 'Idea and experience design',
+          role: 'Idea, experience design, game mechanics and agentic coding',
           name: 'Sinaida Krivchenko',
           url: 'https://sinaida.eu/statement/',
           bio: 'Sinaida Krivchenko creates responsive visual systems where light, sound, movement and human presence become a shared experience.',
@@ -505,14 +505,14 @@ export const PROJECTS: Project[] = [
       kindLabel: 'Interactive web',
       intro: [
         'Sinaida made AETHER CURRENTS on one belief, shared with her music advisor Kamil Yegelev (TeleFM): tools made with AI should amplify human creativity. The fun comes from the person playing, glitches and flaws included, so the human stays in the loop.',
-        'Movement is the signal. On-device hand tracking drives a granular synthesis engine as one direct path: position becomes pitch, a pinch shapes the grain, the distance between the hands opens the space, a fist freezes the sound mid-air. Pitch is quantized to a scale, so a trembling hand still plays in key. The visuals show the same signal as the sound. Nothing leaves the device, and a player can download their music and take it further.',
+        'Movement is the signal. On-device hand tracking drives a granular synthesis engine as one direct path: position becomes pitch, a pinch shapes the grain, the distance between the hands opens the space, a fist freezes the sound mid-air. Pitch is quantized to a scale, so a trembling hand still plays in key. The visuals show the same signal as the sound. The camera image and the sound stay on the device, and a player can download their music and take it further.',
         'AETHER CURRENTS runs in a browser tab. It is released in versions, and each release comes from watching real people play.',
       ],
       heroCta: { label: 'Play the instrument', url: 'https://aether-currents.sinaida.eu/' },
       stat: {
         value: '0',
-        heading: 'Bytes that leave the device',
-        body: 'No camera frame, no audio, no account. Privacy was decided first, before any other part of the architecture.',
+        heading: 'Camera frames that leave the device',
+        body: 'Hand tracking runs in the browser with Google’s MediaPipe. No camera image and no audio leave the device, and there is no account. The browser only downloads the tracking files from Google and jsDelivr.',
       },
       media: [
         {
@@ -566,7 +566,7 @@ export const PROJECTS: Project[] = [
     tagline: 'Off-axis descent steered by head & hand movement: the body is the controller',
     short: 'The\u00A0experiment where the\u00A0body became the\u00A0controller',
     blurb:
-      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. All tracking runs on the device, and nothing leaves the machine. Ray-based GLSL shading, no frameworks. An art experiment and a toy, and a working study in the body as controller: the same system can let a performer’s body drive the image.",
+      "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. Tracking runs on the device with Google’s MediaPipe, and no camera image leaves the machine. Ray-based GLSL shading, no frameworks. An art experiment and a toy, and a working study in the body as controller: the same system can let a performer’s body drive the image.",
     tools: ['WebGL2 / GLSL', 'MediaPipe body tracking', 'Web Audio'],
     skills: ['body-tracking', 'head-coupled', 'creative-web', 'algorithmic-systems', 'perception-media', 'interactive-installations'],
     image: workEtherealPath,
@@ -590,7 +590,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '0',
         heading: 'Camera frames that leave the device',
-        body: 'Pose tracking runs in\u00A0the\u00A0page. Nothing is\u00A0recorded or\u00A0sent. The\u00A0only network call is\u00A0a\u00A0one-time download of\u00A0the\u00A0tracking model, made only if\u00A0you choose\u00A0the\u00A0camera.',
+        body: 'Pose tracking runs in\u00A0the\u00A0page. No image is\u00A0recorded or\u00A0sent. The\u00A0only network calls download the\u00A0tracking library and\u00A0model from jsDelivr and\u00A0Google, and\u00A0only if\u00A0you choose\u00A0the\u00A0camera.',
       },
       sections: [
         {
@@ -823,8 +823,8 @@ export const PROJECTS: Project[] = [
         {
           heading: 'How it was made',
           paragraphs: [
-            'Sinaida has used ChatGPT since January 2023, and\u00A0her work with machine learning goes back further: at\u00A0university she trained perceptrons and\u00A0built predictive algorithms that sorted cases for\u00A0a\u00A0cervical cancer screening system. Since January 2026 she codes with AI agents through an\u00A0orchestrator she built herself, [Mahler](https://github.com/sinaida-space/mahler-the-orchestrator). It\u00A0splits the\u00A0work, writes the\u00A0specs and\u00A0routes each task to\u00A0the\u00A0model that fits it. The\u00A0repository of\u00A0this tool keeps its plan, with every task assigned to\u00A0a\u00A0named\u00A0model.',
-            'Her years in\u00A0General Electric’s IT\u00A0Leadership Program (2012–2015, rotations across countries and\u00A0businesses) taught her to\u00A0build systems where many hands deliver one result. Now the\u00A0hands are AI agents. The\u00A0thinking that sets the\u00A0system, its rules and\u00A0its taste stays human, and\u00A0so\u00A0does what the\u00A0work is\u00A0about: bodies, perception, rest,\u00A0weather.',
+            'Sinaida’s grounding in\u00A0machine learning comes from university, where she worked on\u00A0a\u00A0clinical decision support system for\u00A0cervical cancer screening: a\u00A0camera read each sample, and\u00A0the\u00A0system sorted it\u00A0into normal or\u00A0in\u00A0need of\u00A0further tests. In\u00A0January 2026 she took up agentic coding and\u00A0built a\u00A0working system around it: her own orchestrator, [Mahler](https://github.com/sinaida-space/mahler-the-orchestrator), which splits the\u00A0work, writes the\u00A0specs and\u00A0routes each task to\u00A0the\u00A0model that fits it, and\u00A0a\u00A0pipeline that takes every project from the\u00A0first idea to\u00A0a\u00A0public\u00A0release.',
+            'From General Electric’s IT\u00A0Leadership Program (2012–2015) she brought the\u00A0habit of\u00A0building systems where many hands deliver one result. Now the\u00A0hands are AI agents, she sets the\u00A0direction and\u00A0the\u00A0taste, and\u00A0an\u00A0idea becomes a\u00A0working public tool within\u00A0days.',
             'The\u00A0interface grew in\u00A0layers: the\u00A0audio engine first, then flat windows in\u00A0the\u00A0style of\u00A0this site with Geist Pixel as\u00A0the\u00A0only typeface, a\u00A0terminal-style welcome screen and\u00A0a\u00A0guide. Version 1.2.0 came two days after the\u00A0repository was\u00A0created.',
           ],
         },
