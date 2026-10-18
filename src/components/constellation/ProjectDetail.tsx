@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
-import { PROJECTS, type Project, type ProjectKind } from '@/data/projects';
+import { PROJECTS, KIND_LABEL, type Project } from '@/data/projects';
+import { MadeLine } from '@/components/PracticeChips';
+import WorkFacts from '@/components/WorkFacts';
 import type { FocusOrigin } from '@/lib/constellationBus';
 import { createCardBuild } from './cardBuild';
 import type { Dialect } from '@/lib/diveBus';
@@ -9,14 +11,6 @@ import VideoEmbed from '@/components/VideoEmbed';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
 import DisplacementImage from '@/components/DisplacementImage';
 
-const KIND_LABEL: Record<ProjectKind, string> = {
-  stage: 'Stage',
-  installation: 'Installation',
-  conceptual: 'Conceptual',
-  game: 'Interactive',
-  tool: 'Tool',
-  tutorial: 'Tutorial',
-};
 
 // Internal case-study pages, keyed by project id: every project with a
 // `caseStudy` block in projects.ts gets a `/work/<id>` page, so the map is
@@ -90,19 +84,8 @@ function Readout({ project }: { project: Project }) {
               <p className="font-mono uppercase leading-snug tracking-[0.12em] text-foreground/55" style={{ fontSize: 16 }}>
                 {project.tagline}
               </p>
-              {project.tools && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {project.tools.map((t) => (
-                    <span
-                      key={t}
-                      className="uppercase"
-                      style={{ border: '1px solid hsl(var(--border))', padding: '3px 10px', fontFamily: 'var(--font-mono)', fontSize: '16px', letterSpacing: '0.15em', color: 'hsl(var(--foreground) / 0.45)' }}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {project.made && <MadeLine project={project} />}
+              <WorkFacts project={project} className="mt-2" />
             </div>
           </div>
         )}

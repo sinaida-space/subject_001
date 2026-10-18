@@ -23,6 +23,7 @@ export const REPO_ROOT = resolve(SCRIPT_DIR, '..', '..');
 export const DIST_DIR = join(REPO_ROOT, 'dist');
 
 const PROJECTS_FILE = join(REPO_ROOT, 'src', 'data', 'projects.ts');
+const PRACTICES_FILE = join(REPO_ROOT, 'src', 'data', 'practices.ts');
 
 export const SITE_URL = 'https://sinaida.eu';
 export const SITE_NAME = 'Sinaida Krivchenko';
@@ -199,6 +200,27 @@ function projectsArrayBody(source) {
   return array.slice(1, -1);
 }
 
+/** The practice tags (studio#70) from src/data/practices.ts, in source order. */
+export function readPractices() {
+  const source = readFileSync(PRACTICES_FILE, 'utf8');
+  const marker = 'export const PRACTICES: Practice[] = [';
+  const at = source.indexOf(marker);
+  if (at === -1) throw new Error(`site-data: could not find "${marker}" in ${PRACTICES_FILE}`);
+  const array = scanBalanced(source, at + marker.length - 1, '[', ']');
+  const practices = splitTopLevelObjects(array.slice(1, -1)).map((block) => ({
+    id: readString(block, 'id'),
+    label: readString(block, 'label'),
+    description: readString(block, 'description'),
+    lane: readString(block, 'lane'),
+  }));
+  if (practices.length === 0 || practices.some((p) => !p.id || !p.label || !p.description)) {
+    throw new Error(`site-data: could not read the practices in ${PRACTICES_FILE}`);
+  }
+  const shared = source.match(/PRACTICE_SHARED_LINE =\s*'((?:\\.|[^'])*)'/);
+  if (!shared) throw new Error(`site-data: could not find PRACTICE_SHARED_LINE in ${PRACTICES_FILE}`);
+  return { practices, sharedLine: unescapeLiteral(shared[1]) };
+}
+
 /**
  * Every project with a `caseStudy`, as a flat record the head tags, JSON-LD,
  * <noscript> body and sitemap can all read from.
@@ -250,7 +272,7 @@ export function readCaseStudies() {
       // The case page shows `intro` when it has one and falls back to the
       // blurb; the crawler fallback mirrors that so the two never diverge.
       body: intro && intro.length ? intro : blurb ? [blurb] : [],
-      tools: readStringArray(head, 'tools') ?? [],
+      practices: readStringArray(head, 'practices') ?? [],
       externalUrl: readString(head, 'url'),
       stat: stripObject(readObject(caseBody, 'stat', ['value', 'heading', 'body'])),
       order: stripObject(readObject(caseBody, 'order', ['heading', 'body', 'suffix'])),
@@ -287,6 +309,13 @@ export function readCaseStudies() {
  */
 export function buildRoutes() {
   const works = readCaseStudies();
+  const { practices, sharedLine } = readPractices();
+  const practiceLabel = Object.fromEntries(practices.map((p) => [p.id, p.label]));
+  for (const work of works) {
+    const unknown = work.practices.find((id) => !practiceLabel[id]);
+    if (unknown) throw new Error(`site-data: ${work.id} lists unknown practice "${unknown}"`);
+    work.practiceLabels = work.practices.map((id) => practiceLabel[id]);
+  }
 
   const home = {
     path: '',
@@ -430,6 +459,45 @@ export function buildRoutes() {
     work,
   }));
 
+  // Practice pages (studio#70): an index and one page per practice tag.
+  const workItem = (work) => ({ label: work.fullTitle, href: `/work/${work.id}/`, note: work.tagline });
+  const practiceIndex = {
+    path: 'practice',
+    kind: 'page',
+    title: `Practices | ${SITE_NAME}`,
+    description: `${practices.map((p) => p.label).join(', ')}.`,
+    canonical: `${SITE_URL}/practice/`,
+    breadcrumbLabel: 'Practices',
+    indexable: true,
+    priority: '0.7',
+    sources: ['src/pages/Practice.tsx', 'src/data/practices.ts', 'src/data/projects.ts'],
+    fallback: {
+      heading: 'Practices',
+      paragraphs: [sharedLine],
+      lists: [{ heading: 'Practices', items: practices.map((p) => ({ label: p.label, href: `/practice/${p.id}/`, note: p.description })) }],
+    },
+  };
+  const practiceRoutes = practices.map((p) => {
+    const inPractice = works.filter((w) => w.practices.includes(p.id));
+    return {
+      path: `practice/${p.id}`,
+      kind: 'page',
+      title: `${p.label} · Practice | ${SITE_NAME}`,
+      description: trimToWordBoundary(`${p.description} ${sharedLine}`, 160),
+      canonical: `${SITE_URL}/practice/${p.id}/`,
+      breadcrumbLabel: p.label,
+      indexable: true,
+      priority: '0.7',
+      sources: ['src/pages/Practice.tsx', 'src/data/practices.ts', 'src/data/projects.ts'],
+      itemList: { name: p.label, works: inPractice },
+      fallback: {
+        heading: p.label,
+        paragraphs: [p.description, sharedLine],
+        lists: [{ heading: 'Works', items: inPractice.map(workItem) }],
+      },
+    };
+  });
+
   return [
     home,
     collaborate,
@@ -442,5 +510,7 @@ export function buildRoutes() {
     legacyRedirect('booking'),
     legacyRedirect('press'),
     ...workRoutes,
+    practiceIndex,
+    ...practiceRoutes,
   ];
 }

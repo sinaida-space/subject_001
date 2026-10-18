@@ -1,6 +1,6 @@
 import { Fragment, lazy, Suspense, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { projectById, PROJECTS, DEFAULT_ROLE } from '@/data/projects';
+import { projectById, PROJECTS } from '@/data/projects';
 import VideoEmbed from '@/components/VideoEmbed';
 import DisplacementImage from '@/components/DisplacementImage';
 import HeartbeatPlaceholder from '@/components/HeartbeatPlaceholder';
@@ -15,6 +15,7 @@ import { CaseDiveControls, ProcessFloor, RelatedWorks } from '@/components/dive/
 import { markHomeReturn } from '@/lib/homeScroll';
 import { withProjectNames } from '@/lib/projectNames';
 import { DitherHeading, DrawnRule } from '@/components/PageParts';
+import WorkFacts from '@/components/WorkFacts';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
@@ -95,12 +96,6 @@ export default function WorkCase() {
   if (!project || !cs) return <NotFound />;
 
   const intro = cs.intro ?? (project.blurb ? [project.blurb] : []);
-
-  // one entry per line, so a list never breaks mid-separator
-  // Role first: the tools are tools, not a claim of engineering craft (studio#1).
-  const facts: [string, string[]][] = [['Role', [project.role ?? DEFAULT_ROLE]]];
-  if (cs.contributors?.length) facts.push(['With', cs.contributors.map((c) => c.name)]);
-  if (project.tools?.length) facts.push(['Tools', project.tools]);
 
   // Case pages form a loop, in PROJECTS order, so a reader who reaches the
   // end of one case always has somewhere to go besides back.
@@ -197,20 +192,7 @@ export default function WorkCase() {
             )}
 
             {/* ── Facts — a ruled table, label and fact at one size (as About) ── */}
-            {facts.length > 0 && (
-              <dl className="relative mt-8">
-                {facts.map(([key, val]) => (
-                  <div key={key} className="relative grid grid-cols-[7rem_1fr] gap-4 py-3 font-mono text-[17px] leading-[1.3]">
-                    <DrawnRule className="top-0" />
-                    <dt className="uppercase text-foreground/60">{key}</dt>
-                    <dd className="text-foreground">
-                      {val.map((v) => <span key={v} className="block">{v}</span>)}
-                    </dd>
-                  </div>
-                ))}
-                <DrawnRule className="bottom-0" />
-              </dl>
-            )}
+            <WorkFacts project={project} />
           </div>
           </div>
 

@@ -15,7 +15,7 @@ createRoot(document.getElementById("root")!).render(<App />);
 // Easter egg hint for anyone who opens devtools. Printed once per load.
 const TEXT = "color:#d8d8d8;font:13px/1.6 monospace";
 console.log(
-  "%c♥ SINAIDA_OS%c\n\nhey, smart one.\nglad you're an explorer.\n\nthere are a few easter eggs hidden on this website.\ngo find them.\n\nthe human behind them lives at /humans.txt\n\nstill here? good. what are you after?\ntype a word and press enter:\n\n  human      the person\n  eggs       a hint, just one\n  contact    the door\n  playlist   the soundtrack\n\n%cbuild " + (typeof __BUILD__ === "undefined" ? "dev" : __BUILD__) + " · designed and coded by sinaida krivchenko",
+  "%c♥ SINAIDA_OS%c\n\nhey, smart one.\nglad you're an explorer.\n\nthere are a few easter eggs hidden on this website.\ngo find them.\n\nthe human behind them lives at /humans.txt\n\nstill here? good. what are you after?\ntype a word and press enter:\n\n  human      the person\n  eggs       a hint, just one\n  contact    the door\n  playlist   the soundtrack\n\n%cbuild " + (typeof __BUILD__ === "undefined" ? "dev" : __BUILD__) + " · design and agentic coding by sinaida krivchenko",
   "color:#ff0a0a;font:700 14px monospace;letter-spacing:.3em;text-shadow:0 0 8px #ff0a0a",
   TEXT,
   "color:#777;font:11px/1.6 monospace",
