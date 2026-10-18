@@ -2,6 +2,7 @@
 // Consumed by: the Constellation graph, Selected Works rows, Experiments list,
 // and (via the SEO script / llms.txt) the static content layer.
 
+import type { PracticeId } from './practices';
 import workRedkiePtitsy from '@/assets/work-redkie-ptitsy.webp';
 import workRedkiePtitsy640 from '@/assets/work-redkie-ptitsy-640.webp';
 import workRedkiePtitsy1024 from '@/assets/work-redkie-ptitsy-1024.webp';
@@ -26,6 +27,16 @@ export type ProjectKind =
   | 'game'         // interactive web experiences
   | 'tool'         // utilities
   | 'tutorial';    // teaching: a build explained step by step
+
+/** Short display name of each kind, shared by the work card and the practice pages. */
+export const KIND_LABEL: Record<ProjectKind, string> = {
+  stage: 'Stage',
+  installation: 'Installation',
+  conceptual: 'Conceptual',
+  game: 'Interactive',
+  tool: 'Tool',
+  tutorial: 'Tutorial',
+};
 
 export type Badge = 'camera' | 'sound' | 'cursor' | 'scroll' | 'ru';
 
@@ -90,7 +101,7 @@ export interface CaseStudy {
   order: { heading: string; body: string; suffix: string };
 }
 
-/** Role line for case pages: the tools list is tools, not a claim of engineering craft (studio#1). */
+/** Role line for case pages, never a claim of engineering craft (studio#1). */
 export const DEFAULT_ROLE = 'Concept design and agentic coding';
 
 export interface Project {
@@ -110,7 +121,10 @@ export interface Project {
   blurb?: string;
   /** what Sinaida did on the piece, shown before the tools; defaults to DEFAULT_ROLE */
   role?: string;
-  tools?: string[];
+  /** what she did, as clickable practice tags (studio#70); tools are never listed */
+  practices: PracticeId[];
+  /** one line on how the work was made, with optional `[label](url)` links; web works fall back to the role */
+  made?: string;
   /** ids of the skill nodes this project connects to in the graph */
   skills: string[];
   /** external destination (games / tools open this on node click) */
@@ -160,7 +174,8 @@ export const PROJECTS: Project[] = [
     blurb:
       'Performed live at Sklad No. 3, Moscow: a full-set stage backdrop for the band redkie ptitsy. Audio-reactive projections built in TouchDesigner and run live behind the band through the whole set.',
     role: 'Concept design and live visuals in TouchDesigner',
-    tools: ['TouchDesigner', 'Audio analysis', 'Live signal chain'],
+    practices: ['live-visuals', 'projection'],
+    made: 'Audio-reactive visuals in TouchDesigner for a live set',
     skills: ['event-design', 'audio-reactive', 'touchdesigner', 'algorithmic-systems'],
     image: workRedkiePtitsy,
     imageSrcSet: `${workRedkiePtitsy640} 640w, ${workRedkiePtitsy1024} 1024w, ${workRedkiePtitsy} 1600w`,
@@ -251,7 +266,7 @@ export const PROJECTS: Project[] = [
     tagline: 'Acrylic painting turned playable web experience & projection installation · with Alisa Feer',
     blurb:
       'A collaboration with artist Alisa Feer. Her acrylic painting became a digital field that exists twice: as a projection installation and as a web experience you steer with your hands through the camera, tracked on-device. It is made for one viewer at a time and asks questions about selfhood.',
-    tools: ['Web', 'MediaPipe hand tracking', 'Acrylic on canvas'],
+    practices: ['gesture', 'interactive-web', 'projection', 'collaborations'],
     skills: ['interactive-installations', 'body-tracking', 'perception-media'],
     url: 'https://the-eyes-chico.sinaida.eu/',
     video: 'dvNl1G2fVLM',
@@ -347,7 +362,7 @@ export const PROJECTS: Project[] = [
     short: 'Alisa Feer’s artworks, turned into a\u00A0world with its own\u00A0lore',
     blurb:
       'A walk-through web installation made with UVALISS (Alisa Feer). Works from her SOULS series hang in a labyrinth of half-lit rooms that the browser builds as you walk: hospital corridors, a grandmother\u2019s flat, pale rooms dissolving into light. The music is generated as you go, and nothing about the visitor is\u00A0kept.',
-    tools: ['Three.js', 'Generative Web Audio', 'On-device hand tracking'],
+    practices: ['gesture', 'interactive-web', 'projection', 'generative-sound', 'collaborations'],
     skills: ['interactive-installations', 'body-tracking', 'creative-web', 'generative-sound'],
     url: 'https://conspace-rooms.vercel.app/',
     video: 'oSWzQ4ds8BI',
@@ -476,7 +491,7 @@ export const PROJECTS: Project[] = [
     short: 'A\u00A0musical instrument played with bare\u00A0hands',
     blurb:
       'Sinaida made AETHER CURRENTS, a browser instrument, with music advice from Kamil Yegelev (TeleFM), a musician in Belgrade: a camera reads your hands, and their movement drives granular sound and light in real time.',
-    tools: ['On-device hand tracking', 'Granular synthesis', 'WebGL'],
+    practices: ['live-visuals', 'gesture', 'interactive-web', 'generative-sound', 'collaborations'],
     skills: ['body-tracking', 'audio-reactive', 'generative-sound', 'creative-web', 'algorithmic-systems', 'perception-media'],
     url: 'https://aether-currents.sinaida.eu/',
     video: 'fxrrSxvKp9Q',
@@ -567,7 +582,7 @@ export const PROJECTS: Project[] = [
     short: 'The\u00A0experiment where the\u00A0body became the\u00A0controller',
     blurb:
       "An interactive descent from beneath a water surface into a nebula, steered entirely by head and hand movement through the webcam. Tracking runs on the device with Google’s MediaPipe, and no camera image leaves the machine. Ray-based GLSL shading, no frameworks. An art experiment and a toy, and a working study in the body as controller: the same system can let a performer’s body drive the image.",
-    tools: ['WebGL2 / GLSL', 'MediaPipe body tracking', 'Web Audio'],
+    practices: ['gesture', 'interactive-web'],
     skills: ['body-tracking', 'head-coupled', 'creative-web', 'algorithmic-systems', 'perception-media', 'interactive-installations'],
     image: workEtherealPath,
     url: 'https://sinaida-space.github.io/ethereal-path/',
@@ -669,7 +684,7 @@ export const PROJECTS: Project[] = [
     tagline: 'Head-coupled op-art: the screen becomes an unstable optical volume',
     blurb:
       "The\u00A0browser estimates the\u00A0viewer’s head position with on-device face tracking and\u00A0shifts the\u00A0projection in\u00A0response, so\u00A0the\u00A0monitor behaves like an\u00A0optical volume behind glass: op-art interference, a\u00A0star tunnel, anamorphic text that only resolves from one viewpoint. One ritual gesture (an\u00A0open hand raised near the\u00A0face) opens the\u00A0next question. A\u00A0browser test of\u00A0an\u00A0old lineage, from anamorphic painting to\u00A0head-coupled perspective and\u00A0the\u00A0camera-tracked LED volumes of\u00A0film\u00A0sets.",
-    tools: ['Web', 'MediaPipe face & hand tracking'],
+    practices: ['gesture', 'interactive-web'],
     skills: ['head-coupled', 'body-tracking', 'creative-web', 'perception-media', 'interactive-installations'],
     url: 'https://sinaida-space.github.io/stereolove/',
     video: 'jQy4Kk70hxM',
@@ -772,7 +787,7 @@ export const PROJECTS: Project[] = [
     short: 'Endless soundscapes for focused work',
     blurb:
       'Layer noise, water, fire, places and\u00A0music into one mix, save it\u00A0as\u00A0a\u00A0preset, and\u00A0let it\u00A0run for\u00A0hours. Sinaida made it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work. An\u00A0audio-reactive tunnel breathes with the\u00A0sound. It\u00A0installs as\u00A0an\u00A0app, works offline, and\u00A0nothing you\u00A0do\u00A0in\u00A0it\u00A0is\u00A0tracked.',
-    tools: ['Web Audio API', 'WebGL', 'Offline web app'],
+    practices: ['live-visuals', 'interactive-web', 'generative-sound'],
     skills: ['generative-sound', 'audio-reactive', 'creative-web', 'perception-media'],
     url: 'https://infinite-voidsong.vercel.app/',
     image: workInfiniteVoidsong,
@@ -874,7 +889,8 @@ export const PROJECTS: Project[] = [
     blurb:
       'Rain on\u00A0a\u00A0window with a\u00A0storm behind it, built in\u00A0TouchDesigner, with a\u00A023-minute video that walks through the\u00A0finished network. Raindrops are spheres moving along a\u00A0line grid, the\u00A0lightning follows a\u00A0geometry path built with custom code, and\u00A0the\u00A0view comes from one of\u00A0TouchDesigner\u2019s example files. The .toe and\u00A0the\u00A0sound file are on\u00A0Patreon for\u00A0every\u00A0subscriber.',
     role: 'Tutorial author, built in TouchDesigner',
-    tools: ['TouchDesigner', 'GLSL shader', 'Audio analysis'],
+    practices: ['live-visuals'],
+    made: 'One of\u00A0my [TouchDesigner tutorials on\u00A0YouTube](https://www.youtube.com/@theSwansAreNotWhatTheySeem): a\u00A0thunderstorm behind rainy glass, with the\u00A0.toe file free on\u00A0Patreon.',
     skills: ['touchdesigner', 'audio-reactive', 'algorithmic-systems', 'creative-web'],
     url: 'https://youtu.be/hwFttiCKbrU',
     video: 'hwFttiCKbrU',

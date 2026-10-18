@@ -24,6 +24,15 @@ She comes up with the idea, the concept and the way to make it into a system. Th
 - Infinite Voidsong (https://infinite-voidsong.vercel.app/) — endless generated soundscapes for focused work, with rest built into the session; Web Audio, WebGL, offline, no tracking
 - Storm Glass (https://youtu.be/hwFttiCKbrU) — TouchDesigner tutorial: a thunderstorm behind rainy glass, audio onsets fire the lightning, drops refract the sky through GLSL
 
+## Practices
+
+- Live & audio-reactive visuals (https://sinaida.eu/practice/live-visuals) — Sound shapes the visuals in real time.
+- Gesture-controlled experiences (https://sinaida.eu/practice/gesture) — The body is the controller: hands, head and movement steer the piece.
+- Interactive web experiences (https://sinaida.eu/practice/interactive-web) — Browser works with a live link, from concept to launch, built through agentic coding.
+- Projection & installation design (https://sinaida.eu/practice/projection) — Projection designs for stages and rooms, from a live concert to installation proposals.
+- Generative sound (https://sinaida.eu/practice/generative-sound) — Sound written as rules, so each session plays out its own way.
+- Artist collaborations (https://sinaida.eu/practice/collaborations) — Artists bring their work, I build a living world around it.
+
 ## Skills
 
 TouchDesigner, Generative art, Real-time audio-reactive visuals, Body & gesture tracking (MediaPipe), Procedural animation, Concept and experience design, Visual narrative development, Biomedical engineering MSc, Systems design thinking. Agentic coding workflows, multi-agent orchestration, MCP (Model Context Protocol) integrations.

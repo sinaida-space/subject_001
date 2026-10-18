@@ -16,6 +16,7 @@ const Collaborate = lazy(routeChunks.collaborate);
 const Experiences = lazy(routeChunks.experiences);
 const Statement = lazy(routeChunks.statement);
 const WorkCase = lazy(routeChunks.work);
+const Practice = lazy(routeChunks.practice);
 const NotFound = lazy(routeChunks.notFound);
 
 const RouteFallback = () => (
@@ -91,6 +92,8 @@ const App = () => (
           <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
           <Route path="/press" element={<Navigate to="/collaborate" replace />} />
           <Route path="/work/:slug" element={<WorkCase />} />
+          <Route path="/practice" element={<Practice />} />
+          <Route path="/practice/:slug" element={<Practice />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

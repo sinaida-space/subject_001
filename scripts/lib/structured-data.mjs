@@ -124,7 +124,7 @@ function creativeWorkNode(route) {
     url: route.canonical,
     ...(sameAs.length ? { sameAs } : {}),
     ...(work.kindLabel ? { genre: work.kindLabel } : {}),
-    ...(work.tools.length ? { keywords: work.tools.join(', ') } : {}),
+    ...(work.practiceLabels.length ? { keywords: work.practiceLabels.join(', ') } : {}),
     creator: ref(PERSON_ID),
     author: ref(PERSON_ID),
     ...(contributors.length ? { contributor: contributors } : {}),
@@ -169,11 +169,25 @@ function worksListNode(route) {
   };
 }
 
+/** A practice page's works (studio#70), so a consumer can enumerate them from the page alone. */
+function practiceListNode(route) {
+  return {
+    '@type': 'ItemList',
+    '@id': `${route.canonical}#works`,
+    name: route.itemList.name,
+    itemListElement: route.itemList.works.map((work, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: { '@id': `${SITE_URL}/work/${work.id}/#work`, name: work.fullTitle, url: `${SITE_URL}/work/${work.id}/` },
+    })),
+  };
+}
+
 function webPageNode(route, { hasBreadcrumb, mainEntityId }) {
   return {
     // ProfilePage on "/" because the homepage's subject is the person, which
     // is exactly the claim a search or answer engine is trying to resolve.
-    '@type': route.kind === 'home' ? ['WebPage', 'ProfilePage'] : 'WebPage',
+    '@type': route.kind === 'home' ? ['WebPage', 'ProfilePage'] : route.itemList ? 'CollectionPage' : 'WebPage',
     '@id': `${route.canonical}#webpage`,
     url: route.canonical,
     name: route.title,
@@ -201,6 +215,7 @@ export function buildGraph(route) {
   if (breadcrumb) graph.push(breadcrumb);
   if (work) graph.push(work);
   if (route.kind === 'home') graph.push(worksListNode(route));
+  if (route.itemList) graph.push(practiceListNode(route));
 
   return { '@context': 'https://schema.org', '@graph': graph };
 }
@@ -255,9 +270,13 @@ function workFallback(route) {
     lines.push(p(work.stat.body));
   }
 
-  if (work.tools.length) {
-    lines.push('        <h2>Built with</h2>');
-    lines.push(p(work.tools.join(', ')));
+  if (work.practices.length) {
+    lines.push(
+      ...listBlock(
+        'Practice',
+        work.practices.map((id, i) => `<a href="/practice/${escapeHtml(id)}/">${escapeHtml(work.practiceLabels[i])}</a>`),
+      ),
+    );
   }
 
   lines.push(...listBlock('Credits', work.credits.map((c) => escapeHtml(c))));
@@ -285,7 +304,13 @@ function pageFallback(route) {
     ...fallback.paragraphs.map((para) => p(para)),
   ];
   for (const list of fallback.lists ?? []) {
-    lines.push(...listBlock(list.heading, list.items.map((item) => escapeHtml(item))));
+    // An item is plain text, or a link with an optional note after it.
+    const html = list.items.map((item) =>
+      typeof item === 'string'
+        ? escapeHtml(item)
+        : `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>${item.note ? `: ${escapeHtml(item.note)}` : ''}`,
+    );
+    lines.push(...listBlock(list.heading, html));
   }
   return lines;
 }

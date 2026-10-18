@@ -4,7 +4,10 @@ import path from "path";
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
 
-// The build's date and commit, printed in the console easter egg.
+// The build stamp printed in the console easter egg: YY.MM.DD.HH.MM in Prague
+// time, 24-hour clock, plus the commit. On main the last commit is the merged
+// release, so the stamp is the moment of the merge and tells apart several
+// releases on one day. Without git it falls back to the time of the build.
 const commit = (() => {
   try {
     return execSync("git rev-parse --short HEAD").toString().trim();
@@ -12,7 +15,27 @@ const commit = (() => {
     return "local";
   }
 })();
-const BUILD = `${new Date().toISOString().slice(2, 10).replace(/-/g, ".")} · ${commit}`;
+const stampDate = (() => {
+  try {
+    return new Date(execSync("git log -1 --format=%cI").toString().trim());
+  } catch {
+    return new Date();
+  }
+})();
+const stampParts = Object.fromEntries(
+  new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Prague",
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  })
+    .formatToParts(stampDate)
+    .map((p) => [p.type, p.value]),
+);
+const BUILD = `${stampParts.year}.${stampParts.month}.${stampParts.day}.${stampParts.hour}.${stampParts.minute} · ${commit}`;
 
 // The Licensing page's "Last updated" is the date of the last commit that
 // touched it. Falls back to today when git history is unavailable.

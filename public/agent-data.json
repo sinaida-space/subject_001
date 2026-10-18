@@ -78,6 +78,44 @@
       "url": "https://youtu.be/hwFttiCKbrU"
     }
   ],
+  "practices": [
+    {
+      "id": "live-visuals",
+      "label": "Live & audio-reactive visuals",
+      "description": "Sound shapes the visuals in real time.",
+      "url": "https://sinaida.eu/practice/live-visuals"
+    },
+    {
+      "id": "gesture",
+      "label": "Gesture-controlled experiences",
+      "description": "The body is the controller: hands, head and movement steer the piece.",
+      "url": "https://sinaida.eu/practice/gesture"
+    },
+    {
+      "id": "interactive-web",
+      "label": "Interactive web experiences",
+      "description": "Browser works with a live link, from concept to launch, built through agentic coding.",
+      "url": "https://sinaida.eu/practice/interactive-web"
+    },
+    {
+      "id": "projection",
+      "label": "Projection & installation design",
+      "description": "Projection designs for stages and rooms, from a live concert to installation proposals.",
+      "url": "https://sinaida.eu/practice/projection"
+    },
+    {
+      "id": "generative-sound",
+      "label": "Generative sound",
+      "description": "Sound written as rules, so each session plays out its own way.",
+      "url": "https://sinaida.eu/practice/generative-sound"
+    },
+    {
+      "id": "collaborations",
+      "label": "Artist collaborations",
+      "description": "Artists bring their work, I build a living world around it.",
+      "url": "https://sinaida.eu/practice/collaborations"
+    }
+  ],
   "contact": {
     "website": "https://sinaida.eu/",
     "collaborate": "https://sinaida.eu/collaborate",

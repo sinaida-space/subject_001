@@ -10,6 +10,7 @@ export const routeChunks = {
   experiences: () => import('@/pages/Experiences'),
   statement: () => import('@/pages/Statement'),
   work: () => import('@/pages/WorkCase'),
+  practice: () => import('@/pages/Practice'),
   notFound: () => import('@/pages/NotFound'),
 };
 
@@ -24,5 +25,6 @@ export function chunkForPath(pathname: string): (() => Promise<unknown>) | null 
   if (path === '/experiences') return routeChunks.experiences;
   if (path === '/statement') return routeChunks.statement;
   if (/^\/work\/[^/.]+$/.test(path)) return routeChunks.work;
+  if (/^\/practice(\/[^/.]+)?$/.test(path)) return routeChunks.practice;
   return null;
 }

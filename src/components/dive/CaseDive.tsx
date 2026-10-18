@@ -2,8 +2,8 @@
 // drafts/rabbit-hole. On a case hero: the ▼ DEPTH 02 mark dives one floor
 // down (same route, ?depth=2) and up to three red threads dive sideways into
 // connected works through shared skills. The floor itself is real DOM:
-// the case's own process material, 1-bit crops of its key frame and a small
-// still network of its tools. Canvases draw once and stay still.
+// the case's own process material, 1-bit crops of its key frame and its
+// practice tags. Canvases draw once and stay still.
 
 import { useEffect, useLayoutEffect, useRef, type MouseEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { PROJECTS, DEFAULT_ROLE, type Project } from '@/data/projects';
 import { SKILLS } from '@/data/graph';
 import { diveBus, isDiveState, type DiveRequest } from '@/lib/diveBus';
 import DitheredThumb from '@/components/DitheredThumb';
+import { PracticeChips } from '@/components/PracticeChips';
 
 const RED = [204, 0, 0]; // --sinaida-red
 const VOID = [5, 5, 5]; // --background
@@ -165,56 +166,6 @@ function OneBitCrops({ src }: { src: string }) {
   );
 }
 
-// The tools as a still star network around the work: numbered to match the list.
-function ToolNetwork({ tools }: { tools: string[] }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const c = ref.current;
-    if (!c) return;
-    const draw = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = c.clientWidth, h = c.clientHeight;
-      c.width = Math.round(w * dpr);
-      c.height = Math.round(h * dpr);
-      const g = c.getContext('2d');
-      if (!g) return;
-      g.scale(dpr, dpr);
-      g.clearRect(0, 0, w, h);
-      const cx = w / 2, cy = h / 2, r = Math.min(w, h) * 0.36;
-      const pts = tools.map((_, i) => {
-        const a = -Math.PI / 2 + (i / tools.length) * Math.PI * 2;
-        return [cx + Math.cos(a) * r * 1.35, cy + Math.sin(a) * r];
-      });
-      g.strokeStyle = 'rgba(204, 0, 0, 0.7)';
-      g.lineWidth = 1;
-      pts.forEach(([x, y], i) => {
-        g.beginPath();
-        g.moveTo(cx, cy);
-        g.lineTo(x, y);
-        const [nx, ny] = pts[(i + 1) % pts.length];
-        if (pts.length > 2) g.lineTo(nx, ny);
-        g.stroke();
-      });
-      g.fillStyle = 'rgb(204, 0, 0)';
-      g.fillRect(cx - 4, cy - 4, 8, 8);
-      g.font = "13px 'Geist Pixel', ui-monospace, monospace";
-      g.textAlign = 'center';
-      g.textBaseline = 'middle';
-      pts.forEach(([x, y], i) => {
-        g.fillStyle = 'rgb(242, 239, 233)';
-        g.fillRect(x - 2.5, y - 2.5, 5, 5);
-        g.fillStyle = 'rgba(242, 239, 233, 0.65)';
-        g.fillText(String(i + 1).padStart(2, '0'), x, y + (y < cy ? -14 : 14));
-      });
-    };
-    draw();
-    window.addEventListener('resize', draw);
-    return () => window.removeEventListener('resize', draw);
-  }, [tools]);
-  return <canvas ref={ref} aria-hidden="true" className="h-[220px] w-full" />;
-}
-
-/** DEPTH 02: the process floor, on the case route via ?depth=2. */
 export function ProcessFloor({ project, full }: { project: Project; full: boolean }) {
   const cs = project.caseStudy!;
   const location = useLocation();
@@ -268,19 +219,10 @@ export function ProcessFloor({ project, full }: { project: Project; full: boolea
           <h2 className="clinical-label mb-3 text-foreground/65">Role</h2>
           <p className="font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/85">{project.role ?? DEFAULT_ROLE}</p>
         </div>
-        {project.tools && project.tools.length > 0 && (
-          <div className="mt-6">
-            <h2 className="clinical-label mb-3 text-foreground/65">Tools</h2>
-            {full && <ToolNetwork tools={project.tools} />}
-            <ol className="mt-3 flex flex-col gap-1 font-mono text-[13px] uppercase tracking-[0.15em] text-foreground/85">
-              {project.tools.map((t, i) => (
-                <li key={t}>
-                  <span className="text-primary-legible">{String(i + 1).padStart(2, '0')}</span> {t}
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
+        <div className="mt-6">
+          <h2 className="clinical-label mb-3 text-foreground/65">Practice</h2>
+          <PracticeChips ids={project.practices} className="" />
+        </div>
       </div>
 
       <div className="md:col-span-7">
