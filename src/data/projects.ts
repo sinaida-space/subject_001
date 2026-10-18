@@ -106,6 +106,8 @@ export const DEFAULT_ROLE = 'Concept design and agentic coding';
 
 export interface Project {
   id: string;
+  /** who made what, one plain line per part (studio#54); shown on the case page */
+  madeBy?: string[];
   /** surface the case dive resolves in (#119): crt = stage, dither = image, ascii = code */
   dialect: Dialect;
   title: string;
@@ -166,6 +168,11 @@ export const PROJECTS: Project[] = [
   {
     id: 'redkie-ptitsy',
     dialect: 'crt',
+    madeBy: [
+      'Concept and visual world: Sinaida Krivchenko',
+      'Visual systems: built by Sinaida in TouchDesigner, one per song',
+      'Music and live performance: redkie ptitsy',
+    ],
     title: 'Redkie Ptitsy',
     subtitle: 'Live Concert Visuals',
     kind: 'stage',
@@ -261,6 +268,12 @@ export const PROJECTS: Project[] = [
   {
     id: 'the-eyes-chico',
     dialect: 'dither',
+    madeBy: [
+      'Concept and interactive design: Sinaida Krivchenko',
+      'Painting: Alisa Feer',
+      'Code: written with AI coding agents, directed and reviewed by Sinaida',
+      'Hand tracking: MediaPipe by Google, running in the browser',
+    ],
     title: 'The Eyes Chico',
     kind: 'installation',
     tagline: 'Acrylic painting turned playable web experience & projection installation · with Alisa Feer',
@@ -356,6 +369,12 @@ export const PROJECTS: Project[] = [
   {
     id: 'conspace-rooms',
     dialect: 'dither',
+    madeBy: [
+      'Idea, experience design and game mechanics: Sinaida Krivchenko',
+      'SOULS artworks and voice: UVALISS (Alisa Feer)',
+      'Code: written with AI coding agents, directed and reviewed by Sinaida',
+      'Hand tracking: MediaPipe by Google, running in the browser',
+    ],
     title: 'CONSPACE ROOMS',
     kind: 'installation',
     tagline: 'Walk-through labyrinth of artworks, in the browser or as a gesture-controlled projection · with UVALISS',
@@ -485,6 +504,12 @@ export const PROJECTS: Project[] = [
   {
     id: 'aether-currents',
     dialect: 'ascii',
+    madeBy: [
+      'Concept and interaction design: Sinaida Krivchenko',
+      'Code: written with AI coding agents, directed and reviewed by Sinaida',
+      'Music advice: Kamil Yegelev (TeleFM)',
+      'Hand tracking: MediaPipe by Google, running in the browser',
+    ],
     title: 'Aether Currents',
     kind: 'game',
     tagline: 'Browser instrument played with bare hands',
@@ -576,6 +601,11 @@ export const PROJECTS: Project[] = [
   {
     id: 'ethereal-path',
     dialect: 'dither',
+    madeBy: [
+      'Concept and artwork: Sinaida Krivchenko',
+      'Code: written with AI coding agents, directed and reviewed by Sinaida',
+      'Body tracking: MediaPipe by Google, running in the browser',
+    ],
     title: 'Ethereal Path',
     kind: 'game',
     tagline: 'Off-axis descent steered by head & hand movement: the body is the controller',
@@ -679,6 +709,12 @@ export const PROJECTS: Project[] = [
   {
     id: 'stereolove',
     dialect: 'crt',
+    madeBy: [
+      'Concept and artwork: Sinaida Krivchenko',
+      'Code: written with AI coding agents, directed and reviewed by Sinaida',
+      'Face and hand tracking: MediaPipe by Google, running in the browser',
+      'Title typeface: Bitmgothic',
+    ],
     title: 'Stereolove',
     kind: 'game',
     tagline: 'Head-coupled op-art: the screen becomes an unstable optical volume',
@@ -780,6 +816,11 @@ export const PROJECTS: Project[] = [
   {
     id: 'infinite-voidsong',
     dialect: 'ascii',
+    madeBy: [
+      'Concept and design: Sinaida Krivchenko',
+      'Code: written with AI coding agents, directed and reviewed by Sinaida',
+      'Field recordings: BigSoundBank (CC0)',
+    ],
     title: 'Infinite Voidsong',
     subtitle: 'Focus Soundscapes',
     kind: 'game',
@@ -882,6 +923,10 @@ export const PROJECTS: Project[] = [
   {
     id: 'storm-glass',
     dialect: 'ascii',
+    madeBy: [
+      'Network and tutorial: Sinaida Krivchenko, in TouchDesigner',
+      'Water map: stylized_water by Etienne Patry, Adobe Substance 3D Community Assets',
+    ],
     title: 'Storm Glass',
     subtitle: 'TouchDesigner Tutorial',
     kind: 'tutorial',
