@@ -887,7 +887,7 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
       </div>
       {/* CRT/VHS pass over the star field — scanlines, vignette, grain, and a
           slow flicker. Ported from the Soulstice backdrop. A deliberately
-          constant, low-amplitude layer (the sanctioned exception to the motion
+          constant, low-amplitude layer (the one allowed exception to the motion
           law); the flicker is frozen under prefers-reduced-motion. Sits outside
           the blur wrapper on its own z-0 sibling so it paints crisply above the
           canvas but still behind content. */}

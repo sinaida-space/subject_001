@@ -265,7 +265,7 @@ export const PROJECTS: Project[] = [
     kind: 'installation',
     tagline: 'Acrylic painting turned playable web experience & projection installation · with Alisa Feer',
     blurb:
-      'A collaboration with artist Alisa Feer. Her acrylic painting became a digital field that exists twice: as a projection installation and as a web experience you steer with your hands through the camera, tracked on-device. It is made for one viewer at a time and asks questions about selfhood.',
+      'A collaboration with artist Alisa Feer. Her acrylic painting became a digital field, shown as a projection installation and as a web experience you steer with your hands through the camera, tracked on-device. It is made for one viewer at a time and asks questions about selfhood.',
     practices: ['gesture', 'interactive-web', 'projection', 'collaborations'],
     skills: ['interactive-installations', 'body-tracking', 'perception-media'],
     url: 'https://the-eyes-chico.sinaida.eu/',
@@ -286,7 +286,7 @@ export const PROJECTS: Project[] = [
       intro: [
         'It began as a conversation between two artists, each searching for her own way forward. Alisa Feer painted the first answer: a lit figure standing in a field of eyes, all the judging gazes that can throw a person off her own path, held still in acrylic on a single A4 sheet.',
         'Sinaida translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way, all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface recalls old computers, which slows a person down enough to look.',
-        'The work exists twice. As a web experience it is finished and live, playable now in any browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Hand tracking runs in the browser with Google’s MediaPipe; the camera image stays on the device and nothing is recorded. As an installation it is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026.',
+        'THE EYES CHICO is a web experience and an installation. The web experience is finished and live in a modern browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Hand tracking runs in the browser with Google’s MediaPipe; the camera image stays on the device and nothing is recorded. Only the tracking files come from outside, from third-party CDNs, once the camera starts. The installation is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026.',
       ],
       heroCta: { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
       stat: {
@@ -307,7 +307,7 @@ export const PROJECTS: Project[] = [
         stages: [
           { label: 'Acrylic on canvas', detail: 'Alisa Feer’s original: acrylic and photo paper, A4, unique piece, July 2026.' },
           { label: 'Digital field', detail: 'The painting rebuilt as a navigable scene: soul-figure, poppies, a horizon of eyes.' },
-          { label: 'Web experience', detail: 'Live in any browser; optional hand tracking runs on-device, palm to steer, fist to dive, pinch to pick.' },
+          { label: 'Web experience', detail: 'Live in a modern browser; optional hand tracking runs on-device, palm to steer, fist to dive, pinch to pick.' },
           { label: 'Installation', detail: 'A room lit red, one laptop, one projector: the same field at the scale of a wall.' },
         ],
         footer: '> concept and interactive design: Sinaida Krivchenko · painting: Alisa Feer',
@@ -433,12 +433,12 @@ export const PROJECTS: Project[] = [
       method: {
         trace: '> build_decisions.trace() // six reasons',
         stages: [
-          { label: 'Any browser', detail: 'Artworks usually wait in rooms people have to travel to. This one opens from a link, on a laptop or a phone, with nothing to install.' },
+          { label: 'In the browser', detail: 'Artworks usually wait in rooms people have to travel to. This one opens from a link, on a laptop or a phone, with nothing to install.' },
           { label: 'Made in code', detail: 'Walls, light and most of the furniture are generated on the spot. The piece stays light on an ordinary connection and rebuilds itself for every visit.' },
           { label: 'Generated sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The recordings are Alisa’s voice at seven of the works and a few short sounds from the yard.' },
           { label: 'A steady walk', detail: 'The target is 60 fps on an average laptop; every passage between rooms was checked for smoothness, and phones get a lighter version automatically.' },
           { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
-          { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it. Even the tracking files come from the piece’s own server.' },
+          { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it, and even the tracking files come from the piece’s own server. The hosting provider sees only the technical data any page load carries, such as the IP address.' },
         ],
         footer: '> idea, experience design & game mechanics: Sinaida Krivchenko · SOULS: UVALISS',
       },
@@ -527,7 +527,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '0',
         heading: 'Camera frames that leave the device',
-        body: 'Hand tracking runs in the browser with Google’s MediaPipe. No camera image and no audio leave the device, and there is no account. The browser only downloads the tracking files from Google and jsDelivr.',
+        body: 'Hand tracking runs in the browser with Google’s MediaPipe. No camera image and no audio leave the device, and there is no account. The browser only downloads the tracking files from third-party CDNs.',
       },
       media: [
         {
@@ -605,7 +605,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '0',
         heading: 'Camera frames that leave the device',
-        body: 'Pose tracking runs in\u00A0the\u00A0page. No image is\u00A0recorded or\u00A0sent. The\u00A0only network calls download the\u00A0tracking library and\u00A0model from jsDelivr and\u00A0Google, and\u00A0only if\u00A0you choose\u00A0the\u00A0camera.',
+        body: 'Pose tracking runs in\u00A0the\u00A0page. No image is\u00A0recorded or\u00A0sent. The\u00A0only network calls download the\u00A0tracking library and\u00A0model from third-party CDNs, and\u00A0only if\u00A0you choose\u00A0the\u00A0camera.',
       },
       sections: [
         {
@@ -758,7 +758,7 @@ export const PROJECTS: Project[] = [
           { label: 'The premise', detail: 'A\u00A0stereogram withholds depth from some viewers. Reverse it: the\u00A0image adapts\u00A0to\u00A0the\u00A0viewer.' },
           { label: 'Head-coupled projection', detail: 'A\u00A0virtual eye in\u00A0front of\u00A0the\u00A0screen, every point projected through it. Pure math, unit\u00A0tested.' },
           { label: 'Anamorphic points', detail: 'Question text sampled into points and\u00A0placed along sightlines from a\u00A0reveal eye, readable from one angle\u00A0only.' },
-          { label: 'Tracking', detail: 'On-device face and\u00A0hand landmarks. The\u00A0first stable face becomes neutral. MediaPipe loads only when the\u00A0camera\u00A0starts.' },
+          { label: 'Tracking', detail: 'On-device face and\u00A0hand landmarks. The\u00A0first stable face becomes neutral. MediaPipe loads from third-party CDNs only when the\u00A0camera\u00A0starts.' },
           { label: 'Frame budget', detail: 'The\u00A0renderer watches its own frame cost and\u00A0sheds detail, frame rate and\u00A0glow before it\u00A0drops\u00A0the\u00A0experience.' },
         ],
         footer: '> concept & artwork: Sinaida Krivchenko · Apache 2.0 code, CC BY-NC-ND 4.0 artwork',
