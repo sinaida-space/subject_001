@@ -248,7 +248,7 @@ function workFallback(route) {
   if (work.stat) {
     // The page shows the number as a big display glyph above its heading.
     // Prose cannot, so the number is folded onto the end of the heading:
-    // "Bytes that leave the device: 0". Concrete figures are the part of a
+    // "Camera frames that leave the device: 0". Concrete figures are the part of a
     // case study an answer engine is most likely to quote, so the number has
     // to survive into the text, not just the layout.
     lines.push(`        <h2>${escapeHtml(work.stat.heading)}: ${escapeHtml(work.stat.value)}</h2>`);

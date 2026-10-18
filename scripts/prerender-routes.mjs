@@ -125,7 +125,18 @@ function renderRouteHtml(baseHtml, route) {
     );
   }
 
-  html = replaceRequired(
+  // Alias routes (/license, /booking, /press) are static files on GitHub
+  // Pages, which cannot answer with a 301. A zero-second refresh sends
+  // visitors and crawlers on to the real page even without JavaScript.
+  if (route.redirectTo) {
+    html = replaceRequired(
+      html,
+      /<meta name="robots" content="[^"]*">/,
+      `<meta name="robots" content="${escapeHtml(route.robots)}">\n    <meta http-equiv="refresh" content="0; url=${escapeHtml(route.redirectTo)}">`,
+      'meta refresh',
+    );
+  }
+html = replaceRequired(
     html,
     /<script type="application\/ld\+json" id="ld-graph">[\s\S]*?<\/script>/,
     `<script type="application/ld+json" id="ld-graph">\n${JSON.stringify(buildGraph(route), null, 2)}\n    </script>`,

@@ -412,6 +412,7 @@ export function buildRoutes() {
     ...collaborate,
     path,
     canonical: collaborate.canonical,
+    redirectTo: collaborate.canonical,
     robots: 'noindex, follow',
     indexable: false,
   });
@@ -437,7 +438,7 @@ export function buildRoutes() {
     privacy,
     licensing,
     // /license is the SPA's alias for /licensing; same shell, not indexed.
-    { ...licensing, path: 'license', robots: 'noindex, follow', indexable: false },
+    { ...licensing, path: 'license', redirectTo: licensing.canonical, robots: 'noindex, follow', indexable: false },
     legacyRedirect('booking'),
     legacyRedirect('press'),
     ...workRoutes,
