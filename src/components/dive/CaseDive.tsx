@@ -71,7 +71,7 @@ export function RelatedWorks({ project }: { project: Project }) {
   if (threads.length === 0) return null;
   return (
     <nav aria-label="Related works" className="mt-14" style={{ borderTop: '1px solid hsl(var(--graphite))', paddingTop: '24px' }}>
-      <div className="clinical-label mb-5 text-foreground/50">Related works</div>
+      <div className="clinical-label mb-5 text-foreground/60">Related works</div>
       <ul className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         {threads.map(({ to, shared }) => (
           <li key={to.id}>
@@ -91,7 +91,7 @@ export function RelatedWorks({ project }: { project: Project }) {
                 {to.title} →
               </div>
               {shared[0] && (
-                <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/40">{shared[0].label}</div>
+                <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/60">{shared[0].label}</div>
               )}
             </Link>
           </li>
