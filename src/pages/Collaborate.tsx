@@ -16,7 +16,7 @@ const PROCESS_STEPS = [
   { label: 'Brief', detail: 'You send the occasion and the space: a setlist with tempos and stems, or plans and photos, and what the room’s light does.' },
   { label: 'Concept', detail: 'A visual direction comes back for your feedback.' },
   { label: 'Build', detail: 'Whatever the piece needs: pencil and paper, procedural graphics in TouchDesigner, or agentic coding.' },
-  { label: 'Rehearsal', detail: 'Colours and timing tested against the venue’s light and rig before the show.' },
+  { label: 'Rehearsal', detail: 'Colours and timing are tested against the venue’s light and rig, on site or from photos and video of the room.' },
   { label: 'Handoff', detail: 'Before the live run: final tests and a contingency plan built on a risk check. Support on the day is agreed for each project.' },
   { label: 'Show', detail: 'Delivered ready to run, with a fallback for every file.' },
 ];
@@ -24,7 +24,7 @@ const PROCESS_STEPS = [
 // Third-person boilerplate, written to be copy-pasted verbatim into program
 // booklets and press. Facts only: no availability, timeline, or client claims
 // beyond the two real credits.
-const BOILERPLATE = `Sinaida Krivchenko (she/her) is a new media artist based in Prague, working globally. She designs visual worlds for stages, concerts and performance spaces that respond to sound and to the bodies in the room. Recent work: Redkie Ptitsy, nine audio-reactive projections for a live concert in Moscow (2026), and CONSPACE ROOMS, a walk-through labyrinth installation and web experience with UVALISS. She chooses the tools each piece needs, from pencil and paper to procedural graphics in TouchDesigner and agentic coding. Before her art practice: six years of independent cultural projects in Amsterdam, the General Electric IT Leadership Program, and a bachelor’s and a master’s in biomedical engineering from Bauman Moscow State Technical University.`;
+const BOILERPLATE = `Sinaida Krivchenko (she/her) is a new media artist based in Prague, available internationally. She designs visual worlds for stages, concerts and performance spaces that respond to sound and to the bodies in the room. Recent work: Redkie Ptitsy, nine audio-reactive projections for a live concert in Moscow (2026), and CONSPACE ROOMS, a walk-through labyrinth installation and web experience with UVALISS. She chooses the tools each piece needs, from pencil and paper to procedural graphics in TouchDesigner and agentic coding. Before her art practice: six years of independent cultural projects in Amsterdam, the General Electric IT Leadership Program, and a bachelor’s and a master’s in biomedical engineering from Bauman Moscow State Technical University.`;
 
 // Copies the boilerplate as plain text, so it pastes clean into a programme.
 function CopyButton({ text }: { text: string }) {
@@ -127,7 +127,7 @@ export default function Collaborate() {
             rows={[
               {
                 label: 'Travel',
-                value: 'Based in Prague, working globally.',
+                value: 'Based in Prague, available internationally.',
                 note: 'Touring and international bookings are welcome; travel and accommodation are arranged case by case.',
               },
               {

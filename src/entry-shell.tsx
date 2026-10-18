@@ -5,7 +5,7 @@
 // invisible. Never shipped to the browser.
 
 import { renderToStaticMarkup } from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom/server';
+import { StaticRouter } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroLetters from '@/components/HeroLetters';
 import { RenderModeProvider } from '@/hooks/useRenderMode';

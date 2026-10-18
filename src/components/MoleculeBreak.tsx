@@ -75,7 +75,7 @@ export function MoleculeNote({
       >
         <span style={{ color: 'hsl(var(--primary-legible))' }}>*</span>
         <span style={{ color: 'hsl(var(--foreground) / 0.75)' }}>{id}</span>
-        <span className="block" style={{ color: 'hsl(var(--foreground) / 0.55)', marginTop: '1.45em' }}>{QUESTIONS[id]}</span>
+        <span className="block" style={{ color: 'hsl(var(--foreground) / 0.6)', marginTop: '1.45em' }}>{QUESTIONS[id]}</span>
       </p>
     </div>
   );

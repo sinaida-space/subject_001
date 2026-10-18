@@ -123,7 +123,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => toggle()}
-              className={`cursor-none flex items-center justify-center h-9 transition-colors text-primary-legible/70 hover:text-accent ${mode === 'full' ? 'w-9' : 'px-3'}`}
+              className={`cursor-none flex items-center justify-center h-9 transition-colors hover:text-accent ${mode === 'full' ? 'w-9 text-primary-legible/70' : 'px-3 text-primary-legible'}`}
               style={{ border: mode === 'full' ? 'none' : '1px solid hsl(var(--foreground) / 0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
@@ -146,7 +146,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => toggle()}
-              className={`flex items-center justify-center h-8 sm:h-9 transition-colors text-primary-legible/70 ${mode === 'full' ? 'w-8 sm:w-9' : 'px-2 sm:px-3'}`}
+              className={`flex items-center justify-center h-8 sm:h-9 transition-colors ${mode === 'full' ? 'w-8 sm:w-9 text-primary-legible/70' : 'px-2 sm:px-3 text-primary-legible'}`}
               style={{ border: mode === 'full' ? 'none' : '1px solid hsl(var(--foreground) / 0.12)' }}
               aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
               title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
