@@ -605,7 +605,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '0',
         heading: 'Camera frames that leave the device',
-        body: 'Pose tracking runs in\u00A0the\u00A0page. No image is\u00A0recorded or\u00A0sent. The\u00A0only network calls download the\u00A0tracking library and\u00A0model from third-party CDNs, and\u00A0only if\u00A0you choose\u00A0the\u00A0camera.',
+        body: 'Pose tracking runs in\u00A0the\u00A0page. No image is\u00A0recorded or\u00A0sent. Besides loading the\u00A0page itself, the\u00A0only network calls download the\u00A0tracking library and\u00A0model from third-party CDNs, and\u00A0only if\u00A0you choose\u00A0the\u00A0camera.',
       },
       sections: [
         {

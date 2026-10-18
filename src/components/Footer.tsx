@@ -92,7 +92,7 @@ function FooterLink({ item }: { item: Item }) {
 }
 
 const Plaque = () => (
-  <p data-ground-mask className="w-fit max-w-xs font-mono uppercase text-[13px] tracking-[0.15em] leading-relaxed text-foreground/55">
+  <p data-ground-mask className="w-fit max-w-xs font-mono uppercase text-[13px] tracking-[0.15em] leading-relaxed text-foreground/60">
     Sinaida Krivchenko<br />New media artist
   </p>
 );

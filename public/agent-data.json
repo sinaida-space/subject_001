@@ -5,7 +5,7 @@
     "Зинаида Кривченко",
     "Zinaida Krivchenko"
   ],
-  "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, working globally.",
+  "tagline": "New media artist. Interactive projections & stage visuals. Prague-based, available internationally.",
   "bio": "Sinaida Krivchenko is a Prague-based new media artist who creates visual worlds for stage and screen. She makes real-time audio-reactive and motion-reactive systems built with tools like TouchDesigner, interactive projections and generative art for live performance. Trained as a biomedical engineer (MSc, Bauman Moscow State Technical University, with research in biometrics and cancer screening), then General Electric’s IT Leadership Program, then six years of independent project work in Amsterdam’s cultural scene. In Amsterdam (2019–2025) she worked on independent projects, including an independent ballet foundation, and hosted a ballet studio’s seasonal showcases at Schouwburg Amstelveen. Her body learned music and movement long before her mind learned code: ballroom as a child, ballet in the audience for her whole life, the barre itself she discovered as an adult at Joffrey Ballet classes. Music has been holding her body together for as long as she can remember. She comes up with the idea, the concept and the way to make it into a system. The making uses whatever the piece needs, from drawing by hand to AI-native production. She cares about integrity and a smooth experience, so every work adjusts to its environment, and each project ships with a rider, a contingency plan and her support. Around that work she has built her own instruments for agents, from a typography checker to a multi-agent orchestrator that decides, task by task, whether agents work in a chain, side by side or around a shared knowledge graph. She keeps up with the research papers the labs publish. Even her website has a door for machines: an MCP server that lets AI assistants read her work first hand.",
   "services": [
     "Audio-reactive concert visuals for a whole set, from the first concept to show day, with a fallback for every file",
@@ -14,13 +14,13 @@
     "Installations and generative visual identities for venues, brands and institutions, adapted to the space they run in"
   ],
   "skills": [
-    "TouchDesigner",
-    "Generative art",
-    "Real-time audio-reactive visuals",
-    "Body & gesture tracking (MediaPipe)",
-    "Procedural animation",
     "Concept and experience design",
     "Visual narrative development",
+    "Real-time audio-reactive visuals",
+    "Body & gesture tracking (MediaPipe)",
+    "Generative art",
+    "Procedural animation",
+    "TouchDesigner",
     "Biomedical engineering MSc",
     "Systems design thinking",
     "Agentic coding workflows",

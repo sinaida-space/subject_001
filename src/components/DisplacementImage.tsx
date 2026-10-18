@@ -173,7 +173,7 @@ export default function DisplacementImage({
         onLoad={onLoad}
         className={imgClassName}
         style={objectStyle}
-        {...(priority ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})}
+        {...(priority ? { loading: 'eager' as const, fetchpriority: 'high' } : {})} // React 18 passes the lowercase attribute through to the DOM
       />
 
       {active && (
