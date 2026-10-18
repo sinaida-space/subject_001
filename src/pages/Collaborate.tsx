@@ -17,7 +17,7 @@ const PROCESS_STEPS = [
   { label: 'Concept', detail: 'A visual direction comes back for your feedback.' },
   { label: 'Build', detail: 'Whatever the piece needs: pencil and paper, procedural graphics in TouchDesigner, or agentic coding.' },
   { label: 'Rehearsal', detail: 'Colours and timing tested against the venue’s light and rig before the show.' },
-  { label: 'Handoff', detail: 'Before the live run: final tests, a contingency plan built on a risk check, and my support on the day.' },
+  { label: 'Handoff', detail: 'Before the live run: final tests and a contingency plan built on a risk check. Support on the day is agreed for each project.' },
   { label: 'Show', detail: 'Delivered ready to run, with a fallback for every file.' },
 ];
 
@@ -115,7 +115,7 @@ export default function Collaborate() {
             I come up with the idea, the concept, and the way to make it into a system. The process
             may include whatever the piece needs, from drawing by hand to AI-native production.
             I care about integrity and a smooth experience, so every work adjusts to its environment.
-            Each project ships with a rider, a contingency plan and my support.
+            Each project ships with a rider and a contingency plan. On-site support is agreed for each project.
           </p>
           <RuledRows rows={PROCESS_STEPS.map((step) => ({ label: step.label, value: step.detail }))} wide={false} />
         </PageSection>
