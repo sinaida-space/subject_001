@@ -192,7 +192,7 @@ export default function WorkCase() {
             )}
 
             {/* ── Facts — a ruled table, label and fact at one size (as About) ── */}
-            <WorkFacts project={project} />
+            <WorkFacts project={project} withMade />
           </div>
           </div>
 
