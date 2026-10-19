@@ -42,7 +42,7 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
   gl_Position = projectionMatrix * mv;
   // a night nobody came still shows, as dust on the way
-  float size = 0.12 + 0.55 * aBright;
+  float size = 0.2 + 0.5 * aBright;
   // the sprite grows to hold the rays when the star answers
   size *= 1.0 + 5.0 * aWake;
   gl_PointSize = clamp(size * uPx / -mv.z, 1.5, 420.0);
@@ -69,7 +69,7 @@ void main() {
   float shortRays = pow(abs(cos(a * 3.0 + 1.5708)), 160.0) * 0.55;
   float along = (1.0 - r) * (1.0 - r);
   float rays = (longRays + shortRays) * along * vWake;
-  float light = core * (0.18 + 0.82 * vBright) + rays * (0.35 + 0.65 * vBright);
+  float light = core * (0.4 + 0.6 * vBright) + rays * (0.35 + 0.65 * vBright);
   light *= 1.0 - smoothstep(0.85, 1.0, r);
   gl_FragColor = vec4(vec3(0.96, 0.937, 0.902) * light, light);
 }`;

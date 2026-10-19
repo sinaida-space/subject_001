@@ -79,6 +79,7 @@ const ScrollToTop = () => {
 export interface HydratedPages {
   work?: ComponentType;
   statement?: ComponentType;
+  machines?: ComponentType;
 }
 
 // Everything inside the router. Shared with the build-time renders
@@ -87,6 +88,7 @@ export interface HydratedPages {
 export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
   const Work = pages.work ?? WorkCase;
   const StatementPage = pages.statement ?? Statement;
+  const MachinesPage = pages.machines ?? Machines;
   return (
   <>
     <a
@@ -111,7 +113,7 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
         <Route path="/collaborate" element={<Collaborate />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/statement" element={<StatementPage />} />
-        <Route path="/machines" element={<Machines />} />
+        <Route path="/machines" element={<MachinesPage />} />
         {/* Old routes live in shared links and search results — keep redirecting */}
         <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
         <Route path="/press" element={<Navigate to="/collaborate" replace />} />

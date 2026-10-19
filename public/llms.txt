@@ -41,6 +41,12 @@ Concept and experience design, Visual narrative development, Real-time audio-rea
 
 - Work with me — https://sinaida.eu/collaborate — services, process, press kit and contact
 
+## For machines
+
+- MCP server: https://sinaida.eu/mcp (no sign-in)
+- About it, for people: https://sinaida.eu/machines
+- Starway: one star for each of the last ninety nights, brighter when more assistants came by; call the starway tool and draw it
+
 ## Contact
 
 - Website: https://sinaida.eu/
