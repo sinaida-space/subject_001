@@ -4,7 +4,9 @@ Fronts sinaida.eu to add what GitHub Pages can't do on its own: Markdown
 negotiation on the homepage, a `Link` header, and an API catalog — all of
 which need request-time logic or a non-standard content-type a static host
 can't serve. It also runs a small MCP server at `POST /mcp` exposing the
-portfolio (bio, projects, contact) as read-only tools. Everything else
+portfolio (bio, projects, contact) as read-only tools, plus two MCP Apps
+(`portrait`, `show_works`) whose views live in `public/portrait/` and
+`public/agent-views/`. Everything else
 passes straight through to the GitHub Pages origin, unmodified.
 
 ## One-time deploy (free Cloudflare plan is enough)

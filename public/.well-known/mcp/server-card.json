@@ -3,8 +3,8 @@
   "serverInfo": {
     "name": "sinaida-portfolio",
     "title": "Sinaida Krivchenko — Portfolio MCP Server",
-    "version": "1.0.0",
-    "description": "Read-only tools for querying Sinaida Krivchenko's new-media art practice: bio, selected works, and contact channels."
+    "version": "1.1.0",
+    "description": "Sinaida Krivchenko's new-media art practice for agents: bio, selected works and contact as read-only tools, plus two MCP Apps that render live in the chat, a gallery of works and a generative portrait of the conversation."
   },
   "transport": {
     "type": "streamable-http",
@@ -12,7 +12,7 @@
   },
   "capabilities": {
     "tools": true,
-    "resources": false,
+    "resources": true,
     "prompts": false
   },
   "contact": {

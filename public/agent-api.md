@@ -8,6 +8,10 @@ of scraping the HTML.
 - Server card: [/.well-known/mcp/server-card.json](/.well-known/mcp/server-card.json)
 - Protocol: [modelcontextprotocol.io](https://modelcontextprotocol.io/)
 - Tools: `get_bio`, `list_projects`, `get_project`, `get_contact`
+- MCP Apps (interactive views in clients that support them):
+  `show_works` opens a gallery of the works with video and live links;
+  `portrait` turns a few words from the conversation into a live shader
+  portrait, also at [/portrait/](/portrait/)
 
 No authentication: everything it returns is already public on the site.
 Source: [github.com/sinaida-space](https://github.com/sinaida-space) →
