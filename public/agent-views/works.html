@@ -109,7 +109,10 @@
   function media(work) {
     const box = el('div', { className: 'media' });
     if (!work.video) {
-      box.append(el('span', { className: 'empty', textContent: work.kind || 'work' }));
+      // A work without video shows its still from sinaida.eu instead.
+      box.append(work.still
+        ? el('img', { src: work.still, alt: '', loading: 'lazy', decoding: 'async' })
+        : el('span', { className: 'empty', textContent: work.kind || 'work' }));
       return box;
     }
     const poster = el('img', { src: `${ORIGIN}/video-posters/${work.video}.jpg`, alt: '', loading: 'lazy', decoding: 'async' });
