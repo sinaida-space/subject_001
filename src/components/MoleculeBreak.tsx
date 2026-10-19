@@ -60,7 +60,7 @@ export function MoleculeNote({
         // the hero treats a held touch as its tunnel gesture; a tap here is not that
         onTouchStart={(e) => e.stopPropagation()}
         aria-label={`${id} molecule`}
-        className="block rounded-sm focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4"
+        className="block rounded-sm focus-visible:outline-solid focus-visible:outline-1 focus-visible:outline-offset-4"
         style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
       >
         <StarMolecule id={id} width={width} height={height} flareKey={flare.key} hold={flare.hold} highlight={lit} />

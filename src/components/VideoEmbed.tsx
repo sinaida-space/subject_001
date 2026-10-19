@@ -56,10 +56,10 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
             className="absolute inset-0 h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-90"
           />
           <span
-            className="relative flex h-14 w-14 items-center justify-center rounded-full border border-primary/70 bg-black/50 backdrop-blur-sm transition-transform group-hover:scale-110"
+            className="relative flex h-14 w-14 items-center justify-center rounded-full border border-primary/70 bg-black/50 backdrop-blur-xs transition-transform group-hover:scale-110"
             style={{ boxShadow: '0 0 24px hsl(var(--sinaida-red) / 0.4)' }}
           >
-            <span className="ml-1 block h-0 w-0 border-y-[9px] border-l-[15px] border-y-transparent border-l-primary" />
+            <span className="ml-1 block h-0 w-0 border-y-[9px] border-l-15 border-y-transparent border-l-primary" />
           </span>
         </button>
       )}
@@ -68,7 +68,7 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           not as page copy; it lets clicks through to the play button. Gone once
           the player is up. */}
       {!playing && (
-        <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-1.5 pt-5 text-right font-mono text-[8px] leading-tight text-white/55">
+        <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-1.5 pt-5 text-right font-mono text-[8px] leading-tight text-white/55">
           Pressing play leaves sinaida.eu. The video is played by YouTube (Google), which may set its own cookies.
         </p>
       )}

@@ -7,6 +7,7 @@ import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import { FEATURED_WORKS } from '@/data/projects';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { useMounted } from '@/lib/hydration';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { BackLink, BODY_CLASS, DitherHeading, H1_CLASS, H2_CLASS, LEAD_CLASS, PAGE_MAIN_CLASS, StillsRow } from '@/components/PageParts';
 
@@ -48,12 +49,14 @@ const Statement = () => {
   });
 
   const { mode } = useRenderMode();
+  // the starfield is browser-only, after the first commit (studio#27)
+  const mounted = useMounted();
   const works = FEATURED_WORKS.slice(0, 3);
 
   const interactive = mode === 'full';
   return (
     <div className="relative min-h-screen bg-background text-foreground">
-      {mode === 'full' && (
+      {mode === 'full' && mounted && (
         <Suspense fallback={null}>
           <ParticleField />
         </Suspense>

@@ -83,7 +83,7 @@ export function RelatedWorks({ project }: { project: Project }) {
               className="group block"
             >
               {to.image && (
-                <div className="aspect-[4/3] overflow-hidden border border-foreground/10 opacity-60 transition group-hover:border-primary group-hover:opacity-100">
+                <div className="aspect-4/3 overflow-hidden border border-foreground/10 opacity-60 transition group-hover:border-primary group-hover:opacity-100">
                   <DitheredThumb src={to.image} alt="" className="h-full w-full object-cover" />
                 </div>
               )}
@@ -205,7 +205,7 @@ export function ProcessFloor({ project, full }: { project: Project; full: boolea
           ▲ Back to the case
         </Link>
         <div className="clinical-label text-primary-legible">How it was made</div>
-        <h1 className="mt-4 font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl">
+        <h1 className="mt-4 font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl md:leading-[1.1]">
           {project.title}
         </h1>
 
@@ -232,7 +232,7 @@ export function ProcessFloor({ project, full }: { project: Project; full: boolea
             {s.paragraphs.map((p) => (
               <p
                 key={p.slice(0, 32)}
-                className="max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 [&:not(:first-of-type)]:mt-6"
+                className="max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 not-first-of-type:mt-6"
               >
                 {p}
               </p>

@@ -93,7 +93,7 @@ function hexA(hex: string, a: number): string {
 const IS_COARSE = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
 
 // Canvas labels are outside CSS, so the site-wide type scale (x1.25 — see
-// tailwind.config.ts and index.css) has to be applied to them in JS. Two
+// the @theme block in index.css) has to be applied to them in JS. Two
 // floors rather than one: project names are the structure and sit at the
 // site's 20px floor, skills are the vocabulary hanging off them and hold at
 // 16px. That gap is what makes the graph read as a hierarchy at a glance

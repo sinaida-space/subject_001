@@ -29,10 +29,17 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          # Vite 8 needs Node 20.19+ or 22.12+; Node 20 is past end of life.
+          node-version: 22
+          cache: npm
 
+      # npm ci installs exactly what package-lock.json pins.
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      # Fails the deploy on a high or critical advisory.
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
 
       # `npm run build` already materializes every SPA route as a real static
       # page (scripts/prerender-routes.mjs, chained after `vite build`): it
@@ -53,6 +60,21 @@ jobs:
       # copy of index.html, which now carries the prerendered homepage hero.
       - name: Check 404.html exists
         run: test -f dist/404.html
+
+      # Lighthouse budget (lighthouserc.json): home and one case page, mobile
+      # profile, median of three runs. Accessibility, best practices, SEO and
+      # layout shift stop the deploy; performance and LCP only warn, because
+      # shared runners vary too much for a hard performance gate. The reports
+      # are kept as a build artifact.
+      - name: Lighthouse budget
+        run: npx -y @lhci/cli@0.14.0 autorun
+
+      - name: Keep Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse
+          path: .lighthouseci
 
       - uses: actions/upload-pages-artifact@v3
         with:

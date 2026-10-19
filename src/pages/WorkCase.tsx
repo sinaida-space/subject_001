@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import ContactChannel from '@/components/ContactChannel';
 import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { useMounted } from '@/lib/hydration';
 import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 import { CaseDiveControls, ProcessFloor, RelatedWorks } from '@/components/dive/CaseDive';
 import { markHomeReturn } from '@/lib/homeScroll';
@@ -78,6 +79,8 @@ export default function WorkCase() {
   const project = projectById(slug ?? '');
   const cs = project?.caseStudy;
   const [heroLoaded, setHeroLoaded] = useState(false);
+  // the starfield is browser-only, after the first commit (studio#16)
+  const mounted = useMounted();
   const { mode } = useRenderMode();
   // DEPTH 02 (#119): the process floor lives on the same route
   const [search] = useSearchParams();
@@ -108,7 +111,7 @@ export default function WorkCase() {
     <div className="relative min-h-screen bg-background">
       {/* Same starfield as the homepage, dialed way down — a subtle sense of
           continuity behind a page that's mostly here to be read. */}
-      {mode === 'full' && (
+      {mode === 'full' && mounted && (
         <Suspense fallback={null}>
           <ParticleField />
         </Suspense>
@@ -135,7 +138,7 @@ export default function WorkCase() {
             {/* Home's heading law: a red kicker over a solid white headline */}
             <div className="clinical-label text-primary-legible">{cs.kindLabel}</div>
 
-            <h1 className="mt-3 font-display text-5xl uppercase font-light leading-[0.95] text-foreground md:text-6xl">
+            <h1 className="mt-3 font-display text-5xl uppercase font-light leading-[0.95] text-foreground md:text-6xl md:leading-[1.05]">
               {project.title}
               {project.subtitle && (
                 <span className="mt-1 block text-2xl text-foreground/60 md:text-3xl">
@@ -202,7 +205,7 @@ export default function WorkCase() {
             {intro.map((p) => (
               <p
                 key={p.slice(0, 32)}
-                className="mt-0 max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 first:mt-0 [&:not(:first-child)]:mt-6"
+                className="mt-0 max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 first:mt-0 not-first:mt-6"
               >
                 {renderInline(p)}
               </p>
@@ -252,7 +255,7 @@ export default function WorkCase() {
                 {s.paragraphs.map((p) => (
                   <p
                     key={p.slice(0, 32)}
-                    className="max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 [&:not(:first-of-type)]:mt-6"
+                    className="max-w-[70ch] font-mono text-[17px] leading-relaxed text-foreground/85 not-first-of-type:mt-6"
                   >
                     {renderInline(p)}
                   </p>
@@ -294,9 +297,9 @@ export default function WorkCase() {
                 aria-label={`Testimonial from ${cs.testimonial.name}`}
               >
                 <div className="clinical-label mb-3 text-foreground/65">A word from the other side</div>
-                <blockquote className="max-w-[62ch] border-l-2 border-primary/40 pl-4 font-mono text-[14px] italic leading-[1.85] text-foreground/[0.82]">
+                <blockquote className="max-w-[62ch] border-l-2 border-primary/40 pl-4 font-mono text-[14px] italic leading-[1.85] text-foreground/82">
                   {cs.testimonial.paragraphs.map((q) => (
-                    <p key={q.slice(0, 32)} className="[&:not(:first-child)]:mt-4">
+                    <p key={q.slice(0, 32)} className="not-first:mt-4">
                       {withProjectNames(q)}
                     </p>
                   ))}
@@ -364,7 +367,7 @@ export default function WorkCase() {
 
             {/* ── Conversion block ── */}
             <div className="mt-14" style={{ borderTop: '1px solid hsl(var(--graphite))', paddingTop: '32px' }}>
-              <DitherHeading className="font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl">
+              <DitherHeading className="font-display text-4xl uppercase font-light leading-[0.95] text-foreground md:text-5xl md:leading-[1.1]">
                 {cs.order.heading}
               </DitherHeading>
               <p className="mt-6 max-w-[60ch] font-mono text-[19px] leading-relaxed text-foreground/85">

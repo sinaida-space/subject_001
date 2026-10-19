@@ -261,7 +261,7 @@ export default function SnakeEasterEgg({ onClose }: { onClose: () => void }) {
   // kept the header above the backdrop.
   return createPortal(
     <div
-      className="snake-backdrop fixed inset-0 z-[9999] flex items-center justify-center px-4"
+      className="snake-backdrop fixed inset-0 z-9999 flex items-center justify-center px-4"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="snake-window" style={{

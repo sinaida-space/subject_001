@@ -17,6 +17,17 @@
 //
 // 3. dist/404.html is written here, from the homepage before the hero goes
 //    in, which is why the deploy workflow no longer copies index.html.
+//
+// 4. Every case page gets its full static render (renderCase), for the
+//    same reason: the hero still paints before the app bundle runs. There
+//    React hydrates the markup (hydrateRoot in main.tsx) instead of
+//    replacing it.
+//
+// 5. Statement gets two renders: full (the room's phone layout) in #root and
+//    lite in a <template>. A tiny inline script after them keeps the one
+//    that matches html[data-mode], so React hydrates exactly that markup,
+//    and empties #root where the wide room is drawn by the client alone
+//    (full mode from 768px). Its hash joins script-src on that page.
 
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, readdirSync, statSync, rmSync } from 'node:fs';
@@ -26,13 +37,17 @@ import { pathToFileURL } from 'node:url';
 const DIST = 'dist';
 const SHELL_DIR = 'dist-shell';
 
-const { renderShell, resolveRenderMode } = await import(
+const { renderShell, renderCase, caseIds, renderStatement, resolveRenderMode } = await import(
   pathToFileURL(join(SHELL_DIR, 'entry-shell.js')).href
 );
 
 const bootJs = `document.documentElement.setAttribute('data-mode',(${resolveRenderMode.toString()})());`;
 const bootHash = `'sha256-${createHash('sha256').update(bootJs).digest('base64')}'`;
 const bootTag = `<script>${bootJs}</script>`;
+
+// Keep in step with StatementRoom's breakpoint and main.tsx's hydration check.
+const pickJs = `(function(){var r=document.getElementById('root'),t=document.getElementById('root-lite');if(document.documentElement.getAttribute('data-mode')==='lite')r.innerHTML=t.innerHTML;else if(matchMedia('(min-width: 768px)').matches)r.innerHTML='';t.remove()})();`;
+const pickHash = `'sha256-${createHash('sha256').update(pickJs).digest('base64')}'`;
 
 function htmlFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -60,6 +75,7 @@ function notFoundHead(html) {
 }
 
 let pages = 0;
+let cases = 0;
 for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
   let html = readFileSync(file, 'utf8');
   if (!html.includes('<div id="root">')) continue;
@@ -75,9 +91,23 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
     html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderShell()}</div>`, 'empty #root', file);
   }
 
+  // 4. Case pages get their full static render (studio#16).
+  const caseId = caseIds.find((id) => file === join(DIST, 'work', id, 'index.html'));
+  if (caseId) {
+    html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderCase(caseId)}</div>`, 'empty #root', file);
+    cases++;
+  }
+
+  // 5. Statement: one render per mode (studio#27).
+  if (file === join(DIST, 'statement', 'index.html')) {
+    const both = `<div id="root">${renderStatement('full')}</div><template id="root-lite">${renderStatement('lite')}</template><script>${pickJs}</script>`;
+    html = mustReplace(html, '<div id="root"></div>', both, 'empty #root', file);
+    html = mustReplace(html, `script-src 'self' ${bootHash}`, `script-src 'self' ${bootHash} ${pickHash}`, 'CSP script-src', file);
+  }
+
   writeFileSync(file, html);
   pages++;
 }
 
 rmSync(SHELL_DIR, { recursive: true, force: true });
-console.log(`prerender-shell: boot script on ${pages} page(s), static hero on dist/index.html`);
+console.log(`prerender-shell: boot script on ${pages} page(s), static hero on dist/index.html, static render on ${cases} case page(s) and Statement`);

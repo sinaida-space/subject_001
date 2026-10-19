@@ -6,6 +6,7 @@ import DataLeftBehind from './DataLeftBehind';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { CITY, cityBus, span, type CityHover } from '@/lib/city';
 import { ditherMask } from '@/lib/ditherMask';
+import { hydration } from '@/lib/hydration';
 
 type Item = { label: string; to?: string; href?: string; download?: boolean; toggle?: boolean };
 
@@ -149,7 +150,8 @@ export default function Footer() {
   const brandRef = useRef<HTMLDivElement>(null);
   const columnsRef = useRef<HTMLElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
-  const [roomy, setRoomy] = useState(() => typeof window !== 'undefined' && window.matchMedia(HELD).matches);
+  // false while hydrating: the build-time render has no media queries
+  const [roomy, setRoomy] = useState(() => !hydration.active && typeof window !== 'undefined' && window.matchMedia(HELD).matches);
   // every page closes with Contact, so every page, in both modes, holds the last
   // screen and dollies out of it like the home page; the galaxy flight and the
   // city under the footer stay full mode
@@ -158,6 +160,7 @@ export default function Footer() {
   useEffect(() => {
     const mq = window.matchMedia(HELD);
     const on = () => setRoomy(mq.matches);
+    on();
     mq.addEventListener('change', on);
     return () => mq.removeEventListener('change', on);
   }, []);
@@ -227,7 +230,7 @@ export default function Footer() {
       {/* held: the screen lets clicks through to Contact, receded above it.
           Not held, md+ keeps the top tight so the page's last screen shows
           LET'S TALK clear of the header (#189). */}
-      <div className={held ? 'pointer-events-none sticky top-0 flex h-[100svh] flex-col justify-end overflow-hidden pb-8' : 'pb-8 pt-24 md:pt-8'}>
+      <div className={held ? 'pointer-events-none sticky top-0 flex h-svh flex-col justify-end overflow-hidden pb-8' : 'pb-8 pt-24 md:pt-8'}>
         <div className="site-frame pointer-events-auto">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-end lg:gap-8">
             <div ref={brandRef} className="lg:col-span-4">

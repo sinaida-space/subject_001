@@ -1,7 +1,9 @@
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 // Must be evaluated before render: it reads the static shell React replaces.
 import "./lib/staticShell";
 import App from "./App.tsx";
+import { hydration } from "./lib/hydration";
+import { routeChunks } from "./lib/routeChunks";
 import "./index.css";
 
 // A reload starts at the top, so the hero → About gate plays from its start
@@ -10,7 +12,29 @@ import "./index.css";
 // themselves (Index), so nothing relies on the browser's restoration.
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Case pages and Statement arrive rendered at build time (studio#16,
+// studio#27). React adopts that markup instead of replacing it, so what is
+// already on screen stays the LCP element. The page's chunk is loaded first
+// and passed in directly, so hydration never suspends on it. The markup's
+// mode is the one html[data-mode] names: case pages are always full, and on
+// Statement an inline script has already put the matching render in #root
+// (scripts/prerender-shell.mjs), or emptied it where the page is drawn by
+// the client alone. ?depth=2 renders the case's process floor, which the
+// build-time render (always depth 1) does not contain.
+const root = document.getElementById("root")!;
+const path = location.pathname.replace(/\/+$/, "");
+const isCase = /^\/work\/[^/.]+$/.test(path) && !new URLSearchParams(location.search).has("depth");
+const isStatement = path === "/statement";
+if ((isCase || isStatement) && root.firstElementChild) {
+  const mode = isCase ? "full" : document.documentElement.getAttribute("data-mode") === "lite" ? "lite" : "full";
+  const chunk = isCase ? routeChunks.work() : routeChunks.statement();
+  chunk.then(({ default: Page }) => {
+    hydration.active = true;
+    hydrateRoot(root, <App hydrate={mode} pages={isCase ? { work: Page } : { statement: Page }} />);
+  });
+} else {
+  createRoot(root).render(<App />);
+}
 
 // Easter egg hint for anyone who opens devtools. Printed once per load.
 const TEXT = "color:#d8d8d8;font:13px/1.6 monospace";

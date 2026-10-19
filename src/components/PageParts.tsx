@@ -21,7 +21,7 @@ export const H2_CLASS =
   'font-display text-[clamp(2.25rem,3.6vw,3.5rem)] uppercase font-light leading-[0.95] text-foreground';
 export const LEAD_CLASS =
   'relative mt-10 max-w-[34ch] font-mono text-[clamp(20px,2vw,28px)] leading-[1.3] text-foreground md:ml-[calc(100%*5/12)]';
-export const BODY_CLASS = 'max-w-[62ch] font-mono text-[19px] leading-[1.5] text-foreground/85';
+export const BODY_CLASS = 'max-w-[62ch] font-mono text-[19px] leading-normal text-foreground/85';
 
 function useMotion() {
   return useRenderMode().mode === 'full';
@@ -75,7 +75,7 @@ export function PageSection({ title, children, id }: { title: ReactNode; childre
 export function TextSection({ title, id, children }: { title: ReactNode; id?: string; children: ReactNode }) {
   return (
     <PageSection id={id} title={title}>
-      <div className="space-y-6 font-mono text-[19px] leading-[1.5] text-foreground/85 [&>p]:max-w-[62ch] [&>ul]:max-w-[62ch]">{children}</div>
+      <div className="space-y-6 font-mono text-[19px] leading-normal text-foreground/85 [&>p]:max-w-[62ch] [&>ul]:max-w-[62ch]">{children}</div>
     </PageSection>
   );
 }

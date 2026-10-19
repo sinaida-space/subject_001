@@ -5,8 +5,9 @@
 // The decision itself lives in resolveRenderMode, which also runs as an inline
 // <head> script in the built HTML (see scripts/prerender-shell.mjs).
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { resolveRenderMode } from '@/lib/resolveRenderMode';
+import { afterHydration } from '@/lib/hydration';
 
 export type RenderMode = 'lite' | 'full';
 
@@ -32,17 +33,29 @@ const RenderModeContext = createContext<Ctx>({ mode: 'full', overridden: false, 
 
 export function RenderModeProvider({ children, initialMode }: { children: ReactNode; initialMode?: RenderMode }) {
   // Start from the stored override if present, else detect. initialMode is
-  // only passed by the build-time static render (src/entry-shell.tsx).
+  // passed by the build-time render (src/entry-shell.tsx) and by a case page
+  // hydrating it (main.tsx).
   const [mode, setMode] = useState<RenderMode>(() => initialMode ?? resolveRenderMode());
   const [overridden, setOverridden] = useState<boolean>(() => readStored() !== null);
 
   useEffect(() => {
-    // Re-detect once on mount in case the first render was SSR-safe default.
-    if (!overridden) setMode(resolveRenderMode());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Re-detect once on mount in case the first render was the build-time
+    // default. resolveRenderMode reads a stored choice first, so this keeps
+    // an override too. A hydrating page waits until React has adopted all
+    // of its markup: a mode change before that would throw it away.
+    afterHydration(() => setMode(resolveRenderMode()));
   }, []);
 
+  // The inline boot script has already set html[data-mode] to the detected
+  // mode. A hydrated case page starts from initialMode ('full', to match its
+  // build-time render), so its first pass must not overwrite that, or a lite
+  // visitor would flash Void until the re-detect above lands.
+  const skipFirst = useRef(initialMode !== undefined);
   useEffect(() => {
+    if (skipFirst.current) {
+      skipFirst.current = false;
+      return;
+    }
     document.documentElement.setAttribute('data-mode', mode);
   }, [mode]);
 

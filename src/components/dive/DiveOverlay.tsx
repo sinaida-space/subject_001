@@ -158,7 +158,7 @@ export default function DiveOverlay({ run, arrive, locate, onDone }: Props) {
   }, []);
 
   return (
-    <div ref={rootRef} className="fixed inset-0 z-[200]" aria-hidden="true" style={{ cursor: 'progress' }}>
+    <div ref={rootRef} className="fixed inset-0 z-200" aria-hidden="true" style={{ cursor: 'progress' }}>
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
       <div
         ref={veilRef}

@@ -197,10 +197,10 @@ export default function AboutSection() {
       <div className="site-frame">
         <Eyebrow full={full} />
         <div className="mt-10 md:mt-16 grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-6 md:gap-y-16">
-          <h3 className={`m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[11.2vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)]${full ? '' : ' md:mt-[24svh]'}`}>
+          <h3 className={`m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[11.2vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)] ${full ? '' : 'md:mt-[24svh]'}`}>
             {`Human first. Digital${NB}second.`}
           </h3>
-          <div data-photo-col className={`md:col-span-3 md:row-start-1 md:row-span-2 md:max-w-[240px] md:self-stretch${full ? '' : ' order-first md:order-none'}`}>
+          <div data-photo-col className={`md:col-span-3 md:row-start-1 md:row-span-2 md:max-w-[240px] md:self-stretch ${full ? '' : 'order-first md:order-0'}`}>
             <div className="md:sticky md:top-24">
               <Reveal delay={150}>
                 <PhotoBlock />

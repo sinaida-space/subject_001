@@ -38,12 +38,12 @@ export default function DataLeftBehind({ children }: { children: string }) {
       </button>
       {open &&
         createPortal(
-          <div className="snake-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setOpen(false)}>
+          <div className="snake-backdrop fixed inset-0 z-100 flex items-center justify-center p-4" onClick={() => setOpen(false)}>
             <div
               role="dialog"
               aria-modal="true"
               aria-labelledby="data-left-behind-title"
-              className="snake-window w-full max-w-[26rem]"
+              className="snake-window w-full max-w-104"
               style={{ border: '1px solid #CC1414', boxShadow: '0 0 40px rgba(204,20,20,0.3)', background: 'hsl(var(--background))' }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -62,7 +62,7 @@ export default function DataLeftBehind({ children }: { children: string }) {
                 </button>
               </div>
               <div className="space-y-6 p-5">
-                <p className="font-mono text-[19px] leading-[1.5] text-foreground">Some of it is music.</p>
+                <p className="font-mono text-[19px] leading-normal text-foreground">Some of it is music.</p>
                 <div className="flex flex-wrap gap-3">
                   <a
                     ref={listenRef}

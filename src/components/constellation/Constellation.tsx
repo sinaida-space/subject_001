@@ -65,7 +65,7 @@ export default function Constellation() {
               <StarTitle
                 text="Body of Work"
                 caption={
-                  <p className="relative z-[1] mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
+                  <p className="relative z-1 mt-2 max-w-[460px] font-mono uppercase leading-relaxed" style={{ color: 'hsl(var(--foreground) / 0.65)', fontSize: 20 }}>
                     Selected works and the skills that happen to resonate.
                   </p>
                 }

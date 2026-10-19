@@ -91,7 +91,7 @@ function Readout({ project }: { project: Project }) {
         )}
 
         <div className="flex flex-col gap-5 p-5 md:p-8">
-          <h3 className="font-display text-3xl uppercase leading-[1.05] text-foreground md:text-4xl">
+          <h3 className="font-display text-3xl uppercase leading-[1.05] text-foreground md:text-4xl md:leading-[1.2]">
             {project.title}
           </h3>
 
@@ -144,7 +144,7 @@ function Readout({ project }: { project: Project }) {
 
       {project.essay && essayOpen && (
         <div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4"
+          className="fixed inset-0 z-80 flex items-center justify-center bg-black/70 p-4"
           onClick={() => setEssayOpen(false)}
         >
           <div
@@ -433,13 +433,13 @@ export default function ProjectDetail({
   // outside that context) render on top of the modal's own top edge.
   return createPortal(
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-black/55 p-4 pt-24 pb-10 transition-opacity duration-[180ms]"
+      className="fixed inset-0 z-70 flex items-center justify-center overflow-y-auto bg-black/55 p-4 pt-24 pb-10 transition-opacity duration-180"
       style={{ opacity: mounted ? 1 : 0 }}
       onClick={onClose}
     >
       {shutter && (
         <>
-          <svg ref={svgRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[71] h-full w-full" style={{ opacity: 0 }}>
+          <svg ref={svgRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-71 h-full w-full" style={{ opacity: 0 }}>
             {/* glow without an SVG blur filter (Safari repaints those every
                 frame): a wide faint stroke under the hairline */}
             <polygon ref={beamRef} fill="hsl(var(--sinaida-red) / 0.14)" />
@@ -449,14 +449,14 @@ export default function ProjectDetail({
           <div
             ref={titleRef}
             aria-hidden="true"
-            className="pointer-events-none fixed left-0 top-0 z-[72] whitespace-nowrap text-foreground"
+            className="pointer-events-none fixed left-0 top-0 z-72 whitespace-nowrap text-foreground"
             style={{ transformOrigin: '0 0', opacity: 0 }}
           />
         </>
       )}
       <div
         ref={cardRef}
-        className="relative w-full max-w-3xl transition-all duration-[180ms] ease-out md:max-w-[1400px]"
+        className="relative w-full max-w-3xl transition-all duration-180 ease-out md:max-w-[1400px]"
         style={{
           background: 'hsl(var(--background))',
           border: '1px solid hsl(var(--sinaida-red))',
@@ -470,7 +470,7 @@ export default function ProjectDetail({
         aria-label={`${project.title}: project readout`}
       >
         {shutter && <canvas ref={buildRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 h-full w-full" />}
-        {shutter && <div ref={dimRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-[40] bg-black" style={{ opacity: 0 }} />}
+        {shutter && <div ref={dimRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-40 bg-black" style={{ opacity: 0 }} />}
         <div style={{ background: 'hsl(var(--muted))', borderBottom: '1px solid hsl(var(--border))', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span ref={labelRef} style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', lineHeight: 1.15, minWidth: 0, color: 'hsl(var(--primary-legible))', letterSpacing: '2px' }}>
             {splitAt < 0 ? headerLabel : (

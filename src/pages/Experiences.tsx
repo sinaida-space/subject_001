@@ -28,7 +28,7 @@ function GoldenBlock({ level, label, text }: { level: 1 | 2 | 3; label: string; 
     <div>
       <SignalMark level={level} />
       <span className="sr-only">{label}</span>
-      <p className="font-mono text-[15px] leading-[1.8] text-foreground/[0.87] mt-2">{text}</p>
+      <p className="font-mono text-[15px] leading-[1.8] text-foreground/87 mt-2">{text}</p>
     </div>
   );
 }
@@ -74,8 +74,8 @@ function RichTextBlock({ section, highlight }: { section: ExperienceRichSection;
             key={i}
             className={
               highlight && i === 0
-                ? 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87] border-l-2 border-primary/40 pl-4'
-                : 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87]'
+                ? 'font-mono text-[15px] leading-[1.8] text-foreground/87 border-l-2 border-primary/40 pl-4'
+                : 'font-mono text-[15px] leading-[1.8] text-foreground/87'
             }
           >
             <RichParagraph parts={parts} />
@@ -106,7 +106,7 @@ function ProjectGallery({ project }: { project: ExperienceProject }) {
           return (
             <picture
               key={img.src}
-              className="shrink-0 snap-start w-[68vw] sm:w-[38%] lg:w-[31%] aspect-[4/3] border border-primary/30 block"
+              className="shrink-0 snap-start w-[68vw] sm:w-[38%] lg:w-[31%] aspect-4/3 border border-primary/30 block"
             >
               <source srcSet={avif} type="image/avif" />
               <img
@@ -136,8 +136,8 @@ function SectionBlock({ section, highlight }: { section: ExperienceSection; high
             key={i}
             className={
               highlight && i === 0
-                ? 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87] border-l-2 border-primary/40 pl-4'
-                : 'font-mono text-[15px] leading-[1.8] text-foreground/[0.87]'
+                ? 'font-mono text-[15px] leading-[1.8] text-foreground/87 border-l-2 border-primary/40 pl-4'
+                : 'font-mono text-[15px] leading-[1.8] text-foreground/87'
             }
           >
             {p}
@@ -180,7 +180,7 @@ export default function Experiences() {
           <span className="text-primary font-bold">{EXPERIENCES_META.headlineAccent}</span>
         </h1>
         {/* One paragraph, hard-broken so each sentence starts its own line. */}
-        <p className="font-mono text-[15px] leading-[1.8] mb-4 text-foreground/[0.87]">
+        <p className="font-mono text-[15px] leading-[1.8] mb-4 text-foreground/87">
           {EXPERIENCES_META.whoLines.map((line, i) => (
             <span key={line}>
               {i > 0 && <br />}
@@ -247,13 +247,13 @@ export default function Experiences() {
               <div className="font-mono uppercase text-foreground/60 mb-2" style={{ letterSpacing: '0.15em', fontSize: 13 }}>
                 Before
               </div>
-              <p className="font-mono text-[15px] leading-[1.8] text-foreground/[0.87]">{s.beforeAfter.before}</p>
+              <p className="font-mono text-[15px] leading-[1.8] text-foreground/87">{s.beforeAfter.before}</p>
             </div>
             <div>
               <div className="font-mono uppercase text-primary-legible mb-2" style={{ letterSpacing: '0.15em', fontSize: 13 }}>
                 After
               </div>
-              <p className="font-mono text-[15px] leading-[1.8] text-foreground/[0.87]">{s.beforeAfter.after}</p>
+              <p className="font-mono text-[15px] leading-[1.8] text-foreground/87">{s.beforeAfter.after}</p>
             </div>
           </div>
         </section>
@@ -265,7 +265,7 @@ export default function Experiences() {
         {/* Act two: the plan */}
         <section className="mb-20">
           <h2 className="clinical-label text-primary-legible mb-6">Goal</h2>
-          <p className="font-mono text-[15px] leading-[1.8] mb-6 text-foreground/[0.87]">{s.goal.statement}</p>
+          <p className="font-mono text-[15px] leading-[1.8] mb-6 text-foreground/87">{s.goal.statement}</p>
           <div className="overflow-x-auto">
             <table className="font-mono text-[13px] w-full border-collapse">
               <thead>
@@ -393,12 +393,12 @@ export default function Experiences() {
           <div className="flex flex-wrap gap-4">
             <ObfuscatedMailto
               label="EMAIL SINAIDA ↗"
-              className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
+              className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/6"
             />
             <ObfuscatedMailto
               label="EMAIL DARIA ↗"
               addressParts={['onlystrikes', '@', 'gmail', '.com']}
-              className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/[0.06]"
+              className="inline-block font-mono text-[12px] uppercase tracking-[0.15em] px-6 py-3 transition-all duration-300 cursor-pointer select-none border border-primary text-primary-legible bg-primary/6"
             />
           </div>
         </section>

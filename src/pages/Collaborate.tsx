@@ -95,7 +95,7 @@ export default function Collaborate() {
           <p className={LEAD_CLASS}>
             I build living visual systems for stages, concerts, and performance spaces.
           </p>
-          <p className={`${LEAD_CLASS} !mt-4 text-foreground/70`}>
+          <p className={`${LEAD_CLASS} mt-4! text-foreground/70`}>
             This page is what actually happens when we work together on&nbsp;one.
           </p>
           <p className={`${BODY_CLASS} mt-8 md:ml-[calc(100%*5/12)]`}>

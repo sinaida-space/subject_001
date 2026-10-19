@@ -161,7 +161,7 @@ const Licensing = () => {
           ]}
         />
 
-        <div className="mt-8 font-mono text-[19px] leading-[1.5] text-foreground/85">
+        <div className="mt-8 font-mono text-[19px] leading-normal text-foreground/85">
           <TextSection title={<>Projects</>}>
 
             <div className="overflow-x-auto">

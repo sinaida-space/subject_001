@@ -310,11 +310,11 @@ export default function HeroSection() {
     document.addEventListener('visibilitychange', onVis);
     return () => {
       off();
-      window.removeEventListener('blur', off);
+      window.removeEventListener('blur-sm', off);
       document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
-  const glowClass = `hero-glow${glowing ? ' hero-glow-active' : ''}`;
+  const glowClass = `hero-glow ${glowing ? 'hero-glow-active' : ''}`;
   const whisper = useHeroWhisper(glowing, WHISPER_QUESTIONS);
 
   // Noradrenaline, the skipped beat, hangs in the void as a faint star
@@ -341,7 +341,7 @@ export default function HeroSection() {
       // the centred block visibly low. Padding is symmetric so the block
       // centres on the screen itself. No text selection or callout: a long
       // press is the easter egg, not a copy gesture.
-      className="relative min-h-[100svh] flex flex-col justify-center z-10 py-24 md:py-28 select-none [-webkit-touch-callout:none]"
+      className="relative min-h-svh flex flex-col justify-center z-10 py-24 md:py-28 select-none [-webkit-touch-callout:none]"
       onTouchStart={holdTunnel}
       onTouchMove={moveTunnel}
       onTouchEnd={releaseTunnel}
@@ -355,7 +355,7 @@ export default function HeroSection() {
             tunnel dive (heroTunnelBus + ParticleField). */}
         <p
           ref={eyebrowRef}
-          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground break-words text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
+          className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground wrap-break-word text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseMove={glowing ? undefined : enterTunnel}
           onMouseLeave={stopTunnel}

@@ -58,6 +58,7 @@ function pickMode(): DiveMode {
 }
 
 const histIdx = () => {
+  if (typeof window === 'undefined') return 0; // build-time case render
   const i = (window.history.state as { idx?: unknown } | null)?.idx;
   return typeof i === 'number' ? i : 0;
 };
@@ -160,7 +161,7 @@ export default function DiveHost() {
       {run && (
         <Suspense
           // a card close starts from the open card, never from a void frame
-          fallback={run.dir === 'out' && !run.close ? <div className="fixed inset-0 z-[200] bg-background" aria-hidden="true" /> : null}
+          fallback={run.dir === 'out' && !run.close ? <div className="fixed inset-0 z-200 bg-background" aria-hidden="true" /> : null}
         >
           <DiveOverlay key={run.id} run={run} arrive={arrive} locate={locate} onDone={onDone} />
         </Suspense>
