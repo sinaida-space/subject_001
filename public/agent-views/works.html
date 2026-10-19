@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>Works · Sinaida Krivchenko</title>
+<style>
+  /* MCP App view for the show_works tool (served by workers/agent-gateway).
+     Opened on its own, it reads /agent-data.json so it can be checked in a browser. */
+  @font-face {
+    font-family: 'Geist Pixel';
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://sinaida.eu/fonts/geist-pixel-latin.woff2') format('woff2');
+  }
+  :root {
+    --void: #050505; --chalk: #f6f6f6; --red: #cd0000; --red-text: #ff1a1a; --neon: #ff3b3b;
+    --graphite: #262626; --gunmetal: #4d4d4d; --slate: #737373; --fog: #999999; --haze: #cccccc;
+    --font: 'Geist Pixel', ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--void); color: var(--chalk); font-family: var(--font); }
+  main { padding: 20px; border-top: 1px solid var(--red); }
+  h1 {
+    margin: 0 0 20px; padding-bottom: .8rem; border-bottom: 1px solid rgba(205,0,0,.22);
+    font-weight: 400; font-size: 1.35rem; text-transform: uppercase; letter-spacing: .12em; color: var(--neon);
+    text-shadow: 0 0 6px rgba(255,60,60,.7), 0 0 16px rgba(205,0,0,.35);
+  }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 24px 20px; }
+  li { display: grid; grid-template-rows: auto 1fr; gap: 12px; }
+  li.focus .title { color: var(--red-text); }
+  .media { position: relative; aspect-ratio: 16 / 9; background: var(--graphite); overflow: hidden; }
+  .media img, .media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+  .media img { filter: grayscale(.35) contrast(1.05); transition: filter .2s; }
+  .media button { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
+  .media button:hover img, .media button:focus-visible img { filter: none; }
+  .media .play {
+    position: absolute; left: 10px; bottom: 10px; padding: .3rem .55rem; font-size: 12px;
+    color: var(--chalk); background: rgba(5,5,5,.88); border: 1px solid var(--gunmetal);
+  }
+  .media button:hover .play { border-color: var(--red); }
+  .media .empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--slate); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; }
+  .kind { font-size: .72rem; color: var(--slate); text-transform: uppercase; letter-spacing: .1em; }
+  .title { margin: .35rem 0 .5rem; font-weight: 400; font-size: 1.1rem; color: var(--chalk); }
+  .tagline { margin: 0 0 .9rem; font-size: .8rem; line-height: 1.5; color: var(--haze); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .links { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .links a {
+    font-size: 12px; color: var(--chalk); text-decoration: none;
+    border: 1px solid var(--gunmetal); padding: .4rem .65rem;
+  }
+  .links a:hover { border-color: var(--red); }
+  :focus-visible { outline: 2px solid var(--red-text); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .media img { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Selected works</h1>
+  <ul id="list" aria-live="polite"></ul>
+</main>
+<script>
+(() => {
+  'use strict';
+
+  const list = document.getElementById('list');
+  const embedded = window.parent !== window;
+  const ORIGIN = 'https://sinaida.eu';
+
+  // ---------- MCP App bridge (same protocol as /portrait/) -------------------
+
+  let nextId = 0;
+  const pending = new Map();
+  function send(message) { window.parent.postMessage({ jsonrpc: '2.0', ...message }, '*'); }
+  function request(method, params) {
+    const id = ++nextId;
+    send({ id, method, params });
+    return new Promise((resolve, reject) => pending.set(id, { resolve, reject }));
+  }
+  function reportSize() {
+    if (embedded) requestAnimationFrame(() => send({ method: 'ui/notifications/size-changed', params: { height: Math.ceil(document.documentElement.scrollHeight) } }));
+  }
+
+  // Links leave the sandbox through the host, which may ask the guest first.
+  function open(url, event) {
+    if (!embedded) return;
+    event.preventDefault();
+    request('ui/open-link', { url }).catch(() => {});
+  }
+
+  // ---------- rendering -----------------------------------------------------
+
+  function el(tag, props = {}, children = []) {
+    const node = Object.assign(document.createElement(tag), props);
+    node.append(...children.filter(Boolean));
+    return node;
+  }
+
+  function link(label, url) {
+    if (!url) return null;
+    const a = el('a', { href: url, textContent: label, target: '_blank', rel: 'noopener' });
+    a.addEventListener('click', (event) => open(url, event));
+    return a;
+  }
+
+  // The poster is a still from sinaida.eu; the video loads only on click,
+  // so no third party sees the guest until they ask for it.
+  function media(work) {
+    const box = el('div', { className: 'media' });
+    if (!work.video) {
+      box.append(el('span', { className: 'empty', textContent: work.kind || 'work' }));
+      return box;
+    }
+    const poster = el('img', { src: `${ORIGIN}/video-posters/${work.video}.jpg`, alt: '', loading: 'lazy', decoding: 'async' });
+    const button = el('button', { type: 'button', ariaLabel: `Play video: ${work.title}` }, [poster, el('span', { className: 'play', textContent: '▶ play' })]);
+    button.addEventListener('click', () => {
+      box.replaceChildren(el('iframe', {
+        src: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(work.video)}?autoplay=1&rel=0`,
+        title: work.title,
+        allow: 'autoplay; encrypted-media; picture-in-picture; fullscreen',
+        allowFullscreen: true,
+      }));
+    });
+    box.append(button);
+    return box;
+  }
+
+  function render(data) {
+    const works = (Array.isArray(data?.works) ? data.works : []).slice();
+    // The work the agent asked about comes first.
+    works.sort((a, b) => (b.id === data.focus) - (a.id === data.focus));
+    list.replaceChildren(...works.map((work) => {
+      const item = el('li', { className: work.id === data.focus ? 'focus' : '' }, [
+        media(work),
+        el('div', {}, [
+          el('div', { className: 'kind', textContent: work.kind || '' }),
+          el('h2', { className: 'title', textContent: work.title }),
+          el('p', { className: 'tagline', textContent: work.tagline || '' }),
+          el('div', { className: 'links' }, [
+            link('open live', work.live),
+            link('case', work.url),
+          ]),
+        ]),
+      ]);
+      return item;
+    }));
+    reportSize();
+  }
+
+  if (embedded) {
+    window.addEventListener('message', (event) => {
+      if (event.source !== window.parent) return;
+      const msg = event.data;
+      if (!msg || msg.jsonrpc !== '2.0') return;
+      if (msg.id != null && pending.has(msg.id) && !msg.method) {
+        const { resolve, reject } = pending.get(msg.id);
+        pending.delete(msg.id);
+        msg.error ? reject(msg.error) : resolve(msg.result);
+      } else if (msg.method === 'ui/notifications/tool-result') {
+        render(msg.params?.structuredContent);
+      } else if (msg.id != null && msg.method) {
+        send({ id: msg.id, result: {} });
+      }
+    });
+    request('ui/initialize', {
+      protocolVersion: '2026-01-26',
+      appInfo: { name: 'sinaida-works', version: '1.0.0' },
+      appCapabilities: { availableDisplayModes: ['inline', 'fullscreen'] },
+    }).then(() => send({ method: 'ui/notifications/initialized', params: {} }))
+      .catch((err) => console.warn('MCP host handshake failed', err));
+    new ResizeObserver(reportSize).observe(document.body);
+  } else {
+    fetch('/agent-data.json').then((r) => r.json()).then((d) => render({ works: d.projects }));
+  }
+})();
+/*! Je suis le spectre d'une rose que tu portais hier au bal.
+    Théophile Gautier, "Le Spectre de la rose", 1837 (La Comédie de la mort, 1838). Public domain. */
+</script>
+</body>
+</html>

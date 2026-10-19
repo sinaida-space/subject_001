@@ -33,49 +33,60 @@
       "title": "Redkie Ptitsy — Live Concert Visuals",
       "kind": "stage",
       "tagline": "Live at Sklad No. 3, Moscow · a full set, with a fallback for every file",
-      "url": "https://sinaida.eu/work/redkie-ptitsy"
+      "url": "https://sinaida.eu/work/redkie-ptitsy",
+      "video": "bDDAXRlz5FQ"
     },
     {
       "id": "conspace-rooms",
       "title": "CONSPACE ROOMS",
       "kind": "installation",
       "tagline": "Walk-through labyrinth of artworks, in the browser or as a gesture-controlled projection, with UVALISS",
-      "url": "https://sinaida.eu/work/conspace-rooms"
+      "url": "https://sinaida.eu/work/conspace-rooms",
+      "video": "oSWzQ4ds8BI",
+      "live": "https://conspace-rooms.vercel.app/?lang=en"
     },
     {
       "id": "aether-currents",
       "title": "Aether Currents",
       "kind": "interactive web",
       "tagline": "Browser instrument played with bare hands · music advisor: Kamil Yegelev (TeleFM)",
-      "url": "https://sinaida.eu/work/aether-currents"
+      "url": "https://sinaida.eu/work/aether-currents",
+      "video": "fxrrSxvKp9Q",
+      "live": "https://aether-currents.sinaida.eu/"
     },
     {
       "id": "ethereal-path",
       "title": "Ethereal Path",
       "kind": "interactive web",
       "tagline": "Off-axis descent steered by head & hand movement — the body is the controller",
-      "url": "https://sinaida-space.github.io/ethereal-path/"
+      "url": "https://sinaida-space.github.io/ethereal-path/",
+      "video": "15wl2Sko5GA",
+      "live": "https://sinaida-space.github.io/ethereal-path/"
     },
     {
       "id": "stereolove",
       "title": "Stereolove",
       "kind": "interactive web",
       "tagline": "Head-coupled op-art — the screen becomes an unstable optical volume",
-      "url": "https://sinaida-space.github.io/stereolove/"
+      "url": "https://sinaida-space.github.io/stereolove/",
+      "video": "jQy4Kk70hxM",
+      "live": "https://sinaida-space.github.io/stereolove/"
     },
     {
       "id": "infinite-voidsong",
       "title": "Infinite Voidsong",
       "kind": "web tool",
       "tagline": "Endless generated soundscapes for focused work, with rest built into the session",
-      "url": "https://infinite-voidsong.vercel.app/"
+      "url": "https://infinite-voidsong.vercel.app/",
+      "live": "https://infinite-voidsong.vercel.app/"
     },
     {
       "id": "storm-glass",
       "title": "Storm Glass — TouchDesigner Tutorial",
       "kind": "tutorial",
       "tagline": "A thunderstorm behind rainy glass, built in TouchDesigner: the bass fires the lightning",
-      "url": "https://youtu.be/hwFttiCKbrU"
+      "url": "https://youtu.be/hwFttiCKbrU",
+      "video": "hwFttiCKbrU"
     }
   ],
   "practices": [
