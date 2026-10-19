@@ -37,7 +37,7 @@ import { pathToFileURL } from 'node:url';
 const DIST = 'dist';
 const SHELL_DIR = 'dist-shell';
 
-const { renderShell, renderCase, caseIds, renderStatement, resolveRenderMode } = await import(
+const { renderShell, renderCase, caseIds, renderStatement, renderMachines, resolveRenderMode } = await import(
   pathToFileURL(join(SHELL_DIR, 'entry-shell.js')).href
 );
 
@@ -103,6 +103,11 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
     const both = `<div id="root">${renderStatement('full')}</div><template id="root-lite">${renderStatement('lite')}</template><script>${pickJs}</script>`;
     html = mustReplace(html, '<div id="root"></div>', both, 'empty #root', file);
     html = mustReplace(html, `script-src 'self' ${bootHash}`, `script-src 'self' ${bootHash} ${pickHash}`, 'CSP script-src', file);
+  }
+
+  // 6. For machines: plain text for agents, replaced by the app on load.
+  if (file === join(DIST, 'machines', 'index.html')) {
+    html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderMachines()}</div>`, 'empty #root', file);
   }
 
   writeFileSync(file, html);

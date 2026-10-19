@@ -21,7 +21,6 @@ const COLUMNS: { label: string; items: Item[]; hover?: CityHover }[] = [
       { label: 'Works', to: '#work' },
       { label: 'Services', to: '#services' },
       { label: 'Contact', to: '#contact' },
-      { label: 'For machines', to: '/machines' },
     ],
   },
   {
@@ -46,6 +45,7 @@ const COLUMNS: { label: string; items: Item[]; hover?: CityHover }[] = [
       { label: 'CV (PDF)', href: '/files/sinaida-krivchenko-cv.pdf', download: true },
       { label: 'Privacy', to: '/privacy' },
       { label: 'Licensing', to: '/licensing' },
+      { label: 'For machines', to: '/machines' },
       { label: 'View', toggle: true },
     ],
   },

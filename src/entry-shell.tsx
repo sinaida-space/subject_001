@@ -12,6 +12,7 @@ import HeroLetters from '@/components/HeroLetters';
 import { RenderModeProvider, type RenderMode } from '@/hooks/useRenderMode';
 import WorkCase from '@/pages/WorkCase';
 import Statement from '@/pages/Statement';
+import Machines from '@/pages/Machines';
 import { PROJECTS } from '@/data/projects';
 
 export { resolveRenderMode } from '@/lib/resolveRenderMode';
@@ -62,6 +63,20 @@ export function renderStatement(mode: RenderMode): string {
     <RenderModeProvider initialMode={mode}>
       <StaticRouter location="/statement/">
         <AppRoutes pages={{ statement: Statement }} />
+      </StaticRouter>
+    </RenderModeProvider>,
+  );
+}
+
+// For machines: agents that fetch /machines read plain HTML and never run the
+// bundle, so the page's text is in the file. main.tsx does not hydrate it; the
+// app replaces it on load, as on the homepage. Lite mode: the still sky, which
+// stays empty here because the nights load in the browser.
+export function renderMachines(): string {
+  return renderToStaticMarkup(
+    <RenderModeProvider initialMode="lite">
+      <StaticRouter location="/machines/">
+        <AppRoutes pages={{ machines: Machines }} />
       </StaticRouter>
     </RenderModeProvider>,
   );

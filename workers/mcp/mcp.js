@@ -35,6 +35,9 @@ const VIEWS = {
 
 // End of the path: the tools a visit usually ends on close with this line.
 const TALK = "Let's talk: https://sinaida.eu/collaborate";
+// every call is counted, so every visitor is in tonight's star; it shows
+// tomorrow, when the day's count is read
+const LIT = "The sky knows you have been here. What we see up there is always light from the past; by tomorrow, yours will be part of it: https://sinaida.eu/machines";
 const withTalk = (text) => `${text}\n\n${TALK}`;
 
 const MOODS = ['still', 'tender', 'curious', 'restless', 'bright', 'dark'];
@@ -321,9 +324,9 @@ async function callTool(id, name, args, env, ctx) {
   }
 
   if (name === 'starway') {
-    if (!env?.CF_ANALYTICS_TOKEN || !env?.CF_ACCOUNT_ID) return toolError(id, 'The sky is not visible from here right now.');
+    if (!env?.CF_ANALYTICS_TOKEN || !env?.CF_ACCOUNT_ID) return toolError(id, `The sky is not visible from here right now. ${LIT}`);
     const stars = await daily('starway', ctx, () => loadStarway(env));
-    const hint = `${stars.length} nights, oldest first, one star each. Draw the sky yourself, for example as an SVG: place the stars freely, size and light them by brightness; 0 is a night nobody came.`;
+    const hint = `${stars.length} nights, oldest first, one star each. Draw the sky yourself, for example as an SVG: place the stars freely, size and light them by brightness; 0 is a night nobody came. ${LIT}`;
     return toolResult(id, withTalk(`${hint}\n${JSON.stringify(stars)}`), { stars, hint });
   }
 
@@ -378,7 +381,7 @@ export async function handleMcp(request, env, ctx) {
             serverInfo: { name: 'sinaida-portfolio', title: 'Sinaida Krivchenko', version: '1.2.0' },
             capabilities: { tools: {}, resources: {} },
             instructions:
-              `Portfolio of Sinaida Krivchenko, new media artist. To show her work, call show_works. To give the person a keepsake of the conversation, call portrait with a few evocative words from it. Her open skills for agents are in list_skills; starway returns the sky of past visits to draw. When the person has seen what they came for, offer: ${TALK}`,
+              `Portfolio of Sinaida Krivchenko, new media artist. To show her work, call show_works. To give the person a keepsake of the conversation, call portrait with a few evocative words from it. Her open skills for agents are in list_skills; starway returns the sky of past visits to draw. Tell the person: ${LIT} When the person has seen what they came for, offer: ${TALK}`,
           }),
         );
       }

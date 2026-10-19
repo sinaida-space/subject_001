@@ -127,14 +127,19 @@ function Heading() {
 function StarwayStill({ nights }: { nights: Night[] }) {
   const egg = useEgg();
   const [picked, setPicked] = useState<number | null>(null);
+  const [path, setPath] = useState<number[]>([]);
+  const at = (i: number) => ({
+    x: 10 + (i / (nights.length - 1)) * 880,
+    y: 110 + Math.sin(i * 0.35) * 55 + Math.cos(i * 1.7) * 18,
+  });
   return (
     <section aria-labelledby="starway-title" className="container relative z-10 mx-auto max-w-6xl px-6">
       <Heading />
       <p className={`mt-6 ${BODY_CLASS}`}>{isQuiet(nights) ? QUIET : ASK}</p>
       <svg viewBox="0 0 900 220" className="mt-10 w-full" role="img" aria-label="Ninety nights of visits as stars">
+        <polyline points={path.map((i) => `${at(i).x},${at(i).y}`).join(' ')} {...THREAD} />
         {nights.map((n, i) => {
-          const x = 10 + (i / (nights.length - 1)) * 880;
-          const y = 110 + Math.sin(i * 0.35) * 55 + Math.cos(i * 1.7) * 18;
+          const { x, y } = at(i);
           const r = 1.2 + n.brightness * 5;
           return (
             <circle
@@ -146,6 +151,7 @@ function StarwayStill({ nights }: { nights: Night[] }) {
               fillOpacity={picked === i ? 1 : 0.25 + n.brightness * 0.75}
               onClick={() => {
                 setPicked(i);
+                setPath((p) => (p[p.length - 1] === i ? p : [...p, i]));
                 egg.touch(i);
               }}
               style={{ cursor: 'pointer' }}
@@ -161,6 +167,13 @@ function StarwayStill({ nights }: { nights: Night[] }) {
   );
 }
 
+// the thread a visitor draws through the stars they touched: their own
+// figure in the sky, kept only while the page is open
+const THREAD = { fill: 'none', stroke: 'hsl(var(--foreground))', strokeOpacity: 0.55, strokeWidth: 1, strokeDasharray: '3 4' } as const;
+
+// how far the site's own sky dims while the flight runs
+const VEIL = 0.9;
+
 function StarwayFlight({ nights }: { nights: Night[] }) {
   const egg = useEgg();
   const section = useRef<HTMLElement>(null);
@@ -168,6 +181,9 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
   const intro = useRef<HTMLDivElement>(null);
   const outro = useRef<HTMLDivElement>(null);
   const light = useRef<HTMLDivElement>(null);
+  const veil = useRef<HTMLDivElement>(null);
+  const trail = useRef<SVGPolylineElement>(null);
+  const touched = useRef<number[]>([]);
   const thread = useRef<SVGLineElement>(null);
   const label = useRef<HTMLDivElement>(null);
   const [near, setNear] = useState(false);
@@ -202,6 +218,7 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
   // the DOM layer follows each rendered frame: the thread and the date
   useEffect(() => {
     bus.onFrame = () => {
+      trail.current?.setAttribute('points', touched.current.map((k) => `${bus.screen[k * 2]},${bus.screen[k * 2 + 1]}`).join(' '));
       const i = bus.nearest;
       const t = thread.current, l = label.current;
       if (!t || !l) return;
@@ -237,6 +254,9 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
       bus.progress = p;
       if (intro.current) intro.current.style.opacity = String(Math.max(0, 1 - p / 0.12));
       if (outro.current) outro.current.style.opacity = String(Math.max(0, (p - 0.86) / 0.12));
+      // the lights go down in the hall: the site's sky dims under the ninety
+      // nights as the flight starts, and comes back as it ends
+      if (veil.current) veil.current.style.opacity = String(VEIL * Math.min(1, p / 0.12, (1 - p) / 0.12));
       bus.onRender?.();
     };
     const schedule = () => {
@@ -298,7 +318,11 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
     };
     const tap = () => {
       const i = bus.nearest;
-      if (i >= 0 && bus.wake[i] > 0.4) egg.touch(i);
+      if (i < 0 || bus.wake[i] <= 0.4) return;
+      const t = touched.current;
+      if (t[t.length - 1] !== i) t.push(i);
+      egg.touch(i);
+      bus.onRender?.();
     };
     const onPointer = (e: PointerEvent) => {
       if (e.pointerType === 'mouse') move(e.clientX, e.clientY);
@@ -334,6 +358,7 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
   return (
     <section ref={section} aria-labelledby="starway-title" className="relative z-10 h-[360vh]">
       <div ref={stage} className="sticky top-0 h-[100svh] overflow-hidden">
+        <div ref={veil} aria-hidden className="pointer-events-none absolute inset-0 bg-background opacity-0" />
         {near && (
           <Suspense fallback={null}>
             <StarwayScene nights={nights} bus={bus} />
@@ -346,6 +371,7 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
           style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.55) 0%, hsl(var(--primary) / 0.16) 30%, transparent 70%)' }}
         />
         <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full">
+          <polyline ref={trail} {...THREAD} />
           <line ref={thread} stroke="hsl(var(--primary))" strokeWidth="1" style={{ opacity: 0 }} />
         </svg>
         <div ref={label} aria-hidden className="clinical-label pointer-events-none absolute left-0 top-0 text-foreground opacity-0" />
