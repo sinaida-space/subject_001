@@ -434,6 +434,25 @@ export function buildRoutes() {
     },
   };
 
+  const machines = {
+    path: 'machines',
+    kind: 'page',
+    title: `For machines | ${AUTHOR_NAME}`,
+    description: 'This site has a second entrance for AI assistants: an MCP server that lets them read the work first hand.',
+    canonical: `${SITE_URL}/machines/`,
+    breadcrumbLabel: 'For machines',
+    indexable: true,
+    priority: '0.3',
+    sources: ['src/pages/Machines.tsx'],
+    fallback: {
+      heading: 'For machines',
+      paragraphs: [
+        'The internet is now read by machines as much as by people. I build for that meeting point, so this site has a second entrance: an MCP server that lets AI assistants read my work first hand.',
+        'Address: https://sinaida.eu/mcp. Add it as a connector in Claude, ChatGPT or any assistant that speaks MCP. No sign-in needed.',
+      ],
+    },
+  };
+
   // Legacy redirect stubs: the SPA sends /booking/ and /press/ visitors on to
   // /collaborate/, so their static shells reuse collaborate's copy and point
   // search engines at the real destination instead of indexing the redirect.
@@ -505,6 +524,7 @@ export function buildRoutes() {
     statement,
     privacy,
     licensing,
+    machines,
     // /license is the SPA's alias for /licensing; same shell, not indexed.
     { ...licensing, path: 'license', redirectTo: licensing.canonical, robots: 'noindex, follow', indexable: false },
     legacyRedirect('booking'),

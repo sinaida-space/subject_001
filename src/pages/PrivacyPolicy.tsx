@@ -102,6 +102,9 @@ const PrivacyPolicy = () => {
             This measurement happens entirely on Cloudflare's servers, from the request data described above. As I have set it up, no script for it runs in your browser, it sets no cookies, and it stores nothing on your device. As Cloudflare describes this service, it does not follow you across other websites, build a profile of you, or attempt to identify you individually.
           </p>
           <p>
+            Calls to the MCP server at&nbsp;/mcp are counted the same way. I use only the number of calls per day, to&nbsp;light one star per night in&nbsp;a&nbsp;small sky the server returns to&nbsp;agents. Nothing about who called is&nbsp;used.
+          </p>
+          <p>
             Legal basis: legitimate interest in understanding in aggregate how the site is used, so I can improve it. This analytics is cookieless and does not identify individuals, so, as I understand the ePrivacy rules, it does not need consent for storing or accessing information on your device, and I rely on legitimate interest here.
           </p>
           <p>

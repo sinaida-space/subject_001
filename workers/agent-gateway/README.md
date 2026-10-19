@@ -3,11 +3,13 @@
 Fronts sinaida.eu to add what GitHub Pages can't do on its own: Markdown
 negotiation on the homepage, a `Link` header, and an API catalog — all of
 which need request-time logic or a non-standard content-type a static host
-can't serve. It also runs a small MCP server at `POST /mcp` exposing the
-portfolio (bio, projects, contact) as read-only tools, plus two MCP Apps
-(`portrait`, `show_works`) whose views live in `public/portrait/` and
-`public/agent-views/`. Everything else
-passes straight through to the GitHub Pages origin, unmodified.
+can't serve. Everything else passes straight through to the GitHub Pages
+origin, unmodified.
+
+The MCP server at `POST /mcp` lives in `../mcp/` and runs as its own Worker,
+`sinaida-mcp`, on the more specific route `sinaida.eu/mcp`; see
+[`../mcp/README.md`](../mcp/README.md). This Worker imports the same code and
+answers `/mcp` itself only if `sinaida-mcp` is not deployed.
 
 ## One-time deploy (free Cloudflare plan is enough)
 
@@ -29,13 +31,12 @@ directly.
 ```bash
 curl -s https://sinaida.eu/ -H 'Accept: text/markdown' | head
 curl -s -I https://sinaida.eu/ | grep -i link
-curl -s https://sinaida.eu/mcp -X POST -H 'content-type: application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
 ## Updating
 
-Edit `index.js`, then `npx wrangler deploy` again. Tool data comes from
-`https://sinaida.eu/agent-data.json` and `/llms.txt` at request time — edit
-those (in `public/`) to update what the MCP tools and markdown negotiation
-return; no Worker redeploy needed for content changes.
+Edit `index.js`, then `npx wrangler deploy` again. The markdown homepage
+comes from `https://sinaida.eu/llms.txt` at request time; edit it (in
+`public/`) to change what markdown negotiation returns; no Worker redeploy
+needed for content changes. After a change in `../mcp/mcp.js`, deploy both
+Workers.

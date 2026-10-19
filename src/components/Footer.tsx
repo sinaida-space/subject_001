@@ -21,6 +21,7 @@ const COLUMNS: { label: string; items: Item[]; hover?: CityHover }[] = [
       { label: 'Works', to: '#work' },
       { label: 'Services', to: '#services' },
       { label: 'Contact', to: '#contact' },
+      { label: 'For machines', to: '/machines' },
     ],
   },
   {
