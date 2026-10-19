@@ -78,7 +78,8 @@
       "kind": "web tool",
       "tagline": "Endless generated soundscapes for focused work, with rest built into the session",
       "url": "https://infinite-voidsong.vercel.app/",
-      "live": "https://infinite-voidsong.vercel.app/"
+      "live": "https://infinite-voidsong.vercel.app/",
+      "still": "https://sinaida.eu/agent-views/stills/infinite-voidsong.webp"
     },
     {
       "id": "storm-glass",

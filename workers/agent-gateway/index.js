@@ -129,6 +129,14 @@ function jsonRpcError(id, code, message) {
   return { jsonrpc: '2.0', id, error: { code, message } };
 }
 
+const NO_AUTH_PATHS = new Set([
+  '/register',
+  '/authorize',
+  '/token',
+  '/.well-known/oauth-authorization-server',
+  '/.well-known/openid-configuration',
+]);
+
 const PROTOCOL_VERSIONS = ['2025-11-25', '2025-06-18', '2025-03-26'];
 
 // Browser-based MCP clients and inspectors call from other origins. The
@@ -280,6 +288,16 @@ export default {
 
     if (url.pathname === '/mcp') {
       return handleMcp(request);
+    }
+
+    // GitHub Pages only reads files: it answers every other method with a 405,
+    // which clients read as "something is here but broken". MCP clients probe
+    // OAuth registration (POST /register) and give up on a 405. This server has
+    // no sign-in and nothing else to write to, so every non-read request and
+    // every OAuth path gets a plain 404 here and never reaches the origin.
+    const isRead = request.method === 'GET' || request.method === 'HEAD';
+    if (!isRead || NO_AUTH_PATHS.has(url.pathname) || url.pathname.startsWith('/.well-known/oauth-protected-resource')) {
+      return new Response('Not Found', { status: 404, headers: { ...CORS, 'content-type': 'text/plain; charset=utf-8' } });
     }
 
     if (url.pathname === '/.well-known/api-catalog') {
