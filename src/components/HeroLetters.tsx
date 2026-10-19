@@ -227,7 +227,7 @@ export default function HeroLetters() {
     document.addEventListener('visibilitychange', onVis);
     return () => {
       off();
-      window.removeEventListener('blur', off);
+      window.removeEventListener('blur-sm', off);
       document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
@@ -259,11 +259,17 @@ export default function HeroLetters() {
     setOpen({ project, origin: lite ? undefined : { left: r.left, top: r.top, width: r.width, height: r.height, el } });
   };
 
+  // Phone sizes (under 768px, where fit() runs) are the fit() result written
+  // as CSS, so the static shell and the first frame already span margin to
+  // margin and nothing jumps when the fonts and the app arrive. 100cqw is the frame's content width (the frame
+  // is the container); the factor is 100 / the widest line's width at 100px:
+  // KRIVCHENKO for the name, the longest tagline line for the tagline.
+  // Re-measure both if the words change; fit() still corrects any drift.
   const type = 'm-0 font-display uppercase font-normal leading-[0.86] tracking-[-0.02em] text-[13vw] md:text-[clamp(2.5rem,min(10.4vw,13.5svh),11.5rem)]';
 
   return (
     <section
-      className="relative z-10 h-[100svh] select-none [-webkit-touch-callout:none]"
+      className="relative z-10 h-svh select-none [-webkit-touch-callout:none]"
       onTouchStart={holdTunnel}
       onTouchMove={moveTunnel}
       onTouchEnd={releaseTunnel}
@@ -271,10 +277,10 @@ export default function HeroLetters() {
     >
       {/* One vertical rule: the gap under the header equals the gap under the
           tagline (G), and the molecule sits at the centre of the void between. */}
-      <div className="site-frame h-full flex flex-col pt-[calc(64px+max(9vh,88px))] pb-[max(9vh,88px)] md:pt-[calc(68px+max(3vh,28px))] md:pb-[max(4vh,36px)]">
+      <div className="@container site-frame h-full flex flex-col pt-[calc(64px+max(9vh,88px))] pb-[max(9vh,88px)] md:pt-[calc(68px+max(3vh,28px))] md:pb-[max(4vh,36px)]">
         <p
           ref={nameRef}
-          className={`${type} self-start text-foreground cursor-none ${glowing ? 'neon-glow' : ''}`}
+          className={`${type} max-[767.98px]:text-[calc(100cqw*0.17229)] self-start text-foreground cursor-none ${glowing ? 'neon-glow' : ''}`}
           onMouseEnter={enterTunnel}
           onMouseMove={glowing ? undefined : enterTunnel}
           onMouseLeave={stopTunnel}
@@ -299,7 +305,7 @@ export default function HeroLetters() {
           </p>
         </div>
 
-        <h1 ref={taglineRef} className={`${type} self-end text-right text-foreground`}>
+        <h1 ref={taglineRef} className={`${type} max-[767.98px]:text-[calc(100cqw*0.19312)] self-end text-right text-foreground`}>
           <span>
             {TAGLINE.map((line, i) => (
               <span key={i} className="hl-line block whitespace-nowrap">

@@ -892,7 +892,7 @@ export default function ParticleField({ subtle = false, flight = false }: Partic
           the blur wrapper on its own z-0 sibling so it paints crisply above the
           canvas but still behind content. */}
       <div
-        className={`crt-overlay${subtle ? ' crt-subtle' : ''}`}
+        className={`crt-overlay ${subtle ? 'crt-subtle' : ''}`}
         aria-hidden="true"
       />
     </>

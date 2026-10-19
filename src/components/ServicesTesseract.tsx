@@ -1028,7 +1028,7 @@ export default function ServicesTesseract({ children }: { children: ReactNode })
       className="relative mt-[7vh]"
       style={{ height: `${Math.round((1 + TOTAL) * 100)}svh`, marginBottom: `${-OVERLAP * 100}svh` }}
     >
-      <div ref={stageRef} className="sticky top-0 h-[100svh] w-full overflow-hidden">
+      <div ref={stageRef} className="sticky top-0 h-svh w-full overflow-hidden">
         <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" />
         {Children.map(children, (child, k) => (
           <div

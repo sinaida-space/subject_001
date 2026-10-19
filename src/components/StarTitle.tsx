@@ -356,7 +356,13 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || REDUCED) return;
+    if (!el) return;
+    // set here, not in the markup: the build-time Statement render (studio#27)
+    // cannot know the visitor's motion setting
+    if (REDUCED) {
+      el.style.setProperty('--title-rule', '1');
+      return;
+    }
     const mq = window.matchMedia(MD);
     let raf = 0;
     let last = -1;
@@ -392,7 +398,7 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
   }, []);
 
   return (
-    <div ref={ref} className={`relative ${className ?? ''}`} style={REDUCED ? ({ ['--title-rule' as string]: '1' } as CSSProperties) : undefined}>
+    <div ref={ref} className={`relative ${className ?? ''}`}>
       <div style={{ transform: 'translate3d(0, var(--title-lag, 0px), 0)' }}>
       <div className="flex items-center gap-6">
         <h2 className="font-mono uppercase text-primary" style={{ letterSpacing: '0.2em', fontSize: 40, ...titleStyle }}>

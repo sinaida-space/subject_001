@@ -64,10 +64,15 @@ export default defineConfig(() => ({
   },
   // No maps in production: dist/ is deployed as-is, so any .map file would be
   // public. Run `vite build --sourcemap` locally when a map is needed.
-  build: { sourcemap: false },
+  // Targets pinned to the Vite 5 defaults: Vite 8 aims at Safari 16.4+ and
+  // rewrites media queries to range syntax, which older iPhones ignore.
+  build: {
+    sourcemap: false,
+    target: ["es2020", "edge88", "firefox78", "chrome87", "safari14"],
+  },
   plugins: [react()],
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: { "@": path.resolve(import.meta.dirname, "./src") },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "three", "@react-three/fiber", "@react-three/drei"],
   },
 }));

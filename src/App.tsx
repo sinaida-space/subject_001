@@ -1,13 +1,14 @@
-import { Suspense, lazy, useEffect, useLayoutEffect } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect, type ComponentType } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import WebMcpTools from "@/components/WebMcpTools";
 import RouteEnhancer from "@/components/RouteEnhancer";
 import DiveHost from "@/components/dive/DiveHost";
-import { RenderModeProvider, useRenderMode } from "@/hooks/useRenderMode";
+import { RenderModeProvider, useRenderMode, type RenderMode } from "@/hooks/useRenderMode";
 import { routeChunks } from "@/lib/routeChunks";
 import { startHalation } from "@/lib/halation";
+import { afterHydration, hydration } from "@/lib/hydration";
 import { rememberHomeScroll, restoreHomeScroll, takeHomeReturn } from "@/lib/homeScroll";
 
 const PrivacyPolicy = lazy(routeChunks.privacy);
@@ -28,7 +29,16 @@ const SiteLight = () => {
   const { mode } = useRenderMode();
   useEffect(() => {
     if (mode !== 'full') return;
-    return startHalation();
+    // it marks headlines in the DOM, so not before a hydrating page is adopted
+    let live = true;
+    let stop: (() => void) | undefined;
+    afterHydration(() => {
+      if (live) stop = startHalation();
+    });
+    return () => {
+      live = false;
+      stop?.();
+    };
   }, [mode]);
   return null;
 };
@@ -63,40 +73,70 @@ const ScrollToTop = () => {
   return null;
 };
 
-const App = () => (
-  <RenderModeProvider>
+// Pages that arrive rendered at build time, passed in already loaded in
+// place of their lazy route, so hydration never suspends on the chunk.
+export interface HydratedPages {
+  work?: ComponentType;
+  statement?: ComponentType;
+}
+
+// Everything inside the router. Shared with the build-time renders
+// (src/entry-shell.tsx), so a hydrated page has the same tree, and the same
+// useId values, on the server and in the browser.
+export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
+  const Work = pages.work ?? WorkCase;
+  const StatementPage = pages.statement ?? Statement;
+  return (
+  <>
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-background focus:text-primary-legible focus:border focus:border-primary focus:px-4 focus:py-2 focus:font-mono focus:uppercase focus:text-sm focus:tracking-widest"
+    >
+      Skip to content
+    </a>
+    <ScrollToTop />
+    <RouteEnhancer />
+    <DiveHost />
+    {/* site-wide, every route: the red arrow in both modes, on Void and on Chalk (#175) */}
+    <CustomCursor />
+    <SiteLight />
+    <WebMcpTools />
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/licensing" element={<Licensing />} />
+        <Route path="/license" element={<Navigate to="/licensing" replace />} />
+        <Route path="/collaborate" element={<Collaborate />} />
+        <Route path="/experiences" element={<Experiences />} />
+        <Route path="/statement" element={<StatementPage />} />
+        {/* Old routes live in shared links and search results — keep redirecting */}
+        <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
+        <Route path="/press" element={<Navigate to="/collaborate" replace />} />
+        <Route path="/work/:slug" element={<Work />} />
+        <Route path="/practice" element={<Practice />} />
+        <Route path="/practice/:slug" element={<Practice />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <HydrationDone />
+    </Suspense>
+  </>
+  );
+};
+
+// Inside the Suspense boundary, after the routes: its effect runs once the
+// boundary's content has been adopted, the last pass of hydration.
+function HydrationDone() {
+  useEffect(() => hydration.finish(), []);
+  return null;
+}
+
+// `hydrate` is the render mode of the build-time markup being adopted; the
+// first render uses it, and RenderModeProvider re-detects afterwards.
+const App = ({ hydrate, pages }: { hydrate?: RenderMode; pages?: HydratedPages }) => (
+  <RenderModeProvider initialMode={hydrate}>
     <BrowserRouter basename="/">
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-background focus:text-primary-legible focus:border focus:border-primary focus:px-4 focus:py-2 focus:font-mono focus:uppercase focus:text-sm focus:tracking-widest"
-      >
-        Skip to content
-      </a>
-      <ScrollToTop />
-      <RouteEnhancer />
-      <DiveHost />
-      {/* site-wide, every route: the red arrow in both modes, on Void and on Chalk (#175) */}
-      <CustomCursor />
-      <SiteLight />
-      <WebMcpTools />
-      <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/licensing" element={<Licensing />} />
-          <Route path="/license" element={<Navigate to="/licensing" replace />} />
-          <Route path="/collaborate" element={<Collaborate />} />
-          <Route path="/experiences" element={<Experiences />} />
-          <Route path="/statement" element={<Statement />} />
-          {/* Old routes live in shared links and search results — keep redirecting */}
-          <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
-          <Route path="/press" element={<Navigate to="/collaborate" replace />} />
-          <Route path="/work/:slug" element={<WorkCase />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/practice/:slug" element={<Practice />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <AppRoutes pages={pages} />
     </BrowserRouter>
   </RenderModeProvider>
 );

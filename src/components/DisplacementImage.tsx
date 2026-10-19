@@ -70,6 +70,7 @@ export default function DisplacementImage({
 }: DisplacementImageProps) {
   const filterId = useId().replace(/:/g, '_');
   const wrapRef = useRef<HTMLDivElement>(null);
+  const baseRef = useRef<HTMLImageElement>(null);
   const bumpRef = useRef<SVGFEImageElement>(null);
   const overlayRef = useRef<HTMLImageElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -82,6 +83,14 @@ export default function DisplacementImage({
   // the displacement vector; a soft radial falloff makes the ripple fade out
   // away from the cursor. Rendered once as a data URI.
   const bumpHref = useBumpDataUri(radius);
+
+  // A hydrated case page (studio#16) adopts an <img> that may have finished
+  // loading before React attached onLoad, so that event never reaches it.
+  useEffect(() => {
+    const img = baseRef.current;
+    if (img?.complete && img.naturalWidth > 0) onLoad?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on mount
+  }, []);
 
   useEffect(() => {
     if (!CAN_DISPLACE) return;
@@ -164,6 +173,7 @@ export default function DisplacementImage({
     <div ref={wrapRef} className={className} style={{ position: 'relative', overflow: 'hidden', ...style }} data-displacement-wrap>
       {/* Base image — always present, always visible, plain and static. */}
       <img
+        ref={baseRef}
         src={src}
         srcSet={srcSet}
         sizes={sizes}

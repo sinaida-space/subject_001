@@ -84,7 +84,7 @@ export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismiss
     // bar only shows while a meaningful chunk of the graph is on screen and
     // never blocks anything once it's scrolled away.
     <div
-      className={`pointer-events-none fixed inset-x-0 z-[60] flex flex-col items-center gap-3 px-3 transition-[opacity,bottom] duration-300 ${bannerShowing ? 'bottom-24 sm:bottom-20' : 'bottom-4'}`}
+      className={`pointer-events-none fixed inset-x-0 z-60 flex flex-col items-center gap-3 px-3 transition-[opacity,bottom] duration-300 ${bannerShowing ? 'bottom-24 sm:bottom-20' : 'bottom-4'}`}
       style={{ opacity: visible ? 1 : 0, visibility: visible ? 'visible' : 'hidden' }}
     >
         {/* "You found it" window — retro-OS framing, matches the project readout */}

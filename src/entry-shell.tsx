@@ -4,11 +4,15 @@
 // pages/Index.tsx (wrapper, header, hero) so the swap to the live app is
 // invisible. Never shipped to the browser.
 
-import { renderToStaticMarkup } from 'react-dom/server';
+import { renderToStaticMarkup, renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
+import { AppRoutes } from '@/App';
 import Header from '@/components/Header';
 import HeroLetters from '@/components/HeroLetters';
-import { RenderModeProvider } from '@/hooks/useRenderMode';
+import { RenderModeProvider, type RenderMode } from '@/hooks/useRenderMode';
+import WorkCase from '@/pages/WorkCase';
+import Statement from '@/pages/Statement';
+import { PROJECTS } from '@/data/projects';
 
 export { resolveRenderMode } from '@/lib/resolveRenderMode';
 
@@ -28,6 +32,36 @@ export function renderShell(): string {
             <div style={{ height: '100vh' }} aria-hidden="true" />
           </main>
         </div>
+      </StaticRouter>
+    </RenderModeProvider>,
+  );
+}
+
+// Case pages (studio#16): the whole case renders at build time, so the hero
+// still is in the HTML and LCP no longer waits for the main bundle. Unlike
+// the homepage, main.tsx hydrates this markup instead of replacing it, so it
+// is the app's own tree (AppRoutes, as App renders it) through renderToString,
+// with the hydration markers React needs.
+export const caseIds = PROJECTS.filter((p) => p.caseStudy).map((p) => p.id);
+
+export function renderCase(id: string): string {
+  return renderToString(
+    <RenderModeProvider initialMode="full">
+      <StaticRouter location={`/work/${id}/`}>
+        <AppRoutes pages={{ work: WorkCase }} />
+      </StaticRouter>
+    </RenderModeProvider>,
+  );
+}
+
+// Statement (studio#27): rendered once per mode, the same way. Full is the
+// phone layout of the room (StatementRoom renders its plain flow below
+// 768px); the wide room is drawn by the client alone.
+export function renderStatement(mode: RenderMode): string {
+  return renderToString(
+    <RenderModeProvider initialMode={mode}>
+      <StaticRouter location="/statement/">
+        <AppRoutes pages={{ statement: Statement }} />
       </StaticRouter>
     </RenderModeProvider>,
   );

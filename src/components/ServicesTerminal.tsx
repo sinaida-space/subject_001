@@ -9,7 +9,7 @@ import StarTitle, { LiteTitle } from './StarTitle';
 const NBSP = ' ';
 
 const linkClass =
-  'underline underline-offset-4 decoration-foreground/30 transition-colors hover:text-foreground hover:decoration-[hsl(var(--sinaida-red))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff1a1a]';
+  'underline underline-offset-4 decoration-foreground/30 transition-colors hover:text-foreground hover:decoration-[hsl(var(--sinaida-red))] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-[#ff1a1a]';
 
 // One service: word, title, short line, the project still and its caption.
 // `fit` sizes it to rest inside one 100svh screen (full mode, tesseract).
@@ -52,7 +52,7 @@ function ServiceScreen({ service, flip, fit }: { service: Service; flip: boolean
           </Link>
         )}
         <p
-          className={`font-mono mt-2.5 text-sm leading-[1.55] [text-wrap:balance] ${fit && !flip ? 'md:text-right' : ''}`}
+          className={`font-mono mt-2.5 text-sm leading-[1.55] text-balance ${fit && !flip ? 'md:text-right' : ''}`}
           style={{ color: 'hsl(var(--foreground) / 0.6)' }}
         >
           <Link to={`/work/${service.caption.project}`} className={`project-name ${linkClass}`}>

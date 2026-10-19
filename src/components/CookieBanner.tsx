@@ -111,7 +111,7 @@ const CookieBanner = () => {
       ref={bannerRef}
       role="region"
       aria-label="Cookie notice"
-      className={`notice-surface fixed bottom-0 left-0 right-0 z-50 py-2.5 sm:py-4${away ? ' notice-surface--away' : ''}`}
+      className={`notice-surface fixed bottom-0 left-0 right-0 z-50 py-2.5 sm:py-4 ${away ? 'notice-surface--away' : ''}`}
     >
       {/* Same container and gutter as Footer.tsx, so the notice's text starts
           on the site's own left edge instead of a narrower one of its own. */}

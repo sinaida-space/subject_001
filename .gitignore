@@ -38,3 +38,6 @@ dist-shell
 
 # working notes, kept local
 docs/handoff-*.md
+
+# Lighthouse CI reports
+.lighthouseci

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ObfuscatedMailto from './ObfuscatedMailto';
 import DitherText from './DitherText';
 
-const linkFocus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff1a1a] focus-visible:outline-offset-2';
+const linkFocus = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-[#ff1a1a] focus-visible:outline-offset-2';
 
 // The two ways in under LET'S TALK: write, or book a call. EMAIL ME also
 // shows the address, resolved out of red dither beside the buttons, and copies

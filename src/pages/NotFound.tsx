@@ -74,7 +74,7 @@ export default function NotFound() {
   }, [navigate, snakeOpen]);
 
   return (
-    <div className="bsod relative flex h-[100svh] flex-col justify-center overflow-hidden px-6 md:px-16">
+    <div className="bsod relative flex h-svh flex-col justify-center overflow-hidden px-6 md:px-16">
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-5xl">
         <div className="bsod-bar mb-10 inline-block px-3 py-1 font-mono text-[15px] uppercase tracking-[0.2em]">sinaida.eu</div>

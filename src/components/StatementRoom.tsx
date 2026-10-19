@@ -1,7 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import StatementLetters, { type LettersHandle } from '@/components/StatementLetters';
-import StatementScene from '@/components/StatementScene';
 import { roomBus, type Box } from '@/lib/roomBus';
+import { hydration } from '@/lib/hydration';
+
+// The WebGL room, drawn only from 768px in full mode. Lazy, so phones and
+// the hydrated build-time render never wait for three.js (studio#27).
+const StatementScene = lazy(() => import('@/components/StatementScene'));
 
 // The statement as a flight: each paragraph waits a little way ahead, and the
 // scroll carries the reader to it, through the scene that StatementScene draws
@@ -121,7 +125,9 @@ export default function StatementRoom({
   /** what the closing paragraph turns into: the cases */
   finale?: ReactNode;
 }) {
-  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches);
+  // narrow while hydrating: the build-time render is the phone layout, and
+  // a wide screen in full mode never hydrates it (scripts/prerender-shell.mjs)
+  const [wide, setWide] = useState(() => !hydration.active && typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches);
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const finaleRef = useRef<HTMLDivElement>(null);
@@ -132,6 +138,7 @@ export default function StatementRoom({
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)');
     const on = () => setWide(mq.matches);
+    on();
     mq.addEventListener('change', on);
     return () => mq.removeEventListener('change', on);
   }, []);
@@ -271,7 +278,9 @@ export default function StatementRoom({
 
   return (
     <div ref={trackRef} className="relative" style={{ height: `${TOTAL * BEAT_VH + 100}vh` }}>
-      <StatementScene />
+      <Suspense fallback={null}>
+        <StatementScene />
+      </Suspense>
       {/* the stage is the whole screen wide, out of the page's column */}
       <div
         ref={stageRef}

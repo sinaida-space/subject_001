@@ -37,11 +37,11 @@ export default function VHSImage({ src, alt, className = '', aspectRatio = '16/1
     >
       {/* Corner brackets — red on both corners */}
       <div
-        className="absolute top-[-1px] right-[-1px] w-[18px] h-[18px] pointer-events-none z-[2]"
+        className="absolute -top-px -right-px w-[18px] h-[18px] pointer-events-none z-2"
         style={{ borderTop: '2px solid hsl(var(--accent))', borderRight: '2px solid hsl(var(--accent))' }}
       />
       <div
-        className="absolute bottom-[-1px] left-[-1px] w-[18px] h-[18px] pointer-events-none z-[2]"
+        className="absolute -bottom-px -left-px w-[18px] h-[18px] pointer-events-none z-2"
         style={{ borderBottom: '2px solid hsl(var(--sinaida-red))', borderLeft: '2px solid hsl(var(--sinaida-red))' }}
       />
 

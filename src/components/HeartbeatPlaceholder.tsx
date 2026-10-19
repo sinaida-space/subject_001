@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 interface HeartbeatPlaceholderProps {
   /** Whether the real content has finished loading. Transition false→true fires the pulse. */
@@ -11,8 +11,6 @@ interface HeartbeatPlaceholderProps {
   aspectRatio?: string;
   className?: string;
 }
-
-let uid = 0;
 
 // A single flatline that spikes exactly once — driven by the `loaded` prop
 // flipping false → true (an onLoad callback from the real asset), never a
@@ -28,7 +26,9 @@ export default function HeartbeatPlaceholder({
   const [pulsing, setPulsing] = useState(false);
   const [hidden, setHidden] = useState(false);
   const prevLoaded = useRef(false);
-  const idRef = useRef(`hb-${uid++}`);
+  // useId, not a module counter: the case hero is hydrated from its
+  // build-time render, and the id is written into the markup
+  const id = `hb-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
   useEffect(() => {
     if (loaded && !prevLoaded.current) {
@@ -46,8 +46,6 @@ export default function HeartbeatPlaceholder({
   }, [loaded]);
 
   if (hidden) return null;
-
-  const id = idRef.current;
 
   return (
     <div
