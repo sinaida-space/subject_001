@@ -86,7 +86,9 @@ export interface CaseStudy {
   /** attribution lines, rendered as a credits block */
   credits?: string[];
   /** structured collaborator credits (role, name, statement link, one-line bio), rendered instead of `credits` when present */
-  creditsPeople?: { role: string; name: string; url: string; bio: string }[];
+  creditsPeople?: { role: string; name: string; url: string; bio: string; bioLink?: { text: string; url: string } }[];
+  /** short visitor quotes, translated, shown after the testimonial with their source */
+  visitorQuotes?: { quotes: { text: string; name: string }[]; source: { label: string; url: string } };
   /**
    * The same collaborators as `credits`, machine-readable: this feeds the
    * `contributor` array in the page's JSON-LD (scripts/lib/structured-data.mjs)
@@ -349,7 +351,11 @@ export const PROJECTS: Project[] = [
           role: 'Painting',
           name: 'Alisa Feer',
           url: 'https://uvaliss.ru/ascv',
-          bio: 'Alisa Feer is a visual artist from St Petersburg exploring themes of darkness and light. Her work has been shown at the Russian Museum, St Petersburg (2026, "Intuition of Space: Epiphany").',
+          bio: 'Alisa Feer is a visual artist from St Petersburg exploring themes of darkness and light. Her video work was screened at “Intuition of Space: Epiphany”, the international video art festival at the Russian Museum’s Centre for Art and Technology, St Petersburg (June 2026).',
+          bioLink: {
+            text: 'Intuition of Space: Epiphany',
+            url: 'https://rusmuseum.ru/news/vsem-privet-dobavte-pozhaluysta-v-sobytiya-nazvanie-v-tsentre-iskusstv-i-tekhnologiy-russkogo-muzeya/',
+          },
         },
       ],
       links: [
@@ -472,6 +478,16 @@ export const PROJECTS: Project[] = [
         name: 'Alisa Feer',
         role: 'visual artist',
       },
+      visitorQuotes: {
+        quotes: [
+          { text: 'One question has put my whole life on pause, and it still\u00A0has.', name: 'Alexander' },
+          { text: 'This is a masterpiece. I don’t know how a human brain is capable of coming up with something like this… So many questions I had never asked myself, and I\u00A0was\u00A0wrong\u00A0not\u00A0to.', name: 'Denis\u00A0V.' },
+          { text: 'You want to give it a lot of time! Deep, atmospheric, important. On how thought-through it is, I want to add that at the end you can save all the questions for yourself, which is great! Because they really are interesting to come back\u00A0to.', name: 'Viktoria\u00A0S.' },
+          { text: 'This needs to be at exhibitions, with different screens, with photographs and other art objects complementing your\u00A0work.', name: 'Ksenia\u00A0V.' },
+          { text: 'Atmospheric, of course. I can’t even imagine how you see the world and what is in your soul, to create work like this. But it is original,\u00A0unusual.', name: 'Pavel\u00A0K.' },
+        ],
+        source: { label: 'uvaliss.ru', url: 'https://uvaliss.ru/conspace_rooms' },
+      },
       creditsPeople: [
         {
           role: 'Idea, experience design, game mechanics and agentic coding',
@@ -483,7 +499,11 @@ export const PROJECTS: Project[] = [
           role: 'SOULS artworks & voice',
           name: 'UVALISS (Alisa Feer)',
           url: 'https://uvaliss.ru/',
-          bio: 'Alisa Feer is a visual artist from St Petersburg exploring themes of darkness and light, childhood and dreams. Her work has been shown at the Russian Museum, St Petersburg (2026, “Intuition of Space: Epiphany”).',
+          bio: 'Alisa Feer is a visual artist from St Petersburg exploring themes of darkness and light, childhood and dreams. Her video work was screened at “Intuition of Space: Epiphany”, the international video art festival at the Russian Museum’s Centre for Art and Technology, St Petersburg (June 2026).',
+          bioLink: {
+            text: 'Intuition of Space: Epiphany',
+            url: 'https://rusmuseum.ru/news/vsem-privet-dobavte-pozhaluysta-v-sobytiya-nazvanie-v-tsentre-iskusstv-i-tekhnologiy-russkogo-muzeya/',
+          },
         },
       ],
       links: [

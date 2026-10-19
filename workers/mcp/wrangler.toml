@@ -1,0 +1,11 @@
+name = "sinaida-mcp"
+main = "index.js"
+compatibility_date = "2026-07-01"
+
+# More specific than agent-gateway's sinaida.eu/*, so Cloudflare sends /mcp
+# here and only here. Secrets (set once, never committed):
+#   CF_ACCOUNT_ID       the Cloudflare account id
+#   CF_ANALYTICS_TOKEN  API token with Account > Account Analytics > Read
+routes = [
+  { pattern = "sinaida.eu/mcp", zone_name = "sinaida.eu" }
+]

@@ -12,6 +12,7 @@ import { afterHydration, hydration } from "@/lib/hydration";
 import { rememberHomeScroll, restoreHomeScroll, takeHomeReturn } from "@/lib/homeScroll";
 
 const PrivacyPolicy = lazy(routeChunks.privacy);
+const Machines = lazy(routeChunks.machines);
 const Licensing = lazy(routeChunks.licensing);
 const Collaborate = lazy(routeChunks.collaborate);
 const Experiences = lazy(routeChunks.experiences);
@@ -110,6 +111,7 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
         <Route path="/collaborate" element={<Collaborate />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/statement" element={<StatementPage />} />
+        <Route path="/machines" element={<Machines />} />
         {/* Old routes live in shared links and search results — keep redirecting */}
         <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
         <Route path="/press" element={<Navigate to="/collaborate" replace />} />

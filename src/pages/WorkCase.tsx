@@ -310,6 +310,32 @@ export default function WorkCase() {
               </figure>
             )}
 
+            {/* ── Visitor quotes — short lines from visitors, translated, with their source ── */}
+            {cs.visitorQuotes && (
+              <figure className="mt-10" data-content-type="visitor-quotes" aria-label="Visitor quotes">
+                <div className="clinical-label mb-3 text-foreground/65">Visitors</div>
+                <ul className="flex max-w-[62ch] flex-col gap-3 border-l-2 border-primary/40 pl-4">
+                  {cs.visitorQuotes.quotes.map((v) => (
+                    <li key={v.name} className="font-mono text-[14px] leading-[1.85] text-foreground/82">
+                      <span className="italic">“{v.text}”</span>{' '}
+                      <span className="text-foreground/65">{v.name}</span>
+                    </li>
+                  ))}
+                </ul>
+                <figcaption className="mt-3 font-mono text-[13px] text-foreground/65">
+                  Translated from Russian, from{' '}
+                  <a
+                    href={cs.visitorQuotes.source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70"
+                  >
+                    {cs.visitorQuotes.source.label}
+                  </a>
+                </figcaption>
+              </figure>
+            )}
+
             {/* ── Credits ── */}
             {cs.creditsPeople ? (
               <div className="mt-10">
@@ -329,7 +355,22 @@ export default function WorkCase() {
                         </a>
                       </p>
                       <p className="mt-1 max-w-[62ch] font-mono text-[13px] leading-relaxed text-foreground/65">
-                        {withProjectNames(p.bio)}
+                        {p.bioLink && p.bio.includes(p.bioLink.text) ? (
+                          <>
+                            {withProjectNames(p.bio.slice(0, p.bio.indexOf(p.bioLink.text)))}
+                            <a
+                              href={p.bioLink.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary-legible underline decoration-primary-legible/40 underline-offset-2 transition-opacity hover:opacity-70"
+                            >
+                              {p.bioLink.text}
+                            </a>
+                            {withProjectNames(p.bio.slice(p.bio.indexOf(p.bioLink.text) + p.bioLink.text.length))}
+                          </>
+                        ) : (
+                          withProjectNames(p.bio)
+                        )}
                       </p>
                     </div>
                   ))}

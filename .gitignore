@@ -41,3 +41,7 @@ docs/handoff-*.md
 
 # Lighthouse CI reports
 .lighthouseci
+
+# Wrangler local state and secrets
+.wrangler/
+.dev.vars*

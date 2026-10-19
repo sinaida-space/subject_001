@@ -1094,6 +1094,8 @@
   }
 
   html {
+    /* a solid root ground for Safari's edge zones, in either mode */
+    background-color: hsl(var(--background));
     scroll-behavior: smooth;
     scroll-timeline: --page-scroll block;
     /* clip, not hidden: hidden on both html and body made body a scroll
@@ -1115,6 +1117,8 @@
     overflow-x: hidden;
     overflow-x: clip;
     background: radial-gradient(circle at center, hsl(var(--background)), hsl(var(--background) / 0.85));
+    /* the last lines clear the solid band under the iOS toolbar (Header.tsx) */
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   /* Lite: a light gaussian grain over the whole picture, multiplied in, so it
@@ -1125,7 +1129,10 @@
     content: '';
     position: fixed;
     inset: 0;
-    z-index: 80;
+    /* under the header (z-50): iOS 26 Safari tints the status bar and the
+       toolbar from the topmost fixed layer at the edge, and this grain is
+       translucent, so above the header it let the page show through there */
+    z-index: 45;
     pointer-events: none;
     background: url('/grain-lite.png') repeat;
     background-size: 256px 256px;

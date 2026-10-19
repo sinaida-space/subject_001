@@ -93,7 +93,11 @@ export default function Header() {
   return (
     <>
       {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
-      <header className="fixed top-0 left-0 right-0 z-50">
+      {/* the same band under the toolbar at the bottom edge */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 bottom-0 z-40 bg-background" style={{ height: 'env(safe-area-inset-bottom)' }} />
+      <header className="fixed top-0 left-0 right-0 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        {/* the status bar's zone, in the page ground (iOS 26 Safari tints it from this) */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 bg-background" style={{ height: 'env(safe-area-inset-top)' }} />
         {/* No glass panel or border: once scrolled, the page's own background
             colour fades down under the header so content slides beneath it.
             The underlay is --card, a few tones above the void (#193, her pick).

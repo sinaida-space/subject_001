@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <!-- cd0000 is --sinaida-red. Browser chrome can't read CSS vars, so the
          literal has to stay, but it must stay the same literal as the token.
 
@@ -24,9 +24,12 @@
          - apple-mobile-web-app-status-bar-style only applies once the site is
            added to the home screen, where it keeps the status bar dark
            instead of reverting to black-on-white. It stays opaque ("black")
-           rather than translucent because nothing in the layout reserves
-           env(safe-area-inset-top), so a translucent bar would sit on top of
-           the header.
+           rather than translucent.
+
+         viewport-fit=cover: iOS 26 Safari draws the page under the status
+         bar and the floating toolbar and tints those zones only from a fixed
+         element with a solid ground at the edge. Header.tsx keeps one band of
+         the page ground under each, sized by env(safe-area-inset-*).
 
          Known limit: iOS Safari drops theme-color tinting entirely in Private
          Browsing tabs and shows its own chrome there. Nothing in the page can
