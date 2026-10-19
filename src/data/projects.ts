@@ -484,6 +484,7 @@ export const PROJECTS: Project[] = [
           { text: 'This is a masterpiece. I don’t know how a human brain is capable of coming up with something like this… So many questions I had never asked myself, and I\u00A0was\u00A0wrong\u00A0not\u00A0to.', name: 'Denis\u00A0V.' },
           { text: 'You want to give it a lot of time! Deep, atmospheric, important. On how thought-through it is, I want to add that at the end you can save all the questions for yourself, which is great! Because they really are interesting to come back\u00A0to.', name: 'Viktoria\u00A0S.' },
           { text: 'This needs to be at exhibitions, with different screens, with photographs and other art objects complementing your\u00A0work.', name: 'Ksenia\u00A0V.' },
+          { text: 'Atmospheric, of course. I can’t even imagine how you see the world and what is in your soul, to create work like this. But it is original,\u00A0unusual.', name: 'Pavel\u00A0K.' },
         ],
         source: { label: 'uvaliss.ru', url: 'https://uvaliss.ru/conspace_rooms' },
       },
