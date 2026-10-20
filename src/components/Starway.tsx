@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { createPortal } from 'react-dom';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { H2_CLASS, KICKER_CLASS, BODY_CLASS } from '@/components/PageParts';
-import { FIRST_LIGHT, formatNight, loadNights, NIGHTS, PLAYLIST_URL, type Night } from '@/lib/starway';
+import { FIRST_LIGHT, formatNight, loadNights, nightsSinceBegan, PLAYLIST_URL, type Night } from '@/lib/starway';
 import { chime } from '@/lib/chime';
 import { savePostcard, shareSky } from '@/lib/postcard';
 import type { Bus } from '@/components/StarwayScene';
@@ -14,7 +14,8 @@ const StarwayScene = lazy(() => import('@/components/StarwayScene'));
 // one per night, as bright as that night's calls. The red light is the person
 // reading, only for as long as they stay: nothing about them is counted, sent
 // or kept. Scroll flies through the nights, the light wakes the star nearest
-// to it. Circling a star, or touching more than three, finds the music.
+// to it. Circling a star, touching more than three, or touching one star
+// twice finds the music.
 
 const isQuiet = (nights: Night[]) => nights.every((n) => n.brightness <= 0);
 
@@ -22,8 +23,9 @@ const isQuiet = (nights: Night[]) => nights.every((n) => n.brightness <= 0);
 // with no answer from the server the way is still there, only dark
 function darkNights(): Night[] {
   const today = Math.floor(Date.now() / 864e5) * 864e5;
-  return Array.from({ length: NIGHTS }, (_, i) => ({
-    date: new Date(today - (NIGHTS - 1 - i) * 864e5).toISOString().slice(0, 10),
+  const n = nightsSinceBegan(today);
+  return Array.from({ length: n }, (_, i) => ({
+    date: new Date(today - (n - 1 - i) * 864e5).toISOString().slice(0, 10),
     brightness: 0,
   }));
 }
@@ -44,15 +46,18 @@ function useNights() {
 function useEgg() {
   const [open, setOpen] = useState(false);
   const shown = useRef(false);
-  const touched = useRef(new Set<number>());
+  const touched = useRef(new Map<number, number>());
   const find = () => {
     if (shown.current) return;
     shown.current = true;
     setOpen(true);
   };
+  // more than three stars, or the same star touched twice: a young sky has
+  // only a few stars, so the second way keeps the music within reach
   const touch = (i: number) => {
-    touched.current.add(i);
-    if (touched.current.size > 3) find();
+    const times = (touched.current.get(i) ?? 0) + 1;
+    touched.current.set(i, times);
+    if (touched.current.size > 3 || times > 1) find();
   };
   const close = useCallback(() => setOpen(false), []);
   return { open, close, find, touch };
@@ -175,7 +180,7 @@ function StarwayStill({ nights }: { nights: Night[] }) {
   const [picked, setPicked] = useState<number | null>(null);
   const [path, setPath] = useState<number[]>([]);
   const at = (i: number) => ({
-    x: 10 + (i / (nights.length - 1)) * 880,
+    x: 10 + (nights.length > 1 ? i / (nights.length - 1) : 0.5) * 880,
     y: 110 + Math.sin(i * 0.35) * 55 + Math.cos(i * 1.7) * 18,
   });
   return (

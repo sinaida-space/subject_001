@@ -198,7 +198,7 @@ const MAX_NIGHTS = 90;
 // Tonight's star is read again after this many seconds, so a visit shows the
 // same night (Cloudflare's own counts lag a few minutes behind).
 const TONIGHT = 600;
-const readSky = (env, ctx) => daily('starway', ctx, () => loadStarway(env), TONIGHT);
+const readSky = (env, ctx) => daily('starway-from-began-2', ctx, () => loadStarway(env), TONIGHT);
 // Brightness kept by the oldest star; today's star keeps all of it.
 const OLDEST_GLOW = 0.35;
 
@@ -230,8 +230,11 @@ async function loadStarway(env) {
   const { notOlderThan, maxDuration } = settings.workersInvocationsAdaptive;
 
   const today = Math.floor(Date.now() / (DAY * 1000)) * DAY * 1000; // 00:00 UTC
-  // Whole days only: the first day must lie completely inside the window.
-  const nights = Math.min(MAX_NIGHTS, Math.floor(notOlderThan / DAY));
+  // Whole days only: the first day must lie completely inside the window,
+  // and the sky starts on the night it began counting, never before.
+  const began = Date.parse(FIRST_LIGHT);
+  const sinceBegan = Math.floor((today - began) / (DAY * 1000)) + 1;
+  const nights = Math.max(1, Math.min(MAX_NIGHTS, Math.floor(notOlderThan / DAY), sinceBegan));
   const first = today - (nights - 1) * DAY * 1000;
   const span = Math.max(1, Math.floor(maxDuration / DAY));
 
@@ -263,7 +266,8 @@ async function loadStarway(env) {
   for (let i = 0; i < nights; i++) {
     const date = isoDay(first + i * DAY * 1000);
     const light = peak ? Math.log1p(perDay.get(date) ?? 0) / peak : 0;
-    const age = nights > 1 ? (nights - 1 - i) / (nights - 1) : 0;
+    // age in nights out of the full ninety, so a young sky is not faded
+    const age = (nights - 1 - i) / (MAX_NIGHTS - 1);
     const glow = 1 - (1 - OLDEST_GLOW) * age;
     sky.push({ date, brightness: Math.round(light * glow * 1000) / 1000, ...(i === nights - 1 && { tonight: true }) });
   }

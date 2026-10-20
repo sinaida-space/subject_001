@@ -6,8 +6,15 @@
 export type Night = { date: string; brightness: number; tonight?: boolean };
 
 // The night the sky began counting (the sinaida-mcp Worker's first day),
-// kept forever, also after it leaves the window
+// kept forever, also after it leaves the window. The sky starts there: no
+// night before it is shown.
 export const FIRST_LIGHT = 'October 19, 2026';
+export const BEGAN = '2026-10-19';
+
+/** How many nights the sky holds today: from BEGAN, up to NIGHTS. */
+export function nightsSinceBegan(today: number) {
+  return Math.max(1, Math.min(NIGHTS, Math.floor((today - Date.parse(BEGAN)) / 864e5) + 1));
+}
 
 export const NIGHTS = 90;
 
@@ -25,12 +32,13 @@ const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 function mockNights(): Night[] {
   const quiet = new URLSearchParams(location.search).get('starway') === 'empty';
   const today = Math.floor(Date.now() / 864e5) * 864e5;
-  return Array.from({ length: NIGHTS }, (_, i) => {
-    const date = isoDay(today - (NIGHTS - 1 - i) * 864e5);
+  const n = quiet ? nightsSinceBegan(today) : NIGHTS;
+  return Array.from({ length: n }, (_, i) => {
+    const date = isoDay(today - (n - 1 - i) * 864e5);
     const r = hash(date);
     const light = quiet || r < 0.3 ? 0 : Math.min(1, 0.15 + r * r + i / 300);
     const glow = 1 - 0.65 * ((NIGHTS - 1 - i) / (NIGHTS - 1));
-    return { date, brightness: Math.round(light * glow * 1000) / 1000, ...(i === NIGHTS - 1 && { tonight: true }) };
+    return { date, brightness: Math.round(light * glow * 1000) / 1000, ...(i === n - 1 && { tonight: true }) };
   });
 }
 
@@ -41,7 +49,7 @@ export async function loadNights(): Promise<Night[]> {
     const res = await fetch('/starway.json');
     if (!res.ok) return [];
     const { stars } = (await res.json()) as { stars?: Night[] };
-    return Array.isArray(stars) ? stars.filter((s) => typeof s?.date === 'string' && Number.isFinite(s?.brightness)) : [];
+    return Array.isArray(stars) ? stars.filter((s) => typeof s?.date === 'string' && s.date >= BEGAN && Number.isFinite(s?.brightness)) : [];
   } catch {
     return [];
   }
