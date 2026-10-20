@@ -13,6 +13,9 @@ import { RenderModeProvider, type RenderMode } from '@/hooks/useRenderMode';
 import WorkCase from '@/pages/WorkCase';
 import Statement from '@/pages/Statement';
 import Machines from '@/pages/Machines';
+import Practice from '@/pages/Practice';
+import Collaborate from '@/pages/Collaborate';
+import { PRACTICES } from '@/data/practices';
 import { PROJECTS } from '@/data/projects';
 
 export { resolveRenderMode } from '@/lib/resolveRenderMode';
@@ -50,6 +53,30 @@ export function renderCase(id: string): string {
     <RenderModeProvider initialMode="full">
       <StaticRouter location={`/work/${id}/`}>
         <AppRoutes pages={{ work: WorkCase }} />
+      </StaticRouter>
+    </RenderModeProvider>,
+  );
+}
+
+// Practice and Collaborate (studio#86): the commission-facing pages, rendered
+// and hydrated the same way as case pages, always in full mode.
+export const practiceIds = PRACTICES.map((p) => p.id);
+
+export function renderPractice(slug?: string): string {
+  return renderToString(
+    <RenderModeProvider initialMode="full">
+      <StaticRouter location={slug ? `/practice/${slug}/` : '/practice/'}>
+        <AppRoutes pages={{ practice: Practice }} />
+      </StaticRouter>
+    </RenderModeProvider>,
+  );
+}
+
+export function renderCollaborate(): string {
+  return renderToString(
+    <RenderModeProvider initialMode="full">
+      <StaticRouter location="/collaborate/">
+        <AppRoutes pages={{ collaborate: Collaborate }} />
       </StaticRouter>
     </RenderModeProvider>,
   );

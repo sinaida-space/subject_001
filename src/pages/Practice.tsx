@@ -10,6 +10,7 @@ import NotFound from '@/pages/NotFound';
 import { PROJECTS, KIND_LABEL, type Project } from '@/data/projects';
 import { PRACTICES, PRACTICE_SHARED_LINE, practiceById, practicePath, type Practice as PracticeT } from '@/data/practices';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { useMounted } from '@/lib/hydration';
 import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
@@ -125,12 +126,14 @@ function PracticeDetail({ practice }: { practice: PracticeT }) {
 export default function Practice() {
   const { slug } = useParams();
   const { mode } = useRenderMode();
+  // the starfield is browser-only, after the first commit (studio#86)
+  const mounted = useMounted();
   const practice = slug ? practiceById(slug) : undefined;
   if (slug && !practice) return <NotFound />;
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
-      {mode === 'full' && (
+      {mode === 'full' && mounted && (
         <Suspense fallback={null}>
           <ParticleField />
         </Suspense>
