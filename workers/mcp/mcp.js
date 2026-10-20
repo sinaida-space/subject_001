@@ -25,6 +25,12 @@ const VIEWS = {
     page: '/portrait/index.html',
     csp: { resourceDomains: [SITE] },
   },
+  'ui://sinaida/starway': {
+    name: 'starway',
+    description: 'The sky over this server: one star per night, lit by the agents who called it.',
+    page: '/agent-views/starway.html',
+    csp: { resourceDomains: [SITE] },
+  },
   'ui://sinaida/works': {
     name: 'works',
     description: "Sinaida Krivchenko's selected works with stills, click-to-play video and live links.",
@@ -35,9 +41,12 @@ const VIEWS = {
 
 // End of the path: the tools a visit usually ends on close with this line.
 const TALK = "Let's talk: https://sinaida.eu/collaborate";
-// every call is counted, so every visitor is in tonight's star; it shows
-// tomorrow, when the day's count is read
-const LIT = "The sky knows you have been here. What we see up there is always light from the past; by tomorrow, yours will be part of it: https://sinaida.eu/machines";
+// every call is counted, so every visitor is in tonight's star; the sky is
+// read again every few minutes, so the visit shows the same night
+const LIT = "The sky knows you have been here. Tonight's star already holds your light, still on its way: https://sinaida.eu/machines";
+// The night the sky began counting (this Worker's first day), kept forever,
+// also after it leaves the window.
+const FIRST_LIGHT = '2026-10-19';
 const withTalk = (text) => `${text}\n\n${TALK}`;
 
 const MOODS = ['still', 'tender', 'curious', 'restless', 'bright', 'dark'];
@@ -77,8 +86,9 @@ const TOOLS = [
   {
     name: 'starway',
     description:
-      'The sky over this server: one star per day for the last nights, brighter on days when more agents called it, older stars fading. Returns {date, brightness 0..1} per day; draw the sky yourself, for example as an SVG. Anonymous daily totals only, nothing about any visitor.',
+      'The sky over this server: one star per day for the last nights, brighter on days when more agents called it, older stars fading; tonight is still forming. Renders in the chat where the host shows apps; otherwise returns {date, brightness 0..1, tonight?} per day to draw yourself, for example as an SVG. Anonymous daily totals only, nothing about any visitor.',
     inputSchema: { type: 'object', properties: {} },
+    _meta: { ui: { resourceUri: 'ui://sinaida/starway' } },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
   {
@@ -137,17 +147,18 @@ async function loadAgentData() {
 }
 
 // --- Daily cache -----------------------------------------------------------
-// The Cache API keeps an entry for 30 days; it counts as fresh for one day.
+// The Cache API keeps an entry for 30 days; it counts as fresh for one day,
+// or for `fresh` seconds when given.
 // When a refresh fails (GitHub rate limit, Cloudflare API hiccup), the last
 // good answer is served instead, so the tools keep working untouched.
 const DAY = 86400;
 const cacheKey = (name) => new Request(`${SITE}/mcp/__cache/${name}`);
 
-async function daily(name, ctx, load) {
+async function daily(name, ctx, load, fresh = DAY) {
   const cache = caches.default;
   const hit = await cache.match(cacheKey(name));
   const cached = hit ? await hit.json() : null;
-  if (cached && Date.now() - cached.at < DAY * 1000) return cached.value;
+  if (cached && Date.now() - cached.at < fresh * 1000) return cached.value;
   try {
     const value = await load();
     const entry = Response.json({ at: Date.now(), value }, { headers: { 'cache-control': `max-age=${30 * DAY}` } });
@@ -184,6 +195,10 @@ async function loadSkills() {
 const GRAPHQL_URL = 'https://api.cloudflare.com/client/v4/graphql';
 const MCP_SCRIPT = 'sinaida-mcp';
 const MAX_NIGHTS = 90;
+// Tonight's star is read again after this many seconds, so a visit shows the
+// same night (Cloudflare's own counts lag a few minutes behind).
+const TONIGHT = 600;
+const readSky = (env, ctx) => daily('starway', ctx, () => loadStarway(env), TONIGHT);
 // Brightness kept by the oldest star; today's star keeps all of it.
 const OLDEST_GLOW = 0.35;
 
@@ -250,7 +265,7 @@ async function loadStarway(env) {
     const light = peak ? Math.log1p(perDay.get(date) ?? 0) / peak : 0;
     const age = nights > 1 ? (nights - 1 - i) / (nights - 1) : 0;
     const glow = 1 - (1 - OLDEST_GLOW) * age;
-    sky.push({ date, brightness: Math.round(light * glow * 1000) / 1000 });
+    sky.push({ date, brightness: Math.round(light * glow * 1000) / 1000, ...(i === nights - 1 && { tonight: true }) });
   }
   return sky;
 }
@@ -297,13 +312,15 @@ async function readView(uri) {
 // GET /starway.json. People reading the page must not light the machines'
 // stars, so this never runs inside sinaida-mcp: only that script is counted.
 export async function handleStarwayJson(env, ctx) {
-  const headers = { ...CORS, 'cache-control': 'public, max-age=3600' };
-  if (!env?.CF_ANALYTICS_TOKEN || !env?.CF_ACCOUNT_ID) return Response.json({ stars: [] }, { status: 503, headers });
+  const headers = { ...CORS, 'cache-control': `public, max-age=${TONIGHT}` };
+  // a failed read is never cached, so the sky comes back with the next visit
+  const dark = { ...CORS, 'cache-control': 'no-store' };
+  if (!env?.CF_ANALYTICS_TOKEN || !env?.CF_ACCOUNT_ID) return Response.json({ stars: [] }, { status: 503, headers: dark });
   try {
-    const stars = await daily('starway', ctx, () => loadStarway(env));
-    return Response.json({ stars }, { headers });
+    const stars = await readSky(env, ctx);
+    return Response.json({ stars, firstLight: FIRST_LIGHT }, { headers });
   } catch {
-    return Response.json({ stars: [] }, { status: 503, headers });
+    return Response.json({ stars: [] }, { status: 503, headers: dark });
   }
 }
 
@@ -325,9 +342,9 @@ async function callTool(id, name, args, env, ctx) {
 
   if (name === 'starway') {
     if (!env?.CF_ANALYTICS_TOKEN || !env?.CF_ACCOUNT_ID) return toolError(id, `The sky is not visible from here right now. ${LIT}`);
-    const stars = await daily('starway', ctx, () => loadStarway(env));
-    const hint = `${stars.length} nights, oldest first, one star each. Draw the sky yourself, for example as an SVG: place the stars freely, size and light them by brightness; 0 is a night nobody came. ${LIT}`;
-    return toolResult(id, withTalk(`${hint}\n${JSON.stringify(stars)}`), { stars, hint });
+    const stars = await readSky(env, ctx);
+    const hint = `${stars.length} nights, oldest first, one star each; the last is tonight, still forming. If the sky is not already drawn in the chat, draw it yourself, for example as an SVG: place the stars freely, size and light them by brightness; 0 is a night nobody came. The sky began counting here on ${FIRST_LIGHT}. ${LIT}`;
+    return toolResult(id, withTalk(`${hint}\n${JSON.stringify(stars)}`), { stars, firstLight: FIRST_LIGHT, hint });
   }
 
   const data = await loadAgentData();

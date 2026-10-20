@@ -26,6 +26,7 @@ export type Bus = {
   screen: Float32Array; // projected star positions, x y per star, CSS px
   wake: Float32Array; // 0 → 1 per star
   nearest: number; // index of the star that answers, or -1
+  path: number[]; // stars the visitor touched, in order (the beam follows it)
   onRender?: () => void; // set by the scene: ask for one frame
   onFrame?: () => void; // set by the page: the DOM overlay follows each frame
 };
@@ -92,6 +93,34 @@ void main() {
   gl_FragColor = vec4(vec3(0.96, 0.937, 0.902) * vA, vA);
 }`;
 
+// the beam: the visitor's thread drawn as light inside the scene, a string of
+// soft photons between the stars they touched, faint at the first and
+// brightest at the last. Rebuilt only when a star is touched.
+const BEAM_MAX = 12000;
+const BEAM_SPACING = 0.015; // world units between photons, close enough to merge
+
+const BEAM_VERT = /* glsl */ `
+attribute float aAge;
+uniform float uPx;
+varying float vAge;
+void main() {
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * mv;
+  gl_PointSize = clamp(0.1 * uPx / -mv.z, 2.5, 28.0);
+  vAge = aAge;
+}`;
+
+const BEAM_FRAG = /* glsl */ `
+varying float vAge;
+void main() {
+  vec2 q = gl_PointCoord * 2.0 - 1.0;
+  float r2 = dot(q, q);
+  if (r2 > 1.0) discard;
+  // a bright thin core in a wide soft halo
+  float light = (exp(-r2 * 6.0) * 0.26 + exp(-r2 * 1.5) * 0.045) * (0.35 + 0.65 * vAge * vAge);
+  gl_FragColor = vec4(vec3(0.96, 0.937, 0.902) * light, light);
+}`;
+
 function Sky({ nights, bus }: { nights: Night[]; bus: Bus }) {
   const { camera, size, gl, invalidate } = useThree();
   const n = nights.length;
@@ -130,6 +159,38 @@ function Sky({ nights, bus }: { nights: Night[]; bus: Bus }) {
     return g;
   }, [n]);
 
+  const beam = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(BEAM_MAX * 3), 3));
+    g.setAttribute('aAge', new THREE.BufferAttribute(new Float32Array(BEAM_MAX), 1));
+    g.setDrawRange(0, 0);
+    return g;
+  }, []);
+  const beamLen = useRef(0);
+
+  // lay photons along each segment of the touched path
+  const buildBeam = (path: number[]) => {
+    const pos = beam.attributes.position.array as Float32Array;
+    const age = beam.attributes.aAge.array as Float32Array;
+    const segs = path.length - 1;
+    let count = 0;
+    for (let k = 0; k < segs; k++) {
+      const a = path[k] * 3, b = path[k + 1] * 3;
+      const dx = stars.pos[b] - stars.pos[a], dy = stars.pos[b + 1] - stars.pos[a + 1], dz = stars.pos[b + 2] - stars.pos[a + 2];
+      const steps = Math.max(2, Math.ceil(Math.hypot(dx, dy, dz) / BEAM_SPACING));
+      for (let j = 0; j < steps && count < BEAM_MAX; j++, count++) {
+        const t = j / steps;
+        pos[count * 3] = stars.pos[a] + dx * t;
+        pos[count * 3 + 1] = stars.pos[a + 1] + dy * t;
+        pos[count * 3 + 2] = stars.pos[a + 2] + dz * t;
+        age[count] = (k + t) / segs;
+      }
+    }
+    beam.attributes.position.needsUpdate = true;
+    beam.attributes.aAge.needsUpdate = true;
+    beam.setDrawRange(0, count);
+  };
+
   const uniforms = useMemo(() => ({ uPx: { value: 1 } }), []);
   const starMat = useMemo(
     () =>
@@ -156,12 +217,27 @@ function Sky({ nights, bus }: { nights: Night[]; bus: Bus }) {
     [uniforms],
   );
 
+  const beamMat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        vertexShader: BEAM_VERT,
+        fragmentShader: BEAM_FRAG,
+        uniforms,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      }),
+    [uniforms],
+  );
+
   useEffect(() => () => {
+    beam.dispose();
+    beamMat.dispose();
     stars.g.dispose();
     dust.dispose();
     starMat.dispose();
     dustMat.dispose();
-  }, [stars, dust, starMat, dustMat]);
+  }, [stars, dust, starMat, dustMat, beam, beamMat]);
 
   // the bus asks for a frame whenever scroll or the pointer moves
   useEffect(() => {
@@ -204,6 +280,10 @@ function Sky({ nights, bus }: { nights: Night[]; bus: Bus }) {
       }
     }
     bus.nearest = best;
+    if (bus.path.length !== beamLen.current) {
+      beamLen.current = bus.path.length;
+      buildBeam(bus.path);
+    }
     stars.g.attributes.aWake.needsUpdate = true;
     bus.onFrame?.();
   });
@@ -211,6 +291,7 @@ function Sky({ nights, bus }: { nights: Night[]; bus: Bus }) {
   return (
     <>
       <points geometry={dust} material={dustMat} frustumCulled={false} />
+      <points geometry={beam} material={beamMat} frustumCulled={false} />
       <points geometry={stars.g} material={starMat} frustumCulled={false} />
     </>
   );

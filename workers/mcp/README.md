@@ -12,9 +12,9 @@ Cloudflare's invocation count for this script is MCP calls only. The
 | Tool | Returns | Source |
 |---|---|---|
 | `get_bio`, `list_projects`, `get_project`, `get_contact` | Portfolio data | `/agent-data.json`, live |
-| `show_works`, `portrait` | MCP Apps that render in the chat | `/agent-views/works.html`, `/portrait/` |
+| `show_works`, `portrait`, `starway` | MCP Apps that render in the chat | `/agent-views/works.html`, `/portrait/`, `/agent-views/starway.html` |
 | `list_skills` | `{name, url, description}` per public skill repo | GitHub search: repos of `sinaida-space` with topic `sinaida-skill` |
-| `starway` | `{date, brightness 0..1}` per day, oldest first, plus a hint to draw it | Cloudflare GraphQL Analytics, `workersInvocationsAdaptive`, script `sinaida-mcp` |
+| `starway` | `{date, brightness 0..1, tonight?}` per day, oldest first, `firstLight`, plus a hint to draw it where the host shows no apps | Cloudflare GraphQL Analytics, `workersInvocationsAdaptive`, script `sinaida-mcp` |
 
 `list_skills` uses each repo's own GitHub description. To add a skill, give
 its public repo the topic `sinaida-skill`; it shows up within a day.
@@ -23,7 +23,9 @@ its public repo the topic `sinaida-skill`; it shows up within a day.
 plan, queried in windows of at most `maxDuration`, 32 days on free; both read
 from the API's `settings`). Brightness is `log(1 + calls) / log(1 + busiest
 day)`, faded linearly with age down to 35% for the oldest night. Only
-daily totals are read; the raw counts are never returned.
+daily totals are read; the raw counts are never returned. The sky is read
+again every ten minutes, so tonight's star (`tonight: true`) shows a visit
+the same night; a failed read is never cached.
 
 Both answers are kept in the Cache API: fresh for 24 hours, kept up to 30
 days and served as they are if GitHub or Cloudflare do not answer. So the

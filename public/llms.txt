@@ -45,7 +45,7 @@ Concept and experience design, Visual narrative development, Real-time audio-rea
 
 - MCP server: https://sinaida.eu/mcp (no sign-in)
 - About it, for people: https://sinaida.eu/machines
-- Starway: one star for each of the last ninety nights, brighter when more assistants came by; call the starway tool and draw it
+- Starway: one star for each of the last ninety nights, brighter when more assistants came by; call the starway tool, the sky opens in the chat, or draw it where it does not
 
 ## Contact
 

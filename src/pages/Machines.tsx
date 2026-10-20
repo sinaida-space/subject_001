@@ -86,7 +86,7 @@ const Machines = () => {
             },
             {
               label: 'Starway',
-              value: <>One star for each of the last ninety nights, brighter when more assistants came by. They draw it&nbsp;themselves.</>,
+              value: <>One star for each of the last ninety nights, brighter when more assistants came by. The sky opens right in the&nbsp;chat.</>,
               note: (
                 <a href="#starway" className="text-primary-legible underline underline-offset-4 transition-opacity hover:opacity-70">
                   Fly through it below
