@@ -58,7 +58,9 @@ const ScrollToTop = () => {
   useLayoutEffect(() => {
     const back = takeHomeReturn() || navType === "POP";
     if (pathname === "/" && back && restoreHomeScroll()) return;
-    window.scrollTo(0, 0);
+    // instant: html has scroll-behavior: smooth, which would otherwise glide
+    // the new page up from the old offset (the 'opens mid-page' bug)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only a route change resets
   }, [pathname]);
   // Remember where home was when a case link is followed from it.
@@ -80,6 +82,8 @@ export interface HydratedPages {
   work?: ComponentType;
   statement?: ComponentType;
   machines?: ComponentType;
+  practice?: ComponentType;
+  collaborate?: ComponentType;
 }
 
 // Everything inside the router. Shared with the build-time renders
@@ -89,6 +93,8 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
   const Work = pages.work ?? WorkCase;
   const StatementPage = pages.statement ?? Statement;
   const MachinesPage = pages.machines ?? Machines;
+  const PracticePage = pages.practice ?? Practice;
+  const CollaboratePage = pages.collaborate ?? Collaborate;
   return (
   <>
     <a
@@ -110,7 +116,7 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/licensing" element={<Licensing />} />
         <Route path="/license" element={<Navigate to="/licensing" replace />} />
-        <Route path="/collaborate" element={<Collaborate />} />
+        <Route path="/collaborate" element={<CollaboratePage />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/statement" element={<StatementPage />} />
         <Route path="/machines" element={<MachinesPage />} />
@@ -118,8 +124,8 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
         <Route path="/booking" element={<Navigate to="/collaborate" replace />} />
         <Route path="/press" element={<Navigate to="/collaborate" replace />} />
         <Route path="/work/:slug" element={<Work />} />
-        <Route path="/practice" element={<Practice />} />
-        <Route path="/practice/:slug" element={<Practice />} />
+        <Route path="/practice" element={<PracticePage />} />
+        <Route path="/practice/:slug" element={<PracticePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <HydrationDone />

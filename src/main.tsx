@@ -12,8 +12,8 @@ import "./index.css";
 // themselves (Index), so nothing relies on the browser's restoration.
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-// Case pages and Statement arrive rendered at build time (studio#16,
-// studio#27). React adopts that markup instead of replacing it, so what is
+// Case pages, Practice, Collaborate and Statement arrive rendered at build
+// time (studio#16, studio#27, studio#86). React adopts that markup instead of replacing it, so what is
 // already on screen stays the LCP element. The page's chunk is loaded first
 // and passed in directly, so hydration never suspends on it. The markup's
 // mode is the one html[data-mode] names: case pages are always full, and on
@@ -25,12 +25,14 @@ const root = document.getElementById("root")!;
 const path = location.pathname.replace(/\/+$/, "");
 const isCase = /^\/work\/[^/.]+$/.test(path) && !new URLSearchParams(location.search).has("depth");
 const isStatement = path === "/statement";
-if ((isCase || isStatement) && root.firstElementChild) {
-  const mode = isCase ? "full" : document.documentElement.getAttribute("data-mode") === "lite" ? "lite" : "full";
-  const chunk = isCase ? routeChunks.work() : routeChunks.statement();
+// Practice and Collaborate (studio#86) hydrate like case pages, always full.
+const fullPage = isCase ? "work" : /^\/practice(\/[^/.]+)?$/.test(path) ? "practice" : path === "/collaborate" ? "collaborate" : null;
+if ((fullPage || isStatement) && root.firstElementChild) {
+  const mode = fullPage ? "full" : document.documentElement.getAttribute("data-mode") === "lite" ? "lite" : "full";
+  const chunk = fullPage ? routeChunks[fullPage]() : routeChunks.statement();
   chunk.then(({ default: Page }) => {
     hydration.active = true;
-    hydrateRoot(root, <App hydrate={mode} pages={isCase ? { work: Page } : { statement: Page }} />);
+    hydrateRoot(root, <App hydrate={mode} pages={{ [fullPage ?? "statement"]: Page }} />);
   });
 } else {
   createRoot(root).render(<App />);

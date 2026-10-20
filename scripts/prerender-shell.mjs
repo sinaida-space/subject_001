@@ -37,7 +37,7 @@ import { pathToFileURL } from 'node:url';
 const DIST = 'dist';
 const SHELL_DIR = 'dist-shell';
 
-const { renderShell, renderCase, caseIds, renderStatement, renderMachines, resolveRenderMode } = await import(
+const { renderShell, renderCase, caseIds, renderPractice, practiceIds, renderCollaborate, renderStatement, renderMachines, resolveRenderMode } = await import(
   pathToFileURL(join(SHELL_DIR, 'entry-shell.js')).href
 );
 
@@ -98,6 +98,18 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
     cases++;
   }
 
+  // 4b. Practice pages and Collaborate, the same way (studio#86).
+  const practiceId = practiceIds.find((id) => file === join(DIST, 'practice', id, 'index.html'));
+  const practiceIndex = file === join(DIST, 'practice', 'index.html');
+  if (practiceId || practiceIndex) {
+    html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderPractice(practiceId)}</div>`, 'empty #root', file);
+    cases++;
+  }
+  if (file === join(DIST, 'collaborate', 'index.html')) {
+    html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderCollaborate()}</div>`, 'empty #root', file);
+    cases++;
+  }
+
   // 5. Statement: one render per mode (studio#27).
   if (file === join(DIST, 'statement', 'index.html')) {
     const both = `<div id="root">${renderStatement('full')}</div><template id="root-lite">${renderStatement('lite')}</template><script>${pickJs}</script>`;
@@ -115,4 +127,4 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
 }
 
 rmSync(SHELL_DIR, { recursive: true, force: true });
-console.log(`prerender-shell: boot script on ${pages} page(s), static hero on dist/index.html, static render on ${cases} case page(s) and Statement`);
+console.log(`prerender-shell: boot script on ${pages} page(s), static hero on dist/index.html, static render on ${cases} case, practice and collaborate page(s) and Statement`);

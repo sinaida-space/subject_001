@@ -6,6 +6,7 @@ import { FEATURED_WORKS } from '@/data/projects';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRenderMode } from '@/hooks/useRenderMode';
+import { useMounted } from '@/lib/hydration';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { withProjectNames } from '@/lib/projectNames';
 import { BackLink, BODY_CLASS, H1_CLASS, KICKER_CLASS, LEAD_CLASS, PAGE_MAIN_CLASS, PageSection, RuledRows, StillsRow } from '@/components/PageParts';
@@ -69,10 +70,12 @@ export default function Collaborate() {
 
   const stills = FEATURED_WORKS.slice(0, 3);
   const { mode } = useRenderMode();
+  // the starfield is browser-only, after the first commit (studio#86)
+  const mounted = useMounted();
 
   return (
     <div className="relative min-h-screen bg-background">
-      {mode === 'full' && (
+      {mode === 'full' && mounted && (
         <Suspense fallback={null}>
           <ParticleField />
         </Suspense>
