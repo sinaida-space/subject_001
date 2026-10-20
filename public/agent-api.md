@@ -10,7 +10,8 @@ of scraping the HTML.
 - Tools: `get_bio`, `list_projects`, `get_project`, `get_contact`
 - `list_skills`: my open skills for agents, linked to their GitHub repos
 - `starway`: one star per day for the last nights, brighter on days
-  when more agents called this server; draw the sky yourself
+  when more agents called this server; it renders in the chat where the
+  client supports MCP Apps, otherwise draw the sky yourself
 - MCP Apps (interactive views in clients that support them):
   `show_works` opens a gallery of the works with video and live links;
   `portrait` turns a few words from the conversation into a live shader

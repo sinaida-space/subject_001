@@ -2,7 +2,9 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { createPortal } from 'react-dom';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { H2_CLASS, KICKER_CLASS, BODY_CLASS } from '@/components/PageParts';
-import { formatNight, loadNights, NIGHTS, PLAYLIST_URL, type Night } from '@/lib/starway';
+import { FIRST_LIGHT, formatNight, loadNights, NIGHTS, PLAYLIST_URL, type Night } from '@/lib/starway';
+import { chime } from '@/lib/chime';
+import { savePostcard, shareSky } from '@/lib/postcard';
 import type { Bus } from '@/components/StarwayScene';
 
 const StarwayScene = lazy(() => import('@/components/StarwayScene'));
@@ -15,6 +17,7 @@ const StarwayScene = lazy(() => import('@/components/StarwayScene'));
 // to it. Circling a star, or touching more than three, finds the music.
 
 const isQuiet = (nights: Night[]) => nights.every((n) => n.brightness <= 0);
+
 
 // with no answer from the server the way is still there, only dark
 function darkNights(): Night[] {
@@ -90,19 +93,29 @@ function Egg({ open, onClose }: { open: boolean; onClose: () => void }) {
             <span aria-hidden="true">[X]</span>
           </button>
         </div>
-        <div className="p-5">
+        <div className="space-y-6 p-5">
           <p className="font-mono text-[19px] leading-normal text-foreground">
-            A message from Major&nbsp;Tom:{' '}
+            A message from Major&nbsp;Tom: long&nbsp;empty&nbsp;corridors
+          </p>
+          <div className="flex flex-wrap gap-3">
             <a
               ref={linkRef}
               href={PLAYLIST_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary-legible underline underline-offset-4 transition-opacity hover:opacity-70"
+              onClick={onClose}
+              className="border border-primary px-5 py-2 font-display text-[18px] uppercase text-primary-legible transition-colors hover:bg-primary hover:text-background"
             >
-              long&nbsp;empty&nbsp;corridors<span className="sr-only"> (opens in a new tab)</span>
+              Play<span className="sr-only"> (opens in a new tab)</span>
             </a>
-          </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="border border-foreground/25 px-5 py-2 font-display text-[18px] uppercase text-foreground/50 transition-colors hover:border-foreground/60 hover:text-foreground/80"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>,
@@ -113,6 +126,39 @@ function Egg({ open, onClose }: { open: boolean; onClose: () => void }) {
 const HINT = <>Scroll to fly. The red light is you; bring it close and a star will&nbsp;answer.</>;
 const ASK = <>You can’t light a star yourself. Your agent can: ask it to draw you the starway of&nbsp;sinaida.eu.</>;
 const QUIET = <>No machines up here yet. You are the first&nbsp;light.</>;
+const SOUND = <>The stars may sound when&nbsp;touched.</>;
+const FIRST = <>The sky began counting here on {FIRST_LIGHT.replace(/ /g, '\u00a0')}.</>;
+// tonight's star is still forming: its count is read again every few minutes
+const TONIGHT = 'Tonight. We know it is there; its light is still on the way.';
+const nightLabel = (n: Night) => (n.tonight ? `${formatNight(n.date)}\n${TONIGHT}` : formatNight(n.date));
+
+// the postcard: drawn and saved on the visitor's device; the link is the
+// plain page, so nothing about anyone travels with it
+function Keepsake({ nights }: { nights: Night[] }) {
+  const [said, setSaid] = useState('');
+  // both buttons the same size, whatever their words
+  const BTN = 'w-40 border px-5 py-2 text-center font-display text-[18px] uppercase transition-colors';
+  return (
+    // its clicks are not touches on the sky
+    <div className="mt-6 flex flex-wrap items-center gap-3" onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => void savePostcard(nights)}
+        className={`${BTN} border-primary text-primary-legible hover:bg-primary hover:text-background`}
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        onClick={() => void shareSky().then((r) => setSaid(r === 'copied' ? 'Copied' : ''))}
+        className={`${BTN} border-foreground/40 text-foreground hover:border-foreground`}
+      >
+        Share
+      </button>
+      <span aria-live="polite" className="clinical-label text-foreground/70">{said}</span>
+    </div>
+  );
+}
 
 function Heading() {
   return (
@@ -136,8 +182,15 @@ function StarwayStill({ nights }: { nights: Night[] }) {
     <section aria-labelledby="starway-title" className="container relative z-10 mx-auto max-w-6xl px-6">
       <Heading />
       <p className={`mt-6 ${BODY_CLASS}`}>{isQuiet(nights) ? QUIET : ASK}</p>
+      <p className={`mt-4 ${BODY_CLASS}`}>{SOUND}</p>
+      <p className={`mt-4 ${BODY_CLASS}`}>{FIRST}</p>
       <svg viewBox="0 0 900 220" className="mt-10 w-full" role="img" aria-label="Ninety nights of visits as stars">
-        <polyline points={path.map((i) => `${at(i).x},${at(i).y}`).join(' ')} {...THREAD} />
+        {trailSegments(path.map(at)).map((seg, k) => (
+          <g key={k}>
+            <line {...seg.line} {...TRAIL_GLOW} strokeOpacity={seg.glow} />
+            <line {...seg.line} {...TRAIL_CORE} strokeOpacity={seg.core} />
+          </g>
+        ))}
         {nights.map((n, i) => {
           const { x, y } = at(i);
           const r = 1.2 + n.brightness * 5;
@@ -152,24 +205,39 @@ function StarwayStill({ nights }: { nights: Night[] }) {
               onClick={() => {
                 setPicked(i);
                 setPath((p) => (p[p.length - 1] === i ? p : [...p, i]));
+                chime(path.length);
                 egg.touch(i);
               }}
               style={{ cursor: 'pointer' }}
             >
-              <title>{formatNight(n.date)}</title>
+              <title>{nightLabel(n)}</title>
             </circle>
           );
         })}
       </svg>
-      <p className="clinical-label mt-4 h-8 text-foreground/70">{picked !== null ? formatNight(nights[picked].date) : ''}</p>
+      <p className="clinical-label mt-4 min-h-8 whitespace-pre-line text-foreground/70">{picked !== null ? nightLabel(nights[picked]) : ''}</p>
+      <Keepsake nights={nights} />
       <Egg open={egg.open} onClose={egg.close} />
     </section>
   );
 }
 
 // the thread a visitor draws through the stars they touched: their own
-// figure in the sky, kept only while the page is open
-const THREAD = { fill: 'none', stroke: 'hsl(var(--foreground))', strokeOpacity: 0.55, strokeWidth: 1, strokeDasharray: '3 4' } as const;
+// figure in the sky, kept only while the page is open. In the flight it is a
+// beam of light inside the scene (StarwayScene); in lite, a flat trail, faint
+// at the first star and brightest at the last one touched; the glow is a
+// wider faint stroke under the core, no blur filter (Safari).
+const TRAIL_CORE = { stroke: 'hsl(var(--foreground))', strokeWidth: 1.25, strokeLinecap: 'round' } as const;
+const TRAIL_GLOW = { stroke: 'hsl(var(--foreground))', strokeWidth: 7, strokeLinecap: 'round' } as const;
+
+function trailSegments(pts: { x: number; y: number }[]) {
+  const n = pts.length - 1;
+  return Array.from({ length: Math.max(0, n) }, (_, k) => {
+    const age = (k + 1) / n; // 1 at the newest segment
+    const core = 0.12 + 0.8 * age * age;
+    return { line: { x1: pts[k].x, y1: pts[k].y, x2: pts[k + 1].x, y2: pts[k + 1].y }, core, glow: core * 0.14 };
+  });
+}
 
 // how far the site's own sky dims while the flight runs
 const VEIL = 0.9;
@@ -182,7 +250,6 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
   const outro = useRef<HTMLDivElement>(null);
   const light = useRef<HTMLDivElement>(null);
   const veil = useRef<HTMLDivElement>(null);
-  const trail = useRef<SVGPolylineElement>(null);
   const touched = useRef<number[]>([]);
   const thread = useRef<SVGLineElement>(null);
   const label = useRef<HTMLDivElement>(null);
@@ -195,6 +262,7 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
       screen: new Float32Array(nights.length * 2),
       wake: new Float32Array(nights.length),
       nearest: -1,
+      path: [],
     }),
     [nights],
   );
@@ -218,7 +286,6 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
   // the DOM layer follows each rendered frame: the thread and the date
   useEffect(() => {
     bus.onFrame = () => {
-      trail.current?.setAttribute('points', touched.current.map((k) => `${bus.screen[k * 2]},${bus.screen[k * 2 + 1]}`).join(' '));
       const i = bus.nearest;
       const t = thread.current, l = label.current;
       if (!t || !l) return;
@@ -233,7 +300,7 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
       t.setAttribute('x2', String(sx));
       t.setAttribute('y2', String(sy));
       t.style.opacity = String(0.25 + bus.wake[i] * 0.6);
-      l.textContent = formatNight(nights[i].date);
+      l.textContent = nightLabel(nights[i]);
       l.style.transform = `translate(${sx + 18}px, ${sy - 34}px)`;
       l.style.opacity = String(Math.min(1, bus.wake[i] * 2));
     };
@@ -253,7 +320,13 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
       const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight)));
       bus.progress = p;
       if (intro.current) intro.current.style.opacity = String(Math.max(0, 1 - p / 0.12));
-      if (outro.current) outro.current.style.opacity = String(Math.max(0, (p - 0.86) / 0.12));
+      if (outro.current) {
+        const o = Math.max(0, (p - 0.86) / 0.12);
+        outro.current.style.opacity = String(o);
+        // the buttons answer only once the words are there to read
+        outro.current.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
+        outro.current.style.visibility = o > 0 ? 'visible' : 'hidden';
+      }
       // the lights go down in the hall: the site's sky dims under the ninety
       // nights as the flight starts, and comes back as it ends
       if (veil.current) veil.current.style.opacity = String(VEIL * Math.min(1, p / 0.12, (1 - p) / 0.12));
@@ -320,7 +393,11 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
       const i = bus.nearest;
       if (i < 0 || bus.wake[i] <= 0.4) return;
       const t = touched.current;
-      if (t[t.length - 1] !== i) t.push(i);
+      if (t[t.length - 1] !== i) {
+        t.push(i);
+        bus.path = t.slice();
+      }
+      chime(t.length - 1);
       egg.touch(i);
       bus.onRender?.();
     };
@@ -371,19 +448,21 @@ function StarwayFlight({ nights }: { nights: Night[] }) {
           style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.55) 0%, hsl(var(--primary) / 0.16) 30%, transparent 70%)' }}
         />
         <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full">
-          <polyline ref={trail} {...THREAD} />
           <line ref={thread} stroke="hsl(var(--primary))" strokeWidth="1" style={{ opacity: 0 }} />
         </svg>
-        <div ref={label} aria-hidden className="clinical-label pointer-events-none absolute left-0 top-0 text-foreground opacity-0" />
+        <div ref={label} aria-hidden className="clinical-label pointer-events-none absolute left-0 top-0 max-w-[28ch] whitespace-pre-line text-foreground opacity-0" />
 
         <div ref={intro} className="container pointer-events-none relative mx-auto max-w-6xl px-6 pt-28 md:pt-32">
           <Heading />
           <p className={`mt-6 max-w-[34ch] ${BODY_CLASS}`}>{HINT}</p>
+          <p className={`mt-4 max-w-[34ch] ${BODY_CLASS}`}>{SOUND}</p>
           {quiet && <p className={`mt-4 max-w-[34ch] ${BODY_CLASS}`}>{QUIET}</p>}
         </div>
         <div className="container absolute inset-x-0 bottom-0 mx-auto max-w-6xl px-6 pb-16">
           <div ref={outro} className="pointer-events-none max-w-[34ch] opacity-0">
             <p className={BODY_CLASS}>{ASK}</p>
+            <p className={`mt-4 ${BODY_CLASS}`}>{FIRST}</p>
+            <Keepsake nights={nights} />
           </div>
         </div>
       </div>

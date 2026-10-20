@@ -3,7 +3,11 @@
 // GET /starway.json (agent-gateway), which reads Cloudflare's own daily count
 // for the sinaida-mcp Worker; reading the page never counts as a call.
 
-export type Night = { date: string; brightness: number };
+export type Night = { date: string; brightness: number; tonight?: boolean };
+
+// The night the sky began counting (the sinaida-mcp Worker's first day),
+// kept forever, also after it leaves the window
+export const FIRST_LIGHT = 'October 19, 2026';
 
 export const NIGHTS = 90;
 
@@ -26,7 +30,7 @@ function mockNights(): Night[] {
     const r = hash(date);
     const light = quiet || r < 0.3 ? 0 : Math.min(1, 0.15 + r * r + i / 300);
     const glow = 1 - 0.65 * ((NIGHTS - 1 - i) / (NIGHTS - 1));
-    return { date, brightness: Math.round(light * glow * 1000) / 1000 };
+    return { date, brightness: Math.round(light * glow * 1000) / 1000, ...(i === NIGHTS - 1 && { tonight: true }) };
   });
 }
 
