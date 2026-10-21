@@ -1,0 +1,80 @@
+doc:
+  type: project-sheet
+  ground: chalk
+  body_size: 11
+  lang: en-GB
+  title: CONSPACE ROOMS · project sheet
+  author: Sinaida Krivchenko
+  subject: Walk-through labyrinth of eighteen paintings, in the browser or as a gesture-controlled projection
+  keywords: [interactive installation, gesture control, projection, Three.js, generative sound, UVALISS, SOULS, Prague]
+  output: ../public/files/conspace-rooms-project-sheet.pdf
+  dither: floyd
+  dither_dpi: 300
+
+hero:
+  lines: [CONSPACE, ROOMS]
+  role: A labyrinth of 18 paintings
+  size: 66
+  role_size: 26
+
+sections:
+  - track: main
+    heading: The piece
+    body: >
+      A walk through a [labyrinth] of half-lit rooms where eighteen works from the [SOULS] cycle by UVALISS hang.
+      It is built anew for every visit. Its three zones follow the cycle from [trauma] toward accepting oneself.
+      In a gallery, one visitor steers the [projection] with bare hands while others watch.
+      The paintings hang next door.
+
+  - track: left
+    heading: Project features
+    fields:
+      - {label: "Formats", value: "online, or a gallery room"}
+      - {label: "Running", value: "self-running, new for each visitor"}
+      - {label: "Tech", value: "Three.js, live sound, hand tracking"}
+      - {label: "Privacy", value: "no data leaves the device"}
+      - {label: "Access", value: "captions, calm mode, EN / RU"}
+
+  - track: right
+    heading: The venue provides
+    body: |
+      Projector, computer, webcam
+      Speakers, cables, mounts
+      A darkened room and power
+      From the artist: the software,
+      as a link or an offline build
+
+  - track: right
+    heading: Credits
+    body: |
+      [Sinaida Krivchenko]
+      idea, experience design,
+      agentic coding
+      [UVALISS] (Alisa Feer)
+      SOULS works & voice, 2026
+
+  - track: left
+    heading: Contact
+    fields:
+      - {label: "Live", value: "conspace-rooms.vercel.app", url: "https://conspace-rooms.vercel.app/?lang=en"}
+      - {label: "Rider", value: "gallery rider", url: "https://conspace-rooms.vercel.app/rider.html?lang=en"}
+      - {label: "Write", value: "sinaida.eu/#contact", url: "https://sinaida.eu/#contact"}
+
+cards:
+  - image: ./images/conspace-fear.png
+    dithered: true
+    title: Fear
+    body: "Trauma: a hospital with no way out."
+    meta: Zone 1 of 3
+  - image: ./images/conspace-memory.png
+    dithered: true
+    title: Memory
+    body: Childhood, in grandma’s flat.
+    meta: Zone 2 of 3
+  - image: ./images/conspace-acceptance.png
+    dithered: true
+    title: Acceptance
+    body: The soul accepts itself.
+    meta: Zone 3 of 3
+
+footer: Sinaida Krivchenko | CONSPACE ROOMS | project sheet | sinaida.eu

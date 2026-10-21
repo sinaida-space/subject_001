@@ -1,0 +1,74 @@
+doc:
+  type: project-sheet
+  ground: chalk
+  body_size: 11
+  lang: en-GB
+  title: THE EYES CHICO · project sheet
+  author: Sinaida Krivchenko
+  subject: A field of poppies and fifty questions about selfhood, in the browser or as a projection steered by hand
+  keywords: [interactive installation, web experience, gesture control, projection, UVALISS, Prague]
+  output: ../public/files/the-eyes-chico-project-sheet.pdf
+  dither: floyd
+  dither_dpi: 300
+
+hero:
+  lines: [THE EYES, CHICO]
+  role: A field of fifty questions
+  size: 66
+  role_size: 26
+
+sections:
+  - track: main
+    heading: The piece
+    body: >
+      Alisa Feer painted a lit figure standing in a field of [eyes], all the judging gazes that can throw
+      a person off her own path. Sinaida translated the painting into a field you can walk.
+      A soul-shaped figure moves through [poppies] and meets fifty [questions] about the feeling of selfhood.
+      The web experience is live; the installation puts the same field on a wall in a room lit red.
+
+  - track: left
+    heading: Project features
+    fields:
+      - {label: "Formats", value: "online, or a room lit red"}
+      - {label: "Control", value: "mouse, touch or bare hands"}
+      - {label: "Gestures", value: "palm to steer, fist to dive, pinch to pick"}
+      - {label: "Privacy", value: "the camera image stays on the device"}
+
+  - track: right
+    heading: The venue provides
+    body: |
+      Projector and computer
+      Camera for hand tracking
+      A darkened room, red light
+      From the artist: the software,
+      as a link or an offline build
+
+  - track: right
+    heading: Credits
+    body: |
+      [Sinaida Krivchenko]
+      concept and interactive design
+      [Alisa Feer] (UVALISS)
+      painting, 2026
+
+  - track: left
+    heading: Contact
+    fields:
+      - {label: "Live", value: "the-eyes-chico.sinaida.eu", url: "https://the-eyes-chico.sinaida.eu/"}
+      - {label: "Write", value: "sinaida.eu/#contact", url: "https://sinaida.eu/#contact"}
+
+cards:
+  - image: ./images/eyes-painting.jpg
+    title: Painting
+    body: Acrylic and photo paper, A4.
+    meta: Alisa Feer · 2026
+  - image: ./images/eyes-hand.png
+    title: Projection
+    body: A raised palm steers the field.
+    meta: Study · Prague
+  - image: ./images/eyes-question.png
+    title: Questions
+    body: Fifty, answered by no one else.
+    meta: Web experience
+
+footer: Sinaida Krivchenko | THE EYES CHICO | project sheet | sinaida.eu
