@@ -323,7 +323,7 @@ export const PROJECTS: Project[] = [
           { label: 'Acrylic on canvas', detail: 'Alisa Feer’s original: acrylic and photo paper, A4, unique piece, July 2026.' },
           { label: 'Digital field', detail: 'The painting rebuilt as a navigable scene: soul-figure, poppies, a horizon of eyes.' },
           { label: 'Web experience', detail: 'Live in a modern browser; optional hand tracking runs on-device, palm to steer, fist to dive, pinch to pick.' },
-          { label: 'Installation', detail: 'A room lit red, one laptop, one projector: the same field at the scale of a wall.' },
+          { label: 'Installation', detail: 'A room lit red, with a projector and a computer from the venue: the same field at the scale of a wall.' },
         ],
         footer: '> concept and interactive design: Sinaida Krivchenko · painting: Alisa Feer',
       },
@@ -366,7 +366,7 @@ export const PROJECTS: Project[] = [
       order: {
         heading: 'For a space',
         body:
-          'The installation is ready for its first public room, and the full tech rider fits five lines: a room that can be darkened, red ambient light, one laptop running the web experience, one projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands, or brief an adaptation for their space.',
+          'The installation is ready for its first public room, and the full tech rider fits five lines, all provided by the venue: a room that can be darkened, red ambient light, a computer running the web experience, a projector mirroring it, an optional camera for hand tracking. Galleries, venues and institutions can show the work as it stands, or brief an adaptation for their space.',
         suffix: 'to find its first room.',
       },
     },
