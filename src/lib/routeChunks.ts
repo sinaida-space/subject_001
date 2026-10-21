@@ -7,7 +7,6 @@ export const routeChunks = {
   privacy: () => import('@/pages/PrivacyPolicy'),
   licensing: () => import('@/pages/Licensing'),
   collaborate: () => import('@/pages/Collaborate'),
-  experiences: () => import('@/pages/Experiences'),
   statement: () => import('@/pages/Statement'),
   machines: () => import('@/pages/Machines'),
   work: () => import('@/pages/WorkCase'),
@@ -23,7 +22,6 @@ export function chunkForPath(pathname: string): (() => Promise<unknown>) | null 
   if (path === '/privacy') return routeChunks.privacy;
   if (path === '/licensing' || path === '/license') return routeChunks.licensing;
   if (path === '/collaborate' || path === '/booking' || path === '/press') return routeChunks.collaborate;
-  if (path === '/experiences') return routeChunks.experiences;
   if (path === '/statement') return routeChunks.statement;
   if (path === '/machines') return routeChunks.machines;
   if (/^\/work\/[^/.]+$/.test(path)) return routeChunks.work;

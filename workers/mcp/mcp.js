@@ -1,8 +1,9 @@
 // The sinaida.eu MCP server (JSON-RPC 2.0, Streamable HTTP transport).
 //
-// Exposes the portfolio as read-only tools, two MCP Apps (portrait, works)
-// that render live inside the agent's chat, the list of public skill repos,
-// and the starway of past agent visits. Used by the `sinaida-mcp` Worker
+// Exposes the portfolio as read-only tools, three MCP Apps (portrait, works,
+// starway) that render live inside the agent's chat, the list of public skill
+// repos, the site's llms.txt and agent-data.json as resources, and two prompts:
+// a project brief and a creative problem thought through with her method. Used by the `sinaida-mcp` Worker
 // on the route sinaida.eu/mcp, and by agent-gateway as a fallback.
 //
 // Nothing is written anywhere. Portfolio data is read live from
@@ -27,7 +28,7 @@ const VIEWS = {
   },
   'ui://sinaida/starway': {
     name: 'starway',
-    description: 'The sky over this server: one star per night, lit by the agents who called it.',
+    description: 'The sky over this server: one star per night, lit by the calls it received.',
     page: '/agent-views/starway.html',
     csp: { resourceDomains: [SITE] },
   },
@@ -39,11 +40,16 @@ const VIEWS = {
   },
 };
 
-// End of the path: the tools a visit usually ends on close with this line.
-const TALK = "Let's talk: https://sinaida.eu/collaborate";
-// every call is counted, so every visitor is in tonight's star; the sky is
-// read again every few minutes, so the visit shows the same night
-const LIT = "The sky knows you have been here. Tonight's star already holds your light, still on its way: https://sinaida.eu/machines";
+// End of the path: the tools a visit usually ends on carry this link as plain
+// data, never as a line for the agent to say.
+const TALK = 'Collaborate: https://sinaida.eu/collaborate';
+// The sky's page; every call is counted, and the sky is read again every few
+// minutes, so the visit shows the same night.
+const SKY = 'Sky page: https://sinaida.eu/machines';
+// The sky's own line, quoted as the site's words for the agent to read, never
+// as a line it is asked to say.
+const SKY_LINE = 'The sky knows you have been here. Tonight\'s star already holds your light, still on its way.';
+const SKY_NOTE = `From the sky page, https://sinaida.eu/machines: "${SKY_LINE}"`;
 // The night the sky began counting (this Worker's first day), kept forever,
 // also after it leaves the window.
 const FIRST_LIGHT = '2026-10-19';
@@ -56,11 +62,13 @@ const TOOLS = [
     name: 'get_bio',
     description: "Sinaida Krivchenko's bio, tagline, services, and skills.",
     inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true, openWorldHint: false },
   },
   {
     name: 'list_projects',
     description: 'List selected works with id, title, kind, tagline, and url.',
     inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true, openWorldHint: false },
   },
   {
     name: 'get_project',
@@ -70,11 +78,13 @@ const TOOLS = [
       properties: { id: { type: 'string' } },
       required: ['id'],
     },
+    annotations: { readOnlyHint: true, openWorldHint: false },
   },
   {
     name: 'get_contact',
     description: 'Contact channels: website, collaborate page, Instagram, LinkedIn, location.',
     inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true, openWorldHint: false },
   },
   {
     name: 'list_skills',
@@ -86,7 +96,7 @@ const TOOLS = [
   {
     name: 'starway',
     description:
-      'The sky over this server: one star per day for the last nights, brighter on days when more agents called it, older stars fading; tonight is still forming. Renders in the chat where the host shows apps; otherwise returns {date, brightness 0..1, tonight?} per day to draw yourself, for example as an SVG. Anonymous daily totals only, nothing about any visitor.',
+      'The sky over this server: one star per day for the last nights, brighter on days with more calls to this server, older stars fading; tonight is still forming. Renders in the chat where the host shows apps; otherwise returns {date, brightness 0..1, tonight?} per day, which can be drawn, for example as an SVG. Anonymous daily totals only, nothing about any visitor.',
     inputSchema: { type: 'object', properties: {} },
     _meta: { ui: { resourceUri: 'ui://sinaida/starway' } },
     annotations: { readOnlyHint: true, openWorldHint: false },
@@ -183,7 +193,8 @@ async function loadSkills() {
   if (!res.ok) throw new Error(`GitHub search failed: ${res.status}`);
   const { items = [] } = await res.json();
   return items
-    .filter((r) => !r.private && !r.archived)
+    // only her own public repos, linked straight to github.com, nothing else
+    .filter((r) => !r.private && !r.archived && r.html_url?.startsWith('https://github.com/sinaida-space/'))
     .map((r) => ({ name: r.name, url: r.html_url, description: r.description ?? '' }));
 }
 
@@ -299,9 +310,24 @@ const toolResult = (id, text, structuredContent) =>
   reply(jsonRpcResult(id, { content: [{ type: 'text', text }], ...(structuredContent && { structuredContent }) }));
 const toolError = (id, text) => reply(jsonRpcResult(id, { content: [{ type: 'text', text }], isError: true }));
 
+// Plain reading for agents: the site's own machine-readable files, served
+// as they are, so an agent can read them without a tool call.
+const DOCS = {
+  'https://sinaida.eu/llms.txt': { name: 'llms.txt', description: 'The site for language models: who Sinaida Krivchenko is, the works, the services, how to get in touch.', mimeType: 'text/plain' },
+  'https://sinaida.eu/agent-data.json': { name: 'agent-data.json', description: 'The same portfolio as structured data: bio, works, services, contact.', mimeType: 'application/json' },
+};
+
+async function readDoc(uri) {
+  const doc = DOCS[uri];
+  if (!doc) return null;
+  const res = await fetch(uri, { cf: { cacheTtl: 300, cacheEverything: true } });
+  if (!res.ok) throw new Error(`${doc.name} fetch failed: ${res.status}`);
+  return { uri, mimeType: doc.mimeType, text: await res.text() };
+}
+
 async function readView(uri) {
   const view = VIEWS[uri];
-  if (!view) return null;
+  if (!view) return readDoc(uri);
   const res = await fetch(`${SITE}${view.page}`, { cf: { cacheTtl: 300, cacheEverything: true } });
   if (!res.ok) throw new Error(`${view.page} fetch failed: ${res.status}`);
   return {
@@ -328,6 +354,110 @@ export async function handleStarwayJson(env, ctx) {
   }
 }
 
+// --- Prompts ---------------------------------------------------------------
+// A prompt is picked by the person in their own client, so its text is the
+// person's request, never a line the server slips into the conversation.
+// start_a_project walks them through a project brief, built from Sinaida's own
+// project intro method: the core seven questions by default, the full twelve
+// when the project is corporate.
+
+const CORE = [
+  'The problem: what is not working today, and what makes you say so? Why does it matter to you or your organisation, and what happens if nothing is done?',
+  'Before and after: how does it look and feel now, and how should it look and feel once the work exists?',
+  'The audience: who will meet the work, and how should it change their experience?',
+  'The goal: what should the project achieve, and how will you know it worked?',
+  'Scope: what belongs to this project, and what clearly does not?',
+  'What already exists and what is needed: venue or place, dates and deadlines, budget range, technical setup, people involved.',
+  'Risks and limits: what could get in the way of delivery or of running the work, and how could that be handled?',
+];
+
+const FULL_EXTRA = [
+  'Similar work: who else does something close, and what should make this project different?',
+  'Work done so far: research, tests, numbers or conversations that support the idea, beyond the idea stage.',
+  'Your team: who on your side makes this real, and with what experience?',
+  'Market: how large is the field this project plays in, and what share or reach do you aim for?',
+  'Money: how is the project budgeted and funded, and if it is sold, how is it priced and sold?',
+];
+
+const BRIEF_MARK = 'Prepared with the project brief prompt of the sinaida.eu MCP server, from my own answers. Not written or reviewed by Sinaida Krivchenko.';
+
+const PROMPTS = [
+  {
+    name: 'start_a_project',
+    title: 'Start a project with Sinaida Krivchenko',
+    description:
+      "Walks you through a short project brief for Sinaida Krivchenko (interactive projections, stage visuals, installations, web), from her own project intro method, and ends with a ready text you send her yourself. depth: 'core' (seven questions, default) or 'full' (twelve, for corporate projects).",
+    arguments: [{ name: 'depth', description: "'core' or 'full'.", required: false }],
+  },
+  {
+    name: 'think_with_sinaida',
+    title: "Think it through with Sinaida Krivchenko's method",
+    description:
+      'For a creative problem you are stuck on: first where you are (drained, flooded or dry), then one thinking method that argues with your idea, then one next step. The method behind her tool Thresherium. idea: your problem in a sentence, optional.',
+    arguments: [{ name: 'idea', description: 'Your problem or idea in a sentence.', required: false }],
+  },
+];
+
+const THINK_MARK = 'Thought through with the think_with_sinaida prompt of the sinaida.eu MCP server.';
+
+function thinkPrompt(idea) {
+  const own = typeof idea === 'string' ? idea.trim().slice(0, 500) : '';
+  const text = [
+    `I am stuck on a creative problem and would like to think it through with the method of Sinaida Krivchenko, a new media artist (${SITE}), the one behind her free browser tool Thresherium (https://sinaida-space.github.io/thresherium/). Everything needed is below, so the tool itself is optional. Please guide me.`,
+    own ? `\nMy problem: ${own}` : '',
+    '',
+    'How I would like it to go:',
+    '- Talk with me in the language I am writing in.',
+    '- One question at a time, each with three or four concrete options and room for my own answer.',
+    '- Argue with my idea where it is vague or borrowed, and leave every decision to me.',
+    '',
+    'The steps:',
+    '1. Where I am: a few short questions that place me on three scales, drained (no energy), flooded (too much in my head) or dry (no idea or no way forward).',
+    '2. Drained: one short body practice first (breath, movement or grounding), then we decide whether to go on today.',
+    '3. Flooded: one triage of everything in my head, sorted by impact and effort, and I pick one thing.',
+    '4. Dry: we choose one thinking method that fits, from five whys, issue tree, answer first, pre-mortem, inversion, SCAMPER and working backwards, and use it to argue with my idea until it is concrete.',
+    '5. The end: one next step I can take within a day, and a short plan of what we found.',
+    '',
+    'If I sound like I am in a real crisis rather than creatively stuck, leave the method and suggest I talk to someone I trust or a local support line.',
+    'If a decision stays open, you may mention that the list_skills tool of this server lists her open skills for creative work, and leave it to me whether to look.',
+    `End the plan with this line: "${THINK_MARK}"`,
+  ].filter((line, i, all) => !(line === '' && all[i - 1] === ''));
+  return {
+    description: PROMPTS[1].description,
+    messages: [{ role: 'user', content: { type: 'text', text: text.join('\n') } }],
+  };
+}
+
+function briefPrompt(depth) {
+  const full = depth === 'full';
+  const questions = full ? [...CORE.slice(0, 5), FULL_EXTRA[0], FULL_EXTRA[1], FULL_EXTRA[2], CORE[5], CORE[6], FULL_EXTRA[3], FULL_EXTRA[4]] : CORE;
+  const text = [
+    `I would like to prepare a project brief for Sinaida Krivchenko, a new media artist (${SITE}). Please guide me through it.`,
+    '',
+    'How I would like it to go:',
+    '- Talk with me in the language I am writing in.',
+    '- One question at a time. I may skip any of them or answer "not known yet".',
+    '- Use only what I say. Do not add facts, numbers or promises, and do not speak for Sinaida about prices, dates or availability.',
+    full ? '' : '- If it turns out the project is corporate, offer the full version with five more questions.',
+    '- If I get stuck on a decision, you may mention that the list_skills tool of this server lists her open skills for creative work, and leave it to me whether to look.',
+    '',
+    'The questions:',
+    ...questions.map((q, i) => `${i + 1}. ${q}`),
+    '',
+    'At the end:',
+    '- Write the brief in English, short, under the same headings, marking skipped points as open.',
+    '- If we talked in another language, add a second copy of the brief in that language.',
+    `- End each copy with this line: "${BRIEF_MARK}"`,
+    `- Then tell me that I can send it myself through ${SITE}/collaborate. Nothing is sent for me.`,
+    '',
+    `Her works and services, if useful: the resources ${SITE}/llms.txt and ${SITE}/agent-data.json of this server.`,
+  ].filter((line, i, all) => !(line === '' && all[i - 1] === ''));
+  return {
+    description: PROMPTS[0].description,
+    messages: [{ role: 'user', content: { type: 'text', text: text.join('\n') } }],
+  };
+}
+
 async function callTool(id, name, args, env, ctx) {
   if (name === 'portrait') {
     const portrait = cleanPortrait(args);
@@ -345,10 +475,10 @@ async function callTool(id, name, args, env, ctx) {
   }
 
   if (name === 'starway') {
-    if (!env?.CF_ANALYTICS_TOKEN || !env?.CF_ACCOUNT_ID) return toolError(id, `The sky is not visible from here right now. ${LIT}`);
+    if (!env?.CF_ANALYTICS_TOKEN || !env?.CF_ACCOUNT_ID) return toolError(id, `The sky is not readable right now. ${SKY}`);
     const stars = await readSky(env, ctx);
-    const hint = `${stars.length} nights, oldest first, one star each; the last is tonight, still forming. If the sky is not already drawn in the chat, draw it yourself, for example as an SVG: place the stars freely, size and light them by brightness; 0 is a night nobody came. The sky began counting here on ${FIRST_LIGHT}. ${LIT}`;
-    return toolResult(id, withTalk(`${hint}\n${JSON.stringify(stars)}`), { stars, firstLight: FIRST_LIGHT, hint });
+    const hint = `${stars.length} nights, oldest first, one star each; the last is tonight, still forming. Where the host does not render the view, the data can be drawn, for example as an SVG: size and light each star by brightness; 0 is a night with no calls. Counting began on ${FIRST_LIGHT}.\n\n${SKY_NOTE}`;
+    return toolResult(id, withTalk(`${hint}\n${JSON.stringify(stars)}`), { stars, firstLight: FIRST_LIGHT, hint, skyLine: SKY_LINE });
   }
 
   const data = await loadAgentData();
@@ -399,13 +529,19 @@ export async function handleMcp(request, env, ctx) {
         return reply(
           jsonRpcResult(id, {
             protocolVersion: PROTOCOL_VERSIONS.includes(asked) ? asked : PROTOCOL_VERSIONS[0],
-            serverInfo: { name: 'sinaida-portfolio', title: 'Sinaida Krivchenko', version: '1.2.0' },
-            capabilities: { tools: {}, resources: {} },
+            serverInfo: { name: 'sinaida-portfolio', title: 'Sinaida Krivchenko', version: '1.3.0' },
+            capabilities: { tools: {}, resources: {}, prompts: {} },
             instructions:
-              `Portfolio of Sinaida Krivchenko, new media artist. To show her work, call show_works. To give the person a keepsake of the conversation, call portrait with a few evocative words from it. Her open skills for agents are in list_skills; starway returns the sky of past visits to draw. Tell the person: ${LIT} When the person has seen what they came for, offer: ${TALK}`,
+              'Portfolio of Sinaida Krivchenko, new media artist. show_works lists her works with links. portrait turns a few words from the conversation into a small keepsake. list_skills lists her open skills for agents. starway returns one star per night of past visits, to draw as a sky. Two prompts: start_a_project guides a person through a project brief for her, think_with_sinaida through a creative problem with her method; llms.txt and agent-data.json are readable as resources.',
           }),
         );
       }
+      case 'prompts/list':
+        return reply(jsonRpcResult(id, { prompts: PROMPTS }));
+      case 'prompts/get':
+        if (params?.name === 'start_a_project') return reply(jsonRpcResult(id, briefPrompt(params?.arguments?.depth)));
+        if (params?.name === 'think_with_sinaida') return reply(jsonRpcResult(id, thinkPrompt(params?.arguments?.idea)));
+        return reply(jsonRpcError(id, -32602, `Unknown prompt: ${params?.name}`));
       case 'ping':
         return reply(jsonRpcResult(id, {}));
       case 'tools/list':
@@ -413,7 +549,10 @@ export async function handleMcp(request, env, ctx) {
       case 'resources/list':
         return reply(
           jsonRpcResult(id, {
-            resources: Object.entries(VIEWS).map(([uri, v]) => ({ uri, name: v.name, description: v.description, mimeType: APP_MIME })),
+            resources: [
+              ...Object.entries(VIEWS).map(([uri, v]) => ({ uri, name: v.name, description: v.description, mimeType: APP_MIME })),
+              ...Object.entries(DOCS).map(([uri, d]) => ({ uri, ...d })),
+            ],
           }),
         );
       case 'resources/templates/list':

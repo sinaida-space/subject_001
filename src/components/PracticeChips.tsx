@@ -40,5 +40,5 @@ function renderLinks(text: string) {
 /** One line on how the work was made; web works fall back to the role line. */
 export function MadeLine({ project, className = '' }: { project: Project; className?: string }) {
   const text = project.made ?? project.role ?? DEFAULT_ROLE;
-  return <p className={`font-mono text-[16px] leading-snug text-foreground/55 ${className}`}>{renderLinks(text)}</p>;
+  return <p className={`font-mono text-[16px] leading-snug text-foreground/60 ${className}`}>{renderLinks(text)}</p>;
 }

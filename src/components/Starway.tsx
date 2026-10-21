@@ -116,7 +116,7 @@ function Egg({ open, onClose }: { open: boolean; onClose: () => void }) {
             <button
               type="button"
               onClick={onClose}
-              className="border border-foreground/25 px-5 py-2 font-display text-[18px] uppercase text-foreground/50 transition-colors hover:border-foreground/60 hover:text-foreground/80"
+              className="border border-foreground/25 px-5 py-2 font-display text-[18px] uppercase text-foreground/60 transition-colors hover:border-foreground/60 hover:text-foreground/80"
             >
               Cancel
             </button>
@@ -129,7 +129,7 @@ function Egg({ open, onClose }: { open: boolean; onClose: () => void }) {
 }
 
 const HINT = <>Scroll to fly. The red light is you; bring it close and a star will&nbsp;answer.</>;
-const ASK = <>You can’t light a star yourself. Your agent can: ask it to draw you the starway of&nbsp;sinaida.eu.</>;
+const ASK = <>Ask your agent to draw you the starway of&nbsp;sinaida.eu.</>;
 const QUIET = <>No machines up here yet. You are the first&nbsp;light.</>;
 const SOUND = <>The stars may sound when&nbsp;touched.</>;
 const FIRST = <>The sky began counting here on {FIRST_LIGHT.replace(/ /g, '\u00a0')}.</>;

@@ -81,7 +81,7 @@ function Readout({ project }: { project: Project }) {
               >
                 {KIND_LABEL[project.kind]}
               </span>
-              <p className="font-mono uppercase leading-snug tracking-[0.12em] text-foreground/55" style={{ fontSize: 16 }}>
+              <p className="font-mono uppercase leading-snug tracking-[0.12em] text-foreground/60" style={{ fontSize: 16 }}>
                 {project.tagline}
               </p>
               {project.made && <MadeLine project={project} />}
@@ -135,7 +135,7 @@ function Readout({ project }: { project: Project }) {
 
           {/* Least priority in the layout: smaller, dimmer, last. */}
           {project.blurb && (
-            <p className="mt-auto border-t pt-4 font-mono leading-relaxed text-foreground/50" style={{ fontSize: 14, borderColor: 'hsl(var(--border))' }}>
+            <p className="mt-auto border-t pt-4 font-mono leading-relaxed text-foreground/60" style={{ fontSize: 14, borderColor: 'hsl(var(--border))' }}>
               {project.blurb}
             </p>
           )}

@@ -46,7 +46,8 @@ export default function ObfuscatedMailto({
 
   return (
     <a
-      href="#"
+      // Without JavaScript the link still leads somewhere: the collaborate page.
+      href="/collaborate"
       onClick={handleClick}
       className={className}
       style={style}

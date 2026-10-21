@@ -68,9 +68,9 @@ function FooterLink({ item }: { item: Item }) {
         onClick={() => toggle()}
         data-ground-mask
         className={`${linkClass} text-left`}
-        aria-label={`View: ${mode === 'full' ? 'Full' : 'Light'}. Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
+        aria-label={`View: ${mode === 'full' ? 'Full' : 'Lite'}. Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
       >
-        View: <span className="text-primary-legible">{mode === 'full' ? 'Full' : 'Light'}</span>
+        View: <span className="text-primary-legible">{mode === 'full' ? 'Full' : 'Lite'}</span>
       </button>
     );
   }

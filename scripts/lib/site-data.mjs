@@ -359,24 +359,6 @@ export function buildRoutes() {
     },
   };
 
-  const experiences = {
-    path: 'experiences',
-    kind: 'page',
-    title: `Experiences · ${AUTHOR_NAME} and Daria Blokhina`,
-    description:
-      'Exhibition and event spaces where the physical structure and the real-time interactive system are designed as one brief. Daria Blokhina builds the space, Sinaida Krivchenko builds the system.',
-    canonical: `${SITE_URL}/experiences/`,
-    breadcrumbLabel: 'Experiences',
-    indexable: true,
-    priority: '0.9',
-    sources: ['src/pages/Experiences.tsx', 'src/data/experiences.ts'],
-    fallback: {
-      heading: 'Experiences',
-      paragraphs: [
-        'Exhibition and event spaces where the physical structure and the real-time interactive system are designed as one brief, rather than a built room with screens added afterwards. Daria Blokhina builds the space. Sinaida Krivchenko builds the system that lives in it.',
-      ],
-    },
-  };
 
   const statement = {
     path: 'statement',
@@ -520,7 +502,6 @@ export function buildRoutes() {
   return [
     home,
     collaborate,
-    experiences,
     statement,
     privacy,
     licensing,
