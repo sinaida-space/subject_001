@@ -15,7 +15,6 @@ const PrivacyPolicy = lazy(routeChunks.privacy);
 const Machines = lazy(routeChunks.machines);
 const Licensing = lazy(routeChunks.licensing);
 const Collaborate = lazy(routeChunks.collaborate);
-const Experiences = lazy(routeChunks.experiences);
 const Statement = lazy(routeChunks.statement);
 const WorkCase = lazy(routeChunks.work);
 const Practice = lazy(routeChunks.practice);
@@ -117,7 +116,6 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
         <Route path="/licensing" element={<Licensing />} />
         <Route path="/license" element={<Navigate to="/licensing" replace />} />
         <Route path="/collaborate" element={<CollaboratePage />} />
-        <Route path="/experiences" element={<Experiences />} />
         <Route path="/statement" element={<StatementPage />} />
         <Route path="/machines" element={<MachinesPage />} />
         {/* Old routes live in shared links and search results — keep redirecting */}

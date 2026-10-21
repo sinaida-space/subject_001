@@ -34,7 +34,7 @@ function Slider({
 }) {
   return (
     <label className="flex items-center gap-2">
-      <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-foreground/50">{label}</span>
+      <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-foreground/60">{label}</span>
       <input
         type="range"
         min={min}
@@ -100,7 +100,7 @@ export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismiss
             <button
               type="button"
               onClick={onDismissCard}
-              className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 hover:text-primary"
+              className="text-[10px] uppercase tracking-[0.15em] text-foreground/60 hover:text-primary"
               aria-label="Close"
             >
               <span aria-hidden="true">[X]</span>

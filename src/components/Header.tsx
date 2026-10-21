@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { label: 'Contact', href: '#contact' },
 ];
 
-// Network (full/Signal Map) vs. list (light/Plain Signal) — the icon itself
+// Network (full/Signal Map) vs. list (lite/Plain Signal) — the icon itself
 // shows which mode is currently active.
 function ModeIcon({ mode }: { mode: 'full' | 'lite' }) {
   if (mode === 'full') {
@@ -29,7 +29,7 @@ function ModeIcon({ mode }: { mode: 'full' | 'lite' }) {
   }
   return (
     <span className="font-mono text-[10px] uppercase tracking-[0.15em]" aria-hidden="true">
-      Light
+      Lite
     </span>
   );
 }
@@ -129,8 +129,8 @@ export default function Header() {
               onClick={() => toggle()}
               className={`cursor-none flex items-center justify-center h-9 transition-colors hover:text-accent ${mode === 'full' ? 'w-9 text-primary-legible/70' : 'px-3 text-primary-legible'}`}
               style={{ border: mode === 'full' ? 'none' : '1px solid hsl(var(--foreground) / 0.12)' }}
-              aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
-              title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
+              aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'lite'})`}
+              title={mode === 'full' ? 'Switch to lite mode' : 'Switch to full mode'}
             >
               <ModeIcon mode={mode} />
             </button>
@@ -152,8 +152,8 @@ export default function Header() {
               onClick={() => toggle()}
               className={`flex items-center justify-center h-8 sm:h-9 transition-colors ${mode === 'full' ? 'w-8 sm:w-9 text-primary-legible/70' : 'px-2 sm:px-3 text-primary-legible'}`}
               style={{ border: mode === 'full' ? 'none' : '1px solid hsl(var(--foreground) / 0.12)' }}
-              aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'light'})`}
-              title={mode === 'full' ? 'Switch to light mode' : 'Switch to full mode'}
+              aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode (currently ${mode === 'full' ? 'full' : 'lite'})`}
+              title={mode === 'full' ? 'Switch to lite mode' : 'Switch to full mode'}
             >
               <ModeIcon mode={mode} />
             </button>
@@ -244,9 +244,9 @@ export default function Header() {
             opacity: menuOpen ? 1 : 0,
             transition: mode === 'lite' ? 'none' : 'opacity 0.35s ease',
           }}
-          aria-label={`Switch to ${mode === 'full' ? 'light' : 'full'} mode`}
+          aria-label={`Switch to ${mode === 'full' ? 'lite' : 'full'} mode`}
         >
-          View: <span style={{ color: 'hsl(var(--primary-legible))' }}>{mode === 'full' ? 'Full' : 'Light'}</span>
+          View: <span style={{ color: 'hsl(var(--primary-legible))' }}>{mode === 'full' ? 'Full' : 'Lite'}</span>
         </button>
 
         <div style={{ marginTop: 16, fontFamily: 'var(--font-mono)', fontSize: 20, color: 'hsl(var(--primary-legible))', letterSpacing: '0.15em' }}>

@@ -67,7 +67,7 @@ function PracticeIndex() {
               </Link>
             </h2>
             <p className="font-mono text-[17px] leading-snug text-foreground/80 md:col-span-5">{p.description}</p>
-            <p className="font-mono text-[16px] uppercase tracking-[0.15em] text-foreground/55 md:col-span-2 md:text-right">
+            <p className="font-mono text-[16px] uppercase tracking-[0.15em] text-foreground/60 md:col-span-2 md:text-right">
               {worksIn(p.id).length} works
             </p>
           </li>
@@ -95,7 +95,7 @@ function PracticeDetail({ practice }: { practice: PracticeT }) {
       <h1 className={TITLE_CLASS}>{practice.label}</h1>
       <p className={LEAD_CLASS}>{practice.description}</p>
       <p className={`${BODY_CLASS} mt-6 md:ml-[calc(100%*5/12)]`}>{PRACTICE_SHARED_LINE}</p>
-      <p className="mt-16 font-mono text-[16px] uppercase tracking-[0.15em] text-foreground/55">
+      <p className="mt-16 font-mono text-[16px] uppercase tracking-[0.15em] text-foreground/60">
         {works.length} {works.length === 1 ? 'work' : 'works'}
       </p>
       <ul className="relative mt-4">
