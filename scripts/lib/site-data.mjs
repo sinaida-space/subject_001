@@ -397,6 +397,24 @@ export function buildRoutes() {
     },
   };
 
+  // Internal reference (#26): built so the URL resolves on Pages, but unlisted
+  // everywhere: noindex, not in the sitemap, not in llms.txt or agent-data.
+  const effects = {
+    path: 'drafts/effects',
+    kind: 'page',
+    title: `Textures and effects | ${AUTHOR_NAME}`,
+    description: 'Internal reference: every texture and effect on the site, with its source file and parameters.',
+    canonical: `${SITE_URL}/drafts/effects/`,
+    breadcrumbLabel: 'Textures and effects',
+    robots: 'noindex, nofollow',
+    indexable: false,
+    sources: ['src/pages/EffectsOverview.tsx'],
+    fallback: {
+      heading: 'Textures and effects',
+      paragraphs: ['Internal reference.'],
+    },
+  };
+
   const licensing = {
     path: 'licensing',
     kind: 'page',
@@ -504,6 +522,7 @@ export function buildRoutes() {
     collaborate,
     statement,
     privacy,
+    effects,
     licensing,
     machines,
     // /license is the SPA's alias for /licensing; same shell, not indexed.

@@ -355,6 +355,7 @@ export default function HeroSection() {
             tunnel dive (heroTunnelBus + ParticleField). */}
         <p
           ref={eyebrowRef}
+          data-egg
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground wrap-break-word text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseMove={glowing ? undefined : enterTunnel}
@@ -431,6 +432,7 @@ export default function HeroSection() {
             type never grows as the window narrows (#188). Re-derive with the same method if the copy or the face
             changes again. */}
         <h1
+          data-egg
           className={`${glowClass} no-hover-fx relative font-display uppercase leading-[1.02] md:leading-[0.95] tracking-tight text-foreground font-bold text-[clamp(1.4rem,7.6vw,2.1rem)] md:text-[clamp(2.1rem,4.4vw,3.6rem)] cursor-none`}
           onMouseEnter={enterTunnel}
           onMouseMove={glowing ? undefined : enterTunnel}

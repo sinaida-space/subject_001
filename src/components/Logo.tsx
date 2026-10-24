@@ -168,6 +168,7 @@ export default function Logo({
           onClick={onEcgClick}
           title="..."
           aria-label="ECG monitor"
+          data-egg
           className="cursor-none"
           style={{ background: 'none', border: 'none', padding: 0, display: 'inline-flex' }}
         >

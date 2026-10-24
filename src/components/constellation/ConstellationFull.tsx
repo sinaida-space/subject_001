@@ -1468,7 +1468,10 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       else setTooltip(null);
       onPointerPosition?.(e.clientX, e.clientY);
     }
-    canvasRef.current!.style.cursor = hitTest(x, y) ? 'pointer' : 'grab';
+    const overStar = !!hitTest(x, y);
+    canvasRef.current!.style.cursor = overStar ? 'pointer' : 'grab';
+    // the custom cursor's egg halo (index.css): a star is the synth's door
+    canvasRef.current!.toggleAttribute('data-egg-hot', overStar);
     start(); // pointer moved → resume the loop (settles & stops when input ceases)
   };
 

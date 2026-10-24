@@ -31,6 +31,7 @@ export default function DataLeftBehind({ children }: { children: string }) {
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
+        data-egg
         className="cursor-pointer bg-transparent p-0 text-left uppercase italic tracking-[0.15em] text-inherit"
         style={{ font: 'inherit' }}
       >

@@ -99,6 +99,9 @@ async function ditherRed(src: string, w: number, h: number): Promise<string> {
   return canvas.toDataURL();
 }
 
+// 10.4vw at 1024 px, and the same height bound as the desktop clamp()
+const HERO_CAP = '106.5px, 13.5svh';
+
 export default function HeroLetters() {
   const { mode } = useRenderMode();
   const lite = mode !== 'full';
@@ -106,9 +109,12 @@ export default function HeroLetters() {
   const nameRef = useRef<HTMLParagraphElement>(null);
   const [smallHero] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
-  // Phones: each block is a full-width rectangle. Its widest line spans
-  // exactly margin to margin, so the name and the tagline frame the screen
-  // on the same two edges. Desktop keeps the shared clamp() size.
+  // Below md (1024 px, the stacked layout): each block is a full-width
+  // rectangle. Its widest line spans exactly margin to margin, so the name and
+  // the tagline frame the screen on the same two edges, up to HERO_CAP: the
+  // size the desktop clamp() gives at 1024 px. So the type never grows as the
+  // window narrows (studio#112, old #188); phones keep the edge-to-edge fit,
+  // tablets sit on the cap. Desktop keeps the shared clamp() size.
   // Then the project dither is cut at each word's own rendered size.
   useEffect(() => {
     const tagline = taglineRef.current;
@@ -119,7 +125,7 @@ export default function HeroLetters() {
     const fit = () => {
       for (const block of [name, tagline]) {
         block.style.fontSize = '';
-        if (window.innerWidth >= 768) continue;
+        if (window.innerWidth >= 1024) continue;
         block.style.fontSize = '100px';
         const lines = [...block.querySelectorAll<HTMLElement>('.hl-line')];
         const widest = Math.max(
@@ -134,7 +140,7 @@ export default function HeroLetters() {
         const col = block.parentElement as HTMLElement;
         const cs = getComputedStyle(col);
         const measure = col.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-        block.style.fontSize = `${(100 * measure) / widest}px`;
+        block.style.fontSize = `min(${(100 * measure) / widest}px, ${HERO_CAP})`;
       }
     };
     const paint = async () => {
@@ -265,7 +271,7 @@ export default function HeroLetters() {
   // is the container); the factor is 100 / the widest line's width at 100px:
   // KRIVCHENKO for the name, the longest tagline line for the tagline.
   // Re-measure both if the words change; fit() still corrects any drift.
-  const type = 'm-0 font-display uppercase font-normal leading-[0.86] tracking-[-0.02em] text-[13vw] md:text-[clamp(2.5rem,min(10.4vw,13.5svh),11.5rem)]';
+  const type = 'm-0 font-display uppercase font-normal leading-[0.86] tracking-[-0.02em] text-[min(13vw,106.5px,13.5svh)] md:text-[clamp(2.5rem,min(10.4vw,13.5svh),11.5rem)]';
 
   return (
     <section
@@ -280,7 +286,8 @@ export default function HeroLetters() {
       <div className="@container site-frame h-full flex flex-col pt-[calc(64px+max(9vh,88px))] pb-[max(9vh,88px)] md:pt-[calc(68px+max(3vh,28px))] md:pb-[max(4vh,36px)]">
         <p
           ref={nameRef}
-          className={`${type} max-[767.98px]:text-[calc(100cqw*0.17229)] self-start text-foreground cursor-none ${glowing ? 'neon-glow' : ''}`}
+          data-egg
+          className={`${type} max-[767.98px]:text-[min(calc(100cqw*0.17229),106.5px,13.5svh)] self-start text-foreground cursor-none ${glowing ? 'neon-glow' : ''}`}
           onMouseEnter={enterTunnel}
           onMouseMove={glowing ? undefined : enterTunnel}
           onMouseLeave={stopTunnel}
@@ -305,7 +312,7 @@ export default function HeroLetters() {
           </p>
         </div>
 
-        <h1 ref={taglineRef} className={`${type} max-[767.98px]:text-[calc(100cqw*0.19312)] self-end text-right text-foreground`}>
+        <h1 ref={taglineRef} className={`${type} max-[767.98px]:text-[min(calc(100cqw*0.19312),106.5px,13.5svh)] self-end text-right text-foreground`}>
           <span>
             {TAGLINE.map((line, i) => (
               <span key={i} className="hl-line block whitespace-nowrap">
@@ -321,6 +328,7 @@ export default function HeroLetters() {
                       <button
                         type="button"
                         className="hl-word"
+                        data-egg
                         data-video={w.video}
                         aria-label={`${w.text}: ${projectById(w.id)?.title ?? ''}, open the case card`}
                         onMouseEnter={(e) => showPreview(w.id, e.clientX, e.clientY)}

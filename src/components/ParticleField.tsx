@@ -1,3 +1,4 @@
+import { STAR_DENSITY } from '@/lib/starDensity';
 import { useRef, useMemo, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -6,11 +7,12 @@ import { depthParallaxFactor, parallaxScreens } from '@/lib/parallax';
 import { heroTunnelBus } from '@/lib/heroTunnelBus';
 import { FLIGHT, flightPose, pageProgress } from '@/lib/flight';
 import { cityBus, cityCamera, cityOrigin } from '@/lib/city';
+import { FOOTER_MODE, footerCamera } from '@/lib/footerMode';
 import CityGround from '@/components/CityGround';
 import CursorLens from '@/components/CursorLens';
 import { galaxyColor } from '@/lib/galaxy';
 
-const TRAIL_COUNT = 400;
+const TRAIL_COUNT = Math.round(400 * STAR_DENSITY.sky);
 
 // The canvas renders on demand (frameloop="demand"): once the field has
 // settled and nothing is driving it, no frames are drawn at all, so a page
@@ -60,8 +62,8 @@ interface ParticleFieldProps {
 // The star look (#194): the galaxy palette, and on a few bright stars a sharp
 // core with diffraction spikes (drawn in the points shader below).
 // Counts thinned 2026-10-12: small stars halved (was ~1365), bright ones -30% (was ~35).
-const SMALL_STARS = 683;
-const BRIGHT_STARS = 25;
+const SMALL_STARS = Math.round(683 * STAR_DENSITY.sky);
+const BRIGHT_STARS = 25; // the round bright ones stay, whatever the density (2026-10-24)
 
 interface ParticlesProps extends ParticleFieldProps {
   /** Called once, after the first frame has actually been drawn. */
@@ -96,6 +98,12 @@ const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
 const CLUSTER = 0.9;
 const CLUSTER_R = 3.5;
 const GLINT_S = 0.9;
+// every footer nav column but CONNECT (studio#24): the stars stream at the
+// camera at DRIVE_SPEED world units a second, swaying off a road that bends
+// ROAD_A world units either way, one bend every 2π / ROAD_K units
+const DRIVE_SPEED = 2.6;
+const ROAD_A = 0.55;
+const ROAD_K = 0.42;
 const AIM_DEPTH = 6; // world units ahead the pointer's aim is turned with the head
 const FIELD_W = 20;
 const FIELD_H = 14;
@@ -103,6 +111,18 @@ const FIELD_D = 8;
 const NEAR_GAP = 3; // stars keep at least this far ahead of the camera; they fade out over the last unit before it
 const REDUCED_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SPRING_DAMPING = 9.5;
+
+// The footer's alternative moves on the home page (footerMode.ts,
+// 2026-10-24), in world space before the pour. Only the picked one is
+// compiled in, so the current footer keeps its shader as it was.
+const MODE_GLSL: Record<string, string> = {
+  current: '',
+  dive: '',
+};
+const MODE_SIZE_GLSL: Record<string, string> = {
+  current: '',
+  dive: '',
+};
 
 // Custom shader for trail particles that expand over their lifetime
 const trailVertexShader = `
@@ -207,6 +227,10 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     ground: { value: cityOrigin(flight, { x: -FLIGHT.x, y: -FLIGHT.y, z: FLIGHT.home - FLIGHT.z }).groundY },
     glint: { value: -1 },
     glintAmt: { value: 0 },
+    // the footer's alternative moves (footerMode.ts, 2026-10-24): the
+    // camera's place
+    camZ: { value: 7 },
+    axis: { value: new THREE.Vector2() },
   }), [flight]);
   const fadeNear = useCallback(
     (shader: THREE.WebGLProgramParametersWithUniforms) => {
@@ -216,6 +240,8 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
       shader.uniforms.uGround = below.ground;
       shader.uniforms.uGlint = below.glint;
       shader.uniforms.uGlintAmt = below.glintAmt;
+      shader.uniforms.uCamZ = below.camZ;
+      shader.uniforms.uAxis = below.axis;
       {
         // a few bright stars get room for their spikes; the shape is drawn in the fragment
         shader.vertexShader = shader.vertexShader
@@ -239,18 +265,18 @@ if (vBright > 0.5) {
           );
       }
       shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', '#include <common>\nuniform float uNearFade;\nuniform float uEye;\nuniform float uFall;\nuniform float uGround;\nuniform float uGlint;\nuniform float uGlintAmt;')
+        .replace('#include <common>', '#include <common>\nuniform float uNearFade;\nuniform float uEye;\nuniform float uFall;\nuniform float uGround;\nuniform float uGlint;\nuniform float uGlintAmt;\nuniform float uCamZ;\nuniform vec2 uAxis;')
         // under eye level a star drops to the ground, the lower ones first
         .replace(
           '#include <project_vertex>',
-          `float under = 1.0 - smoothstep(uEye - 0.9, uEye + 0.2, transformed.y);\nfloat deep = clamp((uEye - transformed.y) / 3.0, 0.0, 1.0);\nfloat drop = clamp(uFall * 1.5 - (1.0 - deep) * 0.5, 0.0, 1.0) * under;\ntransformed.y = mix(transformed.y, uGround, drop * drop);\n#include <project_vertex>`,
+          `${flight ? MODE_GLSL[FOOTER_MODE] : ''}float under = 1.0 - smoothstep(uEye - 0.9, uEye + 0.2, transformed.y);\nfloat deep = clamp((uEye - transformed.y) / 3.0, 0.0, 1.0);\nfloat drop = clamp(uFall * 1.5 - (1.0 - deep) * 0.5, 0.0, 1.0) * under;\ntransformed.y = mix(transformed.y, uGround, drop * drop);\n#include <project_vertex>`,
         )
         .replace(
           '#include <logdepthbuf_vertex>',
-          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= 1.0 - 0.65 * smoothstep(0.8, 1.0, drop);\nvec2 gsc = gl_Position.xy / gl_Position.w;\nfloat gband = (gsc.x * 0.5 + 0.5) + gsc.y * 0.15 - uGlint;\ngl_PointSize *= 1.0 + 1.1 * exp(-gband * gband / 0.0025) * uGlintAmt;\n#include <logdepthbuf_vertex>`,
+          `gl_PointSize *= mix(1.0, smoothstep(${NEAR_GAP.toFixed(1)}, ${(NEAR_GAP + 1).toFixed(1)}, -mvPosition.z), uNearFade);\ngl_PointSize *= 1.0 - 0.65 * smoothstep(0.8, 1.0, drop);\n${flight ? MODE_SIZE_GLSL[FOOTER_MODE] : ''}vec2 gsc = gl_Position.xy / gl_Position.w;\nfloat gband = (gsc.x * 0.5 + 0.5) + gsc.y * 0.15 - uGlint;\ngl_PointSize *= 1.0 + 1.1 * exp(-gband * gband / 0.0025) * uGlintAmt;\n#include <logdepthbuf_vertex>`,
         );
     },
-    [nearFade, below],
+    [nearFade, below, flight],
   );
   const trailIndexRef = useRef(0);
   const timeRef = useRef(0);
@@ -267,6 +293,9 @@ if (vBright > 0.5) {
   // the footer's hovers (#179): how far CONNECT's clusters and the name's
   // glint have eased in, and when the glint started
   const connectRef = useRef(0);
+  // the footer's drive (studio#24): how far it is engaged, and the distance driven
+  const driveRef = useRef(0);
+  const driveZRef = useRef(0);
   const glintRef = useRef({ amt: 0, start: 0 });
   useEffect(
     () =>
@@ -361,6 +390,8 @@ if (vBright > 0.5) {
   // Per-star velocity for the spring-based settle (follow-through/overshoot)
   const starVelocitiesRef = useRef(new Float32Array(particleCount * 3).fill(0));
   const wrapRef = useRef(new Float32Array(particleCount * 3).fill(0));
+  // each star's sideways offset off the road, last frame (studio#24)
+  const roadXRef = useRef(new Float32Array(particleCount).fill(0));
   // How far each star has advanced into the tunnel, independent of the eased
   // tunnelAmt above. Rendered depth is bz + travel*tunnelAmt (mirrors the X/Y
   // "outward" factor below), so releasing hover eases the dive back home in
@@ -447,9 +478,11 @@ if (vBright > 0.5) {
 
     // ── the flight: the camera follows the page's progress, damped like the parallax
     let flying = false;
+    let slideZ = 0;
     if (flight) {
       const f = flightPose(pageProgress());
-      const city = cityCamera(cityBus.progress(), cityBus.horizon());
+      const alt = FOOTER_MODE === 'current' ? null : footerCamera(FOOTER_MODE, cityBus.progress(), cityBus.horizon());
+      const city = alt ?? cityCamera(cityBus.progress(), cityBus.horizon());
       const speed = Math.min(velocityRef.current, 1);
       const tx = f.x, ty = f.y + city.dy, tz = f.z + city.dz;
       const tf = city.fov + FLIGHT_FOV * speed;
@@ -473,6 +506,13 @@ if (vBright > 0.5) {
       pc.rotation.set(cam.pitch, cam.yaw, cam.roll, 'YXZ');
       below.eye.value = cam.y;
       below.fall.value = city.fall;
+      if (alt) {
+        below.camZ.value = cam.z;
+        below.axis.value.set(cam.x, cam.y);
+        // dive: looking down, the stars poured to the ground must lie round
+        // the camera, not only ahead of it, so the box slides forward
+        slideZ = alt.slide * (NEAR_GAP + FIELD_D / 2);
+      }
       if (Math.abs(pc.fov - cam.fov) > 0.001) {
         pc.fov = cam.fov;
         pc.updateProjectionMatrix();
@@ -515,7 +555,19 @@ if (vBright > 0.5) {
     const sweep = hover === 'name' ? Math.min(1, (performance.now() - glint.start) / 1000 / GLINT_S) : 1;
     below.glint.value = -0.2 + 1.5 * sweep;
     below.glintAmt.value = glint.amt * (sweep < 1 ? 1 : 0);
-    const hovering = (connect > 0 && Math.abs(connect - (hover === 'connect' ? 1 : 0)) > 0.002) || (hover === 'name' && sweep < 1) || (glint.amt > 0 && hover !== 'name');
+    // the drive (studio#24): a hover, so it moves only while the pointer is
+    // there, and eases out after; reduced motion leaves the sky still
+    // one short glide on NAVIGATE, then rest (cityBus.gliding)
+    const driveOn = !REDUCED_MOTION && cityBus.gliding();
+    driveRef.current = THREE.MathUtils.damp(driveRef.current, driveOn ? 1 : 0, 5, delta);
+    if (driveRef.current < 0.002 && !driveOn) driveRef.current = 0;
+    const drive = driveRef.current;
+    const driveStep = DRIVE_SPEED * drive * Math.min(delta, 0.05);
+    driveZRef.current += driveStep;
+    const driveZ = driveZRef.current;
+    const roadPhase = Math.sin(ROAD_K * driveZ);
+    const roadX = roadXRef.current;
+    const hovering = drive > 0 || (connect > 0 && Math.abs(connect - (hover === 'connect' ? 1 : 0)) > 0.002) || (hover === 'name' && sweep < 1) || (glint.amt > 0 && hover !== 'name');
 
     activityRef.current = THREE.MathUtils.damp(activityRef.current, 0, 9, delta);
     const activity = Math.max(activityRef.current, Math.min(velocityRef.current * 2, 1));
@@ -607,13 +659,25 @@ if (vBright > 0.5) {
       // Home position is shifted by the depth parallax, so the spring settle
       // below follows the drifting target instead of fighting it.
       let by = basePositions[ix + 1] + parallax * parallaxFactors[i];
-      let bz = basePositions[ix + 2];
+      // the drive moves a star and its home together, so the spring never sees it
+      let bz = basePositions[ix + 2] + driveZ;
+      if (driveStep > 0) posArray[ix + 2] += driveStep;
+      if (!flight && driveZ !== 0) {
+        // no flight wrap here: a star that passes the camera goes round to the back
+        const w = wrapRef.current;
+        bz += w[ix + 2];
+        if (bz > cam.z - NEAR_GAP) {
+          w[ix + 2] -= FIELD_D;
+          bz -= FIELD_D;
+          posArray[ix + 2] -= FIELD_D;
+        }
+      }
       if (flight) {
         // the star's nearest image around the camera; a wrap moves the star
         // and its home together, so the spring never sees the jump
         const ox = FIELD_W * Math.round((cam.x - bx) / FIELD_W);
         const oy = FIELD_H * Math.round((cam.y - by) / FIELD_H);
-        const oz = FIELD_D * Math.floor((cam.z - NEAR_GAP - bz) / FIELD_D);
+        const oz = FIELD_D * Math.floor((cam.z - NEAR_GAP + slideZ - bz) / FIELD_D);
         const w = wrapRef.current;
         if (ox !== w[ix] || oy !== w[ix + 1] || oz !== w[ix + 2]) {
           posArray[ix] += ox - w[ix];
@@ -626,6 +690,15 @@ if (vBright > 0.5) {
         bx += ox;
         by += oy;
         bz += oz;
+      }
+
+      if (drive > 0 || roadX[i] !== 0) {
+        // the road bends ahead: a star swings off it by where the bend is at
+        // its distance, relative to the bend under the camera
+        const lat = drive > 0 ? ROAD_A * drive * (Math.sin(ROAD_K * (driveZ + cam.z - bz)) - roadPhase) : 0;
+        posArray[ix] += lat - roadX[i];
+        roadX[i] = lat;
+        bx += lat;
       }
 
       if (connect > 0) {
@@ -678,8 +751,9 @@ if (vBright > 0.5) {
         const pushX = influence * dx * 0.14 * speedMult * activity;
         const pushY = influence * dy * 0.14 * speedMult * activity;
 
-        // Scroll makes particles drift like wind
-        const scrollWind = velocityRef.current * Math.sin(i * 0.05 + timeRef.current) * 2;
+        // Scroll makes particles drift like wind; direction law (studio#23):
+        // scrolling down moves things left to right (scrollDir is -1 down)
+        const scrollWind = -scrollDirRef.current * velocityRef.current * (0.5 + 0.5 * Math.sin(i * 0.05 + timeRef.current)) * 1.6;
         const scrollLift = velocityRef.current * Math.cos(i * 0.08 + timeRef.current * 0.7) * 1.4;
 
         const targetX = bx + pushX + scrollWind;
@@ -772,7 +846,10 @@ if (vBright > 0.5) {
 
   return (
     <>
-      <points ref={meshRef}>
+      {/* never culled: the stars wrap round the camera, but the bounding
+          sphere stays where they were born, so on the long flight (z 40)
+          three.js dropped the whole field past the Work strip */}
+      <points ref={meshRef} frustumCulled={false}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} />
           <bufferAttribute attach="attributes-color" count={particleCount} array={colors} itemSize={3} />
@@ -783,7 +860,7 @@ if (vBright > 0.5) {
       </points>
 
       {/* Trail particles — dreamy expanding steam */}
-      <points ref={trailRef} material={trailMaterial}>
+      <points ref={trailRef} material={trailMaterial} frustumCulled={false}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" count={trailCount} array={trailPositions} itemSize={3} />
           <bufferAttribute attach="attributes-color" count={trailCount} array={trailColors} itemSize={3} />

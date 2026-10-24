@@ -5,12 +5,16 @@ import App from "./App.tsx";
 import { hydration } from "./lib/hydration";
 import { routeChunks } from "./lib/routeChunks";
 import "./index.css";
+import { startSmoothScroll } from "./lib/smoothScroll";
 
 // A reload starts at the top, so the hero → About gate plays from its start
 // instead of the browser restoring the old offset deep in the page. Route
 // changes already reset scroll (App's ScrollToTop) and hash links scroll
 // themselves (Index), so nothing relies on the browser's restoration.
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+// wheel and trackpad scroll eased in step with the effects (desktop only)
+startSmoothScroll();
 
 // Case pages, Practice, Collaborate and Statement arrive rendered at build
 // time (studio#16, studio#27, studio#86). React adopts that markup instead of replacing it, so what is

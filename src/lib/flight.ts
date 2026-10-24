@@ -19,7 +19,9 @@ const SURGE_SHARE = 0.6;
 
 /** world units the camera travels over the flight: it glides left `x`, sinks
  * `y` and dives `z` from its home at z = `home` */
-export const FLIGHT = { x: 6, y: 1.6, z: 9, home: 7 };
+// z 9 → 40 (2026-10-24): a real way through the field, the stars pass by
+// instead of drifting; the field repeats, so it never runs out
+export const FLIGHT = { x: 6, y: 1.6, z: 40, home: 7 };
 
 // the held footer (#179) takes over where it comes in: the flight ends as its
 // top reaches the bottom of the screen
@@ -53,24 +55,25 @@ const HOME: V3 = [0, 0, FLIGHT.home];
 const END: V3 = [-FLIGHT.x, -FLIGHT.y, FLIGHT.home - FLIGHT.z];
 /** the swing off the diagonal at each waypoint, world units (x, y);
  * hero → quote → About → Work → Services → Contact */
+// doubled and a little more (2026-10-24), so the bends read as turns
 export const SWING: [number, number][] = [
   [0, 0],
-  [0.9, 0.45],
-  [-0.9, -0.4],
-  [0.8, 0.5],
-  [-0.6, -0.25],
+  [2, 1],
+  [-2, -0.9],
+  [1.8, 1.1],
+  [-1.4, -0.55],
   [0, 0],
 ];
 /** the head turns this share of the way to the bend, then stops at the limits */
-const LOOK = 0.55;
-const MAX_YAW = 0.3; // radians
+const LOOK = 0.75;
+const MAX_YAW = 0.42; // radians
 const MAX_PITCH = 0.12; // radians
 /** chapters over which the head turns in at the top and back out at the end,
  * so the first screen and the footer's hand-off both face straight ahead */
 const SETTLE = 0.6;
 /** radians of bank per unit of turn rate (radians per chapter), and its cap */
-const BANK = 0.35;
-const MAX_BANK = 0.12;
+const BANK = 0.6;
+const MAX_BANK = 0.2;
 
 const lerp3 = (a: V3, b: V3, t: number): V3 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 const dist = (a: V3, b: V3) => Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);

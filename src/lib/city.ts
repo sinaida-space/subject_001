@@ -92,9 +92,15 @@ let pour = 0;
 
 /** the footer's hovers (#179, full mode): CONNECT pulls the stars near the
  * cursor into small clusters, MORE snaps the city's lights to the dither
- * grid, the name sends a glint through the stars */
-export type CityHover = 'connect' | 'more' | 'name' | null;
+ * grid, the name sends a glint through the stars. Every nav column but
+ * CONNECT also drives the stars down a winding road (studio#24): NAVIGATE as
+ * 'drive', MORE on top of its snap */
+/** seconds the footer's drive glides for on each hover */
+export const GLIDE_S = 1.6;
+
+export type CityHover = 'connect' | 'more' | 'drive' | 'name' | null;
 let hover: CityHover = null;
+let hoverAt = 0; // when the current hover began, ms
 const hoverListeners = new Set<() => void>();
 let held = false;
 const heldListeners = new Set<() => void>();
@@ -135,9 +141,14 @@ export const cityBus = {
   setHover(h: CityHover) {
     if (h === hover) return;
     hover = h;
+    hoverAt = performance.now();
     hoverListeners.forEach((l) => l());
   },
   hover: () => hover,
+  /** the footer's drive (NAVIGATE): one short glide, GLIDE_S long, then the
+   * map rests again; endless motion under a hover was too busy for the eye
+   * (2026-10-24, WCAG 2.2.2 asks for nothing to move on its own past 5 s) */
+  gliding: () => hover === 'drive' && performance.now() - hoverAt < GLIDE_S * 1000,
   onHover(l: () => void) {
     hoverListeners.add(l);
     return () => void hoverListeners.delete(l);

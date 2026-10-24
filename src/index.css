@@ -1151,6 +1151,18 @@
       auto !important;
   }
 
+  /* Easter egg hint (studio#106): over anything that hides a find, the arrow
+     gains a faint grey halo, there for those who look. Static image, swapped by the browser on hover, so it
+     answers the visitor's own movement and nothing animates on its own. */
+  body.has-custom-cursor [data-egg]:hover,
+  body.has-custom-cursor [data-egg]:hover *,
+  body.has-custom-cursor [data-egg-hot] {
+    cursor:
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><filter id="g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4"/></filter></defs><g transform="translate(6 6)"><path d="M1 1 L1 16 L5 12.7 L7.6 18.4 L10.3 17.1 L7.7 11.4 L13 11.4 Z" fill="%23C8C8C8" stroke="%23C8C8C8" stroke-width="2" stroke-linejoin="round" opacity="0.5" filter="url%28%23g%29"/><path d="M1 1 L1 16 L5 12.7 L7.6 18.4 L10.3 17.1 L7.7 11.4 L13 11.4 Z" fill="%23CC1414" stroke="%231a0000" stroke-width="1" stroke-linejoin="round"/></g></svg>')
+      7 7,
+      pointer !important;
+  }
+
   body:not(.has-custom-cursor) .cursor-none {
     cursor: inherit !important;
   }
@@ -1833,3 +1845,10 @@
     }
   }
 }
+
+/* Smooth scroll (src/lib/smoothScroll.ts) moves the page itself; a CSS
+   smooth scroll on top would ease every one of its steps again */
+html.lenis {
+  scroll-behavior: auto !important;
+}
+

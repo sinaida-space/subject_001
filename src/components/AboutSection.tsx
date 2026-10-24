@@ -196,7 +196,11 @@ export default function AboutSection() {
     <section id="about" className="relative z-10 py-16 md:py-24">
       <div className="site-frame">
         <Eyebrow full={full} />
-        <div className="mt-10 md:mt-16 grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-6 md:gap-y-16">
+        {/* desktop: once whole, About holds still for a stretch of scroll while
+            the sky moves on, so it can be read (2026-10-24). The hold starts
+            where QuoteGate finishes pouring it (--about-hold-top) */}
+        <div className="md:relative">
+        <div data-about-grid className="mt-10 md:mt-16 grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-6 md:gap-y-16 md:sticky md:top-(--about-hold-top,6rem)">
           <h3 className={`m-0 font-display uppercase font-normal text-foreground leading-[0.92] tracking-[-0.01em] text-[11.2vw] md:col-start-4 md:col-span-9 md:row-start-1 md:text-[clamp(3rem,7.2vw,7rem)] ${full ? '' : 'md:mt-[24svh]'}`}>
             {`Human first. Digital${NB}second.`}
           </h3>
@@ -218,6 +222,8 @@ export default function AboutSection() {
               </div>
             </Reveal>
           </div>
+        </div>
+        <div aria-hidden="true" className="hidden md:block h-[40svh]" />
         </div>
       </div>
     </section>
