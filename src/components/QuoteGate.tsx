@@ -27,6 +27,7 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortraitBuild, type PortraitBuild } from '@/components/portraitBuild';
 import { primeImages, sampleText, type Cell } from '@/lib/sampleText';
 import { GALAXY_GLSL } from '@/lib/galaxy';
+import { registerLand } from '@/lib/navLand';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (a: number, b: number, x: number) => {
@@ -55,6 +56,7 @@ const RED = 0.08, COLOUR = 0.3; // then soft red dither, then the colour, done b
 const FRAME_IN = 24; // the frame fades in over this much scroll once 90% have landed
 const SHED_AT = LIGHT ? 1.25 : 1.14; // poured once its letter is this far down the screen (in vh)
 const HAND = 24; // a finished block fades in over this much scroll
+const AFTER_FACE = 60; // the first About letters pour this many px of scroll after the portrait docks
 const GUST = 0.45; // a belief cell crosses the screen over this share of the gust window
 const WIND = 0.6; // About dust rides the wind at this many px per px of scroll before it pours
 const REBUILD_DH = 150; // a height-only resize smaller than this (mobile toolbars) keeps the build
@@ -117,6 +119,7 @@ void main() {
   if (kind < 0.5) {
     // About: dust rides the gust in from the lower left until its letter
     // scrolls in, then pours down into the letter (a curve, no turning back)
+    // (direction law, studio#23: scrolling down moves things left to right)
     vec2 dst = aC - vec2(0.0, uSy);
     vec2 a = aA - WIND_DIR * max(0.0, aT.y - uSy) * ${WIND};
     float t = smoothstep(aT.y, aT.y + ${FALL}.0, uSy);
@@ -128,6 +131,7 @@ void main() {
     alpha = smoothstep(uGather.x, uGather.x + 80.0, uSy) * (1.0 - step(aK.y, uSy));
   } else if (kind < 1.5) {
     // hero: locks, then the wind takes it off to the right
+    // (direction law, studio#23: scrolling down moves things left to right)
     float t = clamp((uSy - aT.x) / ${HERO_BLOW}.0, 0.0, 1.0);
     float e = t * t;
     pos = aA + vec2(e * (uView.x * 1.15 + rnd * 300.0), sin(t * PI) * (rnd - 0.5) * 90.0 - e * 50.0 * (fract(rnd * 13.1) - 0.3));
@@ -154,6 +158,7 @@ void main() {
   } else {
     // the belief: blows in from the left line by line, sets, then the gust
     // lifts it off along an arc, up and to the right, out of the screen
+    // (direction law, studio#23: scrolling down moves things left to right)
     float t1 = clamp((uSy - aT.x) / aK.z, 0.0, 1.0);
     float e1 = 1.0 - pow(1.0 - t1, 3.0);
     vec2 a = mix(aA, aB, e1);
@@ -420,7 +425,11 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       // About: each letter takes a grain of the gust's dust as it scrolls in;
       // the grain waits on the wind's path, lower left of its letter
       g.done = new Array(g.blocks.length).fill(-1);
-      const sheds = aboutCells.map((c) => Math.max(c.y - vh * SHED_AT, pinEnd - vh * 0.1, g.pour + 40) + rand() * 30);
+      // Portrait first, then the words (studio#22): no letter pours before the
+      // square has docked, and the lower ones follow it down the page, so the
+      // About reads as a process: the face forms, then the text writes itself.
+      const aboutTop = aboutCells.reduce((m, c) => Math.min(m, c.y), Infinity);
+      const sheds = aboutCells.map((c) => Math.max(c.y - vh * SHED_AT, pinEnd - vh * 0.1, g.pour + 40, dock + AFTER_FACE + (c.y - aboutTop) * 0.35) + rand() * 30);
       aboutCells.forEach((c, k) => {
         if (c.blk !== undefined && c.blk < g.blocks.length) g.done[c.blk] = Math.max(g.done[c.blk], sheds[k] + FALL);
       });
@@ -441,6 +450,13 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
         ]);
       });
       g.end = last;
+      // where About will hold still (AboutSection): its grid's place on the
+      // screen at the moment the pour is done, never above the header
+      const grid = about.querySelector<HTMLElement>('[data-about-grid]');
+      if (grid) {
+        const holdTop = grid.getBoundingClientRect().top + sy - g.end;
+        about.style.setProperty('--about-hold-top', `${Math.max(88, Math.round(holdTop))}px`);
+      }
 
       // hero: the wind front sweeps left to right
       for (const c of heroCells) {
@@ -688,8 +704,12 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
 
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', onResize);
+    // a link to About lands where it is whole: the portrait formed and every
+    // word poured in (its top would land mid-gate, half built)
+    const unland = registerLand('about', () => (g.built ? Math.ceil(g.end) + 2 : null));
 
     return () => {
+      unland();
       dead = true;
       clearTimeout(buildTimer);
       if (idleId) idleCancel(idleId);

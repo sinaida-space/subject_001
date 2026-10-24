@@ -4,8 +4,8 @@ import { cityBus } from '@/lib/city';
 
 // ── Star title ──
 // A section name as a giant word of sparse galaxy stars, held in the middle
-// of the screen while its section is on stage (#175). It never travels: as
-// the section comes in, the word condenses out of the fog star by star (near
+// of the screen while its section is on stage (#175), on its own slow layer
+// (studio#23, TITLE_Y below). As the section comes in, the word condenses out of the fog star by star (near
 // stars first, a little soft and large, settling to their size), holds while
 // the section passes under it, and thins back into the fog as the section
 // leaves. Its opacity is where you are on the page. A pure function of
@@ -27,6 +27,22 @@ const OVERLAP = 0.3; // share of the word height the following content rides ove
 const PARALLAX = 0.7; // lite titles: the label lags the content by this share of the scroll
 const BRIGHT = 0.5; // of galaxy's bright stars, the share kept here (4% → 2%)
 const PAD = 6; // css px of canvas around the word, for the jitter and the halos
+// the title layer (studio#23): the word rides its own layer, slower than the
+// body. Over its section's pass it climbs from TITLE_Y svh below the middle
+// to TITLE_Y above (about a fifth of the body's speed on a tall section) and
+// drifts TITLE_X css px left to right
+const TITLE_Y = 0.16;
+const TITLE_X = 28;
+// the pour's trails (studio#24): a falling star is a dot that leaves a wake.
+// The wake is drawn, never accumulated: every frame starts clean and each
+// falling star gets TRAIL_N fainter dots behind it along its own path. The
+// wake's length shrinks on the clock, exp(-dt / TRAIL_TAU) after the last
+// move, so it keeps dissolving after the scroll stops, and nothing that holds
+// still ever builds up and snaps back (no blink); after TRAIL_S it is gone
+const TRAIL_TAU = 0.22; // seconds
+const TRAIL_S = 1.2; // seconds
+const TRAIL_N = 5; // dots in a wake
+const TRAIL_STEP = 0.018; // pour progress between two of them, at full length
 
 export interface Star { x: number; y: number; rnd: number; depth: number }
 
@@ -176,6 +192,8 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
     let cvTop = 0;
     let lastP = -1;
     let lastQ = -1;
+    let layerY = 0, layerX = 0; // the title layer's offset, css px
+    let lastLayer = '';
     let raf = 0;
     let dead = false;
 
@@ -191,7 +209,8 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
       canvas.style.top = `${cvTop}px`;
       if (!pour) return;
       // the stars fall to the bottom of the screen, so the canvas reaches it
-      const next = Math.max(0, svh() - cvTop - cvH);
+      // (plus the title layer's highest lift, so it still does when lifted)
+      const next = Math.max(0, svh() - cvTop - cvH + Math.ceil(TITLE_Y * svh()));
       if (next === below) return;
       below = next;
       canvas.height = Math.round((cvH + below) * dpr);
@@ -226,19 +245,26 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
           keep: galaxyKeep(s.rnd) === 1,
           fall: 0.45 * fract(s.rnd * 5.17),
           landY: Math.pow(fract(s.rnd * 3.71), 1.6), // most land far, near the horizon
-          drift: fract(s.rnd * 7.93) - 0.5,
+          // direction law (studio#23): scrolling down moves things left to right
+          drift: 0.6 * fract(s.rnd * 7.93),
         };
       });
       lastP = -1;
     };
 
-    const draw = (p: number, q: number) => {
+    let trailAt = 0; // when the canvas was last faded or cleared, ms
+    let movedAt = 0; // when the pour last moved, ms
+    const draw = (p: number, q: number, trail = false) => {
       ctx.setTransform(dpr, 0, 0, dpr, PAD * dpr, PAD * dpr);
+      const now = performance.now();
       ctx.clearRect(-PAD, -PAD, wordW + 2 * PAD, boxH + 2 * PAD + below);
+      trailAt = trail ? now : 0;
+      // how long the wakes are now: full while the pour moves, then shorter
+      const wake = trail ? Math.exp(-(now - movedAt) / 1000 / TRAIL_TAU) : 0;
       const sprite = halo();
       // the screen's ground, in the word's own coordinates
       const vh = svh();
-      const top = vh * GROUND_TOP - cvTop - PAD, depth = vh * (1 - GROUND_TOP);
+      const top = vh * GROUND_TOP - cvTop - layerY - PAD, depth = vh * (1 - GROUND_TOP);
       for (const f of flyers) {
         const e = land(clamp01((p - f.delay) / 0.25));
         // the pour: each star leaves on its own beat and falls, quicker and
@@ -253,12 +279,18 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
         // falling, a star brightens (light in motion) and goes out as it lands
         const a = Math.min(1, ALPHA + 0.55 * Math.sin(Math.PI * Math.min(t, 0.5))) * e * (f.keep ? 1 : clamp01(p * 2 - 1)) * (1 - ease(clamp01((t - 0.8) / 0.2)));
         if (a <= 0.01) continue;
-        if (t > 0.05) {
-          // a short trail above it, longer as it speeds up
-          const len = 30 * t * (1 - t * 0.4);
-          ctx.globalAlpha = a * 0.35;
+        // a dot, never a streak; while it falls, a few fainter dots behind it
+        if (wake > 0.02 && t > 0 && t < 1) {
           ctx.fillStyle = f.color;
-          ctx.fillRect(x - 0.5, y - len, 1, len);
+          for (let j = 1; j <= TRAIL_N; j++) {
+            const tj = t - j * TRAIL_STEP * wake;
+            if (tj <= 0) break;
+            const gj = tj * tj;
+            const xj = f.tx + f.drift * wordW * 0.35 * gj;
+            const yj = f.ty + (top + f.landY * depth - f.ty) * gj;
+            ctx.globalAlpha = a * wake * 0.55 * (1 - j / (TRAIL_N + 1));
+            ctx.fillRect(xj - s / 2, yj - s / 2, s, s);
+          }
         }
         ctx.globalAlpha = a;
         if (f.bright) {
@@ -285,13 +317,42 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
       // screen, as what follows arrives
       const q = pour ? Math.round(clamp01((vh - r.bottom) / (POUR_SPAN * vh)) * 400) / 400 : 0;
       if (pour) cityBus.setPour(q);
+      // the title layer (studio#23): progress through the section's pass;
+      // a pouring word holds its place once the pour begins, so its ground
+      // stays where the city's is
+      const pass = clamp01((vh - (pour ? Math.max(r.top, vh - r.height) : r.top)) / (r.height + vh));
+      layerY = Math.round(TITLE_Y * svh() * (1 - 2 * pass));
+      // direction law (studio#23): scrolling down moves things left to right
+      layerX = NARROW?.matches ? 0 : Math.round(TITLE_X * (2 * pass - 1));
+      const layer = `translate3d(${layerX}px, ${layerY}px, 0)`;
+      if (layer !== lastLayer) {
+        lastLayer = layer;
+        canvas.style.transform = layer;
+      }
       const p = Math.round(ease(pr) * 200) / 200;
-      if (p === lastP && q === lastQ) return;
+      // trails while it pours (reduced motion: the dots alone). A wake that
+      // is still glowing when the pour stops (back to the whole word, or all
+      // landed) is never wiped in one frame: it dissolves on its clock, and
+      // the canvas hides only after it has (no blink, studio#24). One loop,
+      // one draw a frame: while a wake lives this frame schedules itself
+      const now = performance.now();
+      const on = p > 0 && q < 1;
+      const pouring = on && q > 0 && !REDUCED && (q !== lastQ || p !== lastP);
+      if (pouring) movedAt = now;
+      const wake = !REDUCED && trailAt > 0 && now - movedAt < TRAIL_S * 1000;
+      if (!pouring && !wake && p === lastP && q === lastQ && !trailAt) return;
       lastP = p;
       lastQ = q;
-      const on = p > 0 && q < 1;
+      if (pouring || wake) {
+        canvas.style.visibility = 'visible';
+        draw(p, q, true);
+        raf = requestAnimationFrame(frame);
+        return;
+      }
+      // the wake has gone: one clean frame, or hide if the word is not on
+      trailAt = 0;
       canvas.style.visibility = on ? 'visible' : 'hidden';
-      if (on) draw(p, q);
+      if (on) draw(p, q, false);
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(frame);

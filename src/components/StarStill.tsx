@@ -1,3 +1,4 @@
+import { STAR_DENSITY } from '@/lib/starDensity';
 import { useEffect, useState } from 'react';
 
 // ── Still stars (#141) ──
@@ -7,7 +8,7 @@ import { useEffect, useState } from 'react';
 // draws its first frame (ParticleField sets html[data-field]), the field fades
 // in over it and this fades out, once. Under reduced motion both simply cut.
 
-const COUNT = 130; // halved with the live field's small stars (2026-10-12)
+const COUNT = Math.round(130 * STAR_DENSITY.sky); // halved with the live field's small stars (2026-10-12); ?stars= thins it with the sky
 
 // a fixed seed, so every visit sees the same sky and SSR matches the client
 function mulberry32(a: number) {

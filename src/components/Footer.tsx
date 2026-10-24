@@ -16,6 +16,7 @@ type Item = { label: string; to?: string; href?: string; download?: boolean; tog
 const COLUMNS: { label: string; items: Item[]; hover?: CityHover }[] = [
   {
     label: 'Navigate',
+    hover: 'drive',
     items: [
       { label: 'About', to: '#about' },
       { label: 'Works', to: '#work' },

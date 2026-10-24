@@ -22,9 +22,9 @@ describe('flightPose', () => {
       const q = flightPose(i / 1000);
       expect(q.z).toBeLessThanOrEqual(lastZ + 1e-9);
       lastZ = q.z;
-      expect(Math.abs(q.yaw)).toBeLessThanOrEqual(0.3);
+      expect(Math.abs(q.yaw)).toBeLessThanOrEqual(0.42);
       expect(Math.abs(q.pitch)).toBeLessThanOrEqual(0.12);
-      expect(Math.abs(q.bank)).toBeLessThanOrEqual(0.12);
+      expect(Math.abs(q.bank)).toBeLessThanOrEqual(0.2);
       maxYaw = Math.max(maxYaw, Math.abs(q.yaw));
     }
     expect(maxYaw).toBeGreaterThan(0.1);

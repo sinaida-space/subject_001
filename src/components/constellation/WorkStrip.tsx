@@ -1,3 +1,4 @@
+import { onScrollStep, smoothScroll } from '@/lib/smoothScroll';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { PROJECTS, type Project, type ProjectKind } from '@/data/projects';
 import { constellationBus } from '@/lib/constellationBus';
@@ -127,20 +128,26 @@ function PinnedStrip() {
       const track = trackRef.current;
       const list = listRef.current;
       if (!track || !list) return;
-      // one read, then one write: no forced layout inside the frame
-      const t = Math.min(travelRef.current, Math.max(0, box.top - track.getBoundingClientRect().top));
+      // one read, then one write: no forced layout inside the frame; snapped
+      // to device pixels, so the row never wobbles half a pixel either way
+      const dpr = window.devicePixelRatio || 1;
+      const t = Math.round(Math.min(travelRef.current, Math.max(0, box.top - track.getBoundingClientRect().top)) * dpr) / dpr;
       if (t === lastT) return;
       lastT = t;
       list.style.transform = `translate3d(${-t}px, 0, 0)`;
     };
+    // with smooth scroll on, the row moves in the same frame as the page
+    // (the strip is the one sideways motion, where a lag frame shows most)
+    const smooth = !!smoothScroll();
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
+      if (smooth) update();
+      else if (!raf) raf = requestAnimationFrame(update);
     };
     update();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    const off = onScrollStep(onScroll);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
+      off();
     };
   }, [box]);
 

@@ -18,6 +18,7 @@ const Collaborate = lazy(routeChunks.collaborate);
 const Statement = lazy(routeChunks.statement);
 const WorkCase = lazy(routeChunks.work);
 const Practice = lazy(routeChunks.practice);
+const EffectsOverview = lazy(routeChunks.effects);
 const NotFound = lazy(routeChunks.notFound);
 
 const RouteFallback = () => (
@@ -124,6 +125,8 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
         <Route path="/work/:slug" element={<Work />} />
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/practice/:slug" element={<PracticePage />} />
+        {/* internal reference (#26): unlinked, noindex */}
+        <Route path="/drafts/effects" element={<EffectsOverview />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <HydrationDone />

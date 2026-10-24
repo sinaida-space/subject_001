@@ -54,6 +54,7 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
       if (q === last) return;
       last = q;
       const e = q * q; // ease-in: it leaves slowly, then goes
+      // direction law (studio#23): scrolling down moves things left to right
       quote.style.transform = q > 0 ? `translate3d(${(0.6 * vw * e).toFixed(1)}px, ${(-0.06 * vh * e).toFixed(1)}px, 0)` : '';
       quote.style.opacity = q > 0 ? (1 - Math.pow(q, 1.4)).toFixed(3) : '';
     };

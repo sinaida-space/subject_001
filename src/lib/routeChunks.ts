@@ -11,6 +11,7 @@ export const routeChunks = {
   machines: () => import('@/pages/Machines'),
   work: () => import('@/pages/WorkCase'),
   practice: () => import('@/pages/Practice'),
+  effects: () => import('@/pages/EffectsOverview'),
   notFound: () => import('@/pages/NotFound'),
 };
 

@@ -118,7 +118,10 @@ export default function ContactChannel({ question: lead = `Got an idea that shou
                 {/* laced with star points that glint while the page scrolls (#179) */}
                 <GlitterText>{headline}</GlitterText>
               </div>
-              <div ref={linksRef} data-ground-mask className="mt-[6vh] w-fit">
+              {/* 12 px of air round the links (offset by negative margins): Safari clips a
+                  will-change layer's scaled-up child at its own bounds, which cut the
+                  button's bottom border and glow while the block receded */}
+              <div ref={linksRef} data-ground-mask className="mt-[calc(6vh-12px)] -mx-3 -mb-3 p-3 w-fit">
                 <ContactLinks />
               </div>
             </div>
@@ -131,7 +134,7 @@ export default function ContactChannel({ question: lead = `Got an idea that shou
               <div ref={questionRef} className="w-fit">{question}</div>
               <div className="w-fit">{headline}</div>
               {/* CTA: one bold action, plain links */}
-              <div ref={linksRef} className="mt-[6vh] w-fit">
+              <div ref={linksRef} className="mt-[calc(6vh-12px)] -mx-3 -mb-3 p-3 w-fit">
                 <ContactLinks />
               </div>
             </div>

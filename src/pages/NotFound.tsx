@@ -84,6 +84,7 @@ export default function NotFound() {
             type="button"
             onClick={() => setSnakeOpen(true)}
             title="[ ??? ]"
+            data-egg
             data-text="404"
             className="glitch-404 cursor-pointer border-0 bg-transparent p-0 font-display text-[clamp(120px,22vw,300px)] font-light leading-[0.85] text-inherit"
           >
