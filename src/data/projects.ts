@@ -70,6 +70,8 @@ export interface CaseStudy {
   kindLabel: string;
   /** narrative intro paragraphs; falls back to [blurb] when omitted */
   intro?: string[];
+  /** Shown under the intro, in italics, labelled as a disclaimer. */
+  disclaimer?: string[];
   /** prominent action rendered right under the hero still */
   heroCta?: ProjectLink;
   /** big-number stat card */
@@ -408,18 +410,22 @@ export const PROJECTS: Project[] = [
         'A labyrinth of half-lit rooms where an artist’s cycle meets two artists’ memories of their grandparents. Eighteen works from the SOULS cycle by UVALISS hang in corridors that the browser builds anew for every visit. It opens from a link on a laptop or a phone, and in a gallery visitors steer it with their bare\u00A0hands.',
         'A collaboration with UVALISS (Alisa Feer, https://uvaliss.ru/).',
       ],
+      disclaimer: [
+        'CONSPACE ROOMS is an artwork. It is not therapy, art therapy or a\u00A0psychological or medical service, and it offers no\u00A0advice.\u00A016+.',
+        'Inside: flashing and flickering light, sudden loud sounds, darkness, and images of fear, loss and grief. Not recommended for people with photosensitive\u00A0epilepsy.',
+      ],
       heroCta: { label: 'Walk the labyrinth', url: 'https://conspace-rooms.vercel.app/?lang=en' },
       stat: {
         value: '18',
         heading: 'Works in a labyrinth that is never the same twice',
-        body: 'There is no map and no signage. Candles show the way, and a rose in the corner grows with every work the visitor\u00A0meets.',
+        body: 'Inside the labyrinth there is no map and no signpost. Candles show the way, and a rose in the corner grows with every work the visitor\u00A0meets.',
       },
       sections: [
         {
           heading: 'Where it began',
           paragraphs: [
             'SOULS is a cycle Alisa created for her Master of Visual Arts at the Institute of Visual Arts. Her graduation needed a film, and the two artists spent weeks talking through its visual language. Sinaida made digital material for the set: audio-reactive generations in TouchDesigner and a series of AI\u00A0images.',
-            'A few weeks later Sinaida asked a simple question: what if the works hung inside a labyrinth? The two artists sat down together to work out how it could be done. The first version was a set of gloomy rooms with paintings in them, and not much\u00A0more.',
+            'A few weeks later Sinaida asked a simple question: what if the works hung inside a labyrinth? The two artists sat down together to work out how it could be done. The first version was a\u00A0set of\u00A0gloomy rooms with works in\u00A0them, and not much\u00A0more.',
           ],
         },
         {
@@ -432,14 +438,14 @@ export const PROJECTS: Project[] = [
         {
           heading: 'Three states of the soul',
           paragraphs: [
-            'The rooms follow the arc of the SOULS cycle, from trauma toward accepting oneself. Fear is a hospital: green oil paint under whitewash, humming tubes, beds and drip stands left behind. Memory is a grandmother’s flat: rosette wallpaper, parquet, warm lampshades, a television left on in an empty room, gramophone records playing as if from the next flat. Acceptance is pale, and its walls dissolve into lace and\u00A0light.',
+            'The rooms follow the SOULS cycle, and their visual arc moves through fear, memory and acceptance. Fear is a hospital: green oil paint under whitewash, humming tubes, beds and drip stands left behind. Memory is a grandmother’s flat: rosette wallpaper, parquet, warm lampshades, a television left on in an empty room, gramophone records playing as if from the next flat. Acceptance is pale, and its walls dissolve into lace and\u00A0light.',
           ],
         },
         {
           heading: 'The questions',
           paragraphs: [
             'Sinaida loves deep conversations and strange questions, and many of her projects carry them. Here they rise from candle smoke and wait on the final card. They ask how we look at our own fears, how we see our past, and what we allow ourselves to hope\u00A0for.',
-            'So CONSPACE ROOMS has two lives. For Alisa it is a visual exploration of her cycle. For everyone else it is a slow walk through fear, memory and acceptance, with time to think about how the past shaped the present.',
+            'So CONSPACE ROOMS has two lives. For Alisa it is a visual exploration of her cycle. For everyone else it is a slow walk past eighteen works, with open questions on the walls and time to think about\u00A0them.',
           ],
         },
       ],
@@ -462,8 +468,8 @@ export const PROJECTS: Project[] = [
           { label: 'Made in code', detail: 'Walls, light and most of the furniture are generated on the spot. The piece stays light on an ordinary connection and rebuilds itself for every visit.' },
           { label: 'Generated sound', detail: 'The music is composed by the piece as it plays and never repeats exactly. The recordings are Alisa’s voice at seven of the works and a few short sounds from the yard.' },
           { label: 'A steady walk', detail: 'The target is 60 fps on an average laptop; every passage between rooms was checked for smoothness, and phones get a lighter version automatically.' },
-          { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off.' },
-          { label: 'Private by default', detail: 'No analytics and no accounts. The camera image is processed on the visitor’s device and never leaves it, and even the tracking files come from the piece’s own server. The hosting provider sees only the technical data any page load carries, such as the IP address.' },
+          { label: 'Many ways in', detail: 'Keyboard, mouse, touch, game controller or bare hands. Captions describe sounds and music, and flicker and glitch can be switched off. Limits: there is no screen-reader path and no audio description, gesture mode needs both hands, and first-person movement makes some people\u00A0dizzy.' },
+          { label: 'Private by default', detail: 'No analytics and no accounts. In the browser, the visitor chooses gestures and allows the camera; its image is processed on their own device and never leaves it, and even the tracking files come from the piece’s own server. The hosting provider sees only the technical data any page load carries, such as the IP address. In a gallery, the image is processed on the venue’s computer and is never recorded or\u00A0sent.' },
         ],
         footer: '> idea, experience design & game mechanics: Sinaida Krivchenko · SOULS: UVALISS',
       },
@@ -480,11 +486,11 @@ export const PROJECTS: Project[] = [
       },
       visitorQuotes: {
         quotes: [
-          { text: 'One question has put my whole life on pause, and it still\u00A0has.', name: 'Alexander' },
-          { text: 'This is a masterpiece. I don’t know how a human brain is capable of coming up with something like this… So many questions I had never asked myself, and I\u00A0was\u00A0wrong\u00A0not\u00A0to.', name: 'Denis\u00A0V.' },
-          { text: 'You want to give it a lot of time! Deep, atmospheric, important. On how thought-through it is, I want to add that at the end you can save all the questions for yourself, which is great! Because they really are interesting to come back\u00A0to.', name: 'Viktoria\u00A0S.' },
-          { text: 'This needs to be at exhibitions, with different screens, with photographs and other art objects complementing your\u00A0work.', name: 'Ksenia\u00A0V.' },
-          { text: 'Atmospheric, of course. I can’t even imagine how you see the world and what is in your soul, to create work like this. But it is original,\u00A0unusual.', name: 'Pavel\u00A0K.' },
+          { text: 'One question has put my whole life on pause, and it still\u00A0has.', name: 'A.' },
+          { text: 'This is a masterpiece. I don’t know how a human brain is capable of coming up with something like this… So many questions I had never asked myself, and I\u00A0was\u00A0wrong\u00A0not\u00A0to.', name: 'D.\u00A0V.' },
+          { text: 'You want to give it a lot of time! Deep, atmospheric, important. On how thought-through it is, I want to add that at the end you can save all the questions for yourself, which is great! Because they really are interesting to come back\u00A0to.', name: 'V.\u00A0S.' },
+          { text: 'This needs to be at exhibitions, with different screens, with photographs and other art objects complementing your\u00A0work.', name: 'K.\u00A0V.' },
+          { text: 'Atmospheric, of course. I can’t even imagine how you see the world and what is in your soul, to create work like this. But it is original,\u00A0unusual.', name: 'P.\u00A0K.' },
         ],
         source: { label: 'uvaliss.ru', url: 'https://uvaliss.ru/conspace_rooms' },
       },
@@ -515,7 +521,7 @@ export const PROJECTS: Project[] = [
       order: {
         heading: 'For a space',
         body:
-          'A gallery mode turns the labyrinth into an installation with a projector or a screen, a webcam and speakers. A face in front of the camera starts the walk, the visitor steers with their hands, and once they step away the labyrinth resets into a new one for the next person. The rider is ready in English and Russian.',
+          'A gallery mode turns the labyrinth into an installation with a projector or a screen, a webcam and speakers. The venue gets a local build that runs with no internet. Each morning the attendant switches the camera on with the space bar. From then on, a person stepping in front of the screen starts the walk, the visitor steers with their hands, and once they step away the labyrinth resets for the next person. A sign at the entrance warns about the content and tells visitors a camera is in the room. The rider is ready in English and\u00A0Russian.',
         suffix: 'to bring it into a room.',
       },
     },

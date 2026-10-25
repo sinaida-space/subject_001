@@ -211,6 +211,17 @@ export default function WorkCase() {
               </p>
             ))}
 
+            {cs.disclaimer && (
+              <aside className="mt-6 max-w-[70ch]" aria-label="Disclaimer">
+                <div className="clinical-label mb-2 text-foreground/65">Disclaimer</div>
+                {cs.disclaimer.map((line) => (
+                  <p key={line.slice(0, 32)} className="font-mono text-[15px] italic leading-relaxed text-foreground/75 not-first:mt-2">
+                    {line}
+                  </p>
+                ))}
+              </aside>
+            )}
+
             {/* ── Original painting the piece translates ── */}
             {cs.painting && (
               <div className="mt-10">
@@ -323,7 +334,7 @@ export default function WorkCase() {
                   ))}
                 </ul>
                 <figcaption className="mt-3 font-mono text-[13px] text-foreground/65">
-                  Translated from Russian, from{' '}
+                  Personal responses from visitors, translated from Russian, from{' '}
                   <a
                     href={cs.visitorQuotes.source.url}
                     target="_blank"
@@ -332,6 +343,7 @@ export default function WorkCase() {
                   >
                     {cs.visitorQuotes.source.label}
                   </a>
+                  . They describe how the piece felt and do not measure any&nbsp;effect.
                 </figcaption>
               </figure>
             )}
