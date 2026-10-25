@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { BAYER_FLAT } from '@/lib/ditherPreview';
 
-// Text that resolves out of red dither (#179). The glyphs are drawn once into
+// Text that resolves out of red dither. The glyphs are drawn once into
 // a canvas of CELL px squares; each square lights when its ink clears its
 // 4x4 Bayer threshold, which falls as the run goes on, left to right. Red
 // while it forms, then the real text takes over and the canvas is gone. It

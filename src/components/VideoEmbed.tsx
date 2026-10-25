@@ -15,9 +15,8 @@ interface VideoEmbedProps {
 // after a click. Keeps LCP fast and CLS ≈ 0.
 //
 // The poster is served from /public/video-posters/, self-hosted rather than
-// pulled from img.youtube.com. The old thumbnail URL sent every visitor's IP
-// to Google on page load, before any consent and before any intent to watch,
-// which defeated the point of the facade. Google is now contacted only once
+// pulled from img.youtube.com, so no visitor's IP reaches Google on page
+// load, before any consent or intent to watch. Google is contacted only once
 // the visitor actually presses play. To add a video, drop its
 // hqdefault.jpg into that folder named <videoId>.jpg.
 export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) {

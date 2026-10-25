@@ -195,9 +195,16 @@ const PrivacyPolicy = () => {
             Location: Prague, Czechia<br />
             Email:{' '}
             <ObfuscatedMailto
-              label={'gallant_mod5v [at] icloud [dot] com'}
+              label=""
               className="text-primary-legible underline underline-offset-2 hover:text-accent transition-colors"
-            />
+            >
+              {/* Readable without JavaScript, and copies clean. The hidden
+                  decoys break the address for scrapers: one that reads the
+                  raw HTML finds no contiguous address, one that reads the
+                  text gets a wrong one. display:none keeps them out of
+                  sight, copy and screen readers. */}
+              sinaida<span className="hidden">.nospam</span>.studio<span className="hidden">.invalid</span>@<span className="hidden">example.</span>gmail.com
+            </ObfuscatedMailto>
           </p>
 
           

@@ -77,9 +77,8 @@ const CookieBanner = () => {
         return;
       }
       // Show the notice again when it was acknowledged against an older
-      // version of the policy. Recording the version was pointless while
-      // nothing ever compared it. Anything unparseable (hand-edited, or the
-      // bare string this key used to hold) counts as not acknowledged.
+      // version of the policy. Anything unparseable (hand-edited, or a bare
+      // string) counts as not acknowledged.
       const record = JSON.parse(stored) as { policyVersion?: unknown };
       if (record?.policyVersion !== PRIVACY_POLICY_VERSION) {
         setIsVisible(true);

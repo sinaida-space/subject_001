@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from 'react';
 
 // One passive scroll/resize listener for every scroll-driven effect on the
-// subpages (#198). Each subscriber gets its element's progress through the
+// subpages. Each subscriber gets its element's progress through the
 // viewport, 0 → 1, only on frames where the page actually scrolled: nothing
 // here ticks on its own (motion law).
 

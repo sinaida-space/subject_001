@@ -20,24 +20,49 @@ export function landOn(hash: string, fly = false): boolean {
   const id = hash.replace(/^#/, '');
   const el = document.getElementById(id);
   if (!el) return false;
-  const y = Math.max(0, Math.round(lands.get(id)?.() ?? el.getBoundingClientRect().top + window.scrollY));
-  const jump = () => window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+  const target = () => Math.max(0, Math.round(lands.get(id)?.() ?? el.getBoundingClientRect().top + window.scrollY));
+  const y = target();
+  // read the target again at the jump: the scan takes a moment, and a page
+  // still loading keeps growing above the section meanwhile
+  const jump = () => { window.scrollTo({ top: target(), behavior: 'instant' as ScrollBehavior }); settle(target); };
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (landPreview() === 'fade') fadeThrough(jump);
-  else if (fly && !still && landPreview() === 'fly') flyTo(y);
+  else if (fly && !still && landPreview() === 'fly') flyTo(y, () => settle(target));
   else if (fly && !still) ditherThrough(jump, y > window.scrollY);
   else jump();
   return true;
 }
 
-// The flight (2026-10-18, revisits #175): short enough that the seams on the
+// After a landing the page may still grow above the section (chunks, fonts,
+// pinned sections measuring themselves on a cold load), which would leave the
+// reader short of it, in the section before. For a short while the landing
+// follows the section down; any wheel, touch or key from the reader ends it.
+const SETTLE_MS = 1500;
+let settling = 0;
+function settle(target: () => number) {
+  const id = ++settling;
+  const t0 = performance.now();
+  const stop = () => { settling++; off(); };
+  const off = () => ['wheel', 'touchstart', 'keydown'].forEach((t) => window.removeEventListener(t, stop));
+  ['wheel', 'touchstart', 'keydown'].forEach((t) => window.addEventListener(t, stop, { passive: true, once: true }));
+  const step = (now: number) => {
+    if (id !== settling) return;
+    const y = target();
+    if (Math.abs(y - window.scrollY) > 4) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+    if (now - t0 < SETTLE_MS) requestAnimationFrame(step);
+    else off();
+  };
+  requestAnimationFrame(step);
+}
+
+// The flight: short enough that the seams on the
 // way read as one rush, eased at both ends so the landing is calm. Its length
 // grows with the distance but never past FLY_MAX. Any wheel, touch or key
 // from the reader takes over at once.
 const FLY_MIN = 380;
 const FLY_MAX = 900;
 let flight = 0;
-function flyTo(y: number) {
+function flyTo(y: number, done?: () => void) {
   const from = window.scrollY;
   const dist = y - from;
   if (Math.abs(dist) < 2) return;
@@ -54,14 +79,14 @@ function flyTo(y: number) {
     const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // ease in-out cubic
     window.scrollTo({ top: Math.round(from + dist * e), behavior: 'instant' as ScrollBehavior });
     if (t < 1) requestAnimationFrame(step);
-    else off();
+    else { off(); done?.(); }
   };
   requestAnimationFrame(step);
 }
 
-// Preview flag for the landing (#198 follow-up): ?land=calm lands where the
+// Preview flag for the landing: ?land=calm lands where the
 // section's star word is whole, ?land=fade does the same through a short dip
-// to black. No flag keeps the old jump to the section top.
+// to black. No flag jumps to the section top.
 export function landPreview(): 'calm' | 'fade' | 'fly' | null {
   const v = new URLSearchParams(window.location.search).get('land');
   return v === 'calm' || v === 'fade' || v === 'fly' ? v : null;
@@ -83,7 +108,7 @@ function fadeThrough(jump: () => void) {
   }, 280);
 }
 
-// The landing (2026-10-18): a scan. An ordered dither of the ground colour
+// The landing: a scan. An ordered dither of the ground colour
 // sweeps across the screen in the direction of travel, led by one red line,
 // the way a tracking camera reads a body line by line; the page moves while
 // covered and the same scan clears it. A canvas at a quarter of the screen,

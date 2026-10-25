@@ -1,4 +1,4 @@
-// ── Dive host (#119). Always mounted inside the router, tiny and eager: it
+// ── Dive host. Always mounted inside the router, tiny and eager: it
 // takes dive requests from the bus, notices Back out of a dived-into entry,
 // and mounts the lazily loaded overlay only for the length of one dive. It
 // also shows the DEPTH readout. Full mode only: in lite it registers nothing,

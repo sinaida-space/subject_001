@@ -1,4 +1,4 @@
-// ── How many stars (2026-10-24, comparison) ──
+// ── How many stars ──
 // The sky and the city's lights read as crowded. Two thinner skies to judge
 // side by side on a real screen: ?stars=half (sky at half, city at 60%) and
 // ?stars=third (sky at a third, city at 40%, now the default) and
@@ -13,7 +13,7 @@ const LEVELS: Record<string, Density> = {
   third: { sky: 1 / 3, city: 0.4 },
   quarter: { sky: 0.25, city: 0.35 },
 };
-// a quarter by default (2026-10-24)
+// a quarter by default
 const DEFAULT = 'quarter';
 const KEY = 'sinaida:stars';
 

@@ -59,11 +59,10 @@ interface ParticleFieldProps {
   flight?: boolean;
 }
 
-// The star look (#194): the galaxy palette, and on a few bright stars a sharp
+// The star look: the galaxy palette, and on a few bright stars a sharp
 // core with diffraction spikes (drawn in the points shader below).
-// Counts thinned 2026-10-12: small stars halved (was ~1365), bright ones -30% (was ~35).
 const SMALL_STARS = Math.round(683 * STAR_DENSITY.sky);
-const BRIGHT_STARS = 25; // the round bright ones stay, whatever the density (2026-10-24)
+const BRIGHT_STARS = 25; // the round bright ones stay, whatever the density
 
 interface ParticlesProps extends ParticleFieldProps {
   /** Called once, after the first frame has actually been drawn. */
@@ -78,27 +77,27 @@ interface ParticlesProps extends ParticleFieldProps {
 // physical body rather than a lerp.
 const SPRING_STIFFNESS = 55;
 
-// The home page's flight (#175, src/lib/flight.ts): the camera glides left
+// The home page's flight (src/lib/flight.ts): the camera glides left
 // while you scroll down, so the stars stream left to right, sinks a little
 // and dives into the field in surges. Scroll speed widens the lens and banks
 // the camera into the glide; both ease back to rest when the wheel stops.
 // The field is a box repeated around the camera (nearest image per star), so
 // the dive never runs out of stars; a star wraps where it cannot be seen,
 // behind the near fade or off the side.
-// Since #179 the path bends (flightPose: a Catmull–Rom curve through a
+// The path bends (flightPose: a Catmull–Rom curve through a
 // waypoint per chapter) and the camera turns its head into the bends and
 // banks with them; the scroll-speed bank adds on top.
-// The footer's city (#179) adds its own offset on top: the camera sinks on,
+// The footer's city adds its own offset on top: the camera sinks on,
 // then the eyes lower to the horizon and the lights below.
 const FLIGHT_FOV = 14; // degrees the lens widens at full scroll speed
 const FLIGHT_ROLL = 0.05; // radians the camera banks at full scroll speed
-// the footer's hovers (#179): CONNECT gathers the stars over the cursor into
+// the footer's hovers: CONNECT gathers the stars over the cursor into
 // clusters of CLUSTER world units, within CLUSTER_R of it sideways; the name sends a
 // glint across the screen over GLINT_S seconds
 const CLUSTER = 0.9;
 const CLUSTER_R = 3.5;
 const GLINT_S = 0.9;
-// every footer nav column but CONNECT (studio#24): the stars stream at the
+// every footer nav column but CONNECT: the stars stream at the
 // camera at DRIVE_SPEED world units a second, swaying off a road that bends
 // ROAD_A world units either way, one bend every 2π / ROAD_K units
 const DRIVE_SPEED = 2.6;
@@ -113,7 +112,7 @@ const REDUCED_MOTION = typeof window !== 'undefined' && window.matchMedia('(pref
 const SPRING_DAMPING = 9.5;
 
 // The footer's alternative moves on the home page (footerMode.ts,
-// 2026-10-24), in world space before the pour. Only the picked one is
+//, in world space before the pour. Only the picked one is
 // compiled in, so the current footer keeps its shader as it was.
 const MODE_GLSL: Record<string, string> = {
   current: '',
@@ -218,7 +217,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
   // the camera as it flies (damped toward the flight), and each star's wrap offset
   const camRef = useRef({ x: 0, y: 0, z: 7, fov: 60, roll: 0, pitch: 0, yaw: 0 });
   const nearFade = useMemo(() => ({ value: 0 }), []);
-  // the end of the flight (#179): as the head lowers, the stars under eye
+  // the end of the flight: as the head lowers, the stars under eye
   // level pour down to the ground and settle there, dim, among the city's lights
   const below = useMemo(() => ({
     eye: { value: 0 },
@@ -227,7 +226,7 @@ function Particles({ subtle = false, flight: flightProp = false, onFirstFrame, o
     ground: { value: cityOrigin(flight, { x: -FLIGHT.x, y: -FLIGHT.y, z: FLIGHT.home - FLIGHT.z }).groundY },
     glint: { value: -1 },
     glintAmt: { value: 0 },
-    // the footer's alternative moves (footerMode.ts, 2026-10-24): the
+    // the footer's alternative moves (footerMode.ts: the
     // camera's place
     camZ: { value: 7 },
     axis: { value: new THREE.Vector2() },
@@ -290,10 +289,10 @@ if (vBright > 0.5) {
   const tunnelAmountRef = useRef(0);
   const tunnelHoldStartRef = useRef<number | null>(null);
   const { viewport, invalidate, camera } = useThree();
-  // the footer's hovers (#179): how far CONNECT's clusters and the name's
+  // the footer's hovers: how far CONNECT's clusters and the name's
   // glint have eased in, and when the glint started
   const connectRef = useRef(0);
-  // the footer's drive (studio#24): how far it is engaged, and the distance driven
+  // the footer's drive: how far it is engaged, and the distance driven
   const driveRef = useRef(0);
   const driveZRef = useRef(0);
   const glintRef = useRef({ amt: 0, start: 0 });
@@ -390,7 +389,7 @@ if (vBright > 0.5) {
   // Per-star velocity for the spring-based settle (follow-through/overshoot)
   const starVelocitiesRef = useRef(new Float32Array(particleCount * 3).fill(0));
   const wrapRef = useRef(new Float32Array(particleCount * 3).fill(0));
-  // each star's sideways offset off the road, last frame (studio#24)
+  // each star's sideways offset off the road, last frame
   const roadXRef = useRef(new Float32Array(particleCount).fill(0));
   // How far each star has advanced into the tunnel, independent of the eased
   // tunnelAmt above. Rendered depth is bz + travel*tunnelAmt (mirrors the X/Y
@@ -520,7 +519,7 @@ if (vBright > 0.5) {
       // the near fade comes in once the camera has left its home, so the top of the page is the field as it always was
       nearFade.value = THREE.MathUtils.clamp((7 - cam.z) / 0.5, 0, 1);
     } else if (!REDUCED_MOTION) {
-      // the other pages (#179): the camera stays home until their footer
+      // the other pages: the camera stays home until their footer
       // comes in, then backs away and lowers its eyes the same way, and the
       // stars under eye level pour down into the city's lights
       const city = cityCamera(cityBus.progress(), cityBus.horizon());
@@ -544,7 +543,7 @@ if (vBright > 0.5) {
       }
     }
 
-    // ── the footer's hovers (#179)
+    // ── the footer's hovers
     const hover = cityBus.hover();
     connectRef.current = THREE.MathUtils.damp(connectRef.current, hover === 'connect' ? 1 : 0, 4, delta);
     if (connectRef.current < 0.002 && hover !== 'connect') connectRef.current = 0;
@@ -555,7 +554,7 @@ if (vBright > 0.5) {
     const sweep = hover === 'name' ? Math.min(1, (performance.now() - glint.start) / 1000 / GLINT_S) : 1;
     below.glint.value = -0.2 + 1.5 * sweep;
     below.glintAmt.value = glint.amt * (sweep < 1 ? 1 : 0);
-    // the drive (studio#24): a hover, so it moves only while the pointer is
+    // the drive: a hover, so it moves only while the pointer is
     // there, and eases out after; reduced motion leaves the sky still
     // one short glide on NAVIGATE, then rest (cityBus.gliding)
     const driveOn = !REDUCED_MOTION && cityBus.gliding();
@@ -751,7 +750,7 @@ if (vBright > 0.5) {
         const pushX = influence * dx * 0.14 * speedMult * activity;
         const pushY = influence * dy * 0.14 * speedMult * activity;
 
-        // Scroll makes particles drift like wind; direction law (studio#23):
+        // Scroll makes particles drift like wind; direction law:
         // scrolling down moves things left to right (scrollDir is -1 down)
         const scrollWind = -scrollDirRef.current * velocityRef.current * (0.5 + 0.5 * Math.sin(i * 0.05 + timeRef.current)) * 1.6;
         const scrollLift = velocityRef.current * Math.cos(i * 0.08 + timeRef.current * 0.7) * 1.4;
@@ -887,7 +886,7 @@ function PrecompileScene() {
 export default function ParticleField({ subtle = false, flight = false }: ParticleFieldProps) {
   const [tier, setTier] = useState<PerfTier>(readTier);
   // Hidden until the first frame is drawn, then faded in once over the still
-  // sky (StarStill) that held the screen while three.js loaded (#141, her
+  // sky (StarStill) that held the screen while three.js loaded (her
   // call: arrive smoothly). html[data-field] tells the still sky to go.
   const [visible, setVisible] = useState(false);
   useEffect(() => {

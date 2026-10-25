@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Case dive renderer (#119), ported from drafts/case-dive. A click throws a
+// Case dive renderer. A click throws a
 // red projector beam from the launching control onto a wall; the camera
 // travels along the beam into the projected image, which resolves in the
 // case's dialect (crt / dither / ascii) and fills the frame as the case hero.
@@ -9,9 +9,8 @@
 // canvas that exists only during the dive. Screen coordinates are device px,
 // origin top-left; world units are device px too, the camera looks down +z.
 //
-// Changes from the draft for the real app: the canvas is transparent and
-// never veils the page, so the dive happens inside the live site (spec 2,
-// "one seamless universe"): the beam grows out of the real node, the wall
+// The canvas is transparent and never veils the page, so the dive happens
+// inside the live site, one seamless universe: the beam grows out of the real node, the wall
 // materialises out of its light with feathered, dithered edges, only dust
 // lit by the beam is drawn over the real star field, and the card rises out
 // of the pattern as it dissolves cell by cell (`dissolve`). One key frame
@@ -62,7 +61,7 @@ function beat(p: number) {
 }
 type Beat = ReturnType<typeof beat>;
 
-// Dialect schedules, ported from drafts/stage-door and re-timed to the dolly.
+// Dialect schedules, timed to the dolly.
 type Sched = Partial<Record<
   'ditherIn' | 'resolve' | 'typeIn' | 'handover' | 'lineGlow' | 'aperture' | 'edgeGlow' | 'scanline' | 'chroma' | 'curve' | 'exposure',
   number

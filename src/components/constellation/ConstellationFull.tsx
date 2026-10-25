@@ -158,11 +158,11 @@ function buildFigures(nodes: RNode[]): { a: RNode; b: RNode; cat: Category }[] {
 }
 const CATEGORIES = Object.keys(CATEGORY_LABEL) as Category[];
 
-// ── Build (#121): names and stars develop out of 3 px Bayer cells ──
+// ── Build: names and stars develop out of 3 px Bayer cells ──
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const lin = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 const easeOut = (t: number) => 1 - (1 - t) * (1 - t);
-// once the map is whole (#169): it leans up to TILT toward the pointer (desktop)
+// once the map is whole: it leans up to TILT toward the pointer (desktop)
 // and turns by DRIFT_* across the rest of Work (all devices); radians
 const TILT = (4 * Math.PI) / 180;
 const DRIFT_YAW = (-3 * Math.PI) / 180;
@@ -592,7 +592,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
 
     const nodeById = (id: string) => nodes.find((n) => n.id === id)!;
 
-    // ── the build (#121): what has assembled so far, a pure function of B ──
+    // ── the build: what has assembled so far, a pure function of B ──
     const B = workBuildBus.get();
     const tl = timelineRef.current;
     const building = B < 1 && !!tl;
@@ -619,7 +619,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       }
       if (spin.on || spin.sph > 0) settling = true;
     }
-    // ── once whole (#169): the map leans toward the pointer (desktop, eased,
+    // ── once whole: the map leans toward the pointer (desktop, eased,
     // settles) and turns a few degrees with the scroll across the rest of Work
     const lean = leanRef.current;
     const leaning = !building && !IS_COARSE && ptr.inside && !spin.on && !(drag.node && drag.moved);
@@ -706,7 +706,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       n.drawX = n.x;
       n.drawY = n.y;
     }
-    // ── the formed sweep (#169): a band of light crosses stars and lines once
+    // ── the formed sweep: a band of light crosses stars and lines once
     // the build is whole; what it has passed stays a little brighter
     const sweepV = building ? 0 : workBuildBus.getSweep();
     const bandAt = -0.2 + 1.4 * sweepV;
@@ -968,7 +968,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     ctx.textBaseline = 'middle';
     const drawn: { x1: number; y1: number; x2: number; y2: number }[] = [];
     // Approximate line box height for collision tests, derived per label from
-    // its own type size rather than fixed — projects and skills no longer
+    // its own type size rather than fixed — projects and skills do not
     // share one size, and a box shorter than the glyphs lets neighbours
     // overlap. The extra 10px is breathing room: labels that merely miss each
     // other still read as crowded, so the box is deliberately taller than the
@@ -981,8 +981,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       drawn.push({ x1: n.x - n.r - 5, y1: n.y - n.r - 5, x2: n.x + n.r + 5, y2: n.y + n.r + 5 });
     }
     // Touch screens: every name stays on, but at a smaller fixed size that
-    // never changes with the active highlight. Size-by-state made labels
-    // re-place themselves on every scroll step, so the names jumped around.
+    // never changes with the active highlight. Size-by-state would make labels
+    // re-place themselves on every scroll step, so the names would jump around.
     const narrowView = IS_COARSE;
     labelBoxesRef.current.clear(); // rebuilt below from what's actually drawn this frame
     for (const n of nodes) {
@@ -1065,11 +1065,10 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
       }
       // Every candidate is nudged back inside the canvas before it is tested,
       // and the nudged position is the one that gets drawn. Testing the raw
-      // position and shifting afterwards used to let a candidate pass the
-      // collision check and then be moved on top of a neighbour; it also
-      // rejected every sideways placement for labels wider than about half
-      // the canvas, so on a phone the long ones fell through to the last
-      // candidate and overlapped. Clamping first means the row search sees
+      // position and shifting afterwards would let a candidate pass the
+      // collision check and then be moved on top of a neighbour, and would
+      // reject every sideways placement for labels wider than about half
+      // the canvas. Clamping first means the row search sees
       // real geometry and keeps looking until it finds a clear row.
       const clampX = (x: number) => Math.max(6, Math.min(x, w - 6 - tw));
       let chosen = { ...candidates[0], lx: clampX(candidates[0].lx) };
@@ -1338,7 +1337,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     };
     document.addEventListener('visibilitychange', onVis);
 
-    // the build (#121) steps with the scroll: one frame per step
+    // the build steps with the scroll: one frame per step
     const unsubBuild = workBuildBus.subscribe(() => {
       if (!onScreenRef.current) return;
       lastInputRef.current = performance.now();
@@ -1492,7 +1491,7 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
     [],
   );
 
-  // Every work opens with a dive (#119); its detail card rises out of the
+  // Every work opens with a dive; its detail card rises out of the
   // dialect effect mid-flight, and the card's own links lead on to the case. No dive (lite, no host) opens
   // the card plainly.
   const navigate = (node: RNode) => {
@@ -1634,8 +1633,8 @@ export default function ConstellationFull({ onActiveProject, onPointerPosition }
         onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerLeave}
       />
-      {/* The floating tagline box that used to sit beside the hovered star is
-          gone: GraphHoverCard (rendered by Constellation) now carries the
+      {/* No floating tagline box sits beside the hovered star:
+          GraphHoverCard (rendered by Constellation) carries the
           tagline along with the preview, the name and the wired-to skills,
           docked in the corner opposite the star. A box pinned next to the
           star could only ever land on top of the labels around it, which is

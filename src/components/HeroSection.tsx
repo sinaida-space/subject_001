@@ -100,8 +100,8 @@ const DRIFT_VARIANTS = ['a', 'b', 'c', 'd'];
 // 'a', which is not what the original :nth-child counting did.
 //
 // `settled` is the string the reveal ends on. The scramble swaps in noise glyphs
-// of different widths (the face is proportional), which used to re-wrap the
-// line dozens of times a second (CLS 0.29). While a glyph is still noise, its
+// of different widths (the face is proportional), which would re-wrap the
+// line dozens of times a second. While a glyph is still noise, its
 // settled character stays in the layout invisibly and the noise is drawn on top.
 // Headline line breaks: "FOR" must never end a line, and "&" must never end
 // one either. "FOR STAGE" and "& SCREEN" are each one unbreakable run, so the
@@ -429,7 +429,7 @@ export default function HeroSection() {
             Pixel's width means the ceiling must also respect the max-w-7xl
             container on very wide screens, or the headline overflows there
             too). The below-md ceiling equals the md floor (2.1rem), so the
-            type never grows as the window narrows (#188). Re-derive with the same method if the copy or the face
+            type never grows as the window narrows. Re-derive with the same method if the copy or the face
             changes again. */}
         <h1
           data-egg
@@ -438,7 +438,7 @@ export default function HeroSection() {
           onMouseMove={glowing ? undefined : enterTunnel}
           onMouseLeave={stopTunnel}
         >
-          {/* Same reason as the eyebrow above (audit 2026-08-02, F-006): this is
+          {/* Same reason as the eyebrow above: this is
               the <h1>, so the scrambled frames were the page's accessible name
               for the first ~860 ms. */}
           <span className="sr-only">{`${LINE_A}${LINE_B}`}</span>

@@ -103,14 +103,14 @@ export interface CaseStudy {
   order: { heading: string; body: string; suffix: string };
 }
 
-/** Role line for case pages, never a claim of engineering craft (studio#1). */
+/** Role line for case pages, never a claim of engineering craft. */
 export const DEFAULT_ROLE = 'Concept design and agentic coding';
 
 export interface Project {
   id: string;
-  /** who made what, one plain line per part (studio#54); shown on the case page */
+  /** who made what, one plain line per part; shown on the case page */
   madeBy?: string[];
-  /** surface the case dive resolves in (#119): crt = stage, dither = image, ascii = code */
+  /** surface the case dive resolves in: crt = stage, dither = image, ascii = code */
   dialect: Dialect;
   title: string;
   /** optional second half of the title, e.g. a medium or role descriptor.
@@ -125,7 +125,7 @@ export interface Project {
   blurb?: string;
   /** what Sinaida did on the piece, shown before the tools; defaults to DEFAULT_ROLE */
   role?: string;
-  /** what she did, as clickable practice tags (studio#70); tools are never listed */
+  /** what she did, as clickable practice tags; tools are never listed */
   practices: PracticeId[];
   /** one line on how the work was made, with optional `[label](url)` links; web works fall back to the role */
   made?: string;

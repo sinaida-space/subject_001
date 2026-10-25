@@ -1,4 +1,4 @@
-// ── Looking down (#179) ──
+// ── Looking down ──
 // The whole page the visitor has been looking up, into the sky. At the end
 // the camera dollies out of Contact (it backs away while the lens narrows, so
 // space flattens and the Contact block recedes into the top left), then the
@@ -90,10 +90,10 @@ let progressFn: (() => number) | null = null;
 let horizon = DEFAULT_HORIZON;
 let pour = 0;
 
-/** the footer's hovers (#179, full mode): CONNECT pulls the stars near the
+/** the footer's hovers (full mode): CONNECT pulls the stars near the
  * cursor into small clusters, MORE snaps the city's lights to the dither
  * grid, the name sends a glint through the stars. Every nav column but
- * CONNECT also drives the stars down a winding road (studio#24): NAVIGATE as
+ * CONNECT also drives the stars down a winding road: NAVIGATE as
  * 'drive', MORE on top of its snap */
 /** seconds the footer's drive glides for on each hover */
 export const GLIDE_S = 1.6;
@@ -147,7 +147,7 @@ export const cityBus = {
   hover: () => hover,
   /** the footer's drive (NAVIGATE): one short glide, GLIDE_S long, then the
    * map rests again; endless motion under a hover was too busy for the eye
-   * (2026-10-24, WCAG 2.2.2 asks for nothing to move on its own past 5 s) */
+   *, WCAG 2.2.2 asks for nothing to move on its own past 5 s) */
   gliding: () => hover === 'drive' && performance.now() - hoverAt < GLIDE_S * 1000,
   onHover(l: () => void) {
     hoverListeners.add(l);

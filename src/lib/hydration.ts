@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-// ── Case pages hydrate their build-time render (studio#16) ──
+// ── Case pages hydrate their build-time render ──
 // main.tsx sets `active` right before hydrateRoot. React adopts the app
 // shell first and the content inside App's <Suspense> in a later pass, so
 // the signal that everything is adopted comes from inside that boundary

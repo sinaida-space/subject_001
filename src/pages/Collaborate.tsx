@@ -70,7 +70,7 @@ export default function Collaborate() {
 
   const stills = FEATURED_WORKS.slice(0, 3);
   const { mode } = useRenderMode();
-  // the starfield is browser-only, after the first commit (studio#86)
+  // the starfield is browser-only, after the first commit
   const mounted = useMounted();
 
   return (

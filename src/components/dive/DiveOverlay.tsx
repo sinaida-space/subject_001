@@ -1,4 +1,4 @@
-// ── Dive overlay (#119), lazily loaded. A full-viewport layer that lives only
+// ── Dive overlay, lazily loaded. A full-viewport layer that lives only
 // for one dive: its own WebGL2 canvas plays the projector beam, the route
 // changes under the final frame, then the layer fades and the context is
 // destroyed. Without WebGL2 (or on a phone that failed the probe) it falls

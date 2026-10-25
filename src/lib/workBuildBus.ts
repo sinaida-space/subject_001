@@ -3,7 +3,7 @@
 //   value  the map's build, 0..1 (1 is the finished map, all lite mode sees)
 //   pour   the big bang's pull out of About onto the globe, 0..1; the globe's
 //          own cells fade in as it ends
-//   source unused since the big bang (#166), kept null
+//   source unused since the big bang, kept null
 //   sweep  once the map is whole, the sweep of light across it, 0..1 over the
 //          next stretch of scroll (1 settled)
 //   drift  the slow turn across the rest of Work, 0..1

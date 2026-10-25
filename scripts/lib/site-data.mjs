@@ -200,7 +200,7 @@ function projectsArrayBody(source) {
   return array.slice(1, -1);
 }
 
-/** The practice tags (studio#70) from src/data/practices.ts, in source order. */
+/** The practice tags from src/data/practices.ts, in source order. */
 export function readPractices() {
   const source = readFileSync(PRACTICES_FILE, 'utf8');
   const marker = 'export const PRACTICES: Practice[] = [';
@@ -397,7 +397,7 @@ export function buildRoutes() {
     },
   };
 
-  // Internal reference (#26): built so the URL resolves on Pages, but unlisted
+  // Internal reference: built so the URL resolves on Pages, but unlisted
   // everywhere: noindex, not in the sitemap, not in llms.txt or agent-data.
   const effects = {
     path: 'drafts/effects',
@@ -478,7 +478,7 @@ export function buildRoutes() {
     work,
   }));
 
-  // Practice pages (studio#70): an index and one page per practice tag.
+  // Practice pages: an index and one page per practice tag.
   const workItem = (work) => ({ label: work.fullTitle, href: `/work/${work.id}/`, note: work.tagline });
   const practiceIndex = {
     path: 'practice',

@@ -1,4 +1,4 @@
-// Where home was scrolled to when a case was opened from it (#187). Kept in
+// Where home was scrolled to when a case was opened from it. Kept in
 // sessionStorage: it lives for this tab's visit only, nothing persists.
 //
 // Home mounts its heavy sections lazily, so on the way back the page above

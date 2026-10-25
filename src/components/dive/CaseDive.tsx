@@ -1,5 +1,4 @@
-// ── Case dive controls and the process floor (#119), ported from
-// drafts/rabbit-hole. On a case hero: the ▼ DEPTH 02 mark dives one floor
+// ── Case dive controls and the process floor. On a case hero: the ▼ DEPTH 02 mark dives one floor
 // down (same route, ?depth=2) and up to three red threads dive sideways into
 // connected works through shared skills. The floor itself is real DOM:
 // the case's own process material, 1-bit crops of its key frame and its

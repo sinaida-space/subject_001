@@ -45,7 +45,7 @@ const TURN = 0.55;
 const EXIT = 0.5;
 // what follows the track rises over the exit by this many stage heights
 const OVERLAP = 0.75;
-const CELLS = 3; // STAGE, SCREEN, SPACE (#175)
+const CELLS = 3; // STAGE, SCREEN, SPACE
 const restStart = (k: number) => ENTRY + k * (REST + TURN);
 const restMid = (k: number) => restStart(k) + REST / 2;
 const EXIT_START = restStart(CELLS - 1) + REST;
@@ -73,7 +73,7 @@ interface Scene {
   xw: number; // XW angle
   zw: number; // ZW angle
   zoom: number; // z: the tesseract's distance, as a scale
-  dx: number; // x offset, share of the stage width (#175: it travels left to right)
+  dx: number; // x offset, share of the stage width (it travels left to right)
   dy: number; // y offset, share of the stage height
   yaw: number; // the 3D shadow turned about y, so its two cubes show (0 = a pane faces you)
   pitch: number; // and about x

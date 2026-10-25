@@ -5,7 +5,7 @@ import type { Project } from '@/data/projects';
 import { useRenderMode } from '@/hooks/useRenderMode';
 import { useScrollProgress } from '@/lib/scrollProgress';
 
-// Shared pieces for the pages outside home (#198), so every page speaks the
+// Shared pieces for the pages outside home, so every page speaks the
 // home's language: a red kicker over an oversized white display headline, a
 // white lead set off to the right on a Swiss grid, section titles pinned in
 // the left column while their content scrolls past, and About's ruled table.

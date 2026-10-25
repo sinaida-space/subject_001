@@ -1,5 +1,5 @@
 // Text as dither: every visible glyph under a root, read back on the site's
-// 3 px grid. Shared by the horizon gate (#120) and the work build (#121).
+// 3 px grid. Shared by the horizon gate and the work build.
 
 const CELL = 3; // css px, the site's dither cell
 

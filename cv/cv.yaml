@@ -71,7 +71,7 @@ sections:
     fields:
       - {label: "Website", value: "sinaida.eu", url: "https://sinaida.eu/"}
       - {label: "Instagram", value: "@sin.ai.da", url: "https://www.instagram.com/sin.ai.da/"}
-      - {label: "Email", value: "gallant_mod5v@icloud.com", url: "mailto:gallant_mod5v@icloud.com"}
+      - {label: "Email", value: "sinaida.studio@gmail.com", url: "mailto:sinaida.studio@gmail.com"}
       - {label: "Based in", value: "Prague, CZ"}
 
 cards:

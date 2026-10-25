@@ -170,7 +170,7 @@ function Readout({ project }: { project: Project }) {
             </div>
             <div className="max-h-[75vh] overflow-y-auto p-5 md:p-6">
               {project.essay.contentWarning && (
-                <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-primary">
+                <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-primary-legible">
                   {project.essay.contentWarning}
                 </p>
               )}
@@ -182,7 +182,7 @@ function Readout({ project }: { project: Project }) {
               {project.essay.credits && project.essay.credits.length > 0 && (
                 <>
                   <div className="my-5 border-t border-border/60" />
-                  <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-primary">
+                  <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-primary-legible">
                     Credits
                   </span>
                   {project.essay.credits.map((c, i) => (

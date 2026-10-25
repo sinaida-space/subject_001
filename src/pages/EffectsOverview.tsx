@@ -17,7 +17,7 @@ import SectionBreak from '@/components/SectionBreak';
 import CustomCursor from '@/components/CustomCursor';
 import demoImage from '@/assets/work-conspace-rooms-640.webp';
 
-// ── Internal reference (#26): every texture and effect on its own, with its
+// ── Internal reference: every texture and effect on its own, with its
 // source file and the numbers that tune it. Not linked from anywhere, served
 // noindex (scripts/lib/site-data.mjs), and feeds the world audit and the
 // colophon. Values below are copied from the source files; when a constant

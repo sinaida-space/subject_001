@@ -1,4 +1,4 @@
-// Practice tags (studio#70): what Sinaida did on a work, never the tools.
+// Practice tags: what Sinaida did on a work, never the tools.
 // Each practice is a service someone can hire her for and points at one of
 // the service lanes in services.ts, so a practice page doubles as proof.
 //
@@ -16,7 +16,7 @@ export type PracticeId =
 export interface Practice {
   id: PracticeId;
   label: string;
-  /** one line under the heading of the practice page (approved copy, studio#70) */
+  /** one line under the heading of the practice page (approved copy) */
   description: string;
   /** the service lane on /collaborate this practice proves; none when it serves every lane */
   lane?: string;
@@ -60,7 +60,7 @@ export const PRACTICES: Practice[] = [
   },
 ];
 
-/** Shared line on every practice page (studio#70). */
+/** Shared line on every practice page. */
 export const PRACTICE_SHARED_LINE =
   'From first idea to a working piece: concept, experience design and the build.';
 

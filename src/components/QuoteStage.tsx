@@ -54,7 +54,7 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
       if (q === last) return;
       last = q;
       const e = q * q; // ease-in: it leaves slowly, then goes
-      // direction law (studio#23): scrolling down moves things left to right
+      // direction law: scrolling down moves things left to right
       quote.style.transform = q > 0 ? `translate3d(${(0.6 * vw * e).toFixed(1)}px, ${(-0.06 * vh * e).toFixed(1)}px, 0)` : '';
       quote.style.opacity = q > 0 ? (1 - Math.pow(q, 1.4)).toFixed(3) : '';
     };
@@ -85,7 +85,7 @@ export default function QuoteStage({ pinned }: { pinned: boolean }) {
             ref={quoteRef}
             data-quote
             className="mx-auto m-0 w-fit max-w-full font-display uppercase font-normal text-foreground leading-[1.05] tracking-[-0.01em] text-[7.4vw] md:text-[clamp(2rem,min(3.9vw,7svh),4.5rem)]"
-            // pinned: hidden over the hero until QuoteGate takes it over (#175)
+            // pinned: hidden over the hero until QuoteGate takes it over
             style={story ? { willChange: 'transform, opacity' } : pinned ? { opacity: 0 } : undefined}
           >
             <span data-line="0" className="block">{`I${NB}believe`}</span>

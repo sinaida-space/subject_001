@@ -79,10 +79,10 @@ export default function WorkCase() {
   const project = projectById(slug ?? '');
   const cs = project?.caseStudy;
   const [heroLoaded, setHeroLoaded] = useState(false);
-  // the starfield is browser-only, after the first commit (studio#16)
+  // the starfield is browser-only, after the first commit
   const mounted = useMounted();
   const { mode } = useRenderMode();
-  // DEPTH 02 (#119): the process floor lives on the same route
+  // DEPTH 02: the process floor lives on the same route
   const [search] = useSearchParams();
   const depth = search.get('depth') === '2' ? 2 : 1;
 
@@ -178,7 +178,7 @@ export default function WorkCase() {
               </div>
             )}
 
-            {/* ── Dive one floor down, or sideways along a thread (#119) ── */}
+            {/* ── Dive one floor down, or sideways along a thread ── */}
             <CaseDiveControls project={project} />
 
             {/* ── Prominent case action (e.g. enter the live web experience) ── */}

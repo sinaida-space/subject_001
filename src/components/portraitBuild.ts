@@ -1,4 +1,4 @@
-// ── Portrait develop for the quote gate (#161) ──
+// ── Portrait develop for the quote gate ──
 // Once the stars have settled into the portrait square, the site's own image
 // dither (the Bayer red-on-void used for every work image, lib/ditherPreview)
 // fades in over the whole square, then the photo lights up cell by cell: each

@@ -4,7 +4,7 @@ import { roomBus, type Box } from '@/lib/roomBus';
 import { hydration } from '@/lib/hydration';
 
 // The WebGL room, drawn only from 768px in full mode. Lazy, so phones and
-// the hydrated build-time render never wait for three.js (studio#27).
+// the hydrated build-time render never wait for three.js.
 const StatementScene = lazy(() => import('@/components/StatementScene'));
 
 // The statement as a flight: each paragraph waits a little way ahead, and the

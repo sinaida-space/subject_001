@@ -15,7 +15,7 @@ import { usePageMeta, SITE_NAME } from '@/hooks/usePageMeta';
 
 const ParticleField = lazy(() => import('@/components/ParticleField'));
 
-// Practice pages (studio#70): one page per practice tag, listing every work in
+// Practice pages: one page per practice tag, listing every work in
 // it, plus an index of all practices at /practice. Their job is finding work
 // and moving between practices; every row links on to its case and its other
 // practices. Prerendered by scripts/lib/site-data.mjs.
@@ -126,7 +126,7 @@ function PracticeDetail({ practice }: { practice: PracticeT }) {
 export default function Practice() {
   const { slug } = useParams();
   const { mode } = useRenderMode();
-  // the starfield is browser-only, after the first commit (studio#86)
+  // the starfield is browser-only, after the first commit
   const mounted = useMounted();
   const practice = slug ? practiceById(slug) : undefined;
   if (slug && !practice) return <NotFound />;

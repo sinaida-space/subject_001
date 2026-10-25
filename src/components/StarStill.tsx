@@ -1,14 +1,14 @@
 import { STAR_DENSITY } from '@/lib/starDensity';
 import { useEffect, useState } from 'react';
 
-// ── Still stars (#141) ──
+// ── Still stars ──
 // The live star field is three.js and arrives seconds after the headline on a
 // phone. Until then this still sky holds the screen: a few hundred dots in one
 // inline SVG, painted with the first frame, nothing moving. When the field
 // draws its first frame (ParticleField sets html[data-field]), the field fades
 // in over it and this fades out, once. Under reduced motion both simply cut.
 
-const COUNT = Math.round(130 * STAR_DENSITY.sky); // halved with the live field's small stars (2026-10-12); ?stars= thins it with the sky
+const COUNT = Math.round(130 * STAR_DENSITY.sky); // halved with the live field's small stars; ?stars= thins it with the sky
 
 // a fixed seed, so every visit sees the same sky and SSR matches the client
 function mulberry32(a: number) {
