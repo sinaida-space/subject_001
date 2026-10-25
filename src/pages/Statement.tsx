@@ -49,7 +49,7 @@ const Statement = () => {
   });
 
   const { mode } = useRenderMode();
-  // the starfield is browser-only, after the first commit (studio#27)
+  // the starfield is browser-only, after the first commit
   const mounted = useMounted();
   const works = FEATURED_WORKS.slice(0, 3);
 

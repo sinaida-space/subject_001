@@ -1,7 +1,7 @@
-// ── How the footer's camera moves (2026-10-24) ──
-// The footer's dolly and lowered eyes (#179) have a second move, the default:
+// ── How the footer's camera moves ──
+// The footer's dolly and lowered eyes have a second move, the default:
 // ?footer=dive (the head turns straight down onto the city, a night map seen
-// from above). ?footer=current is the footer as it was. Like ?stars= the
+// from above). ?footer=current is the plain footer. Like ?stars= the
 // pick holds for the tab. Each is a pure function of the footer's progress
 // f: scrolling back plays it in reverse, nothing moves at rest. Home page
 // only; the other pages keep the current footer.
@@ -32,7 +32,7 @@ export const FOOTER_MODE = read();
 export const MODE_TIMING = {
   // dive: the head turns down and the camera rises over the same stretch, so
   // it reads as one arc; the lights come on from under the feet outward
-  // (2026-10-24) the lights pour down from above the camera while the head
+  // the lights pour down from above the camera while the head
   // turns, so the frame is never empty halfway down
   dive: { turn: [0.12, 0.8] as const, fall: [0.15, 0.7] as const, ground: [0.06, 0.75] as const },
 };

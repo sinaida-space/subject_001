@@ -48,7 +48,7 @@ function Slider({
         style={{ accentColor: 'hsl(var(--primary))', touchAction: 'pan-y' }}
         aria-label={label}
       />
-      <span className="w-7 text-right font-mono text-[9px] tabular-nums text-primary/80">{format(value)}</span>
+      <span className="w-7 text-right font-mono text-[9px] tabular-nums text-primary-legible">{format(value)}</span>
     </label>
   );
 }
@@ -66,7 +66,7 @@ export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismiss
 
   useEffect(() => subscribeCookieBannerAcknowledged(() => setBannerShowing(false)), []);
 
-  // Esc closes the unlock card, like its [X] (#147).
+  // Esc closes the unlock card, like its [X].
   useEffect(() => {
     if (!showUnlockCard) return;
     const onKey = (e: KeyboardEvent) => {
@@ -96,7 +96,7 @@ export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismiss
           aria-label="Audio unlocked"
         >
           <div className="flex items-center justify-between border-b border-primary/40 px-3 py-1.5">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-primary">SIGNAL // AUDIO UNLOCKED</span>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-primary-legible">SIGNAL // AUDIO UNLOCKED</span>
             <button
               type="button"
               onClick={onDismissCard}
@@ -117,7 +117,7 @@ export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismiss
             <button
               type="button"
               onClick={onDismissCard}
-              className="w-full border border-primary/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-primary transition-colors hover:bg-primary/10"
+              className="w-full border border-primary/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-primary-legible transition-colors hover:bg-primary/10"
             >
               OK · compose
             </button>
@@ -140,7 +140,7 @@ export default function SynthPanel({ onReset, onClose, showUnlockCard, onDismiss
             synth.primeFromGesture();
             synth.toggle();
           }}
-          className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-primary transition-colors hover:bg-primary/10"
+          className="flex items-center gap-2 border border-primary/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-primary-legible transition-colors hover:bg-primary/10"
           aria-pressed={state.playing}
         >
           <span className="text-[11px] leading-none">{state.playing ? '❚❚' : '▶'}</span>

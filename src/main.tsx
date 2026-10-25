@@ -17,7 +17,7 @@ if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 startSmoothScroll();
 
 // Case pages, Practice, Collaborate and Statement arrive rendered at build
-// time (studio#16, studio#27, studio#86). React adopts that markup instead of replacing it, so what is
+// time. React adopts that markup instead of replacing it, so what is
 // already on screen stays the LCP element. The page's chunk is loaded first
 // and passed in directly, so hydration never suspends on it. The markup's
 // mode is the one html[data-mode] names: case pages are always full, and on
@@ -29,7 +29,7 @@ const root = document.getElementById("root")!;
 const path = location.pathname.replace(/\/+$/, "");
 const isCase = /^\/work\/[^/.]+$/.test(path) && !new URLSearchParams(location.search).has("depth");
 const isStatement = path === "/statement";
-// Practice and Collaborate (studio#86) hydrate like case pages, always full.
+// Practice and Collaborate hydrate like case pages, always full.
 const fullPage = isCase ? "work" : /^\/practice(\/[^/.]+)?$/.test(path) ? "practice" : path === "/collaborate" ? "collaborate" : null;
 if ((fullPage || isStatement) && root.firstElementChild) {
   const mode = fullPage ? "full" : document.documentElement.getAttribute("data-mode") === "lite" ? "lite" : "full";

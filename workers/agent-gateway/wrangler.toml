@@ -7,6 +7,8 @@ compatibility_date = "2026-07-01"
 # markdown negotiation + a Link header). See index.js for the pass-through logic.
 # GET /starway.json reads Cloudflare analytics with the same two secrets as
 # sinaida-mcp (CF_ACCOUNT_ID, CF_ANALYTICS_TOKEN); without them it answers 503.
+# /assets/* is carved out in the dashboard (Workers Routes: sinaida.eu/assets/*,
+# Worker: None); wrangler deploy leaves that route alone.
 routes = [
   { pattern = "sinaida.eu/*", zone_name = "sinaida.eu" }
 ]

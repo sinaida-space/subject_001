@@ -1,4 +1,4 @@
-// Card build-up (#119): once a card lands at the end of its projection
+// Card build-up: once a card lands at the end of its projection
 // throw, its contents come up in the work's own dialect, the same grammar
 // the constellation dives speak. A canvas lies over the card and starts as
 // a solid cover; draw(q) uncovers it, q = 0 covered .. 1 fully clear. The

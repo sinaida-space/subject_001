@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Work build (#121, #166): About → Body of Work.
+// Work build: About → Body of Work.
 //
 //   bang   as About leaves, all of it (the ABOUT stars, the headline, the
 //          table, the portrait's pixels, the credit) hands over to cells
@@ -59,7 +59,7 @@ const UP = 0.95;
 // The pull ends when the BODY OF WORK title's top reaches POUR_B; it takes
 // at least FORM_MIN screen heights of scroll.
 const POUR_B = 0.36;
-// The BODY OF WORK word is a StarTitle like every section name (#175): the
+// The BODY OF WORK word is a StarTitle like every section name: the
 // bang pours everything into the globe, and the h2 here only times the pull.
 const TITLE_POUR = false;
 const FORM_MIN = 0.2;
@@ -138,7 +138,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // A link to Works lands where the map has finished building (#2), never on
+  // A link to Works lands where the map has finished building, never on
   // the half-built globe at the section's top: same sums as the build below,
   // solved for the scroll where it reaches 1.
   useEffect(() => {
@@ -309,7 +309,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       return cells.map((c): Raw => ({ anchor, x: c.x - box.left, y: c.y - sy - box.top, r: c.r, g: c.g, b: c.b, a, s: 2.4, rnd: rand(), depth: rand() }));
     };
     // the ABOUT title stays out of the bang: it holds in the middle of the
-    // screen and thins into the fog with About's presence (StarTitle, #175)
+    // screen and thins into the fog with About's presence (StarTitle)
     const readStars = () => {
       const out: Raw[] = [];
       const tbox = null as HTMLElement | null;

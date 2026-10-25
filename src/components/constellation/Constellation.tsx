@@ -58,7 +58,7 @@ export default function Constellation() {
       <div className="site-frame">
         <div className={mode === 'full' ? 'flex flex-col gap-8 md:gap-12' : 'flex flex-col'}>
           {/* The heading spans the frame above the map. In full mode it is a
-              StarTitle like every section name (#175); WorkBuild times its
+              StarTitle like every section name; WorkBuild times its
               pull on the h2 inside it. */}
           {mode === 'full' ? (
             <div ref={headingRef} data-work-heading className="shrink-0">

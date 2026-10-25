@@ -135,7 +135,7 @@ export default function GraphHoverCard({ project, boundsRef, avoidRef }: Props) 
       }}
     >
       {/* In a short viewport the still gives up height first, so the name and
-          the tagline are never cut (#152): square at most, cropped to fit. */}
+          the tagline are never cut: square at most, cropped to fit. */}
       {dataUrl && (
         <img
           src={dataUrl}

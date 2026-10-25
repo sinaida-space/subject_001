@@ -6,7 +6,7 @@ import { CITY, DOLLY_Z, cityBus, cityOrigin, span, textRects } from '@/lib/city'
 import { DIVE_OVER, FOOTER_MODE, cityShiftZ, footerCamera } from '@/lib/footerMode';
 import { FLIGHT } from '@/lib/flight';
 
-// ── The city's lights (#179) ──
+// ── The city's lights ──
 // When the eyes lower at the end of the page, this is what they find: a
 // plane of soft lights under the last eye height, where the stars poured
 // down: street lights on a grid, some avenues brighter, windows scattered in
@@ -23,7 +23,7 @@ const DEPTH = 90; // how far the plane runs ahead
 
 const REDUCED_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MAX_MASKS = 32;
-// the footer's hovers on the ground (studio#24): NAVIGATE and MORE drive down
+// the footer's hovers on the ground: NAVIGATE and MORE drive down
 // a winding road, CONNECT gathers the lights into clusters
 const DRIVE_SPEED = 7; // world units a second; the ground is wide, so faster than the sky
 const ROAD_K = '0.11'; // how often the road bends, per world unit
@@ -34,7 +34,7 @@ const DIVE_DRIVE_SPEED = 1.6; // from above, a calm glide over the map
 // the dive's patch of lights round the point under the eyes (footerMode.ts)
 const DIVE_OVER_F = DIVE_OVER.toFixed(1);
 const DIVE_HALF_D = '7.0';
-// the lights' way down from the sky and back up (2026-10-24)
+// the lights' way down from the sky and back up
 const RISE_SPAN = '0.22'; // share of the ground's reveal one light takes to land
 const RISE_MIN = '8.0'; // world units above the ground it starts from, at least
 const RISE_VAR = '18.0'; // and up to this much higher
@@ -48,7 +48,7 @@ const vertex = /* glsl */ `
   uniform int uMasks;
   uniform float uSnap;
   uniform float uPx;
-  uniform float uDrive;    // the drive's hold, 0..1 (studio#24)
+  uniform float uDrive;    // the drive's hold, 0..1
   uniform float uDriveZ;   // how far the drive has gone, world units
   uniform float uCluster;  // CONNECT's gathering, 0..1
   uniform vec2 uOrigin;    // the city's centre (x, z), the camera's feet
@@ -61,7 +61,7 @@ const vertex = /* glsl */ `
   void main() {
     vec3 p = position;
     float hazeNow = aLook.w;
-    // the lights are the sky's stars come down (2026-10-24): before its turn
+    // the lights are the sky's stars come down: before its turn
     // a light hangs up in the sky as a small white star and sinks to its
     // place as the ground comes on; scrolled back, it rises again. Each in
     // its own order (aLook.y) and to its own height
@@ -71,7 +71,7 @@ const vertex = /* glsl */ `
     p.y += lift2 * (${RISE_MIN} + ${RISE_VAR} * rnd) * uLift;
     p.x += lift2 * (rnd - 0.5) * 2.0 * uLift;
     // CONNECT: the lights gather into small clusters round a few hubs
-    // (seen from above, many small ones over the whole map, 2026-10-24)
+    // (seen from above, many small ones over the whole map)
     if (uCluster > 0.0) {
       float hubSize = mix(${HUB.toFixed(1)}, ${DIVE_HUB.toFixed(1)}, uDive);
       vec2 hub = (floor((p.xz - uOrigin) / hubSize) + 0.5) * hubSize + uOrigin;
@@ -81,7 +81,7 @@ const vertex = /* glsl */ `
     // each light wrapping back to the far end once it passes under the feet
     // seen from above (dive), the map itself streams toward the bottom of the
     // screen, as if flying low over the city: each light of the patch under
-    // the eyes wraps round inside it, so the map never empties (2026-10-24)
+    // the eyes wraps round inside it, so the map never empties
     float dHere = uOrigin.y - p.z;
     if (uDrive > 0.0 && uDive > 0.0 && abs(dHere - ${DIVE_OVER_F}) <= ${DIVE_HALF_D}) {
       float dz = mod(dHere - (${DIVE_OVER_F} - ${DIVE_HALF_D}) - uDriveZ, 2.0 * ${DIVE_HALF_D}) + ${DIVE_OVER_F} - ${DIVE_HALF_D};
@@ -134,7 +134,7 @@ const fragment = /* glsl */ `
   varying float vAlpha;
   void main() {
     float r = length(gl_PointCoord - 0.5);
-    // round and soft as light; a hard square once snapped to the grid
+    // round and soft as light; a hard square when snapped to the grid
     float a = mix(1.0 - smoothstep(0.15, 0.5, r), 1.0, uSnap) * vAlpha;
     if (a < 0.004) discard;
     gl_FragColor = vec4(vColor, a);
@@ -149,7 +149,7 @@ const rng = (seed: number) => () => {
 
 /** under the flight's end (home) or under the camera's own home (other pages) */
 export default function CityGround({ flight = true }: { flight?: boolean }) {
-  // the footer's alternative moves (footerMode.ts, 2026-10-24) are home only
+  // the footer's alternative moves (footerMode.ts) are home only
   const alt = flight && FOOTER_MODE !== 'current' ? FOOTER_MODE : null;
   const origin = useMemo(() => {
     const o = cityOrigin(flight, { x: -FLIGHT.x, y: -FLIGHT.y, z: FLIGHT.home - FLIGHT.z });
@@ -255,7 +255,7 @@ export default function CityGround({ flight = true }: { flight?: boolean }) {
     // the visitor asked for less motion
     const h = cityBus.hover();
     const dt = Math.min(delta, 0.05);
-    // NAVIGATE glides once and rests; MORE only snaps to the grid (2026-10-24)
+    // NAVIGATE glides once and rests; MORE only snaps to the grid
     const driveTo = !REDUCED_MOTION && cityBus.gliding() ? 1 : 0;
     u.uDrive.value = THREE.MathUtils.damp(u.uDrive.value, driveTo, 5, dt);
     if (u.uDrive.value < 0.01 && !driveTo) u.uDrive.value = 0;

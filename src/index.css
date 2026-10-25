@@ -387,11 +387,9 @@
   & .hero-ltr {
     animation: hero-drift-v5-a 6.2s ease-in-out infinite;
   }
-  /* Which of the four drift paths a letter takes. This used to be
-     :nth-child(4n+2..4), which counted glyphs among their siblings — once
-     .hero-word groups them, that counter restarts at every word and the
-     cycle breaks up. The variant is now stamped on from the letter's index
-     within the whole run (see Letters in HeroSection.tsx), so the pattern
+  /* Which of the four drift paths a letter takes. The variant is
+     stamped on from the letter's index (not :nth-child, which restarts at
+     every .hero-word group) within the whole run (see Letters in HeroSection.tsx), so the pattern
      stays continuous across a line no matter how it is grouped. */
   & .hero-ltr-b {
     animation-name: hero-drift-v5-b;
@@ -415,11 +413,9 @@
 }
 
 @utility hero-ltr-b {
-  /* Which of the four drift paths a letter takes. This used to be
-     :nth-child(4n+2..4), which counted glyphs among their siblings — once
-     .hero-word groups them, that counter restarts at every word and the
-     cycle breaks up. The variant is now stamped on from the letter's index
-     within the whole run (see Letters in HeroSection.tsx), so the pattern
+  /* Which of the four drift paths a letter takes. The variant is
+     stamped on from the letter's index (not :nth-child, which restarts at
+     every .hero-word group) within the whole run (see Letters in HeroSection.tsx), so the pattern
      stays continuous across a line no matter how it is grouped. */
   .hero-glow-active & {
     animation-name: hero-drift-v5-b;
@@ -678,9 +674,8 @@
 }
 
 @utility notice-surface {
-  /* Cookie notice surface. The bar previously used a flat --card fill, which
-     sat at almost the same value as the page and read as part of the layout.
-     Now it's a translucent pane over a blurred backdrop, lit from its top edge
+  /* Cookie notice surface. A flat --card fill would sit at almost the same
+     value as the page and read as part of the layout, so it is a translucent pane over a blurred backdrop, lit from its top edge
      so it reads as a separate plane floating above the page. Static: the glow
      is a gradient, never an animation. */
   position: relative;
@@ -883,7 +878,7 @@
 }
 
 @utility star-field {
-  /* #141: the live field fades in once over the still sky, which fades out */
+  /* the live field fades in once over the still sky, which fades out */
   transition: opacity 1.2s ease-out;
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -901,7 +896,7 @@
 }
 
 @utility project-name {
-  /* every project is named in capitals; the source keeps the real title (#160) */
+  /* every project is named in capitals; the source keeps the real title */
   text-transform: uppercase;
 }
 
@@ -1151,7 +1146,7 @@
       auto !important;
   }
 
-  /* Easter egg hint (studio#106): over anything that hides a find, the arrow
+  /* Easter egg hint: over anything that hides a find, the arrow
      gains a faint grey halo, there for those who look. Static image, swapped by the browser on hover, so it
      answers the visitor's own movement and nothing animates on its own. */
   body.has-custom-cursor [data-egg]:hover,
@@ -1616,8 +1611,8 @@
     );
   }
 
-  /* MoleculeBreak / StarMolecule: the same slow 4s breath the old section
-   node had, on the whole molecule. Opacity only, compositor-cheap. */
+  /* MoleculeBreak / StarMolecule: the same slow 4s breath as a section
+   node, on the whole molecule. Opacity only, compositor-cheap. */
   @keyframes molecule-breath {
     0%,
     100% {
@@ -1636,7 +1631,7 @@
       opacity: 0.8;
     }
   }
-  /* on Chalk the molecules rest as texture, well under the ink (#154) */
+  /* on Chalk the molecules rest as texture, well under the ink */
   html[data-mode='lite'] .molecule-breath {
     animation: none;
     opacity: 0.5;
@@ -1705,7 +1700,7 @@
   }
 }
 
-/* The footer resolving out of dither (#179, src/lib/ditherMask.ts): red while
+/* The footer resolving out of dither (src/lib/ditherMask.ts): red while
    it forms; a piece that holds focus shows whole. */
 .dither-forming,
 .dither-forming * {
@@ -1716,7 +1711,7 @@
   mask-image: none !important;
 }
 
-/* ── Subpage scroll motion (#198) ──
+/* ── Subpage scroll motion ──
    --p is the element's scroll progress, written by src/lib/scrollProgress.ts
    only while the page scrolls. Unset (lite mode, no JS) means the end state. */
 

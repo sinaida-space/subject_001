@@ -1,17 +1,10 @@
 // ── Per-route JSON-LD and <noscript> fallback ──
 //
-// Two problems this fixes, both introduced by materializing routes as copies
-// of dist/index.html:
-//
-//   1. Every route shipped the homepage's <noscript> body, so a crawler that
-//      does not execute JS read "Sinaida Krivchenko | New media artist" plus
-//      the homepage service list on /work/redkie-ptitsy/ and saw nothing of
-//      the case study.
-//   2. Every route shipped the homepage's structured data, which included a
-//      CreativeWork block for The Eyes Chico. /work/redkie-ptitsy/ therefore
-//      declared itself to be a different work. That is worse than no markup.
-//
-// Both are now generated per route from the same model in ./site-data.mjs.
+// Each route gets its own <noscript> body and its own structured data, so a
+// crawler that does not execute JS reads a description of the page it is on
+// (the case study, not the homepage), and a work's JSON-LD never declares
+// itself to be a different work. Both are generated per route from the same
+// model in ./site-data.mjs.
 //
 // The markup is emitted as ONE @graph rather than several loose blocks, with
 // every node carrying an @id and referring to the others by @id. A consumer
@@ -169,7 +162,7 @@ function worksListNode(route) {
   };
 }
 
-/** A practice page's works (studio#70), so a consumer can enumerate them from the page alone. */
+/** A practice page's works, so a consumer can enumerate them from the page alone. */
 function practiceListNode(route) {
   return {
     '@type': 'ItemList',

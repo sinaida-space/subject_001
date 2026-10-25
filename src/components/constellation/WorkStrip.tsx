@@ -9,7 +9,7 @@ import DitherReveal from '@/components/DitherReveal';
 // Body of Work as a horizontal strip of square cards, one per project.
 // Every still is red dither; its colour shows under a hovering mouse and
 // while its card holds keyboard focus. In every mode the strip pins and the
-// vertical wheel or swipe carries it sideways, never a scrollbar (#175):
+// vertical wheel or swipe carries it sideways, never a scrollbar:
 // the first project starts on the frame's left gutter, the next ones come in
 // from the right, and the strip lets go once the last one reaches the centre.
 // The row bleeds to the viewport edges.
@@ -52,7 +52,7 @@ function Column({ project, onFocusColumn }: ColumnProps) {
         ref={btnRef}
         type="button"
         onClick={() => {
-          // opens the card exactly as the old index row did
+          // opens the card, like any other entry point
           const r = btnRef.current?.getBoundingClientRect();
           constellationBus.focusWork(project.id, false, r && { left: r.left, top: r.top, width: r.width, height: r.height, el: btnRef.current ?? undefined });
         }}

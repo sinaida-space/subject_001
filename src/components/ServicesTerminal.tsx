@@ -36,7 +36,7 @@ function ServiceScreen({ service, flip, fit }: { service: Service; flip: boolean
         </p>
       </div>
       <div className={flip ? 'md:col-span-5 md:col-start-1 md:row-start-1' : 'md:col-span-5 md:col-start-8'}>
-        {/* The still opens the case too (#187). The caption's link stays the one
+        {/* The still opens the case too. The caption's link stays the one
             named link for keyboards and screen readers. */}
         {project?.image && (
           <Link to={`/work/${service.caption.project}`} tabIndex={-1} aria-hidden="true" className="block">

@@ -12,7 +12,7 @@ type Item = { label: string; to?: string; href?: string; download?: boolean; tog
 
 // The three link columns, bottom-aligned so they step up like a skyline.
 // Navigate follows the page's own order.
-// hover: what the column does to the sky in full mode (#179, cityBus)
+// hover: what the column does to the sky in full mode (cityBus)
 const COLUMNS: { label: string; items: Item[]; hover?: CityHover }[] = [
   {
     label: 'Navigate',
@@ -115,7 +115,7 @@ const BottomBar = () => (
   </div>
 );
 
-// the footer's hovers (#179): pointer or keyboard focus sets them, leaving
+// the footer's hovers: pointer or keyboard focus sets them, leaving
 // clears them; in lite nothing listens
 const hoverOn = (h: CityHover) =>
   h
@@ -134,7 +134,7 @@ const toTop = (e: React.MouseEvent) => {
   }
 };
 
-// One footer on every page, in both modes (#179). On the home page in full
+// One footer on every page, in both modes. On the home page in full
 // mode it is also the last screen of the flight: tall screens hold it still
 // for CITY.runway screens while the camera dollies out of Contact and lowers
 // its eyes, and it publishes that progress to the star field and Contact.
@@ -225,13 +225,15 @@ export default function Footer() {
     <footer
       ref={rootRef}
       data-city={flight ? '' : undefined}
-      className="relative z-10"
+      // held: the footer box is taller than the screen and sits above Contact,
+      // so it lets clicks through too; only its frame and the snake take them
+      className={held ? 'pointer-events-none relative z-10' : 'relative z-10'}
       style={held ? { height: `calc(100svh + ${CITY.runway * 100}svh)` } : undefined}
     >
-      {snakeOpen && <SnakeEasterEgg onClose={() => setSnakeOpen(false)} />}
+      {snakeOpen && <div className="pointer-events-auto"><SnakeEasterEgg onClose={() => setSnakeOpen(false)} /></div>}
       {/* held: the screen lets clicks through to Contact, receded above it.
           Not held, md+ keeps the top tight so the page's last screen shows
-          LET'S TALK clear of the header (#189). */}
+          LET'S TALK clear of the header. */}
       <div className={held ? 'pointer-events-none sticky top-0 flex h-svh flex-col justify-end overflow-hidden pb-8' : 'pb-8 pt-24 md:pt-8'}>
         <div className="site-frame pointer-events-auto">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-end lg:gap-8">

@@ -4,8 +4,8 @@ import { cityBus } from '@/lib/city';
 
 // ── Star title ──
 // A section name as a giant word of sparse galaxy stars, held in the middle
-// of the screen while its section is on stage (#175), on its own slow layer
-// (studio#23, TITLE_Y below). As the section comes in, the word condenses out of the fog star by star (near
+// of the screen while its section is on stage, on its own slow layer
+// (TITLE_Y below). As the section comes in, the word condenses out of the fog star by star (near
 // stars first, a little soft and large, settling to their size), holds while
 // the section passes under it, and thins back into the fog as the section
 // leaves. Its opacity is where you are on the page. A pure function of
@@ -27,13 +27,13 @@ const OVERLAP = 0.3; // share of the word height the following content rides ove
 const PARALLAX = 0.7; // lite titles: the label lags the content by this share of the scroll
 const BRIGHT = 0.5; // of galaxy's bright stars, the share kept here (4% → 2%)
 const PAD = 6; // css px of canvas around the word, for the jitter and the halos
-// the title layer (studio#23): the word rides its own layer, slower than the
+// the title layer: the word rides its own layer, slower than the
 // body. Over its section's pass it climbs from TITLE_Y svh below the middle
 // to TITLE_Y above (about a fifth of the body's speed on a tall section) and
 // drifts TITLE_X css px left to right
 const TITLE_Y = 0.16;
 const TITLE_X = 28;
-// the pour's trails (studio#24): a falling star is a dot that leaves a wake.
+// the pour's trails: a falling star is a dot that leaves a wake.
 // The wake is drawn, never accumulated: every frame starts clean and each
 // falling star gets TRAIL_N fainter dots behind it along its own path. The
 // wake's length shrinks on the clock, exp(-dt / TRAIL_TAU) after the last
@@ -141,7 +141,7 @@ interface Flyer {
   delay: number; // share of the presence it waits before it condenses
   size: number; depth: number;
   color: string; bright: boolean; keep: boolean;
-  // the pour (#179): when it leaves its fall, where it lands (0 the horizon,
+  // the pour: when it leaves its fall, where it lands (0 the horizon,
   // 1 the bottom of the screen) and how far it drifts sideways
   fall: number; landY: number; drift: number;
 }
@@ -155,7 +155,7 @@ interface StarTitleProps {
   until?: number;
   /** instead of thinning away as its section leaves, the word pours down
    * out of itself: its stars fall below the horizon and become the city's
-   * lights (Contact into the footer, #179) */
+   * lights (Contact into the footer) */
   pour?: boolean;
 }
 
@@ -197,8 +197,8 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
     let raf = 0;
     let dead = false;
 
-    // fixed in the middle of the screen, both ways (#179); the word plus a pad.
-    // Phones keep every header on the frame's one left axis (#189).
+    // fixed in the middle of the screen, both ways; the word plus a pad.
+    // Phones keep every header on the frame's one left axis.
     const place = () => {
       const cvW = wordW + 2 * PAD, cvH = boxH + 2 * PAD;
       cvTop = Math.round((svh() - cvH) / 2);
@@ -245,7 +245,7 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
           keep: galaxyKeep(s.rnd) === 1,
           fall: 0.45 * fract(s.rnd * 5.17),
           landY: Math.pow(fract(s.rnd * 3.71), 1.6), // most land far, near the horizon
-          // direction law (studio#23): scrolling down moves things left to right
+          // direction law: scrolling down moves things left to right
           drift: 0.6 * fract(s.rnd * 7.93),
         };
       });
@@ -317,12 +317,12 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
       // screen, as what follows arrives
       const q = pour ? Math.round(clamp01((vh - r.bottom) / (POUR_SPAN * vh)) * 400) / 400 : 0;
       if (pour) cityBus.setPour(q);
-      // the title layer (studio#23): progress through the section's pass;
+      // the title layer: progress through the section's pass;
       // a pouring word holds its place once the pour begins, so its ground
       // stays where the city's is
       const pass = clamp01((vh - (pour ? Math.max(r.top, vh - r.height) : r.top)) / (r.height + vh));
       layerY = Math.round(TITLE_Y * svh() * (1 - 2 * pass));
-      // direction law (studio#23): scrolling down moves things left to right
+      // direction law: scrolling down moves things left to right
       layerX = NARROW?.matches ? 0 : Math.round(TITLE_X * (2 * pass - 1));
       const layer = `translate3d(${layerX}px, ${layerY}px, 0)`;
       if (layer !== lastLayer) {
@@ -333,7 +333,7 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
       // trails while it pours (reduced motion: the dots alone). A wake that
       // is still glowing when the pour stops (back to the whole word, or all
       // landed) is never wiped in one frame: it dissolves on its clock, and
-      // the canvas hides only after it has (no blink, studio#24). One loop,
+      // the canvas hides only after it has (no blink). One loop,
       // one draw a frame: while a wake lives this frame schedules itself
       const now = performance.now();
       const on = p > 0 && q < 1;
@@ -401,7 +401,7 @@ export default function StarTitle({ text, as = 'h2', caption, className, pour = 
 
 // ── Lite title ──
 // The plain section header of lite mode, on the frame's left axis like the
-// body text (#175). From md up a 1px rule runs from the label to the frame's
+// body text. From md up a 1px rule runs from the label to the frame's
 // right edge, growing 0 → full as the header scrolls from 100vh to 60vh.
 // The label is a slower layer while it comes in: it moves at 0.3 of the
 // scroll speed until the header reaches its reading place (a quarter down the
@@ -418,7 +418,7 @@ export function LiteTitle({ text, caption, className, titleStyle }: { text: stri
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // set here, not in the markup: the build-time Statement render (studio#27)
+    // set here, not in the markup: the build-time Statement render
     // cannot know the visitor's motion setting
     if (REDUCED) {
       el.style.setProperty('--title-rule', '1');

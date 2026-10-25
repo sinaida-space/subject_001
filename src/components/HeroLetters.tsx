@@ -113,7 +113,7 @@ export default function HeroLetters() {
   // rectangle. Its widest line spans exactly margin to margin, so the name and
   // the tagline frame the screen on the same two edges, up to HERO_CAP: the
   // size the desktop clamp() gives at 1024 px. So the type never grows as the
-  // window narrows (studio#112, old #188); phones keep the edge-to-edge fit,
+  // window narrows; phones keep the edge-to-edge fit,
   // tablets sit on the cap. Desktop keeps the shared clamp() size.
   // Then the project dither is cut at each word's own rendered size.
   useEffect(() => {
@@ -366,7 +366,7 @@ export default function HeroLetters() {
           caption={
             <p className="m-0 flex items-baseline justify-between gap-4 font-display uppercase tracking-[0.06em] text-[14px]">
               <span className="text-foreground">{preview.project.title}</span>
-              <span className="text-primary">{KIND[preview.project.kind]}</span>
+              <span className="text-primary-legible">{KIND[preview.project.kind]}</span>
             </p>
           }
         />

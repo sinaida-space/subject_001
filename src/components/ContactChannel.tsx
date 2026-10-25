@@ -8,7 +8,7 @@ import { landPreview, registerLand } from '@/lib/navLand';
 
 const NB = ' ';
 
-// ── The dolly out of Contact (#179) ──
+// ── The dolly out of Contact ──
 // When the footer holds the last screen, the Contact block (the question,
 // LET'S TALK, the two ways in) stops under the header as it comes up, then
 // sinks back into the top left while the camera backs away: the words recede
@@ -111,11 +111,11 @@ export default function ContactChannel({ question: lead = `Got an idea that shou
         {full ? (
           <>
             <StarTitle text="Contact" pour />
-            {/* the block the dolly carries (#179); the question is the title's caption */}
+            {/* the block the dolly carries; the question is the title's caption */}
             <div ref={blockRef}>
               <div ref={questionRef} data-ground-mask className="w-fit">{question}</div>
               <div data-ground-mask className="w-fit">
-                {/* laced with star points that glint while the page scrolls (#179) */}
+                {/* laced with star points that glint while the page scrolls */}
                 <GlitterText>{headline}</GlitterText>
               </div>
               {/* 12 px of air round the links (offset by negative margins): Safari clips a

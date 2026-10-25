@@ -1,7 +1,5 @@
 // ── 4D tesseract geometry and projection ──
-// Ported from the July tesseract hero (archive/WIP_JULY_tesseract-hero,
-// src/components/Tesseract.tsx), without its idle rotation, pointer tilt and
-// flatten morph. Pure math: no DOM, no state.
+// Pure math: no DOM, no state.
 
 export type Vec4 = [number, number, number, number];
 

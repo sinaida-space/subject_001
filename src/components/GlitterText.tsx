@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 
-// ── Glitter on a word (#179) ──
+// ── Glitter on a word ──
 // LET'S TALK laced with star points, in the memory of her first MySpace
 // pages, kept neat: a sparse scatter of points on the word's own ink, each a
 // tiny four-point star that glints only while the page scrolls. Which ones

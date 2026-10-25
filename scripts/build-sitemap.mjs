@@ -1,11 +1,10 @@
 // ── dist/sitemap.xml, with lastmod derived from git ──
 //
-// This replaces a hand-maintained public/sitemap.xml whose dates drifted the
-// moment anyone forgot to touch them: it still claimed 2026-07-24 for pages
-// edited a week later. A stale lastmod is worse than none, because it tells a
-// crawler not to bother re-reading a page that actually changed.
+// Each lastmod comes from git, so it never drifts from the real edit date: a
+// stale lastmod is worse than none, because it tells a crawler not to bother
+// re-reading a page that actually changed.
 //
-// lastmod now comes from `git log` over the files that produce each route
+// lastmod comes from `git log` over the files that produce each route
 // (declared as `sources` in scripts/lib/site-data.mjs). That is a proxy, not a
 // per-paragraph diff — the three case pages share src/data/projects.ts, so
 // editing one bumps all three. It errs toward "recently touched", which costs

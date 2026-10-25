@@ -16,7 +16,7 @@
 //    bundle. React's createRoot replaces it on mount.
 //
 // 3. dist/404.html is written here, from the homepage before the hero goes
-//    in, which is why the deploy workflow no longer copies index.html.
+//    in.
 //
 // 4. Every case page gets its full static render (renderCase), for the
 //    same reason: the hero still paints before the app bundle runs. There
@@ -37,7 +37,7 @@ import { pathToFileURL } from 'node:url';
 const DIST = 'dist';
 const SHELL_DIR = 'dist-shell';
 
-const { renderShell, renderCase, caseIds, renderPractice, practiceIds, renderCollaborate, renderStatement, renderMachines, resolveRenderMode } = await import(
+const { renderShell, renderCase, caseIds, renderPractice, practiceIds, renderCollaborate, renderStatement, renderMachines, renderPrivacy, renderLicensing, resolveRenderMode } = await import(
   pathToFileURL(join(SHELL_DIR, 'entry-shell.js')).href
 );
 
@@ -91,14 +91,14 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
     html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderShell()}</div>`, 'empty #root', file);
   }
 
-  // 4. Case pages get their full static render (studio#16).
+  // 4. Case pages get their full static render.
   const caseId = caseIds.find((id) => file === join(DIST, 'work', id, 'index.html'));
   if (caseId) {
     html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderCase(caseId)}</div>`, 'empty #root', file);
     cases++;
   }
 
-  // 4b. Practice pages and Collaborate, the same way (studio#86).
+  // 4b. Practice pages and Collaborate, the same way.
   const practiceId = practiceIds.find((id) => file === join(DIST, 'practice', id, 'index.html'));
   const practiceIndex = file === join(DIST, 'practice', 'index.html');
   if (practiceId || practiceIndex) {
@@ -110,7 +110,7 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
     cases++;
   }
 
-  // 5. Statement: one render per mode (studio#27).
+  // 5. Statement: one render per mode.
   if (file === join(DIST, 'statement', 'index.html')) {
     const both = `<div id="root">${renderStatement('full')}</div><template id="root-lite">${renderStatement('lite')}</template><script>${pickJs}</script>`;
     html = mustReplace(html, '<div id="root"></div>', both, 'empty #root', file);
@@ -120,6 +120,16 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
   // 6. For machines: plain text for agents, replaced by the app on load.
   if (file === join(DIST, 'machines', 'index.html')) {
     html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderMachines()}</div>`, 'empty #root', file);
+  }
+
+  // 7. Privacy: the written-out contact address, for readers without JavaScript.
+  if (file === join(DIST, 'privacy', 'index.html')) {
+    html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderPrivacy()}</div>`, 'empty #root', file);
+  }
+
+  // 8. Licensing: the terms as text, for readers without JavaScript.
+  if (file === join(DIST, 'licensing', 'index.html')) {
+    html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderLicensing()}</div>`, 'empty #root', file);
   }
 
   writeFileSync(file, html);

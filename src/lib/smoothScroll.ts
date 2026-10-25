@@ -1,7 +1,7 @@
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
-// ── Smooth scroll (2026-10-24) ──
+// ── Smooth scroll ──
 // Wheel and trackpad scrolling eased on the main thread, in the same frame
 // every scroll-driven effect reads it. Without it Safari scrolls on its
 // compositor first and the effects (the Contact dolly, the title layer, the
@@ -21,7 +21,7 @@ export function startSmoothScroll(): void {
   if (!fine || still || off) return;
   lenis = new Lenis({
     autoRaf: true,
-    lerp: 0.075, // softer than the default 0.1 (2026-10-24)
+    lerp: 0.075, // softer than the default 0.1
     wheelMultiplier: 1,
     // modals with their own scroll (project details) scroll natively
     allowNestedScroll: true,

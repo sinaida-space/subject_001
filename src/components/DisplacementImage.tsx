@@ -84,7 +84,7 @@ export default function DisplacementImage({
   // away from the cursor. Rendered once as a data URI.
   const bumpHref = useBumpDataUri(radius);
 
-  // A hydrated case page (studio#16) adopts an <img> that may have finished
+  // A hydrated case page adopts an <img> that may have finished
   // loading before React attached onLoad, so that event never reaches it.
   useEffect(() => {
     const img = baseRef.current;

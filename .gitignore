@@ -26,10 +26,10 @@ dist-ssr
 # Local design/source assets — not deployed
 website_sources/
 
-# Agent worktree sandboxes — never part of the tracked tree
+# Local worktrees — never part of the tracked tree
 .claude/worktrees/
 
-# Local agent tooling — not part of the site
+# Local tooling — not part of the site
 .agents/
 .claude/launch.json
 private/

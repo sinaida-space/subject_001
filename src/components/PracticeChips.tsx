@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { DEFAULT_ROLE, type Project } from '@/data/projects';
 import { practiceById, practicePath, type PracticeId } from '@/data/practices';
 
-// Practice tags (studio#70): every chip is a link to the page of works in
+// Practice tags: every chip is a link to the page of works in
 // that practice. Grey at rest, the one red on hover and focus.
 const CHIP_CLASS =
   'inline-block border border-border px-[10px] py-[3px] font-mono text-[16px] uppercase tracking-[0.15em] text-foreground/60 transition-colors hover:border-primary hover:text-primary-legible focus-visible:border-primary focus-visible:text-primary-legible';

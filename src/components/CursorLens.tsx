@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Effect, EffectAttribute } from 'postprocessing';
 import * as THREE from 'three';
 
-// ── Cursor lens (#194) ──
+// ── Cursor lens ──
 // The red arrow stays; the hand bends the sky behind the page. A lens around
 // the pointer grows with its speed through an under-damped spring (one
 // overshoot when the hand stops, then flat), stars crossing the lens edge flare

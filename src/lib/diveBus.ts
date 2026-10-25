@@ -1,4 +1,4 @@
-// ── Case dives (#119): tiny bus between the things that start a dive
+// ── Case dives: tiny bus between the things that start a dive
 // (a constellation node, the DEPTH mark, a thread) and the DiveHost that
 // plays it. Callers ask `diveBus.dive(req)`; a false return means no dive
 // will run (lite mode, no host mounted), so the caller navigates plainly.

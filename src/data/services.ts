@@ -1,7 +1,7 @@
 // ── Single source of truth for service copy, consumed by ServicesTerminal
 // (homepage) and Collaborate (/collaborate). Edit once, both surfaces update. ──
 //
-// Rule for this file (audit 2026-08-02, F-001): every `record` line states only
+// Rule for this file: every `record` line states only
 // what actually happened, in the same words the case study uses. "Prototyped"
 // never becomes "installed".
 //

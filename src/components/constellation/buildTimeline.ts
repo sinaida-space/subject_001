@@ -1,6 +1,6 @@
 import type { Category } from '@/data/graph';
 
-// The order the map builds itself in (#121), as windows of build progress u
+// The order the map builds itself in, as windows of build progress u
 // (0..1, from workBuildBus). One impulse is handed on star to star: it jumps
 // into each constellation, sound → space → code → body, and grows that
 // figure's strokes in the order its tree was built. Then the skill names

@@ -1,4 +1,4 @@
-// Every project is named in capitals on the site (#160). The source keeps the
+// Every project is named in capitals on the site. The source keeps the
 // real title, so screen readers and search read the proper name; the caps
 // come from CSS (.project-name in index.css). This wraps the names found in a
 // run of prose.

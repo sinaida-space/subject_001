@@ -49,7 +49,7 @@ const SiteLight = () => {
 // the previous page was at. Only fires on pathname change, not on in-page
 // hash navigation (Index handles its own #section scrolling).
 // Coming back home from a case (browser Back, or the case's own Back link)
-// returns to the spot the case was opened from (#187); see lib/homeScroll.
+// returns to the spot the case was opened from; see lib/homeScroll.
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   const navType = useNavigationType();
@@ -59,7 +59,7 @@ const ScrollToTop = () => {
     const back = takeHomeReturn() || navType === "POP";
     if (pathname === "/" && back && restoreHomeScroll()) return;
     // instant: html has scroll-behavior: smooth, which would otherwise glide
-    // the new page up from the old offset (the 'opens mid-page' bug)
+    // the new page up from the old offset
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only a route change resets
   }, [pathname]);
@@ -84,6 +84,8 @@ export interface HydratedPages {
   machines?: ComponentType;
   practice?: ComponentType;
   collaborate?: ComponentType;
+  privacy?: ComponentType;
+  licensing?: ComponentType;
 }
 
 // Everything inside the router. Shared with the build-time renders
@@ -95,6 +97,8 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
   const MachinesPage = pages.machines ?? Machines;
   const PracticePage = pages.practice ?? Practice;
   const CollaboratePage = pages.collaborate ?? Collaborate;
+  const PrivacyPage = pages.privacy ?? PrivacyPolicy;
+  const LicensingPage = pages.licensing ?? Licensing;
   return (
   <>
     <a
@@ -106,15 +110,15 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
     <ScrollToTop />
     <RouteEnhancer />
     <DiveHost />
-    {/* site-wide, every route: the red arrow in both modes, on Void and on Chalk (#175) */}
+    {/* site-wide, every route: the red arrow in both modes, on Void and on Chalk */}
     <CustomCursor />
     <SiteLight />
     <WebMcpTools />
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/licensing" element={<Licensing />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/licensing" element={<LicensingPage />} />
         <Route path="/license" element={<Navigate to="/licensing" replace />} />
         <Route path="/collaborate" element={<CollaboratePage />} />
         <Route path="/statement" element={<StatementPage />} />
@@ -125,7 +129,7 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
         <Route path="/work/:slug" element={<Work />} />
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/practice/:slug" element={<PracticePage />} />
-        {/* internal reference (#26): unlinked, noindex */}
+        {/* internal reference: unlinked, noindex */}
         <Route path="/drafts/effects" element={<EffectsOverview />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

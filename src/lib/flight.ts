@@ -1,4 +1,4 @@
-// ── The home page's flight (#175) ──
+// ── The home page's flight ──
 // Scroll is the only input; the site answers by moving through space. The
 // page from the top of the hero to the footer is one progress p, 0..1. The
 // camera glides left, sinks and dives along one bending path (below), in
@@ -19,11 +19,11 @@ const SURGE_SHARE = 0.6;
 
 /** world units the camera travels over the flight: it glides left `x`, sinks
  * `y` and dives `z` from its home at z = `home` */
-// z 9 → 40 (2026-10-24): a real way through the field, the stars pass by
+// z 9 → 40: a real way through the field, the stars pass by
 // instead of drifting; the field repeats, so it never runs out
 export const FLIGHT = { x: 6, y: 1.6, z: 40, home: 7 };
 
-// the held footer (#179) takes over where it comes in: the flight ends as its
+// the held footer takes over where it comes in: the flight ends as its
 // top reaches the bottom of the screen
 let cityFooter: HTMLElement | null = null;
 
@@ -37,7 +37,7 @@ export function pageProgress(): number {
   return max > 0 ? clamp01(window.scrollY / max) : 0;
 }
 
-// ── The bending path (#179) ──
+// ── The bending path ──
 // Space bends: the flight is one centripetal Catmull–Rom curve through a
 // waypoint per chapter, slaloming left/right and up/down around the straight
 // diagonal from home to the footer. The camera looks along the curve's bends
@@ -55,7 +55,7 @@ const HOME: V3 = [0, 0, FLIGHT.home];
 const END: V3 = [-FLIGHT.x, -FLIGHT.y, FLIGHT.home - FLIGHT.z];
 /** the swing off the diagonal at each waypoint, world units (x, y);
  * hero → quote → About → Work → Services → Contact */
-// doubled and a little more (2026-10-24), so the bends read as turns
+// doubled and a little more, so the bends read as turns
 export const SWING: [number, number][] = [
   [0, 0],
   [2, 1],

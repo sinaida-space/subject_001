@@ -1,4 +1,4 @@
-// ── Resolving out of dither, by CSS mask (#179) ──
+// ── Resolving out of dither, by CSS mask ──
 // The footer's pieces (logo, columns, the bottom line) come through a 4x4
 // Bayer mask of 2 css px cells, the site's one dither grain. Level k of 16
 // opens the cells whose threshold is under k: 0 shows nothing, 16 drops the

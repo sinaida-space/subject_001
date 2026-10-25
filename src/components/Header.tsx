@@ -100,7 +100,7 @@ export default function Header() {
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 bg-background" style={{ height: 'env(safe-area-inset-top)' }} />
         {/* No glass panel or border: once scrolled, the page's own background
             colour fades down under the header so content slides beneath it.
-            The underlay is --card, a few tones above the void (#193, her pick).
+            The underlay is --card, a few tones above the void.
             The opacity flip is a one-off response to scroll, not a loop. */}
         <div
           aria-hidden="true"

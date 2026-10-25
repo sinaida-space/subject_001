@@ -1,13 +1,11 @@
 // ── Static per-route <head> and crawler fallback for GitHub Pages ──
 //
-// This is a Vite/React SPA. GitHub Pages can only serve static files, so the
-// deploy workflow used to materialize every route by copying dist/index.html
-// verbatim into dist/<route>/index.html. That means every route shipped the
-// homepage's <title>, description, canonical, og:*/twitter:* tags, structured
-// data and <noscript> body — search engines saw every case study as a
-// duplicate of "/", social crawlers rendered the homepage card for any shared
-// deep link, and every work page's JSON-LD claimed to describe a different
-// work than the one on the page.
+// This is a Vite/React SPA. GitHub Pages can only serve static files, so every
+// route is materialized as dist/<route>/index.html with its own <title>,
+// description, canonical, og:*/twitter:* tags, structured data and <noscript>
+// body. Search engines see each case study as its own page, social crawlers
+// render the right card for any shared deep link, and every work page's JSON-LD
+// describes the work on the page.
 //
 // This script runs after `vite build` (and after scripts/inject-seo.mjs, so it
 // reads the already-cleaned template). For every known route it clones

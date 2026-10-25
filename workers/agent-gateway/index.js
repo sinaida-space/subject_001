@@ -13,6 +13,14 @@
 //   2. GET  /  (Accept: text/markdown) — markdown rendition of the homepage.
 //   3. GET  /  (any Accept)  — adds a Link header pointing agents at the
 //                              MCP server card and the llms.txt summary.
+//   4. Every response passed through — year-long cache on hashed assets,
+//                              frame-ancestors, origin ids stripped (harden).
+//                              /assets/* normally skips this Worker: a route
+//                              with no Worker and two zone rules (Cache Rule,
+//                              response header Transform Rule) do the same
+//                              there, so page assets never count as Worker
+//                              requests. The /assets/ branch stays as the
+//                              fallback if that route is removed.
 //
 // Tool/markdown data is read live from https://sinaida.eu/agent-data.json
 // and /llms.txt, both already deployed with the site, so this Worker has no
@@ -54,6 +62,26 @@ const API_CATALOG = {
   ],
 };
 
+// Headers GitHub Pages can't set. Vite names every file in /assets/ after a
+// hash of its content, so a changed file always gets a new URL and the old one
+// can be cached for a year. frame-ancestors only works as a real header, never
+// in the <meta> CSP. The origin's own request ids say nothing a visitor needs.
+const IMMUTABLE = 'public, max-age=31536000, immutable';
+const ORIGIN_HEADERS = ['x-github-request-id', 'x-github-edge-region', 'x-fastly-request-id', 'x-served-by', 'x-timer', 'x-proxy-cache', 'x-cache', 'x-cache-hits', 'via'];
+
+function harden(originResponse, url) {
+  const response = new Response(originResponse.body, originResponse);
+  for (const name of ORIGIN_HEADERS) response.headers.delete(name);
+  if (response.ok && url.pathname.startsWith('/assets/')) {
+    response.headers.set('cache-control', IMMUTABLE);
+    response.headers.delete('expires');
+  }
+  if ((response.headers.get('content-type') || '').startsWith('text/html')) {
+    response.headers.append('content-security-policy', "frame-ancestors 'none'");
+  }
+  return response;
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -90,13 +118,12 @@ export default {
         if (md) return md;
       }
 
-      const originResponse = await fetch(request);
-      const response = new Response(originResponse.body, originResponse);
+      const response = harden(await fetch(request), url);
       response.headers.append('Link', LINK_HEADER);
       return response;
     }
 
-    return fetch(request);
+    return harden(await fetch(request), url);
   },
 };
 

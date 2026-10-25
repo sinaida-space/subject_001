@@ -119,7 +119,7 @@ void main() {
   if (kind < 0.5) {
     // About: dust rides the gust in from the lower left until its letter
     // scrolls in, then pours down into the letter (a curve, no turning back)
-    // (direction law, studio#23: scrolling down moves things left to right)
+    // (direction law: scrolling down moves things left to right)
     vec2 dst = aC - vec2(0.0, uSy);
     vec2 a = aA - WIND_DIR * max(0.0, aT.y - uSy) * ${WIND};
     float t = smoothstep(aT.y, aT.y + ${FALL}.0, uSy);
@@ -131,7 +131,7 @@ void main() {
     alpha = smoothstep(uGather.x, uGather.x + 80.0, uSy) * (1.0 - step(aK.y, uSy));
   } else if (kind < 1.5) {
     // hero: locks, then the wind takes it off to the right
-    // (direction law, studio#23: scrolling down moves things left to right)
+    // (direction law: scrolling down moves things left to right)
     float t = clamp((uSy - aT.x) / ${HERO_BLOW}.0, 0.0, 1.0);
     float e = t * t;
     pos = aA + vec2(e * (uView.x * 1.15 + rnd * 300.0), sin(t * PI) * (rnd - 0.5) * 90.0 - e * 50.0 * (fract(rnd * 13.1) - 0.3));
@@ -158,7 +158,7 @@ void main() {
   } else {
     // the belief: blows in from the left line by line, sets, then the gust
     // lifts it off along an arc, up and to the right, out of the screen
-    // (direction law, studio#23: scrolling down moves things left to right)
+    // (direction law: scrolling down moves things left to right)
     float t1 = clamp((uSy - aT.x) / aK.z, 0.0, 1.0);
     float e1 = 1.0 - pow(1.0 - t1, 3.0);
     vec2 a = mix(aA, aB, e1);
@@ -425,7 +425,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       // About: each letter takes a grain of the gust's dust as it scrolls in;
       // the grain waits on the wind's path, lower left of its letter
       g.done = new Array(g.blocks.length).fill(-1);
-      // Portrait first, then the words (studio#22): no letter pours before the
+      // Portrait first, then the words: no letter pours before the
       // square has docked, and the lower ones follow it down the page, so the
       // About reads as a process: the face forms, then the text writes itself.
       const aboutTop = aboutCells.reduce((m, c) => Math.min(m, c.y), Infinity);
@@ -607,7 +607,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       if (sy <= S0 || sy >= g.end) {
         clearDom();
         // before the first wheel tick the belief's track already overlaps the
-        // hero (#174): it stays hidden until the gust brings it (#175)
+        // hero: it stays hidden until the gust brings it
         if (sy <= S0) put(quote, 'opacity', '0');
         if (sy >= g.end) {
           // past the gate: what became dust stays gone while it is still on screen
@@ -721,7 +721,7 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       clearDom(true);
       if (photoImg) photoImg.style.opacity = '';
       portrait?.destroy();
-      // no loseContext(): on macOS Chrome it blanks the window for a frame (#119)
+      // no loseContext(): on macOS Chrome it blanks the window for a frame
       gl.deleteBuffer(buf);
       gl.deleteVertexArray(vao);
       gl.deleteProgram(prog);

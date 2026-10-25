@@ -4,6 +4,8 @@
  * preventing the plain address from appearing in initial HTML or accessibility trees.
  */
 
+import { contactAddress } from '@/lib/contactAddress';
+
 interface ObfuscatedMailtoProps {
   label: string;
   className?: string;
@@ -39,15 +41,16 @@ export default function ObfuscatedMailto({
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     // Assemble address only on click, not on render
-    const resolved = (addressParts ?? ['gallant', '_mod5v', '@', 'icloud', '.com']).join('');
+    const resolved = addressParts ? addressParts.join('') : contactAddress();
     onOpen?.(resolved);
     window.location.href = `mailto:${resolved}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
   };
 
   return (
     <a
-      // Without JavaScript the link still leads somewhere: the collaborate page.
-      href="/collaborate"
+      // Without JavaScript the link leads to the address written out in the
+      // privacy policy's contact section.
+      href="/privacy/#contact-me"
       onClick={handleClick}
       className={className}
       style={style}
