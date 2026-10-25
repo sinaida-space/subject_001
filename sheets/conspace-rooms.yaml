@@ -13,7 +13,7 @@ doc:
 
 hero:
   lines: [CONSPACE, ROOMS]
-  role: A labyrinth of 18 paintings
+  role: Interactive experience
   size: 66
   role_size: 26
 
@@ -22,9 +22,9 @@ sections:
     heading: The piece
     body: >
       A walk through a [labyrinth] of half-lit rooms where eighteen works from the [SOULS] cycle by UVALISS hang.
-      It is built anew for every visit. Its three zones follow the cycle from [trauma] toward accepting oneself.
+      It is built anew for every visit. Its three zones follow the visual arc of the cycle: [fear], memory and acceptance.
       In a gallery, one visitor steers the [projection] with bare hands while others watch.
-      The paintings hang next door.
+      The works hang next door. An artwork. Not therapy or a psychological or medical service. 16+.
 
   - track: left
     heading: Project features
@@ -32,7 +32,7 @@ sections:
       - {label: "Formats", value: "online, or a gallery room"}
       - {label: "Running", value: "self-running, new for each visitor"}
       - {label: "Tech", value: "Three.js, live sound, hand tracking"}
-      - {label: "Privacy", value: "no data leaves the device"}
+      - {label: "Privacy", value: "nothing is recorded or sent"}
       - {label: "Access", value: "captions, calm mode, EN / RU"}
 
   - track: right
@@ -61,20 +61,20 @@ sections:
       - {label: "Write", value: "sinaida.eu/#contact", url: "https://sinaida.eu/#contact"}
 
 cards:
+  - image: ./images/conspace-qr.png
+    dithered: true
+    title: conspace rooms
   - image: ./images/conspace-fear.png
     dithered: true
     title: Fear
-    body: "Trauma: a hospital with no way out."
-    meta: Zone 1 of 3
+    body: Hospital corridors.
   - image: ./images/conspace-memory.png
     dithered: true
     title: Memory
-    body: Childhood, in grandma’s flat.
-    meta: Zone 2 of 3
+    body: Grandma’s flat.
   - image: ./images/conspace-acceptance.png
     dithered: true
     title: Acceptance
-    body: The soul accepts itself.
-    meta: Zone 3 of 3
+    body: Rooms of light.
 
 footer: Sinaida Krivchenko | CONSPACE ROOMS | project sheet | sinaida.eu
