@@ -263,12 +263,12 @@ const Licensing = () => {
               adapt, exhibit or print the painting, in whole or in part, can come from
               Alisa Feer&nbsp;alone. Every request goes to her directly at{' '}
               <a
-                href="https://uvaliss.ru/contacts"
+                href="https://uvaliss.ru/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-legible underline underline-offset-2 hover:text-accent transition-colors"
               >
-                uvaliss.ru/contacts
+                uvaliss.ru
               </a>
               . Requests sent to me are forwarded, not&nbsp;answered.
             </p>
