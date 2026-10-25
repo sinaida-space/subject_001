@@ -305,6 +305,9 @@ export const PROJECTS: Project[] = [
         'Sinaida translated that painting into a field you can walk. A soul-shaped figure moves through poppies and meets fifty questions along the way, all of them about the feeling of selfhood, none of them answerable by anyone but the person asking. The interface recalls old computers, which slows a person down enough to look.',
         'THE EYES CHICO is a web experience and an installation. The web experience is finished and live in a modern browser, with optional bare-hand control through the camera: palm to steer, fist to dive, pinch to pick. Hand tracking runs in the browser with Google’s MediaPipe; the camera image stays on the device and nothing is recorded. Only the tracking files come from outside, from third-party CDNs, once the camera starts. The installation is a proposal: a room lit red, a projector, the same field at the scale of a wall. Prototyped in Prague, 2026.',
       ],
+      disclaimer: [
+        'THE EYES CHICO is an artwork. It is not therapy or a\u00A0psychological or medical service, and it offers no\u00A0advice. If you are going through a\u00A0hard time, talk to a\u00A0specialist.',
+      ],
       heroCta: { label: 'Enter the website', url: 'https://the-eyes-chico.sinaida.eu/' },
       stat: {
         value: '50',
@@ -657,6 +660,9 @@ export const PROJECTS: Project[] = [
         'Every so\u00A0often the\u00A0drift stops at\u00A0a\u00A0broken ring. The\u00A0ring closes when you make the\u00A0movement it\u00A0asks for: a\u00A0slow turn of\u00A0the\u00A0head, a\u00A0shrug, a\u00A0reach. Then a\u00A0question arrives, and\u00A0the\u00A0descent\u00A0continues.',
         'It\u00A0runs in\u00A0a\u00A0browser tab, with or\u00A0without a\u00A0camera, in\u00A0a\u00A0five-minute seated version and\u00A0an\u00A0eight-minute version that gets you onto your\u00A0feet.',
       ],
+      disclaimer: [
+        'Ethereal Path is an artwork. The descent can cause dizziness. In the standing version, clear the space around you and stop if you feel\u00A0unsteady.',
+      ],
       heroCta: { label: 'Take the descent', url: 'https://sinaida-space.github.io/ethereal-path/' },
       stat: {
         value: '0',
@@ -762,6 +768,9 @@ export const PROJECTS: Project[] = [
       intro: [
         'Move your head and\u00A0the\u00A0flat monitor opens into a\u00A0window, with a\u00A0star tunnel behind the\u00A0glass. Stereolove finds your head through a\u00A0webcam and\u00A0redraws the\u00A0picture for\u00A0where you\u00A0are.',
         'Questions hang inside the\u00A0tunnel as\u00A0clouds of\u00A0cyan points. From one viewpoint they line up\u00A0into words; step aside and\u00A0they scatter. Raise an\u00A0open hand near your face and\u00A0the\u00A0next question\u00A0arrives.',
+      ],
+      disclaimer: [
+        'Stereolove is an artwork. Its moving optical patterns can cause dizziness; if they do, look away and stop. Not recommended for people with photosensitive\u00A0epilepsy.',
       ],
       heroCta: { label: 'Enter Stereolove', url: 'https://sinaida-space.github.io/stereolove/' },
       stat: {
@@ -870,6 +879,9 @@ export const PROJECTS: Project[] = [
         'Brown noise, rain over it, a\u00A0few chords moving underneath. Infinite Voidsong generates sound for\u00A0focused work and\u00A0keeps playing for\u00A0as\u00A0long as\u00A0you need. You layer sounds from six families into one mix, save it\u00A0as\u00A0a\u00A0preset and\u00A0leave\u00A0it\u00A0running.',
         'Sinaida made it\u00A0for\u00A0her own working day. Ballet taught her that rest is\u00A0where growth happens, so\u00A0the\u00A0breaks are timed with the\u00A0same care as\u00A0the\u00A0work, and\u00A0a\u00A0session ends with a\u00A0slow fade and\u00A0a\u00A0soft\u00A0chime.',
         'A\u00A0tunnel drawn in\u00A0WebGL moves with the\u00A0sound. The\u00A0tool installs as\u00A0an\u00A0app, works offline, has no\u00A0accounts and\u00A0tracks\u00A0nothing.',
+      ],
+      disclaimer: [
+        'Infinite Voidsong is an artwork and a\u00A0sound tool. It is not a\u00A0medical device or therapy. Focus Boost pulses the sound 12 to\u00A020 times a\u00A0second, so keep the volume\u00A0low.',
       ],
       heroCta: { label: 'Open Infinite Voidsong', url: 'https://infinite-voidsong.vercel.app/' },
       stat: {
@@ -982,6 +994,9 @@ export const PROJECTS: Project[] = [
       intro: [
         'Raindrops on\u00A0glass, and\u00A0lightning somewhere behind them. Storm Glass is\u00A0a\u00A0thunderstorm built in\u00A0TouchDesigner, with a\u00A023-minute video that walks through the\u00A0whole network\u00A0as\u00A0it\u00A0stands.',
         'It\u00A0is\u00A0a\u00A0teaching case: a\u00A0messy network, opened up\u00A0so\u00A0others can load it\u00A0and\u00A0take it\u00A0apart. The\u00A0.toe file and\u00A0the\u00A0sound file are on\u00A0Patreon for\u00A0all subscribers, free tier\u00A0included.',
+      ],
+      disclaimer: [
+        'The video contains lightning\u00A0flashes.',
       ],
       heroCta: { label: 'Watch the network overview', url: 'https://youtu.be/hwFttiCKbrU' },
       sections: [
