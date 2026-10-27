@@ -29,7 +29,7 @@ export function renderShell(): string {
         <div className="relative min-h-screen bg-background">
           <Header />
           <main id="main-content" tabIndex={-1}>
-            <div className="shell-hold" data-shell-hero="">
+            <div data-shell-hero="">
               <HeroLetters />
             </div>
             {/* The live page is many screens tall. Without this the shell

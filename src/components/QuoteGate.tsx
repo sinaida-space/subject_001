@@ -25,7 +25,7 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortraitBuild, type PortraitBuild } from '@/components/portraitBuild';
-import { primeImages, sampleText, type Cell } from '@/lib/sampleText';
+import { primeImages, textSampler, SLICE_MS, type Cell, type TextSampler } from '@/lib/sampleText';
 import { GALAXY_GLSL } from '@/lib/galaxy';
 import { registerLand } from '@/lib/navLand';
 
@@ -343,10 +343,11 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
     };
     const at = (screens: number) => g.pin0 + g.vh * screens;
 
-    // The three text reads are the heavy part of a build (~100 ms in one task,
-    // a long task on load). The first build reads them ahead, one per idle
-    // slot; build() takes what is ready and reads the rest itself. The reads
-    // are page coordinates, so they are kept only while the scroll stays put.
+    // The three text reads are the heavy part of a build (~600 ms on a slow
+    // phone). The first build reads them ahead in slices of SLICE_MS, one per
+    // idle slot; build() takes what is ready and reads the rest itself. The
+    // reads are page coordinates, so they are kept only while the scroll
+    // stays put.
     const skipHero = (el: Element) => !!el.closest('.sr-only, .hero-ghost, .hero-noise, .hero-whisper, button:not(.hl-word)');
     const lineOf = (el: Element) => el.closest('[data-feel]') ? FEEL_ID : Number((el.closest('[data-line]') as HTMLElement | null)?.dataset.line ?? 0);
     const blockOf = (el: Element) => {
@@ -354,13 +355,16 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
       const i = b ? g.blocks.indexOf(b as HTMLElement) : -1;
       return i < 0 ? 254 : i;
     };
-    const readHero = () => sampleText(hero, skipHero, hero.getBoundingClientRect(), true);
-    const readQuote = () => sampleText(quote, () => false, quote.getBoundingClientRect(), false, lineOf);
-    const readAbout = () => {
+    const sampleHero = () => textSampler(hero, skipHero, hero.getBoundingClientRect(), true);
+    const sampleQuote = () => textSampler(quote, () => false, quote.getBoundingClientRect(), false, lineOf);
+    const sampleAbout = () => {
       g.blocks = Array.from(about.querySelectorAll<HTMLElement>('h2, h3, p, span, div')).filter((el) => !el.closest('.photo-frame-wrapper, [data-gate-skip]') && !el.hasAttribute('data-rule'));
-      return sampleText(about, (el) => !!el.closest('.sr-only, .photo-frame-wrapper'), about.getBoundingClientRect(), false, blockOf);
+      return textSampler(about, (el) => !!el.closest('.sr-only, .photo-frame-wrapper'), about.getBoundingClientRect(), false, blockOf);
     };
-    let ahead: { sy: number; hero?: Cell[]; quote?: Cell[]; about?: Cell[] } | null = null;
+    const readHero = () => sampleHero().run(Infinity) ?? [];
+    const readQuote = () => sampleQuote().run(Infinity) ?? [];
+    const readAbout = () => sampleAbout().run(Infinity) ?? [];
+    let ahead: { sy: number; hero?: Cell[]; quote?: Cell[]; about?: Cell[]; job?: TextSampler } | null = null;
 
     const build = () => {
       // the pinned stage is 100svh: a screen height that mobile toolbars
@@ -677,10 +681,14 @@ export default function QuoteGate({ children }: { children: ReactNode }) {
         const step = () => {
           idleId = 0;
           if (ahead !== a) return;
-          if (!a.hero) a.hero = readHero();
-          else if (!a.quote) a.quote = readQuote();
-          else if (!a.about) a.about = readAbout();
-          else return finish();
+          const part = !a.hero ? 'hero' : !a.quote ? 'quote' : !a.about ? 'about' : null;
+          if (!part) return finish();
+          a.job ??= (part === 'hero' ? sampleHero : part === 'quote' ? sampleQuote : sampleAbout)();
+          const cells = a.job.run(SLICE_MS);
+          if (cells) {
+            a[part] = cells;
+            a.job = undefined;
+          }
           idleId = idleCall(step);
         };
         idleId = idleCall(step);
