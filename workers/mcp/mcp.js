@@ -40,6 +40,9 @@ const VIEWS = {
   },
 };
 
+// Largest request body the server reads, in bytes.
+const MAX_BODY = 16 * 1024;
+
 // End of the path: the tools a visit usually ends on carry this link as plain
 // data, never as a line for the agent to say.
 const TALK = 'Collaborate: https://sinaida.eu/collaborate';
@@ -510,9 +513,16 @@ export async function handleMcp(request, env, ctx) {
     return new Response('MCP endpoint requires POST', { status: 405, headers: { ...CORS, allow: 'POST, OPTIONS' } });
   }
 
+  // A JSON-RPC call here is a few hundred bytes; anything far larger is refused unread.
+  // The header is checked first, the text length too, since a chunked body sends no header.
+  if (Number(request.headers.get('content-length')) > MAX_BODY) {
+    return reply(jsonRpcError(null, -32600, 'Request too large'), 413);
+  }
   let body;
   try {
-    body = await request.json();
+    const text = await request.text();
+    if (text.length > MAX_BODY) return reply(jsonRpcError(null, -32600, 'Request too large'), 413);
+    body = JSON.parse(text);
   } catch {
     return reply(jsonRpcError(null, -32700, 'Parse error'), 400);
   }

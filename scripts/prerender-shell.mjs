@@ -74,6 +74,29 @@ function notFoundHead(html) {
   return out.replace(/\s*<meta property="og:url" content="[^"]*">/, '');
 }
 
+
+// A route's own chunk is requested only after the entry has run, so on pages
+// that hydrate (Statement, cases, Practice, Collaborate) it would start one
+// round trip late. Preload it, and the chunks it imports statically, beside
+// the entry. Dynamic imports (the 3D scenes) are left alone.
+function staticDeps(entryFile, seen = new Set()) {
+  if (seen.has(entryFile)) return seen;
+  seen.add(entryFile);
+  const code = readFileSync(join(DIST, 'assets', entryFile), 'utf8');
+  for (const m of code.matchAll(/(?:from|import)\s*"\.\/([^"]+\.js)"/g)) staticDeps(m[1], seen);
+  return seen;
+}
+function routePreloads(html, prefix) {
+  const entry = /<script type="module"[^>]*src="\/assets\/([^"]+\.js)"/.exec(html)?.[1];
+  const chunk = readdirSync(join(DIST, 'assets')).find((f) => f.startsWith(`${prefix}-`) && f.endsWith('.js'));
+  if (!chunk) return html;
+  const links = [...staticDeps(chunk)]
+    .filter((f) => f !== entry && !html.includes(`/assets/${f}"`))
+    .map((f) => `<link rel="modulepreload" crossorigin href="/assets/${f}">`)
+    .join('\n  ');
+  return links ? html.replace('</head>', () => `${links}\n  </head>`) : html;
+}
+
 let pages = 0;
 let cases = 0;
 for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
@@ -89,6 +112,10 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
     // every broken link would flash the homepage first.
     writeFileSync(join(DIST, '404.html'), notFoundHead(html));
     html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderShell()}</div>`, 'empty #root', file);
+    // The home page is its own chunk; preload it so it loads beside the entry
+    // instead of after it.
+    const homeChunk = readdirSync(join(DIST, 'assets')).find((f) => /^Index-.*\.js$/.test(f));
+    if (homeChunk) html = mustReplace(html, '</head>', `<link rel="modulepreload" crossorigin href="/assets/${homeChunk}">\n  </head>`, 'head end', file);
   }
 
   // 4. Case pages get their full static render.
@@ -131,6 +158,13 @@ for (const file of htmlFiles(DIST).filter((f) => !f.endsWith('404.html'))) {
   if (file === join(DIST, 'licensing', 'index.html')) {
     html = mustReplace(html, '<div id="root"></div>', `<div id="root">${renderLicensing()}</div>`, 'empty #root', file);
   }
+
+  // 9. Preload the chunk each hydrating page adopts its markup with.
+  const rel = file.slice(DIST.length + 1).replace(/\\/g, '/');
+  if (rel === 'statement/index.html') html = routePreloads(html, 'Statement');
+  else if (caseId) html = routePreloads(html, 'WorkCase');
+  else if (practiceId || practiceIndex) html = routePreloads(html, 'Practice');
+  else if (rel === 'collaborate/index.html') html = routePreloads(html, 'Collaborate');
 
   writeFileSync(file, html);
   pages++;

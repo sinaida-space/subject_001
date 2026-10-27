@@ -38,6 +38,13 @@ if ((fullPage || isStatement) && root.firstElementChild) {
     hydration.active = true;
     hydrateRoot(root, <App hydrate={mode} pages={{ [fullPage ?? "statement"]: Page }} />);
   });
+} else if (path === "") {
+  // Home is its own chunk, so the other pages do not pay for it. Load it
+  // first and pass it in, so the static hero is replaced in one step with no
+  // blank Suspense frame in between. index.html preloads the chunk.
+  routeChunks.home().then(({ default: Page }) => {
+    createRoot(root).render(<App pages={{ home: Page }} />);
+  });
 } else {
   createRoot(root).render(<App />);
 }

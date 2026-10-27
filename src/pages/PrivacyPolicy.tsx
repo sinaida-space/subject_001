@@ -105,6 +105,9 @@ const PrivacyPolicy = () => {
             Calls to the MCP server at&nbsp;/mcp are counted the same way. I use only the number of calls per day, to&nbsp;light one star per night in&nbsp;a&nbsp;small sky the server returns to&nbsp;agents. Nothing about who called is&nbsp;used.
           </p>
           <p>
+            When an&nbsp;agent calls a&nbsp;tool, the words it&nbsp;sends, such as&nbsp;the words for a&nbsp;portrait or&nbsp;an&nbsp;idea to&nbsp;think through, travel through Cloudflare to&nbsp;the server, shape the answer and are then let go. I&nbsp;keep only the daily count. Your agent app and its model provider follow their own privacy policies.
+          </p>
+          <p>
             Legal basis: legitimate interest in understanding in aggregate how the site is used, so I can improve it. This analytics is cookieless and does not identify individuals, so, as I understand the ePrivacy rules, it does not need consent for storing or accessing information on your device, and I rely on legitimate interest here.
           </p>
           <p>
