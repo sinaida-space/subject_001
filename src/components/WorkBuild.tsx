@@ -27,7 +27,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, type ReactNode } from 'react';
-import { sampleText, type Cell } from '@/lib/sampleText';
+import { sampleText, textSampler, SLICE_MS, type Cell, type TextSampler } from '@/lib/sampleText';
 import { workBuildBus } from '@/lib/workBuildBus';
 import { registerLand } from '@/lib/navLand';
 import { galaxyBright, galaxyColor, galaxyKeep, galaxySize } from '@/lib/galaxy';
@@ -324,7 +324,11 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
       return out;
     };
     // the headline, the caption and the table
-    const readText = () => textCells(sampleText(about, (el) => !!el.closest('.sr-only, [data-gate-skip], [data-photo-col]'), about.getBoundingClientRect(), false), 0, about.getBoundingClientRect(), 1, 166);
+    const sampleAboutText = () => textSampler(about, (el) => !!el.closest('.sr-only, [data-gate-skip], [data-photo-col]'), about.getBoundingClientRect(), false);
+    const toText = (cells: Cell[]) => textCells(cells, 0, about.getBoundingClientRect(), 1, 166);
+    const readText = () => toText(sampleAboutText().run(Infinity) ?? []);
+    // the read-ahead takes the text in slices, so no idle slot runs long
+    let textJob: TextSampler | null = null;
     // the credit is drawn very faint; sampled at full colour, kept faint
     const readCredit = () => {
       if (!wrap) return [];
@@ -381,8 +385,14 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
         if (!titleStars) titleStars = placeTitle();
         else if (raw.wOff === undefined) raw.wOff = readWOff();
         else if (!raw.stars) raw.stars = readStars();
-        else if (!raw.text) raw.text = readText();
-        else if (!raw.credit) raw.credit = readCredit();
+        else if (!raw.text) {
+          textJob ??= sampleAboutText();
+          const cells = textJob.run(SLICE_MS);
+          if (cells) {
+            raw.text = toText(cells);
+            textJob = null;
+          }
+        } else if (!raw.credit) raw.credit = readCredit();
         else if (!raw.face) raw.face = readFace();
         else return;
         idle = idleCall(step);
@@ -391,6 +401,7 @@ export default function WorkBuild({ children }: { children: ReactNode }) {
     };
     const forget = () => {
       raw = {};
+      textJob = null;
       if (idle) idleCancel(idle);
       idle = 0;
     };
