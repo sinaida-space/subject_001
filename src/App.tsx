@@ -1,6 +1,5 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, type ComponentType } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
-import Index from "./pages/Index";
 import CustomCursor from "@/components/CustomCursor";
 import WebMcpTools from "@/components/WebMcpTools";
 import RouteEnhancer from "@/components/RouteEnhancer";
@@ -11,6 +10,7 @@ import { startHalation } from "@/lib/halation";
 import { afterHydration, hydration } from "@/lib/hydration";
 import { rememberHomeScroll, restoreHomeScroll, takeHomeReturn } from "@/lib/homeScroll";
 
+const Index = lazy(routeChunks.home);
 const PrivacyPolicy = lazy(routeChunks.privacy);
 const Machines = lazy(routeChunks.machines);
 const Licensing = lazy(routeChunks.licensing);
@@ -79,6 +79,7 @@ const ScrollToTop = () => {
 // Pages that arrive rendered at build time, passed in already loaded in
 // place of their lazy route, so hydration never suspends on the chunk.
 export interface HydratedPages {
+  home?: ComponentType;
   work?: ComponentType;
   statement?: ComponentType;
   machines?: ComponentType;
@@ -92,6 +93,7 @@ export interface HydratedPages {
 // (src/entry-shell.tsx), so a hydrated page has the same tree, and the same
 // useId values, on the server and in the browser.
 export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
+  const Home = pages.home ?? Index;
   const Work = pages.work ?? WorkCase;
   const StatementPage = pages.statement ?? Statement;
   const MachinesPage = pages.machines ?? Machines;
@@ -116,7 +118,7 @@ export const AppRoutes = ({ pages = {} }: { pages?: HydratedPages }) => {
     <WebMcpTools />
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Home />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/licensing" element={<LicensingPage />} />
         <Route path="/license" element={<Navigate to="/licensing" replace />} />

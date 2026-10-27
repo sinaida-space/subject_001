@@ -4,6 +4,7 @@
 // lazy route will ask for.
 
 export const routeChunks = {
+  home: () => import('@/pages/Index'),
   privacy: () => import('@/pages/PrivacyPolicy'),
   licensing: () => import('@/pages/Licensing'),
   collaborate: () => import('@/pages/Collaborate'),
@@ -19,7 +20,7 @@ export const routeChunks = {
  * client-side route (files, llms.txt, the CV PDF and so on). */
 export function chunkForPath(pathname: string): (() => Promise<unknown>) | null {
   const path = pathname.replace(/\/+$/, '') || '/';
-  if (path === '/') return () => Promise.resolve();
+  if (path === '/') return routeChunks.home;
   if (path === '/privacy') return routeChunks.privacy;
   if (path === '/licensing' || path === '/license') return routeChunks.licensing;
   if (path === '/collaborate' || path === '/booking' || path === '/press') return routeChunks.collaborate;
