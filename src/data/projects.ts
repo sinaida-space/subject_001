@@ -581,7 +581,7 @@ export const PROJECTS: Project[] = [
       stat: {
         value: '0',
         heading: 'Camera frames that leave the device',
-        body: 'Hand tracking runs in the browser with Google’s MediaPipe. No camera image and no audio leave the device, and there is no account. The browser only downloads the tracking files from third-party CDNs.',
+        body: 'Hand tracking runs in the browser with Google’s MediaPipe. No camera image and no audio leave the device, and there is no account. The tracking library and model are served from the instrument’s own site.',
       },
       media: [
         {
