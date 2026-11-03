@@ -7,12 +7,13 @@
 
 current  fills cv/template-current.pdf (hero, rules, headings, QR and
          contacts are fixed there) and writes public/files/sinaida-krivchenko-cv.pdf
-grid     hands the same content to the sinaida-grid-style skill and writes
+grid     hands the same content to the grid builder and writes
          cv/out/sinaida-krivchenko-cv-grid.pdf
 
 Needs PyMuPDF and PyYAML. Exits non-zero when copy overflows its box.
 """
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -25,7 +26,8 @@ import yaml
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 FONT = Path.home() / "dev/design-system-docs/fonts/GeistPixel-Regular.ttf"
-GRID_BUILD = Path.home() / ".claude/skills/sinaida-grid-style/scripts/build.py"
+# Set CV_GRID_BUILD to the grid builder script for the grid look.
+GRID_BUILD = Path(os.environ.get("CV_GRID_BUILD", HERE / "grid-style/scripts/build.py"))
 TEMPLATE = HERE / "template-current.pdf"
 OUT_CURRENT = ROOT / "public/files/sinaida-krivchenko-cv.pdf"
 OUT_GRID = HERE / "out/sinaida-krivchenko-cv-grid.pdf"
@@ -195,7 +197,7 @@ def build_current(spec):
 
 def build_grid(spec):
     if not GRID_BUILD.exists():
-        raise SystemExit("sinaida-grid-style skill not found at %s" % GRID_BUILD)
+        raise SystemExit("grid builder not found at %s (set CV_GRID_BUILD)" % GRID_BUILD)
     spec = yaml.safe_load(yaml.safe_dump(spec))
     spec["doc"]["output"] = str(OUT_GRID)
     for card in spec["cards"]:

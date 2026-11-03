@@ -562,8 +562,8 @@ export const PROJECTS: Project[] = [
     essay: {
       paragraphs: [
         'Aether Currents is a way to feel music on your fingertips. Open it, show it your camera, and your hands become the interface. The right hand moves through position and pitch. A pinch shapes grain size. The left hand’s height sets density. Pull your hands apart and the filter opens, the space widens. Close into a fist and the sound freezes mid-air. There is no keyboard, no mouse and no MIDI controller between you and the sound, only your own sense of where your hands are.',
-        'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of "move only your upper body." Ballet trains a body inside strict rules. Aether Currents has rules too: six gestures over a granular synthesis engine, with plenty of room to play inside them. The instrument does not know what you will play, and often its maker does not either.',
-        'Kamil Yegelev (TeleFM), a musician in Belgrade, advised on the music. Everything runs on the device, with no server and no cloud. The target is sound that follows movement in under a hundred milliseconds, fast enough to feel like playing. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
+        'The work comes from Sinaida’s years at the barre. Turnout, spotting, the discipline of “move only your upper body.” Ballet trains a body inside strict rules. Aether Currents has rules too: six gestures over a granular synthesis engine, with plenty of room to play inside them. The instrument does not know what you will play, and often its maker does not either.',
+        'Kamil Yegelev (TeleFM), a musician in Belgrade, advised on the music. Everything runs on the device, with no server and no cloud. The visuals carry the same signal as the audio, so what your hands do to the sound, the light shows back to you.',
       ],
       credits: [
         'Instrument: Sinaida Krivchenko · sinaida.eu · @sin.ai.da',
