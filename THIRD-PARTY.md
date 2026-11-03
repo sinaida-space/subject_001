@@ -16,7 +16,8 @@ exact terms.
 
 ### Geist Pixel — `public/fonts/geist-pixel-*.woff2`
 
-Copyright (c) Vercel. Licensed under the SIL Open Font License 1.1.
+Copyright 2024 The Geist Project Authors. Licensed under the SIL Open Font License 1.1.
+License text: `public/fonts/OFL-GeistPixel.txt`.
 https://github.com/vercel/geist-font
 
 ### Libre Franklin
