@@ -414,7 +414,7 @@ export const PROJECTS: Project[] = [
         'A collaboration with UVALISS (Alisa Feer, https://uvaliss.ru/).',
       ],
       disclaimer: [
-        'CONSPACE ROOMS is an artwork. It is not therapy, art therapy or a\u00A0psychological or medical service, and it offers no\u00A0advice.\u00A016+.',
+        'CONSPACE ROOMS is an artwork, 16+. It holds fear, loss and the memory of\u00A0loved ones. If something touches you too deeply, talk to someone close or a\u00A0psychologist.',
         'Inside: flashing and flickering light, sudden loud sounds, darkness, and images of fear, loss and grief. Not recommended for people with photosensitive\u00A0epilepsy.',
       ],
       heroCta: { label: 'Walk the labyrinth', url: 'https://conspace-rooms.vercel.app/?lang=en' },
