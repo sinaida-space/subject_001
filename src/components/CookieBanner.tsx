@@ -7,10 +7,8 @@ import { notifyCookieBannerAcknowledged, notifyCookieBannerAway } from '@/lib/co
 // current text. Tracks the "last updated" date in PrivacyPolicy.tsx, with a
 // suffix when the policy changes substantively more than once in a day.
 //
-// -2 covers the Cloudflare and analytics disclosure. The version deployed
-// earlier today stated the site used no analytics, so anyone who acknowledged
-// that gets shown the notice again rather than being left with a stale claim.
-export const PRIVACY_POLICY_VERSION = '2026-07-24-2';
+// Matches the "last updated" date on the privacy page.
+export const PRIVACY_POLICY_VERSION = '2026-10-15';
 
 // Removes the stored acknowledgement and reloads so the notice shows again.
 // Guarded in a try/catch: Safari private mode throws on localStorage access.

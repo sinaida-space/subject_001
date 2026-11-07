@@ -33,7 +33,7 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
       {playing ? (
         <iframe
           className="absolute inset-0 h-full w-full"
-          src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`}
           title={title}
           loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -67,7 +67,7 @@ export default function VideoEmbed({ id, title, maxHeightVh }: VideoEmbedProps) 
           not as page copy; it lets clicks through to the play button. Gone once
           the player is up. */}
       {!playing && (
-        <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-1.5 pt-5 text-right font-mono text-[8px] leading-tight text-white/60">
+        <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-1.5 pt-5 text-right font-mono text-xs leading-tight text-white/80">
           Pressing play leaves sinaida.eu. The video is played by YouTube (Google), which may set its own cookies.
         </p>
       )}

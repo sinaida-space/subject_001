@@ -489,7 +489,7 @@ export const PROJECTS: Project[] = [
       },
       visitorQuotes: {
         quotes: [
-          { text: 'One question has put my whole life on pause, and it still\u00A0has.', name: 'A.' },
+          { text: 'One question I still ask myself every morning, and it keeps me\u00A0going.', name: 'Alexander' },
           { text: 'This is a masterpiece. I don’t know how a human brain is capable of coming up with something like this… So many questions I had never asked myself, and I\u00A0was\u00A0wrong\u00A0not\u00A0to.', name: 'D.\u00A0V.' },
           { text: 'You want to give it a lot of time! Deep, atmospheric, important. On how thought-through it is, I want to add that at the end you can save all the questions for yourself, which is great! Because they really are interesting to come back\u00A0to.', name: 'V.\u00A0S.' },
           { text: 'This needs to be at exhibitions, with different screens, with photographs and other art objects complementing your\u00A0work.', name: 'K.\u00A0V.' },
